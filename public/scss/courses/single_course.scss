@@ -1,0 +1,45 @@
+@use "../utils/common" as common;
+@use "../utils/variables" as vars;
+
+.single-course-section {
+  margin-block: 30px;
+
+  .bread-crumb {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block: 30px;
+  }
+
+  .course-data {
+    h2 {
+      font-size: vars.$md_header_size;
+      font-weight: 400;
+      margin-block-end: 20px;
+    }
+    .course-price {
+      color: red;
+      font-size: vars.$md_font_size;
+      font-weight: 500;
+    }
+
+    .course-description {
+      margin-block: 30px;
+    }
+
+    .course-type {
+      margin-block-end: 20px;
+      strong {
+        display: block;
+        margin-block: 10px;
+      }
+      span {
+        display: block;
+        padding: 10px 20px;
+        border: 1px solid #000;
+        width: fit-content;
+        border-radius: 4px;
+      }
+    }
+  }
+}
