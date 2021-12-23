@@ -13,7 +13,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 const courses = require("./routes/courses");
-const about = require("./routes/about")
+const about = require("./routes/about");
+const contactus = require("./routes/contactus");
 
 app.get("/", (req, res, next) => {
   res.render("home/home.ejs", {
@@ -24,5 +25,6 @@ app.get("/", (req, res, next) => {
 
 app.use("/courses", courses.routes);
 app.use("/aboutme", about.routes);
+app.use('/contact', contactus.routes);
 
 app.listen(3000);

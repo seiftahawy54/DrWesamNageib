@@ -1,0 +1,53 @@
+.contact-us {
+  margin-block-start: 60px;
+  height: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.contact-us h3 {
+  margin-block-end: 30px;
+}
+.contact-us form .form-control {
+  border: none;
+  padding: 0;
+}
+.contact-us form .form-control input, .contact-us form .form-control textarea {
+  width: 100%;
+  border: 1px solid #E354A1;
+  padding: 5px;
+  border-radius: 4px;
+}
+.contact-us form .form-control input::placeholder, .contact-us form .form-control textarea::placeholder {
+  font-family: "Fira Sans", sans-serif !important;
+}
+.contact-us form .form-control textarea {
+  height: 160px;
+}
+.contact-us form .form-control:nth-of-type(even) {
+  margin-block: 20px;
+}
+.contact-us form button {
+  width: 100%;
+  margin-block-start: 20px;
+}
+.contact-us .contact-alternative {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  height: 100%;
+}
+.contact-us .contact-alternative a {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-size: 24px;
+}
+.contact-us .contact-alternative a svg:not(:nth-of-type(1)) {
+  width: 28px;
+  height: 28px;
+}
+
+/*# sourceMappingURL=index.css.map */

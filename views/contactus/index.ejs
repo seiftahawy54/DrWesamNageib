@@ -1,0 +1,46 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/contactus/index.css" />
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="contact-us">
+    <div class="container">
+        <div class="row">
+            <div class="col offset-2">
+                <h3>Contact for any issues</h3>
+                <form action="/contact_sent" method="POST">
+                    <div class="form-control">
+                        <input type="text" name="contact_name" id="contact_name" placeholder="Your name"/>
+                    </div>
+                    <div class="form-control">
+                        <input type="email" name="contact_email" id="contact_email" placeholder="Your email"/>
+                    </div>
+                    <div class="form-control">
+                        <textarea name="content_content" id="contact_content" placeholder="Enter your message"></textarea>
+                    </div>
+                    <button class="btn" type="submit">Send your message</button>
+                </form>
+            </div>
+            <div class="col">
+                <aside class="contact-alternative">
+                    <a href="https://wa.me/+00201142134559" target="_blank" class="reset-link">
+                        <%- include('../../public/imgs/svgs/whatsapp.svg') %>
+                        Message On Whatsapp
+                    </a>
+                    <a href="tel:+0020142234513" target="_blank" class="reset-link">
+                        <%- include('../../public/imgs/svgs/phone.svg') %>
+                        (+002) 0 142 234 513
+                    </a>
+                    <a href="mailto:contact@drwesannageib.com" target="_blank" class="reset-link">
+                        <%- include('../../public/imgs/svgs/email.svg') %>
+                        contact@drwesannageib.com
+                    </a>
+                </aside>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>
