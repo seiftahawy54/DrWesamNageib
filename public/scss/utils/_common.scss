@@ -1,0 +1,45 @@
+@use 'variables' as vars;
+
+@mixin similarHW($dimension, $important: null) {
+  @if ($important) {
+    width: $dimension !important;
+    height: $dimension !important;
+  } @else {
+    width: $dimension;
+    height: $dimension;
+  }
+}
+
+%custom-input-style {
+  position: relative;
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  font-size: vars.$xl_header_size;
+  font-weight: 500;
+  transition: 0.25s;
+  margin-block: 30px 65px;
+  width: 100%;
+  gap: 10px;
+  cursor: pointer;
+}
+
+%darkModeStyles {
+  background: vars.$dark_mode_bg !important;
+  color: vars.$dark_mode_color !important;
+}
+
+%websiteMarginXl {
+  margin-top: 140px;
+}
+
+%websiteMarginLg {
+  margin-top: 120px !important;
+}
+
+%customShadow {
+  box-shadow: 4px 4px 20px rgba(51, 64, 255, 0.4);
+}
+
+%commonTransition {
+  transition: all .25s ease-in-out;
+}

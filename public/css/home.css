@@ -1,0 +1,100 @@
+.our-courses .course-text .button-container, .main-header .button-container {
+  display: flex;
+  width: 100%;
+  align-content: center;
+  justify-content: center;
+  gap: 20px;
+}
+.our-courses .course-text .button-container button, .main-header .button-container button {
+  width: 200px;
+  height: 55px;
+}
+.our-courses .course-text .button-container button:nth-of-type(1), .main-header .button-container button:nth-of-type(1) {
+  background-color: #E354A1;
+  color: #fff;
+}
+.our-courses .course-text .button-container button:nth-of-type(1):hover, .main-header .button-container button:nth-of-type(1):hover {
+  background-color: transparent;
+  color: #E354A1;
+  border: 1px solid #E354A1;
+}
+.our-courses .course-text .button-container button:nth-of-type(2), .main-header .button-container button:nth-of-type(2) {
+  background-color: transparent;
+  color: #E354A1;
+  border: 1px solid #E354A1;
+}
+.our-courses .course-text .button-container button:nth-of-type(2):hover, .main-header .button-container button:nth-of-type(2):hover {
+  background-color: #E354A1;
+  color: #fff;
+}
+
+.main-header {
+  text-align: center;
+}
+.main-header p {
+  margin-block: 80px 40px;
+}
+.main-header h2 {
+  font-family: "Fira Sans", sans-serif !important;
+  font-weight: bold;
+  margin-block-end: 45px;
+  font-size: 32px;
+}
+.main-header video {
+  margin-block: 0 30px;
+  border-radius: 5px;
+  object-fit: cover;
+  width: 700px;
+  height: 400px;
+}
+.main-header .courses-scroll {
+  margin-block: 40px 100px;
+  color: #E354A1;
+}
+
+.our-courses .courses-container {
+  margin-block: 50px;
+}
+.our-courses .course-thumbnail img {
+  width: 280px;
+  height: 280px;
+  display: block;
+  margin: auto;
+}
+.our-courses .course-text .course-title-ar {
+  font-family: "Cairo", sans-serif !important;
+}
+.our-courses .course-text p {
+  font-size: 18px;
+  line-height: 42px;
+}
+.our-courses .course-text .button-container {
+  justify-content: flex-start;
+}
+
+.testimonials .swiper-slide {
+  display: flex;
+}
+.testimonials .client-container {
+  width: 536px;
+  margin: auto;
+}
+.testimonials .client-container .client-data {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-size: 18px;
+  margin-block-end: 14px;
+}
+.testimonials .client-container .client-data svg {
+  width: 48px;
+  height: 48px;
+}
+.testimonials .client-container .client-data .client-date {
+  opacity: 0.5;
+}
+.testimonials .client-container p.client-opinion {
+  line-height: 40px;
+}
+
+/*# sourceMappingURL=home.css.map */

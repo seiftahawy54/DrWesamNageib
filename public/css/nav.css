@@ -1,0 +1,24 @@
+.navbar {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  height: 120px;
+}
+.navbar .navbar-brand {
+  font-size: 28px !important;
+  color: #000;
+}
+.navbar .navbar-nav {
+  gap: 40px;
+}
+.navbar .navbar-nav .nav-item a {
+  color: #000;
+  font-size: 18px;
+}
+.navbar .navbar-nav .nav-item a.active {
+  color: #E354A1;
+}
+.navbar .navbar-nav .nav-item a svg {
+  width: 26px;
+  height: 26px;
+}
+
+/*# sourceMappingURL=nav.css.map */

@@ -1,0 +1,84 @@
+@use "../utils/common" as common;
+@use "../utils/variables" as vars;
+
+.featured-courses {
+  .small-brief {
+    margin-block: 80px;
+  }
+
+  .featured-courses-container {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    padding: 27px 16px;
+    border-top: 8px solid vars.$main_color;
+    font-size: vars.$md_font_size;
+
+    button {
+      width: 100%;
+    }
+
+    .course-title-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+
+      .course-thumbnail {
+        img {
+          @include common.similarHW(60px)
+        }
+      }
+    }
+
+    .course-about {
+      font-weight: 300;
+      margin-block: 32px;
+    }
+  }
+}
+
+.all-courses {
+  h3 {
+    font-family: vars.$sans_font;
+  }
+
+  .course-sort {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .all-courses-cont {
+    margin-block-start: 20px;
+
+    .course {
+      border: 0.5px solid #707070;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      margin-block-end: 20px;
+      transition: box-shadow .25s ease-in-out;
+      cursor: pointer;
+
+      .course-thumbnail {
+        width: 100%;
+      }
+
+      .course-footer {
+        padding: 20px;
+      }
+
+      .course-title {
+        margin-block-end: 10px;
+        font-size: vars.$sm_font_size;
+      }
+
+      .course-price {
+        color: red;
+        font-family: vars.$sans_font;
+      }
+
+      &:hover {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+body, * {
+  font-family: "Poppins", sans-serif !important;
+}
+
+.btn {
+  width: 200px;
+  height: 55px;
+  background-color: #E354A1;
+  color: #fff;
+  transition: all 0.25s ease-in-out;
+  border-radius: 5px;
+}
+.btn:hover {
+  background-color: transparent;
+  color: #E354A1;
+  border: 1px solid #E354A1;
+}
+
+.btn-outlined {
+  width: 200px;
+  height: 55px;
+  background-color: transparent;
+  color: #E354A1;
+  border: 1px solid #E354A1;
+  transition: all 0.25s ease-in-out;
+  border-radius: 5px;
+}
+.btn-outlined:hover {
+  background-color: #E354A1;
+  color: #fff;
+}
+
+.swiper {
+  height: 300px;
+}
+
+.reset-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.1s ease-in-out;
+}
+.reset-link:hover {
+  color: #E354A1;
+}
+
+footer {
+  border-top: 1px solid #000;
+  padding-block: 30px;
+  margin-block-start: 30px;
+}
+
+/*# sourceMappingURL=main.css.map */

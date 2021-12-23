@@ -1,0 +1,31 @@
+@use "./utils/variables" as vars;
+@use "./utils/common" as common;
+
+.navbar {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  height: 120px;
+
+  .navbar-brand {
+    font-size: vars.$lg_header_size !important;
+    color: #000;
+  }
+
+  .navbar-nav {
+    gap: 40px;
+
+    .nav-item {
+      a {
+        color: #000;
+        font-size: vars.$md_font_size;
+
+        &.active {
+          color: vars.$main_color;
+        }
+
+        svg {
+          @include common.similarHW(26px);
+        }
+      }
+    }
+  }
+}

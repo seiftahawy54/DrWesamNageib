@@ -1,0 +1,131 @@
+@use "./utils/variables" as vars;
+@use "./utils/common" as common;
+
+%commonButtons {
+  display: flex;
+  width: 100%;
+  align-content: center;
+  justify-content: center;
+  gap: 20px;
+
+  button {
+    width: 200px;
+    height: 55px;
+
+    &:nth-of-type(1) {
+      background-color: vars.$main_color;
+      color: #fff;
+
+      &:hover {
+        background-color: transparent;
+        color: vars.$main_color;
+        border: 1px solid vars.$main_color;
+      }
+    }
+
+    &:nth-of-type(2) {
+      background-color: transparent;
+      color: vars.$main_color;
+      border: 1px solid vars.$main_color;
+
+      &:hover {
+        background-color: vars.$main_color;
+        color: #fff;
+      }
+    }
+  }
+}
+
+.main-header {
+  text-align: center;
+
+  p {
+    margin-block: 80px 40px;
+  }
+
+  h2 {
+    font-family: vars.$sans_font;
+    font-weight: bold;
+    margin-block-end: 45px;
+    font-size: vars.$xl_header_size;
+  }
+
+  video {
+    margin-block: 0 30px;
+    border-radius: 5px;
+    object-fit: cover;
+    width: 700px;
+    height: 400px;
+  }
+
+  .button-container {
+    @extend %commonButtons;
+  }
+
+  .courses-scroll {
+    margin-block: 40px 100px;
+    color: vars.$main_color;
+  }
+}
+
+.our-courses {
+
+  .courses-container {
+    margin-block: 50px;
+  }
+
+  .course-thumbnail {
+    img {
+      @include common.similarHW(280px);
+      display: block;
+      margin: auto;
+    }
+  }
+
+  .course-text {
+    .course-title-ar {
+      font-family: vars.$arabic_font;
+    }
+
+    p {
+      font-size: vars.$md_font_size;
+      line-height: 42px;
+    }
+
+    .button-container {
+      @extend %commonButtons;
+      justify-content: flex-start;
+    }
+  }
+}
+
+.testimonials {
+  .swiper-slide {
+    display: flex;
+  }
+
+  .client-container {
+    width: 536px;
+    margin: auto;
+
+    .client-data {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: vars.$md_font_size;
+      margin-block-end: 14px;
+
+      svg {
+        @include common.similarHW(48px);
+      }
+
+      .client-date {
+        opacity: 0.5
+      }
+    }
+
+    p.client-opinion {
+      line-height: 40px;
+    }
+  }
+}

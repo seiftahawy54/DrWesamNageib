@@ -1,0 +1,65 @@
+.featured-courses .small-brief {
+  margin-block: 80px;
+}
+.featured-courses .featured-courses-container {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+  padding: 27px 16px;
+  border-top: 8px solid #E354A1;
+  font-size: 18px;
+}
+.featured-courses .featured-courses-container button {
+  width: 100%;
+}
+.featured-courses .featured-courses-container .course-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.featured-courses .featured-courses-container .course-title-container .course-thumbnail img {
+  width: 60px;
+  height: 60px;
+}
+.featured-courses .featured-courses-container .course-about {
+  font-weight: 300;
+  margin-block: 32px;
+}
+
+.all-courses h3 {
+  font-family: "Fira Sans", sans-serif !important;
+}
+.all-courses .course-sort {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.all-courses .all-courses-cont {
+  margin-block-start: 20px;
+}
+.all-courses .all-courses-cont .course {
+  border: 0.5px solid #707070;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  margin-block-end: 20px;
+  transition: box-shadow 0.25s ease-in-out;
+  cursor: pointer;
+}
+.all-courses .all-courses-cont .course .course-thumbnail {
+  width: 100%;
+}
+.all-courses .all-courses-cont .course .course-footer {
+  padding: 20px;
+}
+.all-courses .all-courses-cont .course .course-title {
+  margin-block-end: 10px;
+  font-size: 16px;
+}
+.all-courses .all-courses-cont .course .course-price {
+  color: red;
+  font-family: "Fira Sans", sans-serif !important;
+}
+.all-courses .all-courses-cont .course:hover {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+/*# sourceMappingURL=courses.css.map */
