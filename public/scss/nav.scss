@@ -7,19 +7,46 @@
 
   .navbar-brand {
     font-size: vars.$lg_header_size !important;
-    color: #000;
+    color: vars.$main_color;
   }
 
   .navbar-nav {
     gap: 40px;
+    align-items: center;
 
     .nav-item {
       a {
         color: #000;
         font-size: vars.$md_font_size;
 
+        &.login-button {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #fff;
+          gap: 10px;
+          transition: all .25s ease-in-out;
+          svg {
+            path {
+              transition: all .25s ease-in-out;
+            }
+          }
+
+          &:hover {
+            color: vars.$main_color;
+
+            svg {
+              path { fill: vars.$main_color !important; }
+            }
+          }
+        }
+
         &.active {
           color: vars.$main_color;
+
+          svg {
+            fill: vars.$main_color;
+          }
         }
 
         svg {

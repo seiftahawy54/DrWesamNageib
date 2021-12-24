@@ -4,17 +4,38 @@
 }
 .navbar .navbar-brand {
   font-size: 28px !important;
-  color: #000;
+  color: #E354A1;
 }
 .navbar .navbar-nav {
   gap: 40px;
+  align-items: center;
 }
 .navbar .navbar-nav .nav-item a {
   color: #000;
   font-size: 18px;
 }
+.navbar .navbar-nav .nav-item a.login-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  gap: 10px;
+  transition: all 0.25s ease-in-out;
+}
+.navbar .navbar-nav .nav-item a.login-button svg path {
+  transition: all 0.25s ease-in-out;
+}
+.navbar .navbar-nav .nav-item a.login-button:hover {
+  color: #E354A1;
+}
+.navbar .navbar-nav .nav-item a.login-button:hover svg path {
+  fill: #E354A1 !important;
+}
 .navbar .navbar-nav .nav-item a.active {
   color: #E354A1;
+}
+.navbar .navbar-nav .nav-item a.active svg {
+  fill: #E354A1;
 }
 .navbar .navbar-nav .nav-item a svg {
   width: 26px;

@@ -1,0 +1,72 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/cart/cart.css">
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="shopping-cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <div class="cart-header">
+                    <h3>My Cart</h3>
+                    <a href="/courses" class="reset-link">
+                        Continue shopping
+                        <%- include('../../public/imgs/svgs/right_chevron.svg') %>
+                    </a>
+                </div>
+                <hr />
+                <div class="cart-content">
+                    <% cart.courses.forEach(course => { %>
+                        <div class="row purchase-details">
+                            <div class="col">
+                                <img src="/imgs/imgs/course_img.png" alt="coruse thumbnail" class="w-100 img-fuild" />
+                            </div>
+                            <div class="col">
+                                <h3><%- course.courseName; %></h3>
+                                <p>&dollar; <%- course.coursePrice; %></p>
+                                <p><%- course.courseDescription; %></p>
+                                <p><%- course.courseDate; %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+            <div class="col-4 offset-2">
+                <h3>Order Summary</h3>
+                <hr />
+                <div>
+                    <div class="row">
+                        <div class="col">
+                            <h4>
+                                Subtotal
+                            </h4>
+                        </div>
+                        <div class="col">
+                            <% cart.courses.forEach(course => { %>
+                                <p>&dollar;<%- course.coursePrice %></p>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col">
+                            <h4>
+                                Total
+                            </h4>
+                        </div>
+                        <div class="col">
+                            &dollar;<%- cart.totalPrice %>
+                        </div>
+                    </div>
+                    <button class="w-100 purchase-button btn">
+                        Pay with <img src="/imgs/imgs/paypal.png" alt="Pay with paypal" class="d-inline"/>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

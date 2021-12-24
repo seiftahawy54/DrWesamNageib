@@ -1,0 +1,28 @@
+.shopping-cart {
+  margin-block: 30px;
+}
+.shopping-cart .cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.shopping-cart .cart-content .purchase-details:nth-of-type(odd) {
+  margin-block-end: 20px;
+}
+.shopping-cart .purchase-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  font-size: 20px;
+  background-color: #F2BA36;
+  color: rgba(0, 0, 0, 0.9);
+  margin-block-start: 30px;
+}
+.shopping-cart .purchase-button img {
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+}
+
+/*# sourceMappingURL=cart.css.map */

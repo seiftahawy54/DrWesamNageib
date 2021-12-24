@@ -13,19 +13,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 const courses = require("./routes/courses");
-const about = require("./routes/about");
-const contactus = require("./routes/contactus");
-
-app.get("/", (req, res, next) => {
-  res.render("home/home.ejs", {
-    title: "Homepage",
-    path: "/"
-    });
-});
+const shopping = require("./routes/shopping");
 
 app.use("/courses", courses.routes);
-app.use("/aboutme", about.routes);
-app.use('/contact', contactus.routes);
+app.use("/", shopping.routes);
 
 const port = process.env.PORT || 3000;
 

@@ -1,0 +1,37 @@
+@use '../utils/common' as common;
+@use '../utils/variables' as vars;
+
+.shopping-cart {
+  margin-block: 30px;
+
+  .cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cart-content {
+    .purchase-details {
+      &:nth-of-type(odd) {
+        margin-block-end: 20px;
+      }
+    }
+  }
+
+  .purchase-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    font-size: vars.$lg_font_size;
+    background-color: #F2BA36;
+    color: rgba(0, 0, 0, 0.9);
+    margin-block-start: 30px;
+
+    img {
+      @include common.similarHW(68px);
+      object-fit: contain;
+    }
+  }
+
+}
