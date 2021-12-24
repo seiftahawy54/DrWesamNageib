@@ -30,5 +30,4 @@ app.use('/contact', contactus.routes);
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-  console.log(`we're in the middle of the nightmare ${port}`);
 });
