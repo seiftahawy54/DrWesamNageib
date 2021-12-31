@@ -12,7 +12,28 @@
   h3 {
     margin-block-end: 30px;
   }
+
+  .separator {
+    width: 2px;
+    height: 100%;
+    background-color: vars.$main_color;
+  }
+
   form {
+    position: relative;
+    /*
+
+    &:after {
+      content: "";
+      top: 0;
+      right: 0;
+      width: 1px;
+      height: 300px;
+      background-color: red;
+      position: absolute;
+    }
+    */
+
     .form-control {
       border: none;
       padding: 0;
@@ -20,8 +41,8 @@
       input, textarea {
         width: 100%;
         border: 1px solid vars.$main_color;
-        padding: 5px;
         border-radius: 4px;
+        padding: 12px;
 
         &::placeholder {
           font-family: vars.$sans_font;

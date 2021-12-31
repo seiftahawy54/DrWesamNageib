@@ -14,9 +14,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const courses = require("./routes/courses");
 const shopping = require("./routes/shopping");
+const auth = require("./routes/auth");
 
 app.use("/courses", courses.routes);
-app.use("/", shopping.routes);
+app.use(auth.routes)
+app.use(shopping.routes);
 
 const port = process.env.PORT || 3000;
 

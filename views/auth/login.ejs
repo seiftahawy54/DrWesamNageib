@@ -1,0 +1,30 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/auth/login.css" />
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="login-form">
+    <div class="content-container">
+        <h2>Login</h2>
+        <div class="header-dash-line"></div>
+        <form action="/login" method="POST">
+            <div class="my-form-control">
+                <input type="email" name="email" id="email" placeholder="Your email" />
+            </div>
+            <div class="my-form-control reset-form-control">
+                <input type="password" name="password" id="password" placeholder="Your password" />
+            </div>
+            <div class="login-options">
+                <a href="/forget_password">Forget Password</a>
+                <a href="/register">Do not have an account</a>
+            </div>
+            <button class="btn">
+                Login
+            </button>
+        </form>
+    </div>
+</section>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

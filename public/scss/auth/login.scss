@@ -1,0 +1,53 @@
+@use "../utils/variables" as vars;
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin-block: 100px 110px;
+
+  .content-container {
+    border: 1px solid vars.$main_color;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    padding: 100px 80px;
+    box-shadow: 0 4px 4px rgba(0,0,0,.25);
+
+    .header-dash-line {
+      margin-block: 15px 55px;
+      width: 50px;
+      height: 2px;
+      background-color: vars.$main_color;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      justify-content: center;
+
+      input {
+        height: 44px;
+        margin-block-end: 30px;
+        padding: 12px;
+        border-radius: 4px;
+        border: 1px solid vars.$main_color;
+      }
+
+      .login-options {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      button {
+        margin-block-start: 30px;
+        align-self: center;
+      }
+    }
+  }
+}

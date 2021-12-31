@@ -39,6 +39,7 @@
   font-weight: bold;
   margin-block-end: 45px;
   font-size: 32px;
+  font-variant: small-caps;
 }
 .main-header video {
   margin-block: 0 30px;

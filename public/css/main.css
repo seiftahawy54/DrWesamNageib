@@ -2,6 +2,18 @@ body, * {
   font-family: "Poppins", sans-serif !important;
 }
 
+textarea {
+  resize: none;
+}
+
+.reset-form-control {
+  border: 0;
+  padding: 0;
+}
+.reset-form-control input {
+  width: 100%;
+}
+
 .btn {
   width: 200px;
   height: 55px;
