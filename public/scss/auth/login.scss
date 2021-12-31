@@ -1,6 +1,7 @@
 @use "../utils/variables" as vars;
 
-.login-form {
+.login-form,
+.register-form {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -37,16 +38,31 @@
         padding: 12px;
         border-radius: 4px;
         border: 1px solid vars.$main_color;
+
+        &::placeholder {
+          font-family: vars.$main_font;
+        }
       }
 
       .login-options {
         display: flex;
         justify-content: space-between;
+        text-decoration: underline;
       }
 
       button {
         margin-block-start: 30px;
         align-self: center;
+      }
+    }
+  }
+}
+
+.register-form {
+  .content-container {
+    form {
+      input {
+        width: 465px;
       }
     }
   }
