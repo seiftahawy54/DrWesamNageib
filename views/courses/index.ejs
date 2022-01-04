@@ -11,14 +11,14 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="featured-course-container col">
+            <div class="featured-course-container offset-4 col-4">
                 <div class="featured-courses-container">
                     <div class="course-title-container">
                         <div class="course-thumbnail">
                             <img src="/imgs/imgs/book.png" alt="Course Thumbnail" />
                         </div>
                         <div class="course-title">
-                            CPHQ Introduction Course
+                            CPHQ Exam Preparation Course
                         </div>
                     </div>
                     <p class="course-about">
@@ -29,61 +29,6 @@
                     </button>
                 </div>
             </div>
-            <div class="featured-course-container col">
-                <div class="featured-courses-container">
-                    <div class="course-title-container">
-                        <div class="course-thumbnail">
-                            <img src="/imgs/imgs/book.png" alt="Course Thumbnail" />
-                        </div>
-                        <div class="course-title">
-                            CPHQ Introduction Course
-                        </div>
-                    </div>
-                    <p class="course-about">
-                        Certified Professional in Healthcare Quality Preparatory course
-                    </p>
-                    <button class="btn-outlined">
-                        View Course
-                    </button>
-                </div>
-            </div>
-            <div class="featured-course-container col">
-                <div class="featured-courses-container">
-                    <div class="course-title-container">
-                        <div class="course-thumbnail">
-                            <img src="/imgs/imgs/book.png" alt="Course Thumbnail" />
-                        </div>
-                        <div class="course-title">
-                            CPHQ Introduction Course
-                        </div>
-                    </div>
-                    <p class="course-about">
-                        Certified Professional in Healthcare Quality Preparatory course
-                    </p>
-                    <button class="btn-outlined">
-                        View Course
-                    </button>
-                </div>
-            </div>
-            <div class="featured-course-container col">
-                <div class="featured-courses-container">
-                    <div class="course-title-container">
-                        <div class="course-thumbnail">
-                            <img src="/imgs/imgs/book.png" alt="Course Thumbnail" />
-                        </div>
-                        <div class="course-title">
-                            CPHQ Introduction Course
-                        </div>
-                    </div>
-                    <p class="course-about">
-                        Certified Professional in Healthcare Quality Preparatory course
-                    </p>
-                    <button class="btn-outlined">
-                        View Course
-                    </button>
-                </div>
-            </div>
-
         </div>
     </div>
 
@@ -98,33 +43,21 @@
             <div class="col-2">
                 <h3>Filter By</h3>
                 <hr>
-                <div>Type</div>
+                <div>Exam</div>
                 <div class="first-category">
-                    <input type="checkbox" name="category1" id="category1" /> <label for="category1">Categroy 1</label>
+                    <input type="checkbox" name="category1" id="category1" /> <label for="category1">CPHQ</label>
                     <br />
-                    <input type="checkbox" name="category1" id="category2" /> <label for="category2">Categroy 2</label>
+                    <input type="checkbox" name="category1" id="category2" /> <label for="category2">Human Development</label>
                     <br />
-                    <input type="checkbox" name="category1" id="category3" /> <label for="category3">Categroy 3</label>
+                    <input type="checkbox" name="category1" id="category3" /> <label for="category3">TOT</label>
                 </div>
 
                 <hr>
-                <div>Type</div>
+                <div>Language</div>
                 <div class="first-category">
-                    <input type="checkbox" name="category1" id="category4" /> <label for="category4">Categroy 4</label>
+                    <input type="checkbox" name="category1" id="category4" /> <label for="category4">English</label>
                     <br />
-                    <input type="checkbox" name="category1" id="category5" /> <label for="category5">Categroy 5</label>
-                    <br />
-                    <input type="checkbox" name="category1" id="category6" /> <label for="category6">Categroy 6</label>
-                </div>
-
-                <hr>
-                <div>Type</div>
-                <div class="first-category">
-                    <input type="checkbox" name="category1" id="category7" /> <label for="category7">Categroy 7</label>
-                    <br />
-                    <input type="checkbox" name="category1" id="category8" /> <label for="category8">Categroy 8</label>
-                    <br />
-                    <input type="checkbox" name="category1" id="category9" /> <label for="category9">Categroy 9</label>
+                    <input type="checkbox" name="category1" id="category5" /> <label for="category5">Arabic</label>
                 </div>
             </div>
             <div class="col">
@@ -137,68 +70,20 @@
                     </datalist>
                 </div>
                 <div class="row all-courses-cont">
-                    <div class="col-4">
-                        <a href="/courses/1" class="reset-link">
-                            <div class="course">
-                                <img src="/imgs/imgs/course_img.png" alt="CPHQ Preparation Course"
-                                     class="course-thumbnail" />
-                                <div class="course-footer">
-                                    <div class="course-title">CPHQ Online Course</div>
-                                    <div class="course-price">&dollar;300.00</div>
+                    <% courses.forEach(course => { %>
+                        <div class="col-4">
+                            <a href="/courses/<%- course.course_id %>" class="reset-link">
+                                <div class="course">
+                                    <img src="/imgs/imgs/course_img.png" alt="CPHQ Preparation Course"
+                                         class="course-thumbnail" />
+                                    <div class="course-footer">
+                                        <div class="course-title"><%- course.name %></div>
+                                        <div class="course-price">&dollar; <%- course.price %></div>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-4">
-                        <div class="course">
-                            <img src="/imgs/imgs/course_img.png" alt="CPHQ Preparation Course"
-                                 class="course-thumbnail" />
-                            <div class="course-footer">
-                                <div class="course-title">CPHQ Online Course</div>
-                                <div class="course-price">&dollar;300.00</div>
-                            </div>
+                            </a>
                         </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="course">
-                            <img src="/imgs/imgs/course_img.png" alt="CPHQ Preparation Course"
-                                 class="course-thumbnail" />
-                            <div class="course-footer">
-                                <div class="course-title">CPHQ Online Course</div>
-                                <div class="course-price">&dollar;300.00</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="course">
-                            <img src="/imgs/imgs/course_img.png" alt="CPHQ Preparation Course"
-                                 class="course-thumbnail" />
-                            <div class="course-footer">
-                                <div class="course-title">CPHQ Online Course</div>
-                                <div class="course-price">&dollar;300.00</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="course">
-                            <img src="/imgs/imgs/course_img.png" alt="CPHQ Preparation Course"
-                                 class="course-thumbnail" />
-                            <div class="course-footer">
-                                <div class="course-title">CPHQ Online Course</div>
-                                <div class="course-price">&dollar;300.00</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="course">
-                            <img src="/imgs/imgs/course_img.png" alt="CPHQ Preparation Course"
-                                 class="course-thumbnail" />
-                            <div class="course-footer">
-                                <div class="course-title">CPHQ Online Course</div>
-                                <div class="course-price">&dollar;300.00</div>
-                            </div>
-                        </div>
-                    </div>
+                    <% }) %>
                 </div>
             </div>
         </div>

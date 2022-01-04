@@ -11,15 +11,15 @@
             <div class="crumb-links">
                 <a href="/" class="home-page reset-link">Home</a> /
                 <a href="/courses" class="courses-page reset-link">Courses</a> /
-                <a href="/<%- courseLink %>" class="course-name-page reset-link"><%- courseName %></a>
+                <a href="/courses/<%- course.course_id %>" class="course-name-page reset-link"><%- course.name %></a>
             </div>
             <div class="next-prev">
-                <a href="/courses/1" class="reset-link">
+                <a href="/courses/<%- parseInt(course.course_id) === 1 ? parseInt(course.course_id) : parseInt(course.course_id) - 1 %>" class="reset-link">
                     <%- include('../../public/imgs/svgs/right_arrow.svg') %>
                     Prev
                 </a>
                 |
-                <a href="/courses/2" class="reset-link">
+                <a href="/courses/<%- parseInt(course.course_id) + 1 %>" class="reset-link">
                     Next
                     <%- include('../../public/imgs/svgs/left_arrow.svg') %>
                 </a>
@@ -34,21 +34,13 @@
             <div class="col-4">
                 <div class="course-data">
                     <h2>
-                        <%- courseName %>
+                        <%- course.name %>
                     </h2>
                     <div class="course-price">
-                       &dollar;<%- coursePrice %>
+                       &dollar;<%- course.price %>
                     </div>
                     <div class="course-description">
                         <%- courseDescription %>
-                    </div>
-                    <div class="course-type">
-                        <strong>Type 1</strong>
-                        <span>Category 1</span>
-                    </div>
-                    <div class="course-type">
-                        <strong>Type 2</strong>
-                        <span>Category 2</span>
                     </div>
                     <button class="btn">
                         Add to cart
