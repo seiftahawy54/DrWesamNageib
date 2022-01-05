@@ -1,4 +1,4 @@
-const db = require("../utits/db");
+// const db = require("../utits/db");
 
 class Users {
   static getSingleUser() {}

@@ -1,11 +1,11 @@
 {
   "name": "code",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "app.mjs",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon --watch app.js",
-    "web": "node app.js",
+    "start": "nodemon --watch app.mjs",
+    "web": "node app.mjs",
     "sass": "sass --watch ./public/scss/:./public/css/"
   },
   "dependencies": {
@@ -14,6 +14,7 @@
     "csurf": "^1.11.0",
     "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-pg-session": "^1.1.0",
     "express-session": "^1.17.2",

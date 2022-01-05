@@ -1,7 +1,7 @@
-const Courses = require("../models/courses");
+import { getAllCourses, getSingleCourse } from "../models/courses.mjs";
 
-exports.getIndex = (req, res, next) => {
-  Courses.getAllCourses()
+export function getIndex (req, res, next) {
+  getAllCourses()
     .then((result) => {
       res.render("courses/index", {
         title: "Courses",
@@ -12,12 +12,11 @@ exports.getIndex = (req, res, next) => {
     .catch((errs) => {
       console.log(errs);
     });
-};
+}
 
-exports.singleCourse = (req, res, next) => {
-  Courses.getSingleCourse(req.params.courseId)
+export function singleCourse (req, res, next) {
+  getSingleCourse(req.params.courseId)
     .then((course) => {
-      // res.send(course);
       res.render("courses/single_course", {
         title: "Course Name",
         path: "/courses",
@@ -27,7 +26,6 @@ exports.singleCourse = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(error);
+      console.log(err);
     });
-  /**/
-};
+}

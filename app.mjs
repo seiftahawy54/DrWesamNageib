@@ -1,9 +1,11 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+import path from "path";
+import express from "express";
+import bodyParser from "body-parser";
+import db from "./utits/db.mjs";
+dotenv.config();
 
-const path = require("path");
-const express = require("express");
-const bodyParser = require("body-parser");
-const db = require("./utits/db");
+const __dirname = path.resolve()
 // const session = require("express-session");
 // const PostgresStore = require("express-pg-session")(session);
 // const csrf = require("csurf");
@@ -28,11 +30,11 @@ app.use(
 );
 */
 
-const courses = require("./routes/courses");
-const shopping = require("./routes/shopping");
-const auth = require("./routes/auth");
+import { coursesRoutes } from "./routes/courses.mjs"
+import { shoppingRoutes } from "./routes/shopping.mjs"
+import {authRoutes} from "./routes/auth.mjs"
 
-app.use("/courses", courses.routes);
+app.use("/courses", coursesRoutes);
 
 /*app.use(csrfProtection);
 
@@ -40,8 +42,8 @@ app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
 });*/
 
-app.use(auth.routes);
-app.use(shopping.routes);
+app.use(authRoutes);
+app.use(shoppingRoutes);
 
 const port = process.env.PORT || 3000;
 

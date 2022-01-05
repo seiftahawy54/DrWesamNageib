@@ -1,4 +1,4 @@
-exports.getShoppingCart = (req, res, next) => {
+export function getShoppingCart (req, res, next) {
   const courseOptions = {
     courseName: "CPHQ Course",
     coursePrice: 300,
@@ -14,25 +14,25 @@ exports.getShoppingCart = (req, res, next) => {
       totalPrice: 399,
     },
   });
-};
+}
 
-exports.getHomePage = (req, res, next) => {
+export function getHomePage (req, res, next) {
   res.render("home/home.ejs", {
     title: "Homepage",
     path: "/",
   });
-};
+}
 
-exports.getAboutPage = (req, res, next) => {
+export function getAboutPage (req, res, next) {
   res.render("about/index", {
     title: "Who am i",
     path: "/aboutme",
   });
-};
+}
 
-exports.getContactPage = (req, res, next) => {
+export function getContactPage (req, res, next) {
   res.render("contactus/index", {
     title: "Contact Us",
     path: "/contact",
   });
-};
+}

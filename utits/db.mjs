@@ -1,6 +1,8 @@
-const { Client, Pool } = require("pg");
+import pg from "pg";
+import dotenv from "dotenv";
+dotenv.config();
 
-const pool = new Pool({
+const pool = new pg.Pool({
   connectionString: process.env.HEROKU_PGSQL_URI,
   ssl: {
     rejectUnauthorized: false,
@@ -16,4 +18,4 @@ pool
     console.log(err);
   });
 
-module.exports = pool;
+export default pool;
