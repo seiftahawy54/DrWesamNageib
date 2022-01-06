@@ -6,6 +6,18 @@ textarea {
   resize: none;
 }
 
+.custom-head {
+  font-size: 28px;
+}
+.custom-head span {
+  display: block;
+  width: 170px;
+  background-color: #E354A1;
+  height: 2px;
+  border-radius: 4px;
+  margin-block: 10px 30px;
+}
+
 .reset-form-control {
   border: 0;
   padding: 0;

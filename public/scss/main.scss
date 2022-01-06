@@ -12,6 +12,18 @@ textarea {
   resize: none;
 }
 
+.custom-head {
+  font-size: vars.$lg_header_size;
+  span {
+    display: block;
+    width: 170px;
+    background-color: vars.$main_color;
+    height: 2px;
+    border-radius: 4px;
+    margin-block: 10px 30px;
+  }
+}
+
 .reset-form-control {
   border: 0;
   padding: 0;

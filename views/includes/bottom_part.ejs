@@ -3,7 +3,7 @@
 <script type="module">
   import Swiper from 'https://unpkg.com/swiper@7/swiper-bundle.esm.browser.min.js'
 
-  const swiper = new Swiper('.swiper', {
+  const swiper = new Swiper('.main-slider', {
     loop: true,
     autoplay: true,
     // If we need pagination
@@ -17,7 +17,20 @@
       nextEl: '.swiper-button-next',
       prevEl: '.swiper-button-prev',
     },
+    slidesPerView: 1
   });
+
+  const aboutSwiper = new Swiper('.about-swiper', {
+    loop: true,
+    autoplay: true,
+    // If we need pagination
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true
+    },
+    slidesPerView: 3
+  });
+
 </script>
 </body>
 </html>
