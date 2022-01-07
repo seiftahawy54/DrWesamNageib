@@ -1,6 +1,6 @@
 import { getAllCourses, getSingleCourse } from "../models/courses.mjs";
 
-export function getIndex (req, res, next) {
+const getIndex = (req, res, next) => {
   getAllCourses()
     .then((result) => {
       res.render("courses/index", {
@@ -12,9 +12,9 @@ export function getIndex (req, res, next) {
     .catch((errs) => {
       console.log(errs);
     });
-}
+};
 
-export function singleCourse (req, res, next) {
+const singleCourse = (req, res, next) => {
   getSingleCourse(req.params.courseId)
     .then((course) => {
       res.render("courses/single_course", {
@@ -22,10 +22,29 @@ export function singleCourse (req, res, next) {
         path: "/courses",
         course: course.rows[0],
         courseDescription:
-          "The course is blended in nature that consists of 16 sessions: 10 live streaming sessions and 6",
+          "The course is blended in nature that consists of 16 sessions: 10 live streaming sessions with complete prepare for the exam",
       });
     })
     .catch((err) => {
       console.log(err);
     });
-}
+};
+
+const addCourseToCart = (req, res, next) => {
+  const courseId = req.body.courseId;
+  const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  /*  const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    console.log(courseId, expirationDate);
+    const cookiesStatus = await res.cookie("courseId", "3", {
+      expires: expirationDate,
+    });
+    console.log(cookiesStatus);
+    if (cookiesStatus) {
+      res.redirect("/register");
+    }*/
+
+  res.setHeader("Set-Cookie", `courseId=${courseId}; Path=/`);
+  res.redirect("/register");
+};
+
+export { getIndex, addCourseToCart, singleCourse };

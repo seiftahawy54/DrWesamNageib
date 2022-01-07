@@ -44,14 +44,18 @@
 .register-form .content-container form input::placeholder {
   font-family: "Poppins", sans-serif !important;
 }
-.login-form .content-container form .login-options,
-.register-form .content-container form .login-options {
+.login-form .content-container form .cart-courses span,
+.register-form .content-container form .cart-courses span {
+  color: #fff;
+  background-color: #E354A1;
+  width: fit-content;
+  padding: 10px 20px;
+  border-radius: 4px;
   display: flex;
-  justify-content: space-between;
-  text-decoration: underline;
 }
 .login-form .content-container form button,
 .register-form .content-container form button {
+  width: fit-content !important;
   margin-block-start: 30px;
   align-self: center;
 }

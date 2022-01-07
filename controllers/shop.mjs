@@ -1,3 +1,5 @@
+import path from "path";
+
 const getShoppingCart = (req, res, next) => {
   res.render("shopping/index", {
     title: "Shopping Cart",
@@ -30,4 +32,17 @@ const getContactPage = (req, res, next) => {
   });
 };
 
-export { getContactPage, getAboutPage, getHomePage, getShoppingCart };
+const downloadCV = (req, res, next) => {
+  const cvPath = path.resolve("public", "files");
+  res.download(cvPath + "/dr_wesam_nageib.docx");
+  res.status(200);
+  res.redirect("/aboutme");
+};
+
+export {
+  getContactPage,
+  getAboutPage,
+  getHomePage,
+  getShoppingCart,
+  downloadCV,
+};

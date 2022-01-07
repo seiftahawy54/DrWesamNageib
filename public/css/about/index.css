@@ -10,9 +10,12 @@
   color: #E354A1;
   font-family: "Fira Sans", sans-serif !important;
 }
-.aboutme button {
+.aboutme .btn {
   width: fit-content !important;
   margin-block: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .aboutme .about-swiper {
   height: 400px;

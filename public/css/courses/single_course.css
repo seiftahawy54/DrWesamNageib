@@ -7,6 +7,13 @@
   justify-content: space-between;
   margin-block: 30px;
 }
+.single-course-section .course-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+}
 .single-course-section .course-data h2 {
   font-size: 24px;
   font-weight: 400;

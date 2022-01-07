@@ -40,6 +40,12 @@ textarea {
   border: 1px solid #E354A1;
 }
 
+a.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .btn-outlined {
   width: 200px;
   height: 55px;

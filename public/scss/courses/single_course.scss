@@ -12,11 +12,18 @@
   }
 
   .course-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    height: 100%;
+
     h2 {
       font-size: vars.$md_header_size;
       font-weight: 400;
       margin-block-end: 20px;
     }
+
     .course-price {
       color: red;
       font-size: vars.$md_font_size;
@@ -29,10 +36,12 @@
 
     .course-type {
       margin-block-end: 20px;
+
       strong {
         display: block;
         margin-block: 10px;
       }
+
       span {
         display: block;
         padding: 10px 20px;

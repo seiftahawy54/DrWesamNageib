@@ -14,9 +14,12 @@
     }
   }
 
-  button {
+  .btn {
     width: fit-content !important;
     margin-block: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .about-swiper {

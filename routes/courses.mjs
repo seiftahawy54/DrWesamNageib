@@ -1,9 +1,15 @@
-import { getIndex, singleCourse } from "../controllers/courses.mjs"
-import express from "express"
+import {
+  getIndex,
+  singleCourse,
+  addCourseToCart,
+} from "../controllers/courses.mjs";
+import express from "express";
 
 const router = express.Router();
 
-router.get("/", getIndex);
-router.get("/:courseId", singleCourse);
+router
+  .get("/", getIndex)
+  .get("/:courseId", singleCourse)
+  .post("/addToCart", addCourseToCart);
 
-export {router as coursesRoutes};
+export { router as coursesRoutes };
