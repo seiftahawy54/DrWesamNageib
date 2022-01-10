@@ -33,17 +33,11 @@ const singleCourse = (req, res, next) => {
 const addCourseToCart = (req, res, next) => {
   const courseId = req.body.courseId;
   const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  /*  const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    console.log(courseId, expirationDate);
-    const cookiesStatus = await res.cookie("courseId", "3", {
-      expires: expirationDate,
-    });
-    console.log(cookiesStatus);
-    if (cookiesStatus) {
-      res.redirect("/register");
-    }*/
-
-  res.setHeader("Set-Cookie", `courseId=${courseId}; Path=/`);
+  res.cookie("courseId", `${courseId}`, {
+    maxAge: expirationDate,
+    httpOnly: true,
+    path: "/",
+  });
   res.redirect("/register");
 };
 

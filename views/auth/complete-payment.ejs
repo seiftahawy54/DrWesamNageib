@@ -1,0 +1,93 @@
+<%- include("../includes/top_part.ejs"); %>
+<style>
+    .complete-payment {
+        margin-block-start: 300px;
+    }
+</style>
+</head>
+<body>
+
+<% if (course) { %>
+
+
+  <section class="complete-payment">
+    <div class="container">
+      Your Going to buy:
+      <div>
+        <div>
+          course name: <%= course.name %>
+        </div>
+        <div>
+          course price: &dollar; <%= course.price %>
+        </div>
+      </div>
+      <div id="paypal-button-container">
+
+      </div>
+    </div>
+  </section>
+
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=<%- clientId %>&components=buttons"></script>
+  <script>
+    const courseJSON = '<%- JSON.stringify(course) %>';
+    const courseObject = JSON.parse(courseJSON);
+
+    paypal.Buttons({
+      createOrder: function () {
+        return fetch('/create-order', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            item: {
+              name: courseObject.name,
+              price: courseObject.price
+            }
+          })
+        })
+          .then(response => {
+            console.log("paypal_response: ", response)
+            if (response.ok) {
+              return response.json()
+            }
+            return response.json().then(json => {
+              Promise.reject(json)
+            })
+          })
+          .then(wantedThings => {
+            return wantedThings.id;
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      },
+      onApprove: function (data, actions) {
+        console.log('data: ', data)
+        console.log('actions: ', actions)
+        // This function captures the funds from the transaction.
+        return actions.order.capture().then(function (details) {
+          console.log('details: ', details)
+          // This function shows a transaction success message to your buyer.
+          alert("Transaction completed by " + details.payer.name.given_name);
+        })
+          .catch(err => {
+            console.error(`approve error`, err)
+          });
+      },
+      onCancel: () => {
+        window.alert("go to HELL!")
+      },
+      style: {
+        layout: "vertical",
+        color: "blue",
+        shape: "rect",
+        label: "paypal"
+      }
+    }).render("#paypal-button-container");
+  </script>
+<% } %>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

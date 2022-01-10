@@ -2,8 +2,9 @@ import dotenv from "dotenv";
 import path from "path";
 import express from "express";
 import bodyParser from "body-parser";
-import db from "./utits/db.mjs";
+import cookieParser from "cookie-parser";
 
+import db from "./utits/db.mjs";
 import { coursesRoutes } from "./routes/courses.mjs";
 import { shoppingRoutes } from "./routes/shopping.mjs";
 import { authRoutes } from "./routes/auth.mjs";
@@ -19,6 +20,8 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+app.use(express.json());
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve("public")));
 
