@@ -1,6 +1,10 @@
 @use "../utils/common" as common;
 @use "../utils/variables" as vars;
 
+footer {
+  @extend %bottomFooter;
+}
+
 .single-course-section {
   margin-block: 30px;
 

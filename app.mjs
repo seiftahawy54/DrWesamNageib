@@ -8,6 +8,7 @@ import db from "./utits/db.mjs";
 import { coursesRoutes } from "./routes/courses.mjs";
 import { shoppingRoutes } from "./routes/shopping.mjs";
 import { authRoutes } from "./routes/auth.mjs";
+import { dashboardRoutes } from "./routes/dasboard.mjs";
 
 dotenv.config();
 
@@ -36,14 +37,14 @@ app.use(
 );
 */
 
-app.use("/courses", coursesRoutes);
-
 /*app.use(csrfProtection);
 
 app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
 });*/
 
+app.use("/courses", coursesRoutes);
+app.use("/dashboard", dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
 

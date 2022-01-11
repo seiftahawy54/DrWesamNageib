@@ -1,5 +1,12 @@
 @use 'variables' as vars;
 
+
+%bottomFooter {
+  position: absolute;
+  width: 100vw;
+  bottom: 0;
+}
+
 @mixin similarHW($dimension, $important: null) {
   @if ($important) {
     width: $dimension !important;

@@ -1,0 +1,22 @@
+<nav class="">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-3">
+        <a class="navbar-brand" href="/dashboard">Dr. Wasam Naguib</a>
+        <div class="">
+          <ul class="list-unstyled">
+            <li class="nav-item">
+              <a class="nav-link <%- path === '/' ? 'active' : '' %>" aria-current="page" href="/dashboard/overview">Overview</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link  <%- path === '/courses' ? 'active' : '' %>" href="/dashboard/courses">Courses</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link <%- path === '/aboutme' ? 'active' : '' %>" href="/dashboard/aboutme">About me</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

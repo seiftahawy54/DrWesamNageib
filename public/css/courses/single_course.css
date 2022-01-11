@@ -1,3 +1,9 @@
+footer {
+  position: absolute;
+  width: 100vw;
+  bottom: 0;
+}
+
 .single-course-section {
   margin-block: 30px;
 }

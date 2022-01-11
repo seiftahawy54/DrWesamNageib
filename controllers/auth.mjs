@@ -47,9 +47,7 @@ const getCompletePayment = (req, res, next) => {
     getSingleCourse(parseInt(selectedCourse))
       .then((dbResult) => {
         const selectedData = dbResult.rows[0];
-        const clientId =
-          "Ab93AwBqmGoHjjW-W8i1Xj0inen_6wkJWAF1GLqslDDcNi7pXLVLnFxv4sZE4ZSQcvK53n5fcZTr4-gX";
-        console.log(selectedData);
+        const clientId = process.env.PAYPAL_CLIENT_ID;
         res.render("auth/complete-payment", {
           title: "complete payment",
           path: "/complete-payment",
@@ -123,7 +121,6 @@ const postRegister = (req, res, next) => {
 
 const postCreateOrder = async (req, res, next) => {
   const request = new paypal.orders.OrdersCreateRequest();
-  console.log(`item_req: `, req.body.item);
   const total = req.body.item.price;
   request.prefer("return=representation");
   request.requestBody({
@@ -152,45 +149,24 @@ const postCreateOrder = async (req, res, next) => {
   }
 };
 
-const getSuccess = (req, res, next) => {
-  /*  const payerId = req.query.PayerID;
-    const paymentId = req.query.paymentId;
-
-    console.log("payer id: ", payerId);
-    console.log("payment id: ", paymentId);
-
-    const execute_payment_json = {
-      payer_id: payerId,
-      transactions: [
-        {
-          amount: {
-            currency: "USD",
-            total: SelectedCourseData.price,
-          },
-        },
-      ],
-    };
-
-    paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
-      if (error) {
-        console.log(error.response);
-        throw error;
-      } else {
-        console.log(JSON.stringify(payment));
-        res.send("your payment has been made!");
-      }
-    });*/
+const postSuccess = (req, res, next) => {
+  console.log("success_body: ", req.body);
+  res.redirect("/");
 };
 
 const getCancelled = (req, res, next) => {
-  res.send("your payment has been cancelled!");
+  res.render("auth/cancel", {
+    title: "Cancel payment",
+    path: "/cancel_payment",
+    returnLocation: "/",
+  });
 };
 
 export {
   getLogin,
   getRegister,
   postRegister,
-  getSuccess,
+  postSuccess,
   getCancelled,
   getCompletePayment,
   postCreateOrder,
