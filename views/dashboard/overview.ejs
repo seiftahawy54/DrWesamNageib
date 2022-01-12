@@ -1,9 +1,23 @@
 <%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/overview.css"/>
 </head>
 <body>
 
-<%- include("../includes/dashboard-navbar.ejs"); %>
+<section class="overview">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div>Number of users: <%= statsNumbers.users %></div>
+        <div>Number of courses: <%= statsNumbers.courses %></div>
+        <%- include("../includes/footer.ejs"); %>
+      </div>
+    </div>
+  </div>
+</section>
 
-
-<%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>

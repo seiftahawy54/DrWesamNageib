@@ -1,0 +1,61 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css">
+</head>
+<body>
+
+<section class="courses">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <main class="content-header">
+            <div class="custom-head">
+              <h2>Courses</h2>
+              <span></span>
+            </div>
+            <a class="btn btn-success" href="/dashboard/add-new-course">
+              Add new course
+            </a>
+          </main>
+
+          <div class="courses-data">
+            <div class="table-head">
+              <span class="course-id">Course ID</span>
+              <span class="course-name">Course Name</span>
+              <span class="course-price">Course Price</span>
+              <span class="course-update">Update Course</span>
+              <span class="course-delete">Delete Course</span>
+            </div>
+            <% courses.forEach(course => { %>
+              <div class="table-row">
+                <span class="course-id">#<%= course.course_id %></span>
+                <span class="course-name"><%= course.name %></span>
+                <span class="course-price">&dollar;<%= course.price %></span>
+                <div class="course-update">
+                  <form action="/update-course" method="post">
+                    <input type="hidden" name="courseId" value="<%= course.course_id %>">
+                    <button type="submit" class="btn btn-success">Update Course</button>
+                  </form>
+                </div>
+                <div class="course-delete">
+                  <form action="/delete-course" method="post">
+                    <input type="hidden" name="courseId" value="<%= course.course_id %>">
+                    <button type="submit" class="btn btn-danger">Delete Course</button>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+        <%- include("../includes/footer.ejs"); %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/bottom_part.ejs"); %>

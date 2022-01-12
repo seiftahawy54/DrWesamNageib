@@ -1,22 +1,52 @@
-<nav class="">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-3">
-        <a class="navbar-brand" href="/dashboard">Dr. Wasam Naguib</a>
-        <div class="">
-          <ul class="list-unstyled">
-            <li class="nav-item">
-              <a class="nav-link <%- path === '/' ? 'active' : '' %>" aria-current="page" href="/dashboard/overview">Overview</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link  <%- path === '/courses' ? 'active' : '' %>" href="/dashboard/courses">Courses</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link <%- path === '/aboutme' ? 'active' : '' %>" href="/dashboard/aboutme">About me</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+<nav class="dashboard-nav">
+  <a class="navbar-brand reset-link <%- path === '/dashboard/overview' ? 'active' : '' %>" href="/dashboard/overview">Dr.
+    Wasam
+    Nageib</a>
+  <div class="logged-in-user">
+    <div class="user-img">
+      <img src="/imgs/imgs/userthumbnail.png" alt="user-thumbnail"/>
+    </div>
+    <div class="user-info">
+      <span class="user-type">
+      Owner
+    </span>
+      <span class="user-name">
+      Dr. Wesam
+    </span>
+    </div>
+  </div>
+  <div class="nav-links">
+    <ul class="list-unstyled">
+      <li class="nav-item">
+        <a class="nav-link reset-link <%- path === '/dashboard/overview' ? 'active' : '' %>" aria-current="page"
+           href="/dashboard/overview">Overview</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link  reset-link <%- path === '/dashboard/users' ? 'active' : '' %>"
+           href="/dashboard/users">Users</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link reset-link <%- path === '/dashboard/courses' ? 'active' : '' %>" href="/dashboard/courses">Courses</a>
+      </li>
+      <!--<li class="nav-item">
+        <a class="nav-link reset-link <%- path === '/dashboard/rounds' ? 'active' : '' %>" href="/dashboard/courses">Rounds</a>
+      </li>-->
+    </ul>
+  </div>
+
+  <div class="navbar-footer">
+    <div class="info">
+      <a href="/dashboard/info"><%- include('../../public/imgs/svgs/info.svg') %></a>
+    </div>
+    <div class="logout">
+      <form action="/logout" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <button type="submit" class="reset-btn">
+          <%- include('../../public/imgs/svgs/logout.svg') %>
+        </button>
+      </form>
     </div>
   </div>
 </nav>
+
+

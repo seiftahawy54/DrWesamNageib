@@ -1,0 +1,37 @@
+.courses .content {
+  padding: 120px;
+}
+.courses .content .content-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.courses .content .courses-data {
+  border: 2px solid #000;
+}
+.courses .content .courses-data .table-head {
+  display: grid;
+  font-size: 24px;
+  border-bottom: 2px solid #000;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 11px 24px;
+  justify-items: center;
+}
+.courses .content .courses-data .table-row {
+  padding: 11px 24px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  font-size: 16px;
+  justify-items: center;
+  align-items: center;
+}
+.courses .content .courses-data .table-row .course-update button,
+.courses .content .courses-data .table-row .course-delete button {
+  width: fit-content;
+  height: max-content;
+  /*width: 100px;
+  height: 25px;*/
+}
+
+/*# sourceMappingURL=courses.css.map */

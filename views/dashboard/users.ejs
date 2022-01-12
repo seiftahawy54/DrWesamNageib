@@ -1,0 +1,62 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css">
+<link rel="stylesheet" href="/css/dashboard/users.css">
+</head>
+<body>
+
+<section class="courses users">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <main class="content-header">
+            <div class="custom-head">
+              <h2>Users</h2>
+              <span></span>
+            </div>
+          </main>
+
+          <div class="courses-data users-data">
+            <div class="table-head">
+              <span class="course-name">User Name</span>
+              <span class="course-price">Whatsapp Number</span>
+              <span class="course-price">User email</span>
+              <span class="course-name">User Specilization</span>
+              <span class="course-update">Update User</span>
+              <span class="course-delete">Delete User</span>
+            </div>
+            <% users.forEach(user => { %>
+              <div class="table-row">
+                <span class="user-name"><%= user.name %></span>
+                <span class="user-number"><a class="reset-link"
+                                             href="tel:+<%= user.whatsapp_no %>"><%= user.whatsapp_no %></a></span>
+                <span class="user-email"><%= user.email %></span>
+                <span class="user-specilization"><%= user.specialization %></span>
+                <div class="course-update">
+                  <form action="/update-user" method="post">
+                    <input type="hidden" name="userId" value="<%= user.user_id %>">
+                    <button type="submit" class="btn btn-success">Update User</button>
+                  </form>
+                </div>
+                <div class="course-delete">
+                  <form action="/delete-user" method="post">
+                    <input type="hidden" name="userId" value="<%= user.user_id %>">
+                    <button type="submit" class="btn btn-danger">Delete User</button>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+        <%- include("../includes/footer.ejs"); %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/bottom_part.ejs"); %>

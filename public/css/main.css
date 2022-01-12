@@ -1,4 +1,5 @@
-body, * {
+body,
+* {
   font-family: "Poppins", sans-serif !important;
 }
 
@@ -26,10 +27,16 @@ textarea {
   width: 100%;
 }
 
+.reset-btn {
+  background: none;
+  border: 0;
+}
+
 .btn {
   width: 200px;
   height: 55px;
   background-color: #E354A1;
+  border: 1px solid transparent;
   color: #fff;
   transition: all 0.25s ease-in-out;
   border-radius: 5px;
@@ -38,6 +45,22 @@ textarea {
   background-color: transparent;
   color: #E354A1;
   border: 1px solid #E354A1;
+}
+.btn.btn-success {
+  background-color: #0FB11B;
+}
+.btn.btn-success:hover {
+  background-color: transparent;
+  color: #0FB11B;
+  border: 1px solid #0FB11B;
+}
+.btn.btn-danger {
+  background-color: #DA0000;
+}
+.btn.btn-danger:hover {
+  background-color: transparent;
+  color: #DA0000;
+  border: 1px solid #DA0000;
 }
 
 a.btn {
@@ -71,6 +94,14 @@ a.btn {
 }
 .reset-link:hover {
   color: #E354A1;
+}
+
+.error-container {
+  width: 300px;
+  padding: 30px;
+  background-color: red;
+  border: 1px solid red;
+  color: white;
 }
 
 footer {

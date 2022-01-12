@@ -1,0 +1,46 @@
+@use "../utils/variables" as vars;
+
+.courses {
+  .content {
+    padding: 120px;
+
+    .content-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .courses-data {
+      border: 2px solid #000;
+
+      .table-head {
+        display: grid;
+        font-size: vars.$md_header_size;
+        border-bottom: 2px solid #000;
+        grid-template-columns: repeat(5, 1fr);
+        padding: 11px 24px;
+        justify-items: center;
+      }
+
+      .table-row {
+        padding: 11px 24px;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        font-size: vars.$sm_font_size;
+        justify-items: center;
+        align-items: center;
+
+        .course-update,
+        .course-delete {
+          button {
+            width: fit-content;
+            height: max-content;
+            /*width: 100px;
+            height: 25px;*/
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,11 @@
 import { getSingleCourse } from "../models/courses.mjs";
+import {
+  addUserPaymentDetails,
+  addUserInfoWithoutCart,
+} from "../models/users.mjs";
+import crypto from "crypto";
 import paypal from "@paypal/checkout-server-sdk";
+import { validationResult } from "express-validator";
 
 const Environment =
   process.env.NODE_ENV === "production"
@@ -15,22 +21,53 @@ const paypalClient = new paypal.core.PayPalHttpClient(
 let SelectedCourseData = {};
 
 const getLogin = (req, res, next) => {
+  let message = req.flash("error")[0];
+
+  if (!(typeof message === "string")) {
+    message = null;
+  }
+
   res.render("auth/login", {
     title: "Login",
     path: "/login",
+    errorMessage: message,
   });
+};
+
+const postLogin = (req, res, next) => {
+  const email = req.body.email;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).render("auth/login", {
+      title: "Login",
+      path: "/login",
+      errorMessage: errors.array().msg,
+    });
+  } else {
+    req.session.isAuthenticated = true;
+    req.session.user = {
+      email,
+    };
+    res.redirect("/dashboard/overview");
+  }
 };
 
 const getRegister = (req, res, next) => {
   const selectedCourse = req.cookies["courseId"];
+  let message = req.flash("error")[0];
+  if (!(typeof message === "string")) {
+    message = null;
+  }
+
   if (selectedCourse) {
-    getSingleCourse(parseInt(selectedCourse))
+    getSingleCourse(selectedCourse)
       .then((courseData) => {
         SelectedCourseData = courseData.rows[0];
         res.render("auth/register", {
           title: "Register",
           path: "/register",
           course: SelectedCourseData,
+          errorMessage: message,
         });
       })
       .catch((err) => {
@@ -43,8 +80,13 @@ const getRegister = (req, res, next) => {
 
 const getCompletePayment = (req, res, next) => {
   const selectedCourse = req.cookies["courseId"];
+  let message = req.flash("error")[0];
+  if (!(typeof message === "string")) {
+    message = null;
+  }
+
   if (selectedCourse) {
-    getSingleCourse(parseInt(selectedCourse))
+    getSingleCourse(selectedCourse)
       .then((dbResult) => {
         const selectedData = dbResult.rows[0];
         const clientId = process.env.PAYPAL_CLIENT_ID;
@@ -53,6 +95,7 @@ const getCompletePayment = (req, res, next) => {
           path: "/complete-payment",
           course: selectedData,
           clientId,
+          errorMessage: message,
         });
       })
       .catch((err) => {
@@ -64,59 +107,37 @@ const getCompletePayment = (req, res, next) => {
 };
 
 const postRegister = (req, res, next) => {
-  res.redirect("/complete-payment");
-  /*const course_price = req.body.coursePrice;
-  const course_name = req.body.courseName;
-  const course_id = req.body.courseId;
+  const errors = validationResult(req);
+  const name = req.body.name;
+  const email = req.body.email;
+  const whatsapp_no = req.body.whatsapp_number;
+  const specialization = req.body.specialization;
 
-  SelectedCourseData = {
-    name: course_name,
-    price: course_price,
-    id: course_id,
-  };
-
-  const create_payment_json = {
-    intent: "sale",
-    payer: {
-      payment_method: "paypal",
-    },
-    redirect_urls: {
-      return_url: "http://localhost:3000/success_payment",
-      cancel_url: "http://localhost:3000/cancel_payment",
-    },
-    transactions: [
-      {
-        item_list: {
-          items: [
-            {
-              name: course_name,
-              price: course_price.toString(),
-              currency: "USD",
-              quantity: 1,
-            },
-          ],
-        },
-        amount: {
-          currency: "USD",
-          total: course_price.toString(),
-        },
-        description: course_name,
-      },
-    ],
-  };
-
-  paypal.payment.create(create_payment_json, (error, payment) => {
-    if (error) {
-      throw error;
-    } else {
-      console.log("payment data: ", payment);
-      for (let i = 0; i < payment.links.length; i++) {
-        if (payment.links[i].rel === "approval_url") {
-          res.redirect(payment.links[i].href);
-        }
+  if (!errors.isEmpty()) {
+    return res.status(400).render("auth/register", {
+      title: "Register",
+      path: "/register",
+      errorMessage: errors.array().msg,
+    });
+  } else {
+    crypto.randomBytes(10, (err, buffer) => {
+      if (err) {
+        console.log(err);
+        req.flash("there's an error in the website, please contact us!");
+        res.redirect("/register");
       }
-    }
-  });*/
+      const token = buffer.toString("hex");
+      addUserInfoWithoutCart(token, name, email, whatsapp_no, specialization)
+        .then((result) => {
+          req.session.registeredUserId = token;
+          res.redirect("/complete-payment");
+        })
+        .catch((err) => {
+          console.log(err);
+          res.redirect("/register");
+        });
+    });
+  }
 };
 
 const postCreateOrder = async (req, res, next) => {
@@ -143,6 +164,11 @@ const postCreateOrder = async (req, res, next) => {
 
   try {
     const order = await paypalClient.execute(request);
+    const addingResult = await addUserPaymentDetails(
+      req.session.registeredUserId,
+      order
+    );
+    console.log(addingResult);
     res.json({ id: order.result.id });
   } catch (e) {
     res.status(500).json({ error: e });
@@ -150,8 +176,14 @@ const postCreateOrder = async (req, res, next) => {
 };
 
 const postSuccess = (req, res, next) => {
-  console.log("success_body: ", req.body);
   res.redirect("/");
+};
+
+const getSuccess = (req, res, next) => {
+  res.render("auth/done-payment", {
+    title: "Payment is Done",
+    path: "/done-payment",
+  });
 };
 
 const getCancelled = (req, res, next) => {
@@ -162,11 +194,21 @@ const getCancelled = (req, res, next) => {
   });
 };
 
+const postLogout = (req, res, next) => {
+  req.session.destroy((err) => {
+    console.log(err);
+    res.redirect("/");
+  });
+};
+
 export {
   getLogin,
+  postLogin,
+  postLogout,
   getRegister,
-  postRegister,
   postSuccess,
+  getSuccess,
+  postRegister,
   getCancelled,
   getCompletePayment,
   postCreateOrder,

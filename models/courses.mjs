@@ -11,9 +11,16 @@ const getAllCourses = () => {
 
 const getSingleCourse = (courseId) => {
   return db
-    .query("SELECT * FROM courses WHERE course_id = $1;", [parseInt(courseId)])
+    .query("SELECT * FROM courses WHERE course_id=$1;", [courseId.toString()])
     .then((result) => result)
     .catch((err) => err);
 };
 
-export { getSingleCourse, getAllCourses };
+const getNumberOfCourses = () => {
+  return db
+    .query("SELECT count(*) FROM courses;")
+    .then((result) => result)
+    .catch((err) => err);
+};
+
+export { getSingleCourse, getAllCourses, getNumberOfCourses };

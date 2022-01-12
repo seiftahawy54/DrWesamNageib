@@ -1,3 +1,56 @@
-
+.dashboard-nav {
+  padding: 50px;
+  height: 100vh;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+}
+.dashboard-nav .navbar-brand {
+  font-size: 28px !important;
+  display: block;
+  margin-block-end: 10px !important;
+}
+.dashboard-nav .navbar-brand.active {
+  color: #E354A1 !important;
+}
+.dashboard-nav .nav-links {
+  margin-block-start: 30px;
+}
+.dashboard-nav .nav-links ul li {
+  margin-block: 30px;
+}
+.dashboard-nav .nav-links ul li a {
+  font-size: 20px !important;
+}
+.dashboard-nav .nav-links ul li a.active {
+  color: #E354A1 !important;
+}
+.dashboard-nav .logged-in-user {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.dashboard-nav .logged-in-user .user-img img {
+  width: 90px;
+  height: 90px;
+}
+.dashboard-nav .logged-in-user .user-info {
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-nav .logged-in-user .user-info .user-name {
+  font-size: 24px;
+}
+.dashboard-nav .logged-in-user .user-info .user-type {
+  opacity: 0.5;
+}
+.dashboard-nav .navbar-footer {
+  margin-block-start: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dashboard-nav .navbar-footer svg {
+  width: 40px;
+  height: 40px;
+}
 
 /*# sourceMappingURL=navbar.css.map */

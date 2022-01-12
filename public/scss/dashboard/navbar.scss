@@ -1,0 +1,72 @@
+@use "../utils/variables" as vars;
+@use "../utils/common" as common;
+
+.dashboard-nav {
+  padding: 50px;
+  height: 100vh;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+
+  .navbar-brand {
+    font-size: vars.$lg_header_size !important;
+    display: block;
+    margin-block-end: 10px !important;
+
+    &.active {
+      color: vars.$main_color !important;
+    }
+  }
+
+  .nav-links {
+    margin-block-start: 30px;
+
+    ul {
+      li {
+        margin-block: 30px;
+
+        a {
+          font-size: vars.$lg_font_size !important;
+
+          &.active {
+            color: vars.$main_color !important;
+          }
+        }
+      }
+    }
+  }
+
+  .logged-in-user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .user-img {
+      img {
+        @include common.similarHW(90px);
+      }
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+
+      .user-name {
+        font-size: vars.$xl_font_size;
+      }
+
+      .user-type {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .navbar-footer {
+    margin-block-start: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    svg {
+      @include common.similarHW(40px);
+    }
+  }
+}

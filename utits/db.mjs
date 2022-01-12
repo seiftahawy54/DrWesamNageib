@@ -1,9 +1,11 @@
 import pg from "pg";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
+  max: 20,
   ssl: {
     rejectUnauthorized: false,
   },
@@ -12,7 +14,7 @@ const pool = new pg.Pool({
 pool
   .connect()
   .then((result) => {
-    // console.log(result);
+    return result;
   })
   .catch((err) => {
     console.log(err);

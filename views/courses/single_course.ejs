@@ -1,58 +1,59 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/courses/courses.css" />
-<link rel="stylesheet" href="/css/courses/single_course.css" />
+<link rel="stylesheet" href="/css/courses/courses.css"/>
+<link rel="stylesheet" href="/css/courses/single_course.css"/>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
 
 <section class="single-course-section">
-    <div class="container">
-        <div class="bread-crumb">
-            <div class="crumb-links">
-                <a href="/" class="home-page reset-link">Home</a> /
-                <a href="/courses" class="courses-page reset-link">Courses</a> /
-                <a href="/courses/<%- course.course_id %>" class="course-name-page reset-link"><%- course.name %></a>
-            </div>
-            <div class="next-prev">
-                <a href="/courses/<%- parseInt(course.course_id) === 1 ? parseInt(course.course_id) : parseInt(course.course_id) - 1 %>"
-                   class="reset-link">
-                    <%- include('../../public/imgs/svgs/right_arrow.svg') %>
-                    Prev
-                </a>
-                |
-                <a href="/courses/<%- parseInt(course.course_id) + 1 %>" class="reset-link">
-                    Next
-                    <%- include('../../public/imgs/svgs/left_arrow.svg') %>
-                </a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-5 offset-1">
-                <div class="course-image">
-                    <img src="/imgs/imgs/course_img.png" alt="Course Thumbnail" class="w-100 " />
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="course-data">
-                    <h2>
-                        <%- course.name %>
-                    </h2>
-                    <div class="course-price">
-                        &dollar;<%- course.price %>
-                    </div>
-                    <div class="course-description">
-                        <%- courseDescription %>
-                    </div>
-                    <form action="/courses/addToCart" method="post">
-                        <input type="hidden" name="courseId" value="<%- course.course_id %>" />
-                        <button class="btn" type="submit">
-                            Add to cart
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+  <div class="container">
+    <div class="bread-crumb">
+      <div class="crumb-links">
+        <a href="/" class="home-page reset-link">Home</a> /
+        <a href="/courses" class="courses-page reset-link">Courses</a> /
+        <a href="/courses/<%= course.course_id %>" class="course-name-page reset-link"><%- course.name %></a>
+      </div>
+      <div class="next-prev">
+        <a href="/courses/"
+           class="reset-link">
+          <%- include('../../public/imgs/svgs/right_arrow.svg') %>
+          Prev
+        </a>
+        |
+        <a href="/courses/" class="reset-link">
+          Next
+          <%- include('../../public/imgs/svgs/left_arrow.svg') %>
+        </a>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-5 offset-1">
+        <div class="course-image">
+          <img src="/imgs/imgs/course_img.png" alt="Course Thumbnail" class="w-100 "/>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="course-data">
+          <h2>
+            <%- course.name %>
+          </h2>
+          <div class="course-price">
+            &dollar;<%- course.price %>
+          </div>
+          <div class="course-description">
+            <%- courseDescription %>
+          </div>
+          <form action="/courses/addToCart" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <input type="hidden" name="courseId" value="<%- course.course_id %>"/>
+            <button class="btn" type="submit">
+              Add to cart
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <%- include("../includes/footer.ejs"); %>
