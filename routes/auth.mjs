@@ -33,10 +33,10 @@ router
   .get("/register", getRegister)
   .post(
     "/register",
-    body("name").isString(),
-    body("email").isEmail(),
-    body("whatsapp_number").isMobilePhone("any"),
-    body("specialization").isString(),
+    body("name").isString().notEmpty(),
+    body("email").isEmail().notEmpty(),
+    body("whatsapp_number").isMobilePhone("any").notEmpty(),
+    body("specialization").isString().notEmpty(),
     postRegister
   )
   .get("/success_payment", getSuccess)

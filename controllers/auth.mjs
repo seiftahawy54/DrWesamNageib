@@ -18,6 +18,7 @@ const paypalClient = new paypal.core.PayPalHttpClient(
     process.env.PAYPAL_CLIENT_SECERT
   )
 );
+
 let SelectedCourseData = {};
 
 const getLogin = (req, res, next) => {
@@ -63,6 +64,7 @@ const getRegister = (req, res, next) => {
     getSingleCourse(selectedCourse)
       .then((courseData) => {
         SelectedCourseData = courseData.rows[0];
+        req.session.savedCourse = SelectedCourseData;
         res.render("auth/register", {
           title: "Register",
           path: "/register",
@@ -117,7 +119,8 @@ const postRegister = (req, res, next) => {
     return res.status(400).render("auth/register", {
       title: "Register",
       path: "/register",
-      errorMessage: errors.array().msg,
+      course: req.session.savedCourse,
+      errorMessage: "Please Enter Correct Data !",
     });
   } else {
     crypto.randomBytes(10, (err, buffer) => {
@@ -127,15 +130,15 @@ const postRegister = (req, res, next) => {
         res.redirect("/register");
       }
       const token = buffer.toString("hex");
-      addUserInfoWithoutCart(token, name, email, whatsapp_no, specialization)
-        .then((result) => {
-          req.session.registeredUserId = token;
-          res.redirect("/complete-payment");
-        })
-        .catch((err) => {
-          console.log(err);
-          res.redirect("/register");
-        });
+      req.session.newUser = {
+        id: token,
+        name,
+        email,
+        whatsapp_no,
+        specialization,
+      };
+      res.redirect("/complete-payment");
+      /**/
     });
   }
 };
@@ -164,11 +167,27 @@ const postCreateOrder = async (req, res, next) => {
 
   try {
     const order = await paypalClient.execute(request);
+    const userDataFromSession = req.session.newUser;
+    /*      id: token,
+          name,
+          email,
+          whatsapp_no,
+          specialization,
+        };*/
+    const addedUser = await addUserInfoWithoutCart(
+      userDataFromSession.id,
+      userDataFromSession.name,
+      userDataFromSession.email,
+      userDataFromSession.whatsapp_no,
+      userDataFromSession.specialization
+    );
     const addingResult = await addUserPaymentDetails(
-      req.session.registeredUserId,
+      userDataFromSession.id,
       order
     );
-    console.log(addingResult);
+
+    console.log("addedUserResult: ", addedUser);
+    console.log("addingPurchaseResult: ", addingResult);
     res.json({ id: order.result.id });
   } catch (e) {
     res.status(500).json({ error: e });
