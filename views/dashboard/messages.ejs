@@ -36,8 +36,9 @@
                 <span class="message-email"><%= message.senderemail; %></span>
                 <span class="message-content"><%= message.message; %></span>
                 <div class="course-delete">
-                  <form action="/delete-message" method="post">
-                    <input type="hidden" name="messageId" value="<%= message.message_id; %>">
+                  <form action="/dashboard/delete-message" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+                    <input type="hidden" name="messageId" value="<%= message.messageid; %>">
                     <button type="submit" class="btn btn-danger">Delete message</button>
                   </form>
                 </div>

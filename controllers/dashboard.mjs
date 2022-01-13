@@ -14,7 +14,7 @@ import {
   getSingleUser,
   updateSingleUser,
 } from "../models/users.mjs";
-import { getAllMessages } from "../models/messages.mjs";
+import { deleteMessage, getAllMessages } from "../models/messages.mjs";
 import { validationResult } from "express-validator";
 
 const getOverview = async (req, res, next) => {
@@ -199,6 +199,12 @@ const postUpdateUser = async (req, res, next) => {
   }
 };
 
+const postDeleteMessage = async (req, res, next) => {
+  const messageId = req.body.messageId;
+  const deletingResult = await deleteMessage(messageId);
+  res.redirect("/dashboard/messages");
+};
+
 export {
   getOverview,
   getCourses,
@@ -212,4 +218,5 @@ export {
   postUpdateCourse,
   getUpdateUser,
   postUpdateUser,
+  postDeleteMessage,
 };

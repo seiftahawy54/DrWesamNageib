@@ -11,6 +11,7 @@ import {
   postUpdateCourse,
   getUpdateUser,
   postUpdateUser,
+  postDeleteMessage,
 } from "../controllers/dashboard.mjs";
 import express from "express";
 import { body } from "express-validator";
@@ -34,6 +35,7 @@ router
   .post("/delete-user", postDeleteUser)
   .post("/edit-course/:courseId", postUpdateCourse)
   .get("/edit-user/:userId", getUpdateUser)
-  .post("/edit-user/:userId", postUpdateUser);
+  .post("/edit-user/:userId", postUpdateUser)
+  .post("/delete-message", postDeleteMessage);
 
 export { router as dashboardRoutes };

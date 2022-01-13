@@ -22,4 +22,11 @@ const addMessage = (senderName, senderEmail, senderMessage) => {
     .catch((err) => err);
 };
 
-export { getAllMessages, addMessage };
+const deleteMessage = (messageId) => {
+  return db
+    .query("DELETE FROM messages WHERE messageid=$1", [messageId])
+    .then((res) => res)
+    .catch((err) => err);
+};
+
+export { getAllMessages, addMessage, deleteMessage };
