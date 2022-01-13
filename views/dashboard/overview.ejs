@@ -1,7 +1,8 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
-<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
-<link rel="stylesheet" href="/css/dashboard/overview.css"/>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/overview.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css">
 </head>
 <body>
 
@@ -12,8 +13,22 @@
         <%- include("../includes/dashboard-navbar.ejs"); %>
       </div>
       <div class="col-9">
-        <div>Number of users: <%= statsNumbers.users %></div>
-        <div>Number of courses: <%= statsNumbers.courses %></div>
+        <div class="content p-5">
+          <main class="content-header">
+            <div class="custom-head">
+              <h2>Number of Courses</h2>
+              <span></span>
+            </div>
+            <div class="fs-3"><%= statsNumbers.courses; %></div>
+
+            <div class="custom-head">
+              <h2>Number of Users</h2>
+              <span></span>
+            </div>
+            <div class="fs-3"><%= statsNumbers.users; %></div>
+          </main>
+        </div>
+
         <%- include("../includes/footer.ejs"); %>
       </div>
     </div>

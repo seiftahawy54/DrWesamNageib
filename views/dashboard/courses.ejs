@@ -37,11 +37,8 @@
                 <span class="course-name"><%= course.name; %></span>
                 <span class="course-price">&dollar;<%= course.price; %></span>
                 <div class="course-update">
-                  <form action="/dashboard/update-course" method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
-                    <input type="hidden" name="courseId" value="<%= course.course_id; %>">
-                    <button type="submit" class="btn btn-success">Update Course</button>
-                  </form>
+                  <a href="/dashboard/edit-course/<%= course.course_id %>?edit=true" class="btn btn-success">Update
+                    Course</a>
                 </div>
                 <div class="course-delete">
                   <form action="/dashboard/delete-course" method="post">

@@ -1,7 +1,29 @@
 // const db = require("../utits/db");
 import db from "../utits/db.mjs";
 
-const getSingleUser = () => {};
+const getSingleUser = (userId) => {
+  return db
+    .query("SELECT * FROM users WHERE user_id=$1", [userId])
+    .then((res) => res)
+    .catch((err) => err);
+};
+
+const updateSingleUser = (userId, name, email, whatsapp_no, specialization) => {
+  return db
+    .query(
+      "UPDATE users SET name=$1, email=$2, whatsapp_no=$3, specialization=$4 WHERE user_id=$5;",
+      [name, email, whatsapp_no, specialization, userId]
+    )
+    .then((res) => res)
+    .catch((err) => err);
+};
+
+const deleteUser = (userId) => {
+  return db
+    .query("DELETE FROM users WHERE user_id=$1", [userId])
+    .then((res) => res)
+    .catch((err) => err);
+};
 
 const getNumberOfUsers = () => {
   return db
@@ -45,6 +67,8 @@ const addUserPaymentDetails = (id, details) => {
 };
 
 export {
+  updateSingleUser,
+  deleteUser,
   getSingleUser,
   getNumberOfUsers,
   getAllUsers,

@@ -46,7 +46,19 @@ const getNumberOfCourses = () => {
     .catch((err) => err);
 };
 
+const updateSingleCourse = (courseName, coursePrice, courseId) => {
+  return db
+    .query("UPDATE courses SET name=$1, price=$2 WHERE course_id=$3;", [
+      courseName,
+      parseFloat(coursePrice),
+      courseId,
+    ])
+    .then((result) => result)
+    .catch((err) => err);
+};
+
 export {
+  updateSingleCourse,
   addNewCourse,
   getSingleCourse,
   getAllCourses,

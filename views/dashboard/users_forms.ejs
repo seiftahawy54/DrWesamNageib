@@ -15,33 +15,33 @@
         <div class="content">
           <div class="custom-head">
             <h2>
-              <% if (editMode === "true") { %>
-                <%= "Update Course"; %>
-              <% } else { %>
-                <%= "Add new course"; %>
-              <% } %>
+              Update User
             </h2>
             <span></span>
           </div>
           <form
-            action="/dashboard/<% if (editMode === 'true') { %><%= "edit-course/" + course.course_id %><% } else { %>add-new-course<% } %>"
+            action="/dashboard/edit-user/<%= user.user_id; %>"
             method="POST">
             <div class="my-3">
-              <input type="text" name="name" placeholder="Course Name" class="form-control"
-                     value="<% if (editMode === 'true') { %><%= course.name %><% } %>" />
+              <input type="text" name="name" placeholder="User Name" class="form-control"
+                     value="<%= user.name; %>" />
             </div>
             <div class="my-3">
-              <input type="number" name="price" placeholder="Course Price" class="form-control"
-                     value="<% if (editMode === 'true') { %><%= course.price %><% } %>" />
+              <input type="text" name="email" placeholder="User Email" class="form-control"
+                     value="<%= user.email; %>" />
+            </div>
+            <div class="my-3">
+              <input type="tel" name="whatsapp_no" placeholder="User Number" class="form-control"
+                     value="<%= user.whatsapp_no; %>" />
+            </div>
+            <div class="my-3">
+              <input type="text" name="specialization" placeholder="User Specialization" class="form-control"
+                     value="<%= user.specialization; %>" />
             </div>
 
             <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
             <button type="submit" class="btn">
-              <% if (editMode === "true") { %>
-                <%= "Update Course"; %>
-              <% } else { %>
-                <%= "Add new course"; %>
-              <% } %>
+              Update User
             </button>
           </form>
         </div>

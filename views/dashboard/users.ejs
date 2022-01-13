@@ -1,6 +1,6 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
-<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
 <link rel="stylesheet" href="/css/dashboard/courses.css">
 <link rel="stylesheet" href="/css/dashboard/users.css">
 </head>
@@ -32,19 +32,17 @@
             </div>
             <% users.forEach(user => { %>
               <div class="table-row">
-                <span class="user-name"><%= user.name %></span>
+                <span class="user-name"><%= user.name; %></span>
                 <span class="user-number"><a class="reset-link"
-                                             href="tel:+<%= user.whatsapp_no %>"><%= user.whatsapp_no %></a></span>
-                <span class="user-email"><%= user.email %></span>
-                <span class="user-specilization"><%= user.specialization %></span>
+                                             href="tel:+<%= user.whatsapp_no; %>"><%= user.whatsapp_no; %></a></span>
+                <span class="user-email"><%= user.email; %></span>
+                <span class="user-specilization"><%= user.specialization; %></span>
                 <div class="course-update">
-                  <form action="/update-user" method="post">
-                    <input type="hidden" name="userId" value="<%= user.user_id %>">
-                    <button type="submit" class="btn btn-success">Update User</button>
-                  </form>
+                  <a href="/dashboard/edit-user/<%= user.user_id %>" class="btn btn-success">Update User</a>
                 </div>
                 <div class="course-delete">
-                  <form action="/delete-user" method="post">
+                  <form action="/dashboard/delete-user" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
                     <input type="hidden" name="userId" value="<%= user.user_id %>">
                     <button type="submit" class="btn btn-danger">Delete User</button>
                   </form>

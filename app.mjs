@@ -52,6 +52,13 @@ app.use(csrfProtection);
 
 /*app.use(csrfProtection);
  */
+
+/*app.get("*", function (req, res, next) {
+  if (req.headers["x-forwarded-proto"] != "http")
+    res.redirect("http://www.drwesamnageib.com" + req.url);
+  else next(); /!* Continue to other routes if we're not redirecting *!/
+});*/
+
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticated;
   res.locals.csrfToken = req.csrfToken();

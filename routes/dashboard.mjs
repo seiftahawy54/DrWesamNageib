@@ -6,6 +6,11 @@ import {
   getAddNewCourse,
   postAddNewCourse,
   postDeleteCourse,
+  postDeleteUser,
+  getEditCourse,
+  postUpdateCourse,
+  getUpdateUser,
+  postUpdateUser,
 } from "../controllers/dashboard.mjs";
 import express from "express";
 import { body } from "express-validator";
@@ -24,6 +29,11 @@ router
     body("price").isNumeric().notEmpty(),
     postAddNewCourse
   )
-  .post("/delete-course", postDeleteCourse);
+  .get("/edit-course/:courseId", getEditCourse)
+  .post("/delete-course", postDeleteCourse)
+  .post("/delete-user", postDeleteUser)
+  .post("/edit-course/:courseId", postUpdateCourse)
+  .get("/edit-user/:userId", getUpdateUser)
+  .post("/edit-user/:userId", postUpdateUser);
 
 export { router as dashboardRoutes };
