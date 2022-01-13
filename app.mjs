@@ -14,6 +14,7 @@ import { coursesRoutes } from "./routes/courses.mjs";
 import { shoppingRoutes } from "./routes/shopping.mjs";
 import { authRoutes } from "./routes/auth.mjs";
 import { dashboardRoutes } from "./routes/dashboard.mjs";
+import { isAuthenticated } from "./middlewares/dashboard-auth.mjs";
 
 dotenv.config();
 const app = express();
@@ -58,7 +59,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/courses", coursesRoutes);
-app.use("/dashboard", dashboardRoutes);
+app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
 

@@ -1,4 +1,27 @@
 import db from "../utits/db.mjs";
+import crypto from "crypto";
+
+const addNewCourse = (courseName, coursePrice) => {
+  const idHash = crypto.randomBytes(10);
+  const id = idHash.toString("hex");
+  return db
+    .query("INSERT INTO courses VALUES ($1, $2, $3, current_timestamp);", [
+      id,
+      courseName,
+      coursePrice,
+    ])
+    .then((result) => {
+      return result;
+    })
+    .catch((err) => err);
+};
+
+const deleteCourse = (courseId) => {
+  return db
+    .query("DELETE FROM courses WHERE course_id=$1", [courseId])
+    .then((res) => res)
+    .catch((err) => err);
+};
 
 const getAllCourses = () => {
   return db
@@ -23,4 +46,10 @@ const getNumberOfCourses = () => {
     .catch((err) => err);
 };
 
-export { getSingleCourse, getAllCourses, getNumberOfCourses };
+export {
+  addNewCourse,
+  getSingleCourse,
+  getAllCourses,
+  getNumberOfCourses,
+  deleteCourse,
+};

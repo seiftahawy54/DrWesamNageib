@@ -1,10 +1,10 @@
 <nav class="dashboard-nav">
-  <a class="navbar-brand reset-link <%- path === '/dashboard/overview' ? 'active' : '' %>" href="/dashboard/overview">Dr.
+  <a class="navbar-brand reset-link <%- path === "/dashboard/overview" ? "active" : ""; %>" href="/dashboard/overview">Dr.
     Wasam
     Nageib</a>
   <div class="logged-in-user">
     <div class="user-img">
-      <img src="/imgs/imgs/userthumbnail.png" alt="user-thumbnail"/>
+      <img src="/imgs/imgs/userthumbnail.png" alt="user-thumbnail" />
     </div>
     <div class="user-info">
       <span class="user-type">
@@ -18,18 +18,22 @@
   <div class="nav-links">
     <ul class="list-unstyled">
       <li class="nav-item">
-        <a class="nav-link reset-link <%- path === '/dashboard/overview' ? 'active' : '' %>" aria-current="page"
+        <a class="nav-link reset-link <%- path === "/dashboard/overview" ? "active" : ""; %>" aria-current="page"
            href="/dashboard/overview">Overview</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link  reset-link <%- path === '/dashboard/users' ? 'active' : '' %>"
+        <a class="nav-link  reset-link <%- path === "/dashboard/users" ? "active" : ""; %>"
            href="/dashboard/users">Users</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link reset-link <%- path === '/dashboard/courses' ? 'active' : '' %>" href="/dashboard/courses">Courses</a>
+        <a class="nav-link reset-link <%- path === "/dashboard/courses" ? "active" : ""; %>" href="/dashboard/courses">Courses</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link reset-link <%- path === "/dashboard/messages" ? "active" : ""; %>"
+           href="/dashboard/messages">Messages</a>
       </li>
       <!--<li class="nav-item">
-        <a class="nav-link reset-link <%- path === '/dashboard/rounds' ? 'active' : '' %>" href="/dashboard/courses">Rounds</a>
+        <a class="nav-link reset-link <%- path === "/dashboard/rounds" ? "active" : ""; %>" href="/dashboard/courses">Rounds</a>
       </li>-->
     </ul>
   </div>
@@ -40,7 +44,7 @@
     </div>
     <div class="logout">
       <form action="/logout" method="post">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
         <button type="submit" class="reset-btn">
           <%- include('../../public/imgs/svgs/logout.svg') %>
         </button>

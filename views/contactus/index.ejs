@@ -8,6 +8,11 @@
   <div class="container">
     <div class="row">
       <div class="col offset-1">
+        <% if (errorMessage) { %>
+          <div class="error-container">
+            <%- errorMessage; %>
+          </div>
+        <% } %>
         <h3>Contact for any issues</h3>
         <form action="/contact" method="POST">
           <div class="form-control">
@@ -17,8 +22,10 @@
             <input type="email" name="contact_email" id="contact_email" placeholder="Your email" />
           </div>
           <div class="form-control">
-            <textarea name="content_content" id="contact_content" placeholder="Enter your message"></textarea>
+            <textarea name="contact_content" id="contact_content" placeholder="Enter your message"
+                      minlength="90"></textarea>
           </div>
+          <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
           <button class="btn" type="submit">Send your message</button>
         </form>
       </div>

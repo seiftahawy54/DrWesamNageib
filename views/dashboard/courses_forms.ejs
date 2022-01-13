@@ -1,0 +1,37 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css" />
+</head>
+<body>
+
+<section class="courses">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <h2>Add new course</h2>
+          <form action="/dashboard/add-new-course" method="POST">
+            <div class="my-3">
+              <input type="text" name="name" placeholder="Course Name" class="form-control" />
+            </div>
+            <div class="my-3">
+              <input type="number" name="price" placeholder="Course Price" class="form-control" />
+            </div>
+
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+            <button type="submit" class="btn">
+              Add new course
+            </button>
+          </form>
+        </div>
+        <%- include("../includes/footer.ejs"); %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/bottom_part.ejs"); %>
