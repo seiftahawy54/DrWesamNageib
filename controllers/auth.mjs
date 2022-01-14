@@ -195,7 +195,7 @@ const postCreateOrder = async (req, res, next) => {
 };
 
 const postSuccess = (req, res, next) => {
-  res.redirect("/");
+  res.redirect("/success_payment");
 };
 
 const getSuccess = (req, res, next) => {

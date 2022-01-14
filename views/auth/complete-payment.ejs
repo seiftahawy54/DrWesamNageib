@@ -1,5 +1,5 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/auth/complete-payment.css"/>
+<link rel="stylesheet" href="/css/auth/complete-payment.css" />
 </head>
 <body>
 
@@ -34,15 +34,15 @@
   <script>
     const courseJSON = '<%- JSON.stringify(course) %>';
     const courseObject = JSON.parse(courseJSON);
-    const thecsrfToken = "<%- csrfToken %>"
+    const thecsrfToken = "<%- csrfToken %>";
 
     paypal.Buttons({
-      createOrder: function () {
-        return fetch('/create-order', {
+      createOrder: function() {
+        return fetch("/create-order", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-csrf-token": "<%- csrfToken %>",
+            "x-csrf-token": "<%- csrfToken %>"
           },
           body: JSON.stringify({
             item: {
@@ -53,27 +53,27 @@
         })
           .then(response => {
             if (response.ok) {
-              return response.json()
+              return response.json();
             }
             return response.json().then(json => {
-              Promise.reject(json)
-            })
+              Promise.reject(json);
+            });
           })
           .then(wantedThings => {
-            console.log(`wantedthings`, wantedThings)
+            console.log(`wantedthings`, wantedThings);
             return wantedThings.id;
           })
           .catch(err => {
-            console.error(err)
-          })
+            console.error(err);
+          });
       },
-      onApprove: function (data, actions) {
+      onApprove: function(data, actions) {
         // This function captures the funds from the transaction.
-        return actions.order.capture().then(function (details) {
+        return actions.order.capture().then(function(details) {
           fetch("/success_payment", {
             method: "POST",
             headers: {
-              'x-csrf-token': "<%- csrfToken %>",
+              "x-csrf-token": "<%- csrfToken %>"
             },
             redirect: "follow",
             body: JSON.stringify({
@@ -81,16 +81,16 @@
             })
           })
             .then(response => {
-              console.log('server_response', response);
+              console.log("server_response", response);
               window.location = response.url;
-            })
+            });
         })
           .catch(err => {
-            console.error(`approve error`, err)
+            console.error(`approve error`, err);
           });
       },
       onCancel: (data) => {
-        window.location = "/";
+        window.location = "/cancel_payment";
         /*fetch("/cancel_payment", {
           method: "get",
           body: JSON.stringify({
@@ -98,12 +98,11 @@
           })
         })
           .then(response => {
-            console.log('server_response', response);
-            window.location = response.url;
+            console.log("server_response", response);
           })
           .catch(err => {
-            console.error(`approve error`, err)
-          })*/
+            console.error(`approve error`, err);
+          });*/
       },
       style: {
         layout: "vertical",

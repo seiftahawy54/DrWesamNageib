@@ -25,7 +25,8 @@
           </div>
           <form
             action="/dashboard/<% if (editMode === 'true') { %><%= "edit-course/" + course.course_id %><% } else { %>add-new-course<% } %>"
-            method="POST">
+            method="POST"
+            enctype="multipart/form-data">
             <div class="my-3">
               <input type="text" name="name" placeholder="Course Name" class="form-control"
                      value="<% if (editMode === 'true') { %><%= course.name %><% } %>" />
@@ -33,6 +34,10 @@
             <div class="my-3">
               <input type="number" name="price" placeholder="Course Price" class="form-control"
                      value="<% if (editMode === 'true') { %><%= course.price %><% } %>" />
+            </div>
+            <div class="my-3">
+              <input type="file" name="course_img" placeholder="Upload course image" class="form-control"
+                     accept="image/*" />
             </div>
 
             <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />

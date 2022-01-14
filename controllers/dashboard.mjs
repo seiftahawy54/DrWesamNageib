@@ -70,11 +70,15 @@ const getAddNewCourse = (req, res, next) => {
 const postAddNewCourse = async (req, res, next) => {
   const courseName = req.body.name;
   const coursePrice = req.body.price;
+  const courseImage = req.file;
+
+  const imgUrl = courseImage.path;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.redirect("/dashboard/add-new-course");
   } else {
-    const addingResult = await addNewCourse(courseName, coursePrice);
+    const addingResult = await addNewCourse(courseName, coursePrice, imgUrl);
     if (addingResult.command === "INSERT") {
       res.redirect("/dashboard/courses");
     } else {
@@ -126,7 +130,8 @@ const postUpdateCourse = async (req, res, next) => {
 
   const courseName = req.body.name;
   const coursePrice = req.body.price;
-  console.log(courseName, coursePrice);
+  const courseImg = req.file;
+  const courseImgPath = courseImg.path.toString();
 
   const errors = validationResult(req);
   const findingCourse = await getSingleCourse(courseId);
@@ -139,23 +144,49 @@ const postUpdateCourse = async (req, res, next) => {
       course: findingCourse.rows[0],
     });
   } else {
-    const addingResult = await updateSingleCourse(
-      courseName,
-      coursePrice,
-      courseId
-    );
+    if (courseImgPath.length === 0) {
+      const addingResult = await updateSingleCourse(
+        courseName,
+        coursePrice,
+        courseId
+      );
 
-    console.log(addingResult);
-
-    if (addingResult.command === "UPDATE") {
-      res.redirect("/dashboard/courses");
+      if (addingResult.rowCount === 0) {
+        res.redirect("/dashboard/courses");
+      } else {
+        res.render("dashboard/courses_forms", {
+          title: "Update Course",
+          path: "/dashboard/courses",
+          editMode: "true",
+          course: findingCourse.rows[0],
+        });
+      }
     } else {
-      res.render("dashboard/courses_forms", {
-        title: "Update Course",
-        path: "/dashboard/courses",
-        editMode: "true",
-        course: findingCourse.rows[0],
-      });
+      const addingResult = await updateSingleCourse(
+        courseName,
+        coursePrice,
+        courseId,
+        courseImgPath
+      );
+
+      console.log(
+        "imgpath: ",
+        courseImgPath,
+        "imgpath_type: ",
+        typeof courseImgPath
+      );
+      console.log(addingResult);
+
+      if (addingResult.rowCount > 0) {
+        res.redirect("/dashboard/courses");
+      } else {
+        res.render("dashboard/courses_forms", {
+          title: "Update Course",
+          path: "/dashboard/courses",
+          editMode: "true",
+          course: findingCourse.rows[0],
+        });
+      }
     }
   }
 };

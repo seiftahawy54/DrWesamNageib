@@ -8,6 +8,7 @@ import expressSession from "express-session";
 import pgSession from "connect-pg-simple";
 import csrf from "csurf";
 import flash from "connect-flash";
+import Multer from "multer";
 
 import Pool from "./utits/db.mjs";
 import { coursesRoutes } from "./routes/courses.mjs";
@@ -15,16 +16,42 @@ import { shoppingRoutes } from "./routes/shopping.mjs";
 import { authRoutes } from "./routes/auth.mjs";
 import { dashboardRoutes } from "./routes/dashboard.mjs";
 import { isAuthenticated } from "./middlewares/dashboard-auth.mjs";
+import crypto from "crypto";
 
 dotenv.config();
 const app = express();
+
+const fileStorage = Multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploaded_images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, crypto.randomBytes(10).toString("hex") + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  Multer({ storage: fileStorage, fileFilter: fileFilter }).single("course_img")
+);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve("public")));
+app.use("/uploaded_images", express.static(path.resolve("uploaded_images")));
 
 // Session Configurations
 const nPgSession = pgSession(expressSession);

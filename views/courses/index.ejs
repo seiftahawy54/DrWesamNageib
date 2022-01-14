@@ -5,89 +5,89 @@
 <%- include("../includes/navigation.ejs"); %>
 
 <section class="featured-courses">
-    <div class="small-brief text-center">
-        <%- include('../../public/imgs/svgs/feed.svg') %>
-        Courses By Exam
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="featured-course-container offset-4 col-4">
-                <div class="featured-courses-container">
-                    <div class="course-title-container">
-                        <div class="course-thumbnail">
-                            <img src="/imgs/imgs/book.png" alt="Course Thumbnail" />
-                        </div>
-                        <div class="course-title">
-                            CPHQ Exam Preparation Course
-                        </div>
-                    </div>
-                    <p class="course-about">
-                        Certified Professional in Healthcare Quality Preparatory course
-                    </p>
-                    <button class="btn-outlined">
-                        View Course
-                    </button>
-                </div>
+  <div class="small-brief text-center">
+    <%- include('../../public/imgs/svgs/feed.svg') %>
+    Courses By Exam
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="featured-course-container offset-4 col-4">
+        <div class="featured-courses-container">
+          <div class="course-title-container">
+            <div class="course-thumbnail">
+              <img src="/imgs/imgs/book.png" alt="Course Thumbnail" />
             </div>
+            <div class="course-title">
+              CPHQ Exam Preparation Course
+            </div>
+          </div>
+          <p class="course-about">
+            Certified Professional in Healthcare Quality Preparatory course
+          </p>
+          <button class="btn-outlined">
+            View Course
+          </button>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div class="small-brief text-center">
-        <%- include('../../public/imgs/svgs/grid-collection.svg') %>
-        All Courses
-    </div>
+  <div class="small-brief text-center">
+    <%- include('../../public/imgs/svgs/grid-collection.svg') %>
+    All Courses
+  </div>
 </section>
 <section class="all-courses">
-    <div class="container">
-        <div class="row">
-            <div class="col-2">
-                <h3>Filter By</h3>
-                <hr>
-                <div>Exam</div>
-                <div class="first-category">
-                    <input type="checkbox" name="category1" id="category1" /> <label for="category1">CPHQ</label>
-                    <br />
-                    <input type="checkbox" name="category1" id="category2" /> <label for="category2">Human Development</label>
-                    <br />
-                    <input type="checkbox" name="category1" id="category3" /> <label for="category3">TOT</label>
-                </div>
-
-                <hr>
-                <div>Language</div>
-                <div class="first-category">
-                    <input type="checkbox" name="category1" id="category4" /> <label for="category4">English</label>
-                    <br />
-                    <input type="checkbox" name="category1" id="category5" /> <label for="category5">Arabic</label>
-                </div>
-            </div>
-            <div class="col">
-                <div class="course-sort">
-                    <input list="sorting" placeholder="Sorting" />
-                    <datalist id="sorting">
-                        <option value="Price" />
-                        <option value="Exam" />
-                        <option value="Most Popular" />
-                    </datalist>
-                </div>
-                <div class="row all-courses-cont">
-                    <% courses.forEach(course => { %>
-                        <div class="col-4">
-                            <a href="/courses/<%- course.course_id %>" class="reset-link">
-                                <div class="course">
-                                    <img src="/imgs/imgs/course_img.png" alt="CPHQ Preparation Course"
-                                         class="course-thumbnail" />
-                                    <div class="course-footer">
-                                        <div class="course-title"><%- course.name %></div>
-                                        <div class="course-price">&dollar; <%- course.price %></div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    <% }) %>
-                </div>
-            </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <h3>Filter By</h3>
+        <hr>
+        <div>Exam</div>
+        <div class="first-category">
+          <input type="checkbox" name="category1" id="category1" /> <label for="category1">CPHQ</label>
+          <br />
+          <input type="checkbox" name="category1" id="category2" /> <label for="category2">Human Development</label>
+          <br />
+          <input type="checkbox" name="category1" id="category3" /> <label for="category3">TOT</label>
         </div>
+
+        <hr>
+        <div>Language</div>
+        <div class="first-category">
+          <input type="checkbox" name="category1" id="category4" /> <label for="category4">English</label>
+          <br />
+          <input type="checkbox" name="category1" id="category5" /> <label for="category5">Arabic</label>
+        </div>
+      </div>
+      <div class="col">
+        <div class="course-sort">
+          <input list="sorting" placeholder="Sorting" />
+          <datalist id="sorting">
+            <option value="Price" />
+            <option value="Exam" />
+            <option value="Most Popular" />
+          </datalist>
+        </div>
+        <div class="row all-courses-cont">
+          <% courses.forEach(course => { %>
+            <div class="col-4">
+              <a href="/courses/<%- course.course_id %>" class="reset-link">
+                <div class="course">
+                  <img src="/<%- course.course_img %>" alt="CPHQ Preparation Course"
+                       class="course-thumbnail" />
+                  <div class="course-footer">
+                    <div class="course-title"><%- course.name %></div>
+                    <div class="course-price">&dollar; <%- course.price %></div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <%- include("../includes/footer.ejs"); %>

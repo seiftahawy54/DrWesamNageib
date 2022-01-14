@@ -41,7 +41,7 @@ router
   )
   .get("/success_payment", getSuccess)
   .post("/success_payment", postSuccess)
-  .post("/cancel_payment", getCancelled)
+  .get("/cancel_payment", getCancelled)
   .get("/complete-payment", getCompletePayment)
   .post("/create-order", postCreateOrder);
 
