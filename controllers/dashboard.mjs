@@ -74,12 +74,14 @@ const postAddNewCourse = async (req, res, next) => {
 
   const imgUrl = courseImage.path;
 
+  console.log(imgUrl);
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.redirect("/dashboard/add-new-course");
   } else {
     const addingResult = await addNewCourse(courseName, coursePrice, imgUrl);
-    if (addingResult.command === "INSERT") {
+    if (addingResult.rowCount) {
       res.redirect("/dashboard/courses");
     } else {
       res.redirect("/dashboard/add-new-course");
