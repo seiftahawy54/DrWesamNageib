@@ -98,4 +98,19 @@
   line-height: 40px;
 }
 
+.floating-whatsapp {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #fff;
+  width: 70px;
+  height: 70px;
+  border: 1px solid #E354A1;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
+}
+
 /*# sourceMappingURL=home.css.map */

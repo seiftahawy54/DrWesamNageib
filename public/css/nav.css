@@ -1,6 +1,17 @@
 .navbar {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
   height: 120px;
+  position: sticky;
+  width: 100%;
+  top: 0;
+  background-color: #fff;
+  z-index: 100;
+  margin-bottom: 60px;
+}
+.navbar .floating-whatsapp {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
 }
 .navbar .navbar-brand {
   font-size: 28px !important;

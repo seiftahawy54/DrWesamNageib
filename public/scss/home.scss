@@ -70,7 +70,6 @@
 }
 
 .our-courses {
-
   .courses-container {
     margin-block: 50px;
   }
@@ -121,7 +120,7 @@
       }
 
       .client-date {
-        opacity: 0.5
+        opacity: 0.5;
       }
     }
 
@@ -129,4 +128,18 @@
       line-height: 40px;
     }
   }
+}
+
+.floating-whatsapp {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #fff;
+  @include common.similarHW(70px);
+  border: 1px solid vars.$main_color;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
 }
