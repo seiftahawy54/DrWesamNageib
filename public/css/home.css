@@ -98,6 +98,20 @@
   line-height: 40px;
 }
 
+.join-us {
+  background-image: url("/imgs/imgs/website_preview.jpeg");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-blend-mode: color;
+  min-height: 300px;
+  color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 .floating-whatsapp {
   position: fixed;
   bottom: 30px;

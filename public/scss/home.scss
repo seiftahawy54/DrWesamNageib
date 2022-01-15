@@ -130,6 +130,21 @@
   }
 }
 
+.join-us {
+  background-image: url("/imgs/imgs/website_preview.jpeg");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-blend-mode: color;
+  //background-color: rgba(227, 84, 161, 0.5);
+  min-height: 300px;
+  color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 .floating-whatsapp {
   position: fixed;
   bottom: 30px;
