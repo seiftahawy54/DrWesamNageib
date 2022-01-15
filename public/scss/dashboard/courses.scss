@@ -15,9 +15,9 @@
 
       .table-head {
         display: grid;
-        font-size: vars.$md_header_size;
+        font-size: vars.$md_font_size;
         border-bottom: 2px solid #000;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         padding: 11px 24px;
         justify-items: center;
       }
@@ -26,10 +26,16 @@
         padding: 11px 24px;
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         font-size: vars.$sm_font_size;
         justify-items: center;
         align-items: center;
+
+        .course-description {
+          width: 180px;
+          height: 100px;
+          overflow: scroll;
+        }
 
         .course-update,
         .course-delete {

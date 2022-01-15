@@ -3,22 +3,26 @@
     <a class="navbar-brand" href="/">Dr. Wesam Nageib</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+      <span class="navbar-toggler-icon">
+        <span class="dash"></span>
+        <span class="dash"></span>
+        <span class="dash"></span>
+      </span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav d-flex w-100 justify-content-end">
         <li class="nav-item">
-          <a class="nav-link <%- path === '/' ? 'active' : '' %>" aria-current="page" href="/">Home</a>
+          <a class="nav-link <%- path === "/" ? "active" : ""; %>" aria-current="page" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link  <%- path === '/courses' ? 'active' : '' %>" href="/courses">Courses</a>
+          <a class="nav-link  <%- path === "/courses" ? "active" : ""; %>" href="/courses">Courses</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link <%- path === '/aboutme' ? 'active' : '' %>" href="/aboutme">About me</a>
+          <a class="nav-link <%- path === "/aboutme" ? "active" : ""; %>" href="/aboutme">About me</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <%- path === '/contact' ? 'active' : '' %>" href="/contact">Contact</a>
+          <a class="nav-link <%- path === "/contact" ? "active" : ""; %>" href="/contact">Contact</a>
         </li>
         <li class="nav-item">
           <a class="nav-link login-button btn" href="/courses">
@@ -33,7 +37,7 @@
           </li>
         <% } %>
         <!--<li class="nav-item">
-          <a class="nav-link <%- path === '/cart' ? 'active' : '' %>" href="/cart">
+          <a class="nav-link <%- path === "/cart" ? "active" : ""; %>" href="/cart">
             <%- /*include('../../public/imgs/svgs/cart.svg') */ %>
           </a>
         </li>-->

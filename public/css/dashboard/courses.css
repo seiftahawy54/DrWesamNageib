@@ -11,9 +11,9 @@
 }
 .courses .content .courses-data .table-head {
   display: grid;
-  font-size: 24px;
+  font-size: 18px;
   border-bottom: 2px solid #000;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   padding: 11px 24px;
   justify-items: center;
 }
@@ -21,10 +21,15 @@
   padding: 11px 24px;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   font-size: 16px;
   justify-items: center;
   align-items: center;
+}
+.courses .content .courses-data .table-row .course-description {
+  width: 180px;
+  height: 100px;
+  overflow: scroll;
 }
 .courses .content .courses-data .table-row .course-update button,
 .courses .content .courses-data .table-row .course-delete button {

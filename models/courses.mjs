@@ -1,16 +1,19 @@
 import db from "../utits/db.mjs";
 import crypto from "crypto";
 
-const addNewCourse = (courseName, coursePrice, courseImg) => {
+const addNewCourse = (
+  courseName,
+  coursePrice,
+  courseImg,
+  courseDescription
+) => {
   const idHash = crypto.randomBytes(10);
   const id = idHash.toString("hex");
   return db
-    .query("INSERT INTO courses VALUES ($1, $2, $3, current_timestamp, $4);", [
-      id,
-      courseName,
-      coursePrice,
-      courseImg,
-    ])
+    .query(
+      "INSERT INTO courses VALUES ($1, $2, $3, current_timestamp, $4, $5);",
+      [id, courseName, coursePrice, courseImg, courseDescription]
+    )
     .then((result) => {
       return result;
     })
@@ -47,21 +50,32 @@ const getNumberOfCourses = () => {
     .catch((err) => err);
 };
 
-const updateSingleCourse = (courseName, coursePrice, courseId, courseImg) => {
-  if (courseImg.length === 0) {
+const updateSingleCourse = (
+  courseName,
+  coursePrice,
+  courseId,
+  courseImg,
+  courseDescription
+) => {
+  if (courseImg) {
     return db
-      .query("UPDATE courses SET name=$1, price=$2 WHERE course_id=$3;", [
-        courseName,
-        parseFloat(coursePrice),
-        courseId,
-      ])
+      .query(
+        "UPDATE courses SET name=$1, price=$2, course_img=$3, description=$4 WHERE course_id=$5;",
+        [
+          courseName,
+          parseFloat(coursePrice),
+          courseImg,
+          courseDescription,
+          courseId,
+        ]
+      )
       .then((result) => result)
       .catch((err) => err);
   } else {
     return db
       .query(
-        "UPDATE courses SET name=$1, price=$2, course_img=$3 WHERE course_id=$4;",
-        [courseName, parseFloat(coursePrice), courseImg, courseId]
+        "UPDATE courses SET name=$1, price=$2, description=$3 WHERE course_id=$4;",
+        [courseName, parseFloat(coursePrice), courseDescription, courseId]
       )
       .then((result) => result)
       .catch((err) => err);

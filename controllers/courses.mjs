@@ -17,12 +17,11 @@ const getIndex = (req, res, next) => {
 const singleCourse = (req, res, next) => {
   getSingleCourse(req.params.courseId)
     .then((course) => {
+      console.log(course.rows[0]);
       res.render("courses/single_course", {
         title: "Course Name",
         path: "/courses",
         course: course.rows[0],
-        courseDescription:
-          "The course is blended in nature that consists of 16 sessions: 10 live streaming sessions with complete prepare for the exam",
       });
     })
     .catch((err) => {

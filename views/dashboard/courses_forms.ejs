@@ -1,7 +1,7 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css" />
-<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
-<link rel="stylesheet" href="/css/dashboard/courses.css" />
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css"/>
 </head>
 <body>
 
@@ -29,18 +29,24 @@
             enctype="multipart/form-data">
             <div class="my-3">
               <input type="text" name="name" placeholder="Course Name" class="form-control"
-                     value="<% if (editMode === 'true') { %><%= course.name %><% } %>" />
+                     value="<% if (editMode === 'true') { %><%= course.name %><% } %>"/>
             </div>
             <div class="my-3">
               <input type="number" name="price" placeholder="Course Price" class="form-control"
-                     value="<% if (editMode === 'true') { %><%= course.price %><% } %>" />
+                     value="<% if (editMode === 'true') { %><%= course.price %><% } %>"/>
+            </div>
+            <div class="my-3">
+              <textarea name="description" placeholder="Course Description" class="form-control">
+                <% if (editMode === 'true') { %><%= course.description %>
+                <% } %>
+              </textarea>
             </div>
             <div class="my-3">
               <input type="file" name="course_img" placeholder="Upload course image" class="form-control"
-                     accept="image/*" />
+                     accept="image/*"/>
             </div>
 
-            <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
             <button type="submit" class="btn">
               <% if (editMode === "true") { %>
                 <%= "Update Course"; %>

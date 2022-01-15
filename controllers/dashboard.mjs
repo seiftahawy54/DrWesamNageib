@@ -70,17 +70,20 @@ const getAddNewCourse = (req, res, next) => {
 const postAddNewCourse = async (req, res, next) => {
   const courseName = req.body.name;
   const coursePrice = req.body.price;
+  const courseDescription = req.body.description;
   const courseImage = req.file;
-
   const imgUrl = courseImage.path;
-
-  console.log(imgUrl);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.redirect("/dashboard/add-new-course");
   } else {
-    const addingResult = await addNewCourse(courseName, coursePrice, imgUrl);
+    const addingResult = await addNewCourse(
+      courseName,
+      coursePrice,
+      imgUrl,
+      courseDescription
+    );
     if (addingResult.rowCount) {
       res.redirect("/dashboard/courses");
     } else {
@@ -133,7 +136,7 @@ const postUpdateCourse = async (req, res, next) => {
   const courseName = req.body.name;
   const coursePrice = req.body.price;
   const courseImg = req.file;
-  const courseImgPath = courseImg.path.toString();
+  const courseDescription = req.body.description;
 
   const errors = validationResult(req);
   const findingCourse = await getSingleCourse(courseId);
@@ -146,14 +149,16 @@ const postUpdateCourse = async (req, res, next) => {
       course: findingCourse.rows[0],
     });
   } else {
-    if (courseImgPath.length === 0) {
+    if (typeof courseImg !== "object") {
       const addingResult = await updateSingleCourse(
         courseName,
         coursePrice,
-        courseId
+        courseId,
+        null,
+        courseDescription
       );
 
-      if (addingResult.rowCount === 0) {
+      if (addingResult.rowCount > 0) {
         res.redirect("/dashboard/courses");
       } else {
         res.render("dashboard/courses_forms", {
@@ -168,16 +173,9 @@ const postUpdateCourse = async (req, res, next) => {
         courseName,
         coursePrice,
         courseId,
-        courseImgPath
+        courseImg.path,
+        courseDescription
       );
-
-      console.log(
-        "imgpath: ",
-        courseImgPath,
-        "imgpath_type: ",
-        typeof courseImgPath
-      );
-      console.log(addingResult);
 
       if (addingResult.rowCount > 0) {
         res.redirect("/dashboard/courses");

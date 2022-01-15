@@ -1,6 +1,6 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css" />
-<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
 <link rel="stylesheet" href="/css/dashboard/courses.css">
 </head>
 <body>
@@ -28,6 +28,7 @@
               <span class="course-id">Course ID</span>
               <span class="course-name">Course Name</span>
               <span class="course-price">Course Price</span>
+              <span class="course-price">Course Description</span>
               <span class="course-update">Update Course</span>
               <span class="course-delete">Delete Course</span>
             </div>
@@ -36,13 +37,14 @@
                 <span class="course-id">#<%= course.course_id; %></span>
                 <span class="course-name"><%= course.name; %></span>
                 <span class="course-price">&dollar;<%= course.price; %></span>
+                <span class="course-description"><%= course.description; %></span>
                 <div class="course-update">
                   <a href="/dashboard/edit-course/<%= course.course_id %>?edit=true" class="btn btn-success">Update
                     Course</a>
                 </div>
                 <div class="course-delete">
                   <form action="/dashboard/delete-course" method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
                     <input type="hidden" name="courseId" value="<%= course.course_id; %>">
                     <button type="submit" class="btn btn-danger">Delete Course</button>
                   </form>
