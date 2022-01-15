@@ -1,4 +1,4 @@
-public/videos
+publicenv/videos
 # Logs
 logs
 *.log
