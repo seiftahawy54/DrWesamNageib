@@ -1,6 +1,7 @@
 import path from "path";
 import { validationResult } from "express-validator";
 import { addMessage } from "../models/messages.mjs";
+import { getAllCourses } from "../models/courses.mjs";
 
 const getShoppingCart = (req, res, next) => {
   res.render("shopping/index", {
@@ -13,11 +14,22 @@ const getShoppingCart = (req, res, next) => {
   });
 };
 
-const getHomePage = (req, res, next) => {
-  res.render("home/home.ejs", {
-    title: "Homepage",
-    path: "/",
-  });
+const getHomePage = async (req, res, next) => {
+  const getCoursesResult = await getAllCourses();
+
+  if (getCoursesResult.rows.length > 0) {
+    res.render("home/home.ejs", {
+      title: "Homepage",
+      path: "/",
+      courses: getCoursesResult.rows,
+    });
+  } else {
+    res.render("home/home.ejs", {
+      title: "Homepage",
+      path: "/",
+      courses: {},
+    });
+  }
 };
 
 const getAboutPage = (req, res, next) => {

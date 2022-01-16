@@ -1,5 +1,5 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/auth/complete-payment.css" />
+<link rel="stylesheet" href="/css/auth/complete-payment.css"/>
 </head>
 <body>
 
@@ -23,6 +23,7 @@
           </div>
         </div>
       </div>
+
       <div id="paypal-button-container">
 
       </div>
@@ -34,10 +35,9 @@
   <script>
     const courseJSON = '<%- JSON.stringify(course) %>';
     const courseObject = JSON.parse(courseJSON);
-    const thecsrfToken = "<%- csrfToken %>";
 
     paypal.Buttons({
-      createOrder: function() {
+      createOrder: function () {
         return fetch("/create-order", {
           method: "POST",
           headers: {
@@ -67,9 +67,9 @@
             console.error(err);
           });
       },
-      onApprove: function(data, actions) {
+      onApprove: function (data, actions) {
         // This function captures the funds from the transaction.
-        return actions.order.capture().then(function(details) {
+        return actions.order.capture().then(function (details) {
           fetch("/success_payment", {
             method: "POST",
             headers: {

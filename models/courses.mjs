@@ -29,10 +29,8 @@ const deleteCourse = (courseId) => {
 
 const getAllCourses = () => {
   return db
-    .query("select * from courses;")
-    .then((result) => {
-      return result;
-    })
+    .query("SELECT * FROM courses;")
+    .then((result) => result)
     .catch((err) => err);
 };
 

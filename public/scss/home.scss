@@ -57,6 +57,7 @@
     object-fit: cover;
     width: 700px;
     height: 400px;
+    max-width: 100%;
   }
 
   .button-container {
@@ -131,15 +132,16 @@
 }
 
 .join-us {
-  background-image: url("/imgs/imgs/website_preview.jpeg");
+  background-image: url("/imgs/imgs/drs.jpg");
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
   background-blend-mode: color;
+  margin-block-end: 30px;
   //background-color: rgba(227, 84, 161, 0.5);
 
   .overlay {
-    min-height: 300px;
+    min-height: 400px;
     background-color: rgba(227, 84, 161, 0.7);
     @include common.similarHW(100%);
     color: #fff;
@@ -148,9 +150,23 @@
     align-items: center;
     flex-direction: column;
 
+    div {
+      line-height: 40px;
+
+      h2 {
+        font-size: 2.35rem;
+        font-weight: bolder;
+      }
+
+      p,
+      a {
+        font-size: vars.$lg_font_size;
+      }
+    }
+
     a {
       box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
-      transition: box-shadow 0.4s ease-in-out;
+      transition: all 0.2s ease-in-out;
 
       &:hover {
         color: #fff;

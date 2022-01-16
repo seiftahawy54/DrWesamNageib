@@ -91,11 +91,17 @@ const getCompletePayment = (req, res, next) => {
     getSingleCourse(selectedCourse)
       .then((dbResult) => {
         const selectedData = dbResult.rows[0];
+        // Removing Arabic Description for avoiding parsing error;
+        const filteredCourse = {
+          name: selectedData.name,
+          price: selectedData.price,
+          course_id: selectedData.course_id,
+        };
         const clientId = process.env.PAYPAL_CLIENT_ID;
         res.render("auth/complete-payment", {
           title: "complete payment",
           path: "/complete-payment",
-          course: selectedData,
+          course: filteredCourse,
           clientId,
           errorMessage: message,
         });
