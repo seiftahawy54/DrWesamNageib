@@ -82,24 +82,26 @@ textarea {
   }
 }
 
-a.btn {
+a.btn,
+a.btn-outlined {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-decoration: none;
 }
 
 .btn-outlined {
   width: 200px;
   height: 55px;
   background-color: transparent;
-  color: vars.$main_color;
+  color: vars.$main_color !important;
   border: 1px solid vars.$main_color;
   transition: all 0.25s ease-in-out;
   border-radius: 5px;
 
   &:hover {
     background-color: vars.$main_color;
-    color: #fff;
+    color: #fff !important;
   }
 }
 

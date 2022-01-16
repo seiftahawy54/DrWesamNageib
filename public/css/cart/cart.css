@@ -1,3 +1,9 @@
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 .shopping-cart {
   margin-block: 30px;
 }

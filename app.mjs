@@ -97,7 +97,7 @@ app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
 
-const port = process.env.PORT || process.env.DEV_PORT || 3000;
+const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
 Pool.connect()
   .then((pool) => {

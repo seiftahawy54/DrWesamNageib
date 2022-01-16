@@ -1,5 +1,5 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/courses/courses.css" />
+<link rel="stylesheet" href="/css/courses/courses.css"/>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -11,24 +11,28 @@
   </div>
   <div class="container">
     <div class="row">
-      <div class="featured-course-container offset-4 col-4">
-        <div class="featured-courses-container">
-          <div class="course-title-container">
-            <div class="course-thumbnail">
-              <img src="/imgs/imgs/book.png" alt="Course Thumbnail" />
+      <% courses.forEach(course => { %>
+        <div class="featured-course-container col-lg-4 col-sm-12">
+          <div class="featured-courses-container ">
+            <div class="course-title-container">
+              <div class="course-thumbnail">
+                <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
+              </div>
+              <div class="course-title">
+                <%- course.name %>
+              </div>
             </div>
-            <div class="course-title">
-              CPHQ Exam Preparation Course
-            </div>
+            <p class="course-about">
+              <bdi>
+                <%- course.description.slice(0, 150) %>
+              </bdi>
+            </p>
+            <a href="/courses/<%- course.course_id %>" class="reset-link btn-outlined">
+              View Course
+            </a>
           </div>
-          <p class="course-about">
-            Certified Professional in Healthcare Quality Preparatory course
-          </p>
-          <button class="btn-outlined">
-            View Course
-          </button>
         </div>
-      </div>
+      <% }) %>
     </div>
   </div>
 
@@ -45,37 +49,37 @@
         <hr>
         <div>Exam</div>
         <div class="first-category">
-          <input type="checkbox" name="category1" id="category1" /> <label for="category1">CPHQ</label>
-          <br />
-          <input type="checkbox" name="category1" id="category2" /> <label for="category2">Human Development</label>
-          <br />
-          <input type="checkbox" name="category1" id="category3" /> <label for="category3">TOT</label>
+          <input type="checkbox" name="category1" id="category1"/> <label for="category1">CPHQ</label>
+          <br/>
+          <input type="checkbox" name="category1" id="category2"/> <label for="category2">Human Development</label>
+          <br/>
+          <input type="checkbox" name="category1" id="category3"/> <label for="category3">TOT</label>
         </div>
 
         <hr>
         <div>Language</div>
         <div class="first-category">
-          <input type="checkbox" name="category1" id="category4" /> <label for="category4">English</label>
-          <br />
-          <input type="checkbox" name="category1" id="category5" /> <label for="category5">Arabic</label>
+          <input type="checkbox" name="category1" id="category4"/> <label for="category4">English</label>
+          <br/>
+          <input type="checkbox" name="category1" id="category5"/> <label for="category5">Arabic</label>
         </div>
       </div>
       <div class="col">
         <div class="course-sort">
-          <input list="sorting" placeholder="Sorting" />
+          <input list="sorting" placeholder="Sorting"/>
           <datalist id="sorting">
-            <option value="Price" />
-            <option value="Exam" />
-            <option value="Most Popular" />
+            <option value="Price"/>
+            <option value="Exam"/>
+            <option value="Most Popular"/>
           </datalist>
         </div>
         <div class="row all-courses-cont">
           <% courses.forEach(course => { %>
-            <div class="col-4">
+            <div class="col-lg-4 col-sm-12">
               <a href="/courses/<%- course.course_id %>" class="reset-link">
                 <div class="course">
                   <img src="/<%- course.course_img %>" alt="CPHQ Preparation Course"
-                       class="course-thumbnail" />
+                       class="course-thumbnail"/>
                   <div class="course-footer">
                     <div class="course-title"><%- course.name %></div>
                     <div class="course-price">&dollar; <%- course.price %></div>

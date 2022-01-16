@@ -19,7 +19,7 @@ textarea {
 .custom-head span {
   display: block;
   width: 170px;
-  background-color: #E354A1;
+  background-color: #545ee3;
   height: 2px;
   border-radius: 4px;
   margin-block: 10px 30px;
@@ -41,7 +41,7 @@ textarea {
 .btn {
   width: 200px;
   height: 55px;
-  background-color: #E354A1;
+  background-color: #545ee3;
   border: 1px solid transparent;
   color: #fff;
   transition: all 0.25s ease-in-out;
@@ -49,44 +49,46 @@ textarea {
 }
 .btn:hover {
   background-color: transparent;
-  color: #E354A1;
-  border: 1px solid #E354A1;
+  color: #545ee3;
+  border: 1px solid #545ee3;
 }
 .btn.btn-success {
-  background-color: #0FB11B;
+  background-color: #0fb11b;
 }
 .btn.btn-success:hover {
   background-color: transparent;
-  color: #0FB11B;
-  border: 1px solid #0FB11B;
+  color: #0fb11b;
+  border: 1px solid #0fb11b;
 }
 .btn.btn-danger {
-  background-color: #DA0000;
+  background-color: #da0000;
 }
 .btn.btn-danger:hover {
   background-color: transparent;
-  color: #DA0000;
-  border: 1px solid #DA0000;
+  color: #da0000;
+  border: 1px solid #da0000;
 }
 
-a.btn {
+a.btn,
+a.btn-outlined {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-decoration: none;
 }
 
 .btn-outlined {
   width: 200px;
   height: 55px;
   background-color: transparent;
-  color: #E354A1;
-  border: 1px solid #E354A1;
+  color: #545ee3 !important;
+  border: 1px solid #545ee3;
   transition: all 0.25s ease-in-out;
   border-radius: 5px;
 }
 .btn-outlined:hover {
-  background-color: #E354A1;
-  color: #fff;
+  background-color: #545ee3;
+  color: #fff !important;
 }
 
 .swiper {
@@ -99,7 +101,7 @@ a.btn {
   transition: color 0.1s ease-in-out;
 }
 .reset-link:hover {
-  color: #E354A1;
+  color: #545ee3;
 }
 
 .error-container {

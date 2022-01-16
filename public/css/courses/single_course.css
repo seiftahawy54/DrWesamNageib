@@ -4,6 +4,12 @@ footer {
   bottom: 0;
 }
 
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 .single-course-section {
   margin-block: 30px;
 }

@@ -1,3 +1,9 @@
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 .navbar {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
   height: 120px;
@@ -15,7 +21,7 @@
 }
 .navbar .navbar-brand {
   font-size: 28px !important;
-  color: #E354A1;
+  color: #545ee3;
 }
 .navbar .navbar-nav {
   gap: 40px;
@@ -37,16 +43,16 @@
   transition: all 0.25s ease-in-out;
 }
 .navbar .navbar-nav .nav-item a.login-button:hover {
-  color: #E354A1;
+  color: #545ee3;
 }
 .navbar .navbar-nav .nav-item a.login-button:hover svg path {
-  fill: #E354A1 !important;
+  fill: #545ee3 !important;
 }
 .navbar .navbar-nav .nav-item a.active {
-  color: #E354A1;
+  color: #545ee3;
 }
 .navbar .navbar-nav .nav-item a.active svg {
-  fill: #E354A1;
+  fill: #545ee3;
 }
 .navbar .navbar-nav .nav-item a svg {
   width: 26px;

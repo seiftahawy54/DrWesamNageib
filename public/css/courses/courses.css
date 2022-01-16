@@ -1,26 +1,40 @@
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 .featured-courses .small-brief {
   margin-block: 80px;
 }
-.featured-courses .featured-courses-container {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+.featured-courses .featured-course-container {
+  /*
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  */
+}
+.featured-courses .featured-course-container .featured-courses-container {
+  box-shadow: 0 3px 6px rgba(84, 94, 227, 0.5);
   padding: 27px 16px;
-  border-top: 8px solid #E354A1;
+  border-top: 8px solid #545ee3;
   font-size: 18px;
 }
-.featured-courses .featured-courses-container button {
+.featured-courses .featured-course-container .featured-courses-container a {
   width: 100%;
 }
-.featured-courses .featured-courses-container .course-title-container {
+.featured-courses .featured-course-container .featured-courses-container .course-title-container {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
 }
-.featured-courses .featured-courses-container .course-title-container .course-thumbnail img {
+.featured-courses .featured-course-container .featured-courses-container .course-title-container .course-thumbnail img {
   width: 60px;
   height: 60px;
 }
-.featured-courses .featured-courses-container .course-about {
+.featured-courses .featured-course-container .featured-courses-container .course-about {
   font-weight: 300;
   margin-block: 32px;
 }
@@ -61,5 +75,31 @@
 .all-courses .all-courses-cont .course:hover {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
 }
+
+/*
+@include mediaQ.allSmScreens {
+  .featured-course-container {
+    .featured-courses-container {
+      max-width: 100vw !important;
+    }
+  }
+}
+
+@include mediaQ.tabletIpad {
+  .featured-course-container {
+    .featured-courses-container {
+      max-width: calc(100vw / 2) !important;
+    }
+  }
+}
+
+@include mediaQ.laptops {
+  .featured-course-container {
+    .featured-courses-container {
+      max-width: calc(100vw / 3) !important;
+    }
+  }
+}
+*/
 
 /*# sourceMappingURL=courses.css.map */

@@ -1,3 +1,9 @@
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 .contact-us {
   margin-block-start: 60px;
   height: 650px;
@@ -12,7 +18,7 @@
 .contact-us .separator {
   width: 2px;
   height: 100%;
-  background-color: #E354A1;
+  background-color: #545ee3;
 }
 .contact-us form {
   position: relative;
@@ -35,7 +41,7 @@
 }
 .contact-us form .form-control input, .contact-us form .form-control textarea {
   width: 100%;
-  border: 1px solid #E354A1;
+  border: 1px solid #545ee3;
   border-radius: 4px;
   padding: 12px;
 }

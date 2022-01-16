@@ -1,3 +1,9 @@
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 .our-courses .course-text .button-container, .main-header .button-container {
   display: flex;
   width: 100%;
@@ -10,21 +16,21 @@
   height: 55px;
 }
 .our-courses .course-text .button-container button:nth-of-type(1), .main-header .button-container button:nth-of-type(1) {
-  background-color: #E354A1;
+  background-color: #545ee3;
   color: #fff;
 }
 .our-courses .course-text .button-container button:nth-of-type(1):hover, .main-header .button-container button:nth-of-type(1):hover {
   background-color: transparent;
-  color: #E354A1;
-  border: 1px solid #E354A1;
+  color: #545ee3;
+  border: 1px solid #545ee3;
 }
 .our-courses .course-text .button-container button:nth-of-type(2), .main-header .button-container button:nth-of-type(2) {
   background-color: transparent;
-  color: #E354A1;
-  border: 1px solid #E354A1;
+  color: #545ee3;
+  border: 1px solid #545ee3;
 }
 .our-courses .course-text .button-container button:nth-of-type(2):hover, .main-header .button-container button:nth-of-type(2):hover {
-  background-color: #E354A1;
+  background-color: #545ee3;
   color: #fff;
 }
 
@@ -51,7 +57,7 @@
 }
 .main-header .courses-scroll {
   margin-block: 40px 100px;
-  color: #E354A1;
+  color: #545ee3;
 }
 
 .our-courses .courses-container {
@@ -109,7 +115,7 @@
 }
 .join-us .overlay {
   min-height: 400px;
-  background-color: rgba(227, 84, 161, 0.7);
+  background-color: rgba(84, 94, 227, 0.7);
   width: 100%;
   height: 100%;
   color: #fff;
@@ -145,7 +151,7 @@
   background-color: #fff;
   width: 70px;
   height: 70px;
-  border: 1px solid #E354A1;
+  border: 1px solid #545ee3;
   border-radius: 50%;
   display: flex;
   justify-content: center;

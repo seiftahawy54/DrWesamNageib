@@ -142,7 +142,7 @@
 
   .overlay {
     min-height: 400px;
-    background-color: rgba(227, 84, 161, 0.7);
+    background-color: rgba(vars.$main_color, 0.7);
     @include common.similarHW(100%);
     color: #fff;
     display: flex;

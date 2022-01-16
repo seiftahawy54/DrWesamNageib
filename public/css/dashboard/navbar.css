@@ -1,3 +1,9 @@
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 .dashboard-nav {
   padding: 50px;
   height: 100vh;
@@ -9,7 +15,7 @@
   margin-block-end: 10px !important;
 }
 .dashboard-nav .navbar-brand.active {
-  color: #E354A1 !important;
+  color: #545ee3 !important;
 }
 .dashboard-nav .nav-links {
   margin-block-start: 30px;
@@ -21,7 +27,7 @@
   font-size: 20px !important;
 }
 .dashboard-nav .nav-links ul li a.active {
-  color: #E354A1 !important;
+  color: #545ee3 !important;
 }
 .dashboard-nav .logged-in-user {
   display: flex;
