@@ -24,26 +24,47 @@
 <!-- Start Our Courses Sections -->
 <section class="our-courses">
   <div class="container">
-    <div class="row courses-container justify-content-center">
-      <div class="course-thumbnail col ">
-        <img src="/imgs/imgs/book.png" alt="Course thumbnail"/>
-      </div>
-      <div class="course-text col">
-        <h3 class="course-title-en">CPHQ Preparation</h3>
-        <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-        <p>
-          This course is designed for healthcare professionals who are seeking certification by the Healthcare
-          Quality Certification Commission. The CPHQ Exam Preparation is an intensive review of the
-          comprehensive body of knowledge that is designed according to the content outline of the CPHQ Exam.
-        </p>
-        <div class="button-container">
-          <a class="btn" href="/courses">View Course</a>
-          <a class="btn" href="https://www.youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA/videos" target="_blank">
-            Sample Session
-          </a>
+    <% courses.forEach((course, index) => { %>
+      <% if (index % 2 === 0) { %>
+        <div class="row courses-container justify-content-center">
+          <div class="course-thumbnail col ">
+            <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
+          </div>
+          <div class="course-text col">
+            <h3 class="course-title-en"><%- course.name %></h3>
+            <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
+            <p class="ar-font">
+              <%- course.description %>
+            </p>
+            <div class="button-container">
+              <a class="btn" href="/courses/<%- course.course_id %>">View Course</a>
+              <a class="btn" href="https://www.youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA/videos" target="_blank">
+                Sample Session
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      <% } else { %>
+        <div class="row courses-container justify-content-center">
+          <div class="course-text col">
+            <h3 class="course-title-en"><%- course.name %></h3>
+            <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
+            <p class="ar-font">
+              <%- course.description %>
+            </p>
+            <div class="button-container">
+              <a class="btn" href="/courses/<%- course.course_id %>">View Course</a>
+              <a class="btn" href="https://www.youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA/videos" target="_blank">
+                Sample Session
+              </a>
+            </div>
+          </div>
+          <div class="course-thumbnail col ">
+            <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
+          </div>
+        </div>
+      <% } %>
+    <% }) %>
     <!--<div class="row courses-container justify-content-center">
       <div class="course-text offset-1 col">
         <h3 class="course-title-en">CPHQ Preparation</h3>

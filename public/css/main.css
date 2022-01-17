@@ -13,6 +13,11 @@ textarea {
   resize: none;
 }
 
+.ar-font {
+  font-family: "Cairo", sans-serif !important;
+  direction: rtl;
+}
+
 .custom-head {
   font-size: 28px;
 }

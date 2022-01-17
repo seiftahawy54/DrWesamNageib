@@ -15,15 +15,15 @@ const getShoppingCart = (req, res, next) => {
 };
 
 const getHomePage = async (req, res, next) => {
-  const getCoursesResult = await getAllCourses();
-
-  if (getCoursesResult.rows.length > 0) {
+  try {
+    const getCoursesResult = await getAllCourses();
     res.render("home/home.ejs", {
       title: "Homepage",
       path: "/",
       courses: getCoursesResult.rows,
     });
-  } else {
+  } catch (e) {
+    console.error(e.message);
     res.render("home/home.ejs", {
       title: "Homepage",
       path: "/",

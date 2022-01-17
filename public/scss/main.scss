@@ -19,6 +19,11 @@ textarea {
   resize: none;
 }
 
+.ar-font {
+  font-family: vars.$arabic_font;
+  direction: rtl;
+}
+
 .custom-head {
   font-size: vars.$lg_header_size;
 
