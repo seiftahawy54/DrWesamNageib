@@ -7,6 +7,7 @@ body {
   background-image: url("/imgs/svgs/dr_wesam_nageib2.svg") !important;
   background-repeat: repeat;
   background-size: contain;
+  min-height: 100%;
 }
 
 textarea {

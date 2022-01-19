@@ -1,7 +1,8 @@
 import path from "path";
-import { validationResult } from "express-validator";
-import { addMessage } from "../models/messages.mjs";
-import { getAllCourses } from "../models/courses.mjs";
+import {validationResult} from "express-validator";
+import {addMessage} from "../models/messages.mjs";
+import {getAllCourses} from "../models/courses.mjs";
+import {addOneOpinion} from "../models/opinions.mjs";
 
 const getShoppingCart = (req, res, next) => {
   res.render("shopping/index", {
@@ -107,6 +108,35 @@ const downloadCV = (req, res, next) => {
   res.status(200);
 };
 
+const getOpinionsPage = (req, res, next) => {
+  res.render("opinions/index", {
+    title: "Your Opinions",
+    path: "/opinions",
+  });
+};
+
+const postOpinions = async (req, res, next) => {
+  const senderName = req.body.name;
+  const senderCourse = req.body.sender_course;
+  const senderOpinion = req.body.opinion;
+
+  try {
+    const sendingResult = await addOneOpinion(senderName, senderCourse, senderOpinion);
+
+    if (sendingResult.rowCount > 0) {
+      res.redirect("/");
+    } else {
+      res.render("opinions/index", {
+        title: "Your Opinions",
+        path: "/opinions",
+      });
+    }
+
+  } catch (e) {
+    console.log(e)
+  }
+};
+
 export {
   postContactPage,
   getContactPage,
@@ -114,4 +144,6 @@ export {
   getHomePage,
   getShoppingCart,
   downloadCV,
+  getOpinionsPage,
+  postOpinions,
 };

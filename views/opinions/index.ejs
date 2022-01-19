@@ -1,0 +1,35 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/auth/login.css"/>
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="opinions-form">
+  <div class="container">
+    <div class="content-container">
+      <h2>Leave your feedback about our courses</h2>
+      <div class="header-dash-line"></div>
+      <form action="/opinions" method="POST" class="opinions row">
+        <div class="col-12">
+          <input type="text" name="name" id="" class="form-control" placeholder="Your name"/>
+        </div>
+        <div class="col-12">
+          <select name="sender_course">
+            <option value="">Select your course</option>
+            <option value="full">CPHQ Full Course</option>
+            <option value="focused">CPHQ Focused Revision</option>
+            <option value="revision">CPHQ Revision only</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <textarea name="opinion" id="opinion" placeholder="Your Opinion" class="form-control"></textarea>
+        </div>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <button class="btn">Send opinion</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

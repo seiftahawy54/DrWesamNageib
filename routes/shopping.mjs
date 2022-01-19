@@ -5,6 +5,8 @@ import {
   getShoppingCart,
   downloadCV,
   postContactPage,
+  getOpinionsPage,
+  postOpinions,
 } from "../controllers/shop.mjs";
 import express from "express";
 import { body } from "express-validator";
@@ -27,6 +29,16 @@ router
       }),
     ],
     postContactPage
+  )
+  .get("/opinions", getOpinionsPage)
+  .post(
+    "/opinions",
+    [
+      body("name").isString().notEmpty(),
+      body("sender_course").isString().notEmpty(),
+      body("opinion").isString(),
+    ],
+    postOpinions
   );
 
 export { router as shoppingRoutes };

@@ -1,5 +1,6 @@
 .login-form,
-.register-form {
+.register-form,
+.opinions-form {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -8,7 +9,8 @@
   margin-block: 100px 110px;
 }
 .login-form .content-container,
-.register-form .content-container {
+.register-form .content-container,
+.opinions-form .content-container {
   border: 1px solid #545ee3;
   display: flex;
   flex-direction: column;
@@ -19,21 +21,31 @@
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 .login-form .content-container .header-dash-line,
-.register-form .content-container .header-dash-line {
+.register-form .content-container .header-dash-line,
+.opinions-form .content-container .header-dash-line {
   margin-block: 15px 55px;
   width: 50px;
   height: 2px;
   background-color: #545ee3;
 }
 .login-form .content-container form,
-.register-form .content-container form {
+.register-form .content-container form,
+.opinions-form .content-container form {
   display: flex;
   flex-direction: column;
   align-content: center;
   justify-content: center;
 }
 .login-form .content-container form input,
-.register-form .content-container form input {
+.login-form .content-container form textarea,
+.login-form .content-container form select,
+.register-form .content-container form input,
+.register-form .content-container form textarea,
+.register-form .content-container form select,
+.opinions-form .content-container form input,
+.opinions-form .content-container form textarea,
+.opinions-form .content-container form select {
+  width: 465px;
   height: 44px;
   margin-block-end: 30px;
   padding: 12px;
@@ -41,11 +53,30 @@
   border: 1px solid #545ee3;
 }
 .login-form .content-container form input::placeholder,
-.register-form .content-container form input::placeholder {
+.login-form .content-container form textarea::placeholder,
+.login-form .content-container form select::placeholder,
+.register-form .content-container form input::placeholder,
+.register-form .content-container form textarea::placeholder,
+.register-form .content-container form select::placeholder,
+.opinions-form .content-container form input::placeholder,
+.opinions-form .content-container form textarea::placeholder,
+.opinions-form .content-container form select::placeholder {
   font-family: "Poppins", sans-serif !important;
 }
+.login-form .content-container form textarea,
+.register-form .content-container form textarea,
+.opinions-form .content-container form textarea {
+  height: 200px;
+}
+.login-form .content-container form select,
+.register-form .content-container form select,
+.opinions-form .content-container form select {
+  line-height: 42px;
+  height: 50px;
+}
 .login-form .content-container form .cart-courses span,
-.register-form .content-container form .cart-courses span {
+.register-form .content-container form .cart-courses span,
+.opinions-form .content-container form .cart-courses span {
   color: #fff;
   background-color: #545ee3;
   width: fit-content;
@@ -54,7 +85,8 @@
   display: flex;
 }
 .login-form .content-container form button,
-.register-form .content-container form button {
+.register-form .content-container form button,
+.opinions-form .content-container form button {
   width: fit-content !important;
   margin-block-start: 30px;
   align-self: center;
@@ -62,6 +94,10 @@
 
 .register-form .content-container form input {
   width: 465px;
+}
+
+.opinions-form form button {
+  font-size: 20px;
 }
 
 /*# sourceMappingURL=login.css.map */
