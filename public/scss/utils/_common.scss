@@ -1,11 +1,5 @@
 @use "variables" as vars;
 
-%bottomFooter {
-  position: absolute;
-  width: 100vw;
-  bottom: 0;
-}
-
 /*
 
 @mixin computeRgba($color, $opacityWanted) {
