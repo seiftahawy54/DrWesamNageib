@@ -1,10 +1,6 @@
 @use "../utils/variables" as vars;
 @use "../utils/common" as common;
 
-footer {
-  @extend %bottomFooter;
-}
-
 .complete-payment {
   margin-block-start: 300px;
   display: flex;
