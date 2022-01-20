@@ -1,5 +1,3 @@
-footer {
-  position: absolute;
-  bottom: 0;
-  width: calc(100vw - 492px);
+.content {
+  min-height: calc(100% - 135px);
 }

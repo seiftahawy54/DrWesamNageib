@@ -25,100 +25,25 @@
 <section class="our-courses">
   <div class="container">
     <% courses.forEach((course, index) => { %>
-      <% if (index % 2 === 0) { %>
-        <div class="row courses-container justify-content-center">
-          <div class="course-thumbnail col ">
-            <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
-          </div>
-          <div class="course-text col">
-            <h3 class="course-title-en"><%- course.name %></h3>
-            <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-            <p class="ar-font">
-              <%- course.description %>
-            </p>
-            <div class="button-container">
-              <a class="btn" href="/courses/<%- course.course_id %>">View Course</a>
-              <a class="btn" href="https://www.youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA/videos" target="_blank">
-                Sample Session
-              </a>
-            </div>
+      <div class="row courses-container justify-content-center">
+        <div class="course-thumbnail col ">
+          <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
+        </div>
+        <div class="course-text col">
+          <h3 class="course-title-en"><%- course.name %></h3>
+          <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
+          <p class="ar-font rtl-direction">
+            <%- course.description %>
+          </p>
+          <div class="button-container">
+            <a class="btn" href="/courses/<%- course.course_id %>">View Course</a>
+            <a class="btn" href="https://www.youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA/videos" target="_blank">
+              Sample Session
+            </a>
           </div>
         </div>
-      <% } else { %>
-        <div class="row courses-container justify-content-center">
-          <div class="course-text col">
-            <h3 class="course-title-en"><%- course.name %></h3>
-            <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-            <p class="ar-font">
-              <%- course.description %>
-            </p>
-            <div class="button-container">
-              <a class="btn" href="/courses/<%- course.course_id %>">View Course</a>
-              <a class="btn" href="https://www.youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA/videos" target="_blank">
-                Sample Session
-              </a>
-            </div>
-          </div>
-          <div class="course-thumbnail col ">
-            <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
-          </div>
-        </div>
-      <% } %>
+      </div>
     <% }) %>
-    <!--<div class="row courses-container justify-content-center">
-      <div class="course-text offset-1 col">
-        <h3 class="course-title-en">CPHQ Preparation</h3>
-        <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-        <p>
-          This course is designed for healthcare professionals who are seeking certification by the Healthcare
-          Quality Certification Commission. The CPHQ Exam Preparation is an intensive review of the
-          comprehensive body of knowledge that is designed according to the content outline of the CPHQ Exam.
-        </p>
-        <div class="button-container">
-          <button class="btn">View Course</button>
-          <button class="btn">Sample Session</button>
-        </div>
-      </div>
-      <div class="course-thumbnail col ">
-        <img src="/imgs/imgs/book.png" alt="Course thumbnail"/>
-      </div>
-    </div>
-    <div class="row courses-container justify-content-center">
-      <div class="course-thumbnail col ">
-        <img src="/imgs/imgs/book.png" alt="Course thumbnail"/>
-      </div>
-      <div class="course-text col">
-        <h3 class="course-title-en">CPHQ Preparation</h3>
-        <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-        <p>
-          This course is designed for healthcare professionals who are seeking certification by the Healthcare
-          Quality Certification Commission. The CPHQ Exam Preparation is an intensive review of the
-          comprehensive body of knowledge that is designed according to the content outline of the CPHQ Exam.
-        </p>
-        <div class="button-container">
-          <button class="btn">View Course</button>
-          <button class="btn">Sample Session</button>
-        </div>
-      </div>
-    </div>
-    <div class="row courses-container justify-content-center">
-      <div class="course-text offset-1 col">
-        <h3 class="course-title-en">CPHQ Preparation</h3>
-        <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-        <p>
-          This course is designed for healthcare professionals who are seeking certification by the Healthcare
-          Quality Certification Commission. The CPHQ Exam Preparation is an intensive review of the
-          comprehensive body of knowledge that is designed according to the content outline of the CPHQ Exam.
-        </p>
-        <div class="button-container">
-          <button class="btn">View Course</button>
-          <button class="btn">Sample Session</button>
-        </div>
-      </div>
-      <div class="course-thumbnail col ">
-        <img src="/imgs/imgs/book.png" alt="Course thumbnail"/>
-      </div>
-    </div>-->
   </div>
 </section>
 <!-- End Our Courses Sections -->
@@ -152,46 +77,26 @@
 
       <div class="swiper-wrapper">
         <!-- Slides -->
-        <div class="swiper-slide">
-          <section class="client-container">
-            <div class="client-data">
-              <%- include('../../public/imgs/svgs/account.svg') %>
-              <div class="client-name-date">
-                <div class="client-name">
-                  John Doe
-                </div>
-                <div class="client-date">
-                  January - 2022
-                </div>
-              </div>
-            </div>
-            <p class="client-opinion">
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eu aliquet diam, at
-              interdum velit. Vivamus ut arcu non augue malesuada maximus. Cras hendrerit et dui
-              quis varius."
-            </p>
-          </section>
-        </div>
-        <div class="swiper-slide">
-          <section class="client-container">
-            <div class="client-data">
-              <%- include('../../public/imgs/svgs/account.svg') %>
-              <div class="client-name-date">
-                <div class="client-name">
-                  John Doe
-                </div>
-                <div class="client-date">
-                  January - 2022
+        <% opinions.forEach(opinion => { %>
+          <div class="swiper-slide">
+            <section class="client-container">
+              <div class="client-data">
+                <%- include('../../public/imgs/svgs/account.svg') %>
+                <div class="client-name-date">
+                  <div class="client-name">
+                    <%- opinion.sender_name %>
+                  </div>
+                  <div class="client-date">
+                    <bdi><%- opinion.created_on ? opinion.created_on : new Date("01-22-2022").getDate() + '-' + new Date("01-22-2022").getMonth() + 1 + '-' + new Date("01-22-2022").getFullYear() %></bdi>
+                  </div>
                 </div>
               </div>
-            </div>
-            <p class="client-opinion">
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eu aliquet diam, at
-              interdum velit. Vivamus ut arcu non augue malesuada maximus. Cras hendrerit et dui
-              quis varius."
-            </p>
-          </section>
-        </div>
+              <p class="client-opinion ar-font">
+                "<%- opinion.sender_message %>"
+              </p>
+            </section>
+          </div>
+        <% }) %>
       </div>
       <!-- If we need pagination -->
       <div class="swiper-pagination"></div>

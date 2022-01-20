@@ -15,6 +15,7 @@ import {
   updateSingleUser,
 } from "../models/users.mjs";
 import { deleteMessage, getAllMessages } from "../models/messages.mjs";
+import { deleteSingleOpinion, fetchAllOpinions } from "../models/opinions.mjs";
 import { validationResult } from "express-validator";
 
 const getOverview = async (req, res, next) => {
@@ -236,6 +237,33 @@ const postDeleteMessage = async (req, res, next) => {
   res.redirect("/dashboard/messages");
 };
 
+const getOpinionsPage = async (req, res, next) => {
+  try {
+    const fetchingResults = await fetchAllOpinions();
+    res.render("dashboard/opinions", {
+      title: "Opinions",
+      path: "/dashboard/opinions",
+      opinions: fetchingResults.rows,
+    });
+  } catch (e) {
+    res.redirect("/dashboard/overview");
+  }
+};
+
+const postDeleteOpinion = async (req, res, next) => {
+  try {
+    const fetchingResults = await deleteSingleOpinion(req.body.opinionId);
+    if (fetchingResults.rowCount === 1) {
+      res.redirect("/dashboard/opinions");
+    } else {
+      res.redirect("/dashboard/opinions");
+    }
+  } catch (e) {
+    console.log(e);
+    res.redirect("/dashboard/opinions");
+  }
+};
+
 export {
   getOverview,
   getCourses,
@@ -250,4 +278,6 @@ export {
   getUpdateUser,
   postUpdateUser,
   postDeleteMessage,
+  getOpinionsPage,
+  postDeleteOpinion,
 };

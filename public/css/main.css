@@ -16,6 +16,9 @@ textarea {
 
 .ar-font {
   font-family: "Cairo", sans-serif !important;
+}
+
+.rtl-direction {
   direction: rtl;
 }
 

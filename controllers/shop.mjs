@@ -1,8 +1,8 @@
 import path from "path";
-import {validationResult} from "express-validator";
-import {addMessage} from "../models/messages.mjs";
-import {getAllCourses} from "../models/courses.mjs";
-import {addOneOpinion} from "../models/opinions.mjs";
+import { validationResult } from "express-validator";
+import { addMessage } from "../models/messages.mjs";
+import { getAllCourses } from "../models/courses.mjs";
+import { addOneOpinion, fetchAllOpinions } from "../models/opinions.mjs";
 
 const getShoppingCart = (req, res, next) => {
   res.render("shopping/index", {
@@ -18,10 +18,13 @@ const getShoppingCart = (req, res, next) => {
 const getHomePage = async (req, res, next) => {
   try {
     const getCoursesResult = await getAllCourses();
+    const getAllOpinionsResult = await fetchAllOpinions();
+
     res.render("home/home.ejs", {
       title: "Homepage",
       path: "/",
       courses: getCoursesResult.rows,
+      opinions: getAllOpinionsResult.rows,
     });
   } catch (e) {
     console.error(e.message);
@@ -29,6 +32,7 @@ const getHomePage = async (req, res, next) => {
       title: "Homepage",
       path: "/",
       courses: {},
+      opinions: {},
     });
   }
 };
@@ -119,21 +123,34 @@ const postOpinions = async (req, res, next) => {
   const senderName = req.body.name;
   const senderCourse = req.body.sender_course;
   const senderOpinion = req.body.opinion;
+  const errors = validationResult(req);
 
-  try {
-    const sendingResult = await addOneOpinion(senderName, senderCourse, senderOpinion);
+  console.log(errors);
 
-    if (sendingResult.rowCount > 0) {
-      res.redirect("/");
-    } else {
-      res.render("opinions/index", {
-        title: "Your Opinions",
-        path: "/opinions",
-      });
+  if (!errors.isEmpty()) {
+    res.render("opinions/index", {
+      title: "Your Opinions",
+      path: "/opinions",
+    });
+  } else {
+    try {
+      const sendingResult = await addOneOpinion(
+        senderName,
+        senderCourse,
+        senderOpinion
+      );
+
+      if (sendingResult.rowCount > 0) {
+        res.redirect("/");
+      } else {
+        res.render("opinions/index", {
+          title: "Your Opinions",
+          path: "/opinions",
+        });
+      }
+    } catch (e) {
+      console.log(e);
     }
-
-  } catch (e) {
-    console.log(e)
   }
 };
 

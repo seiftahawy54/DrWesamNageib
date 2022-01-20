@@ -4,7 +4,7 @@
   "main": "app.mjs",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon --watch app.mjs --watch views",
+    "start": "nodemon app.mjs",
     "web": "node app.mjs",
     "sass": "sass --watch ./public/scss/:./public/css/"
   },

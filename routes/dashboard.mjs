@@ -12,6 +12,8 @@ import {
   getUpdateUser,
   postUpdateUser,
   postDeleteMessage,
+  getOpinionsPage,
+  postDeleteOpinion,
 } from "../controllers/dashboard.mjs";
 import express from "express";
 import { body } from "express-validator";
@@ -19,6 +21,9 @@ import { body } from "express-validator";
 const router = express.Router();
 
 router
+  .get("/", (req, res) => {
+    res.redirect("/dashboard/overview");
+  })
   .get("/overview", getOverview)
   .get("/courses", getCourses)
   .get("/users", getUsers)
@@ -36,6 +41,8 @@ router
   .post("/edit-course/:courseId", postUpdateCourse)
   .get("/edit-user/:userId", getUpdateUser)
   .post("/edit-user/:userId", postUpdateUser)
-  .post("/delete-message", postDeleteMessage);
+  .post("/delete-message", postDeleteMessage)
+  .get("/opinions", getOpinionsPage)
+  .post("/delete-opinion", postDeleteOpinion);
 
 export { router as dashboardRoutes };

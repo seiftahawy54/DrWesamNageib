@@ -1,10 +1,10 @@
 <nav class="dashboard-nav">
-  <a class="navbar-brand reset-link <%- path === "/dashboard/overview" ? "active" : ""; %>" href="/dashboard/overview">Dr.
+  <a class="navbar-brand reset-link active" href="/">Dr.
     Wasam
     Nageib</a>
   <div class="logged-in-user">
     <div class="user-img">
-      <img src="/imgs/imgs/userthumbnail.png" alt="user-thumbnail" />
+      <img src="/imgs/imgs/userthumbnail.png" alt="user-thumbnail"/>
     </div>
     <div class="user-info">
       <span class="user-type">
@@ -32,6 +32,10 @@
         <a class="nav-link reset-link <%- path === "/dashboard/messages" ? "active" : ""; %>"
            href="/dashboard/messages">Messages</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link reset-link <%- path === "/dashboard/opinions" ? "active" : ""; %>"
+           href="/dashboard/opinions">Opinions</a>
+      </li>
       <!--<li class="nav-item">
         <a class="nav-link reset-link <%- path === "/dashboard/rounds" ? "active" : ""; %>" href="/dashboard/courses">Rounds</a>
       </li>-->
@@ -44,7 +48,7 @@
     </div>
     <div class="logout">
       <form action="/logout" method="post">
-        <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+        <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
         <button type="submit" class="reset-btn">
           <%- include('../../public/imgs/svgs/logout.svg') %>
         </button>

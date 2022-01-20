@@ -5,6 +5,10 @@
   padding: 50px;
   height: 100vh;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  position: sticky;
+  background-color: #fff;
 
   .navbar-brand {
     font-size: vars.$lg_header_size !important;

@@ -13,4 +13,18 @@ const addOneOpinion = (senderName, senderCourse, senderMessage) => {
     .catch((err) => err);
 };
 
-export { addOneOpinion };
+const fetchAllOpinions = () => {
+  return db
+    .query("SELECT * FROM opinions;")
+    .then((res) => res)
+    .catch((err) => err);
+};
+
+const deleteSingleOpinion = (opinionId) => {
+  return db
+    .query("DELETE FROM opinions WHERE opinion_id=$1", [opinionId])
+    .then((res) => res)
+    .catch((err) => err);
+};
+
+export { addOneOpinion, fetchAllOpinions, deleteSingleOpinion };
