@@ -3,7 +3,7 @@ import crypto from "crypto";
 
 const addOneOpinion = (senderName, senderCourse, senderMessage) => {
   return db
-    .query("INSERT INTO opinions VALUES ($1, $2, $3, $4);", [
+    .query("INSERT INTO opinions VALUES ($1, $2, $3, $4, current_timestamp);", [
       crypto.randomBytes(10).toString("hex"),
       senderName,
       senderCourse,

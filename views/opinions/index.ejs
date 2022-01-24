@@ -22,7 +22,8 @@
           </select>
         </div>
         <div class="col-12">
-          <textarea name="opinion" id="opinion" placeholder="Your Opinion" class="form-control"></textarea>
+          <textarea name="opinion" id="opinion" placeholder="Your Opinion" class="form-control"
+                    minlength="80"></textarea>
         </div>
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
         <button class="btn">Send opinion</button>

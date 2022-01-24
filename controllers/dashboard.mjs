@@ -139,6 +139,8 @@ const postUpdateCourse = async (req, res, next) => {
   const courseImg = req.file;
   const courseDescription = req.body.description;
 
+  console.log(courseName, coursePrice, courseImg, courseDescription);
+
   const errors = validationResult(req);
   const findingCourse = await getSingleCourse(courseId);
 

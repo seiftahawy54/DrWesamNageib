@@ -1,6 +1,11 @@
 @use "../utils/variables" as vars;
 
 .courses {
+  #editor,
+  .ck-editor {
+    border-radius: 4px !important;
+  }
+
   .content {
     padding: 120px;
 

@@ -1,3 +1,7 @@
+.courses #editor,
+.courses .ck-editor {
+  border-radius: 4px !important;
+}
 .courses .content {
   padding: 120px;
 }
