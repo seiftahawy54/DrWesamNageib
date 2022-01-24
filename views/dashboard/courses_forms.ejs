@@ -38,12 +38,10 @@
                      value="<% if (editMode === 'true') { %><%= course.price %><% } %>"/>
             </div>
             <div class="my-3">
-              <textarea id="editor" name="description" placeholder="Course Description" class="form-control">
+              <textarea name="description" placeholder="Course Description"
+                        class="form-control editor-<%- course.course_id %>">
 
               </textarea>
-              <!--              <div id="editor">
-
-                            </div>-->
             </div>
             <div class="my-3">
               <input type="file" name="course_img" placeholder="Upload course image" class="form-control"
@@ -66,109 +64,5 @@
   </div>
 </section>
 
-<script type="module">
-
-  const editorTag = document.querySelector("#editor");
-  let editor;
-  ClassicEditor
-    .create(editorTag, {
-      toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
-    })
-    .then(editorData => {
-      editor = editorData;
-
-      <% if (editMode === 'true') { %>
-      editor.setData("<%- course.description %>")
-      <% } %>
-    })
-    .catch(err => {
-      console.error(err)
-    })
-
-  /*// import ClassicEditor from "https://cdn.ckeditor.com/ckeditor5/31.1.0/classic/ckeditor.js";
-  // import axios from "https://unpkg.com/axios/dist/axios.min.js";
-
-  const courseForm = document.querySelector('form')
-  const courseName = document.querySelector('input[name="name"]')
-  const coursePrice = document.querySelector('input[name="price"]')
-  const courseImage = document.querySelector('input[name="course_img"]')
-  const submitButton = document.querySelector(".submitBtn");
-  let editor;
-  const editorTag = document.querySelector("#editor");
-
-  ClassicEditor
-    .create(editorTag, {
-      toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
-    })
-    .then(editorData => {
-      editor = editorData;
-
-      <% if (editMode === 'true') { %>
-      editor.setData("<%= course.description %>")
-      <% } %>
-    })
-    .catch(err => {
-      console.error(err)
-    })
-
-  courseImage.addEventListener('change', (event) => {
-    const files = event.target.files;
-    const formData = new FormData()
-    formData.append('myFile', files[0])
-
-    fetch('/saveImage', {
-      method: 'POST',
-      body: formData
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data)
-      })
-      .catch(error => {
-        console.error(error)
-      })
-  })
-
-  submitButton.addEventListener("click", (e) => {
-    e.preventDefault();
-    /!*console.log('form file: ', courseImage.files[0])
-    console.log('form data: ', courseName.value, coursePrice.value)
-    console.log('editor data: ', editor.getData())*!/
-    /!*const bodyData = new FormData();
-    bodyData.append("name", courseName.value)
-    bodyData.append("price", coursePrice.value)
-    bodyData.append("description", editor.getData())
-    bodyData.append("file", courseImage.files[0])*!/
-
-    // console.log('body_data: ', bodyData)
-
-    <% if (editMode === 'true') { %>
-    fetch
-    ('<%= course.course_id %>', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundaryyEmKNDsBKjB7QEqu',
-        // 'boundary': '----WebKitFormBoundaryyEmKNDsBKjB7QEqu',
-        "x-csrf-token": "<%- csrfToken %>"
-      },
-      body: {
-        name: courseName.value,
-        price: coursePrice.value,
-        description: editor.getData(),
-        // file: courseImage.files[0]
-      },
-      file: courseImage.files[0]
-    })
-      .then(data => {
-        console.log('sending result: ', data)
-      })
-      .catch(err => {
-        console.error('sending error: ', err)
-      })
-    <% } else { %>
-    <% } %>
-  })
-*/
-</script>
-
+<%- include("../includes/courses_scripts.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>
