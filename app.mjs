@@ -4,7 +4,6 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
-import morgan from "morgan";
 import expressSession from "express-session";
 import pgSession from "connect-pg-simple";
 import csrf from "csurf";
@@ -50,7 +49,6 @@ app.use(cookieParser());
 app.use(
   Multer({ storage: fileStorage, fileFilter: fileFilter }).single("course_img")
 );
-app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve("public")));
 app.use("/uploaded_images", express.static(path.resolve("uploaded_images")));
