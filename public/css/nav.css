@@ -74,4 +74,30 @@
   height: 26px;
 }
 
+@media (min-width: 992px) and (max-width: 1199px) {
+  .navbar .navbar-nav {
+    gap: 23px !important;
+  }
+  .navbar .navbar-nav a {
+    padding: 0 !important;
+    font-size: 16px !important;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .navbar .navbar-nav {
+    gap: 23px !important;
+  }
+  .navbar .navbar-nav a {
+    font-size: 16px !important;
+  }
+}
+@media (min-width: 1400px) and (max-width: 1599px) {
+  .navbar .navbar-nav {
+    gap: 23px !important;
+  }
+  .navbar .navbar-nav a {
+    font-size: 16px !important;
+  }
+}
+
 /*# sourceMappingURL=nav.css.map */

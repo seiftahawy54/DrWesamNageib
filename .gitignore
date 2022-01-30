@@ -1,6 +1,8 @@
 # Images File
-
 publicenv/videos
+
+backup.js
+
 # Logs
 logs
 *.log

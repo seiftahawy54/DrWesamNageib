@@ -1,5 +1,6 @@
 @use "./utils/variables" as vars;
 @use "./utils/common" as common;
+@use "./utils/mediaFns" as mediaQ;
 
 .navbar {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
@@ -85,6 +86,31 @@
         svg {
           @include common.similarHW(26px);
         }
+      }
+    }
+  }
+}
+
+@include mediaQ.tabletIpad {
+  .navbar {
+    .navbar-nav {
+      gap: 23px !important;
+
+      a {
+        padding: 0 !important;
+        font-size: vars.$sm_font_size !important;
+      }
+    }
+  }
+}
+
+@include mediaQ.laptops {
+  .navbar {
+    .navbar-nav {
+      gap: 23px !important;
+
+      a {
+        font-size: vars.$sm_font_size !important;
       }
     }
   }

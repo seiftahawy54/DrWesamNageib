@@ -2,35 +2,10 @@ import {
   addNewCourse,
   deleteCourse,
   getAllCourses,
-  getNumberOfCourses,
   getSingleCourse,
   updateSingleCourse,
-} from "../models/courses.mjs";
-// import {  } from "../models/rounds.mjs";
-import {
-  deleteUser,
-  getAllUsers,
-  getNumberOfUsers,
-  getSingleUser,
-  updateSingleUser,
-} from "../models/users.mjs";
-import { deleteMessage, getAllMessages } from "../models/messages.mjs";
-import { deleteSingleOpinion, fetchAllOpinions } from "../models/opinions.mjs";
+} from "../../models/courses.mjs";
 import { validationResult } from "express-validator";
-
-const getOverview = async (req, res, next) => {
-  const numberOfUsers = await getNumberOfUsers();
-  const numberOfCourses = await getNumberOfCourses();
-
-  res.render("dashboard/overview", {
-    title: "Over View Page",
-    path: "/dashboard/overview",
-    statsNumbers: {
-      users: await numberOfUsers.rows[0].count,
-      courses: await numberOfCourses.rows[0].count,
-    },
-  });
-};
 
 const getCourses = async (req, res, next) => {
   const allCourses = await getAllCourses();
@@ -38,24 +13,6 @@ const getCourses = async (req, res, next) => {
     title: "Courses page",
     path: "/dashboard/courses",
     courses: allCourses.rows,
-  });
-};
-
-const getUsers = async (req, res, next) => {
-  const allUsers = await getAllUsers();
-  res.render("dashboard/users", {
-    title: "Users page",
-    path: "/dashboard/users",
-    users: allUsers.rows,
-  });
-};
-
-const getMessages = async (req, res, next) => {
-  const allMessages = await getAllMessages();
-  res.render("dashboard/messages", {
-    title: "Messages page",
-    path: "/dashboard/messages",
-    messages: allMessages.rows,
   });
 };
 
@@ -103,16 +60,6 @@ const postDeleteCourse = async (req, res, next) => {
   }
 };
 
-const postDeleteUser = async (req, res, next) => {
-  const userId = req.body.userId;
-  const deletingResult = await deleteUser(userId);
-  if (deletingResult.command === "DELETE") {
-    res.redirect("/dashboard/users");
-  } else {
-    res.status(400).redirect("/dashboard/users");
-  }
-};
-
 const getEditCourse = async (req, res, next) => {
   const editMode = req.query.edit;
   if (editMode === "false") return res.redirect("/dashboard/courses");
@@ -138,8 +85,9 @@ const postUpdateCourse = async (req, res, next) => {
   const coursePrice = req.body.price;
   const courseImg = req.file;
   const courseDescription = req.body.description;
-
-  console.log(courseName, coursePrice, courseImg, courseDescription);
+  const courseArName = req.body.arabic_name;
+  const courseThumbnail = req.body.thumbnail;
+  const courseRank = req.body.course_rank;
 
   const errors = validationResult(req);
   const findingCourse = await getSingleCourse(courseId);
@@ -158,7 +106,10 @@ const postUpdateCourse = async (req, res, next) => {
         coursePrice,
         courseId,
         null,
-        courseDescription
+        courseDescription,
+        courseArName,
+        courseThumbnail,
+        courseRank
       );
 
       if (addingResult.rowCount > 0) {
@@ -177,7 +128,10 @@ const postUpdateCourse = async (req, res, next) => {
         coursePrice,
         courseId,
         courseImg.path,
-        courseDescription
+        courseDescription,
+        courseArName,
+        courseThumbnail,
+        courseRank
       );
 
       if (addingResult.rowCount > 0) {
@@ -194,92 +148,11 @@ const postUpdateCourse = async (req, res, next) => {
   }
 };
 
-const getUpdateUser = async (req, res, next) => {
-  const userId = req.params.userId;
-
-  const findingResult = await getSingleUser(userId);
-
-  res.render("dashboard/users_forms", {
-    title: "Update User",
-    path: "/dashboard/users",
-    user: findingResult.rows[0],
-  });
-};
-
-const postUpdateUser = async (req, res, next) => {
-  const userId = req.params.userId;
-  const email = req.body.email;
-  const name = req.body.name;
-  const whatsapp_no = req.body.whatsapp_no;
-  const specialization = req.body.specialization;
-
-  const updatingSingleUser = await updateSingleUser(
-    userId,
-    name,
-    email,
-    whatsapp_no,
-    specialization
-  );
-
-  if (updatingSingleUser.command === "UPDATE") {
-    res.redirect("/dashboard/users");
-  } else {
-    const findingResult = await getSingleUser(userId);
-    res.render("dashboard/users_forms", {
-      title: "Update User",
-      path: "/dashboard/users",
-      user: findingResult.rows[0],
-    });
-  }
-};
-
-const postDeleteMessage = async (req, res, next) => {
-  const messageId = req.body.messageId;
-  const deletingResult = await deleteMessage(messageId);
-  res.redirect("/dashboard/messages");
-};
-
-const getOpinionsPage = async (req, res, next) => {
-  try {
-    const fetchingResults = await fetchAllOpinions();
-    res.render("dashboard/opinions", {
-      title: "Opinions",
-      path: "/dashboard/opinions",
-      opinions: fetchingResults.rows,
-    });
-  } catch (e) {
-    res.redirect("/dashboard/overview");
-  }
-};
-
-const postDeleteOpinion = async (req, res, next) => {
-  try {
-    const fetchingResults = await deleteSingleOpinion(req.body.opinionId);
-    if (fetchingResults.rowCount === 1) {
-      res.redirect("/dashboard/opinions");
-    } else {
-      res.redirect("/dashboard/opinions");
-    }
-  } catch (e) {
-    console.log(e);
-    res.redirect("/dashboard/opinions");
-  }
-};
-
 export {
-  getOverview,
   getCourses,
-  getUsers,
-  getMessages,
   getAddNewCourse,
-  postAddNewCourse,
-  postDeleteCourse,
-  postDeleteUser,
   getEditCourse,
+  postAddNewCourse,
   postUpdateCourse,
-  getUpdateUser,
-  postUpdateUser,
-  postDeleteMessage,
-  getOpinionsPage,
-  postDeleteOpinion,
+  postDeleteCourse,
 };

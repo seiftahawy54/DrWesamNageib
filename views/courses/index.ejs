@@ -16,15 +16,15 @@
           <div class="featured-courses-container ">
             <div class="course-title-container">
               <div class="course-thumbnail">
-                <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
+                <img src="<%- course.course_img %>" alt="<%= course.name %>"/>
               </div>
               <div class="course-title">
-                <%- course.name %>
+                <%= course.name %>
               </div>
             </div>
             <p class="course-about">
               <bdi>
-                <%- course.description.slice(0, 150) %>
+                <%= course.course_thumbnail %>
               </bdi>
             </p>
             <a href="/courses/<%- course.course_id %>" class="reset-link btn-outlined">

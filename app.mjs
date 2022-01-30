@@ -98,6 +98,20 @@ app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
 
+app.use((error, req, res, next) => {
+  res.render("500", {
+    title: "Server Error",
+    path: "",
+  });
+});
+
+app.use((req, res, next) => {
+  res.render("404", {
+    title: "There's an error!",
+    path: "",
+  });
+});
+
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
 Pool.connect()

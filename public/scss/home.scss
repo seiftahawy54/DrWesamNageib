@@ -1,5 +1,6 @@
 @use "./utils/variables" as vars;
 @use "./utils/common" as common;
+@use "./utils/mediaFns" as mediaQ;
 
 %commonButtons {
   display: flex;
@@ -106,7 +107,7 @@
   }
 
   .client-container {
-    width: 536px;
+    max-width: 536px;
     margin: auto;
 
     .client-data {
@@ -180,6 +181,7 @@
   position: fixed;
   bottom: 30px;
   right: 30px;
+  z-index: 999;
   background-color: #fff;
   @include common.similarHW(70px);
   border: 1px solid vars.$main_color;
@@ -188,4 +190,14 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
+}
+
+@include mediaQ.allSmScreens {
+  .floating-whatsapp {
+    @include common.similarHW(50px);
+
+    svg {
+      @include common.similarHW(30px);
+    }
+  }
 }

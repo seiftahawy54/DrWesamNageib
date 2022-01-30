@@ -1,17 +1,18 @@
 import { getAllCourses, getSingleCourse } from "../models/courses.mjs";
+import { errorRaiser } from "../utits/error_raiser.mjs";
+import { sortCourses } from "../utits/general_helper.mjs";
 
-const getIndex = (req, res, next) => {
-  getAllCourses()
-    .then((result) => {
-      res.render("courses/index", {
-        title: "Courses",
-        path: "/courses",
-        courses: result.rows,
-      });
-    })
-    .catch((errs) => {
-      console.log(errs);
+const getIndex = async (req, res, next) => {
+  try {
+    const fetchingResult = await getAllCourses();
+    res.render("courses/index", {
+      title: "Courses",
+      path: "/courses",
+      courses: sortCourses(fetchingResult.rows),
     });
+  } catch (e) {
+    errorRaiser(e, next);
+  }
 };
 
 const singleCourse = (req, res, next) => {

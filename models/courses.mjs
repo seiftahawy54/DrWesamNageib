@@ -53,17 +53,23 @@ const updateSingleCourse = (
   coursePrice,
   courseId,
   courseImg,
-  courseDescription
+  courseDescription,
+  courseArName,
+  courseThumbnail,
+  courseRank
 ) => {
   if (courseImg) {
     return db
       .query(
-        "UPDATE courses SET name=$1, price=$2, course_img=$3, description=$4 WHERE course_id=$5;",
+        "UPDATE courses SET name=$1, price=$2, course_img=$3, description=$4, ar_course_name=$5, course_thumbnail=$6, course_rank=$7 WHERE course_id=$8;",
         [
           courseName,
           parseFloat(coursePrice),
           courseImg,
           courseDescription,
+          courseArName,
+          courseThumbnail,
+          parseInt(courseRank),
           courseId,
         ]
       )
@@ -72,8 +78,16 @@ const updateSingleCourse = (
   } else {
     return db
       .query(
-        "UPDATE courses SET name=$1, price=$2, description=$3 WHERE course_id=$4;",
-        [courseName, parseFloat(coursePrice), courseDescription, courseId]
+        "UPDATE courses SET name=$1, price=$2, description=$3, ar_course_name=$4, course_thumbnail=$5, course_rank=$6 WHERE course_id=$7;",
+        [
+          courseName,
+          parseFloat(coursePrice),
+          courseDescription,
+          courseArName,
+          courseThumbnail,
+          parseInt(courseRank),
+          courseId,
+        ]
       )
       .then((result) => result)
       .catch((err) => err);

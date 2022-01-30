@@ -3,6 +3,8 @@ import { validationResult } from "express-validator";
 import { addMessage } from "../models/messages.mjs";
 import { getAllCourses } from "../models/courses.mjs";
 import { addOneOpinion, fetchAllOpinions } from "../models/opinions.mjs";
+import { errorRaiser } from "../utits/error_raiser.mjs";
+import { sortCourses } from "../utits/general_helper.mjs";
 
 const getShoppingCart = (req, res, next) => {
   res.render("shopping/index", {
@@ -20,20 +22,16 @@ const getHomePage = async (req, res, next) => {
     const getCoursesResult = await getAllCourses();
     const getAllOpinionsResult = await fetchAllOpinions();
 
+    let sortedCourses = sortCourses(getCoursesResult.rows);
+
     res.render("home/home.ejs", {
       title: "Homepage",
       path: "/",
-      courses: getCoursesResult.rows,
+      courses: sortedCourses,
       opinions: getAllOpinionsResult.rows,
     });
   } catch (e) {
-    console.error(e.message);
-    res.render("home/home.ejs", {
-      title: "Homepage",
-      path: "/",
-      courses: {},
-      opinions: {},
-    });
+    errorRaiser(e, next);
   }
 };
 

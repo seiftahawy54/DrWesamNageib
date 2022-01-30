@@ -12,48 +12,50 @@
   left: 0;
   position: sticky;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
-.dashboard-nav .navbar-brand {
+.dashboard-nav .navbar-links-container .navbar-brand {
   font-size: 28px !important;
   display: block;
   margin-block-end: 10px !important;
 }
-.dashboard-nav .navbar-brand.active {
+.dashboard-nav .navbar-links-container .navbar-brand.active {
   color: #545ee3 !important;
 }
-.dashboard-nav .nav-links {
+.dashboard-nav .navbar-links-container .nav-links {
   margin-block-start: 30px;
 }
-.dashboard-nav .nav-links ul li {
+.dashboard-nav .navbar-links-container .nav-links ul li {
   margin-block: 30px;
 }
-.dashboard-nav .nav-links ul li a {
+.dashboard-nav .navbar-links-container .nav-links ul li a {
   font-size: 20px !important;
 }
-.dashboard-nav .nav-links ul li a.active {
+.dashboard-nav .navbar-links-container .nav-links ul li a.active {
   color: #545ee3 !important;
 }
-.dashboard-nav .logged-in-user {
+.dashboard-nav .navbar-links-container .logged-in-user {
   display: flex;
   align-items: center;
   gap: 20px;
 }
-.dashboard-nav .logged-in-user .user-img img {
+.dashboard-nav .navbar-links-container .logged-in-user .user-img img {
   width: 90px;
   height: 90px;
 }
-.dashboard-nav .logged-in-user .user-info {
+.dashboard-nav .navbar-links-container .logged-in-user .user-info {
   display: flex;
   flex-direction: column;
 }
-.dashboard-nav .logged-in-user .user-info .user-name {
+.dashboard-nav .navbar-links-container .logged-in-user .user-info .user-name {
   font-size: 24px;
 }
-.dashboard-nav .logged-in-user .user-info .user-type {
+.dashboard-nav .navbar-links-container .logged-in-user .user-info .user-type {
   opacity: 0.5;
 }
 .dashboard-nav .navbar-footer {
-  margin-block-start: 90%;
   display: flex;
   align-items: center;
   justify-content: space-between;
