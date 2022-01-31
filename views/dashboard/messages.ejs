@@ -23,7 +23,6 @@
 
           <div class="courses-data messages-data">
             <div class="table-head">
-              <span class="message-name">Message ID</span>
               <span class="message-name">Message email</span>
               <span class="message-email">Message name</span>
               <span class="message-content">Message Content</span>
@@ -31,7 +30,6 @@
             </div>
             <% messages.forEach(message => { %>
               <div class="table-row">
-                <span class="message-name"><%= message.messageid; %></span>
                 <span class="message-name"><%= message.sendername; %></span>
                 <span class="message-email"><%= message.senderemail; %></span>
                 <span class="message-content"><%= message.message; %></span>

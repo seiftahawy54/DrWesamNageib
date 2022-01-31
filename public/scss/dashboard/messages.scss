@@ -6,11 +6,11 @@
 
     .table-head {
       font-size: vars.$lg_font_size - 2 !important;
-      grid-template-columns: repeat(5, 1fr) !important;
+      grid-template-columns: repeat(4, 1fr) !important;
     }
 
     .table-row {
-      grid-template-columns: repeat(5, 1fr) !important;
+      grid-template-columns: repeat(4, 1fr) !important;
 
       .message-content {
         overflow: auto;

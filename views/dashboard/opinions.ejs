@@ -23,7 +23,6 @@
 
           <div class="courses-data opinions-data">
             <div class="table-head">
-              <span class="opinion-id">Opinion ID</span>
               <span class="opinion-name">Sender Name</span>
               <span class="opinion-course">Sender Course</span>
               <span class="opinion-message">Sender Message</span>
@@ -32,7 +31,6 @@
             </div>
             <% opinions.forEach(opinion => { %>
               <div class="table-row">
-                <span class="opinion-id"><%= opinion.opinion_id; %></span>
                 <span class="opinion-name"><%= opinion.sender_name; %></span>
                 <span class="opinion-course"><%= opinion.sender_course; %></span>
                 <span class="opinion-message"><%= opinion.sender_message; %></span>
