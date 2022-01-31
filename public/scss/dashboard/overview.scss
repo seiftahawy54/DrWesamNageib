@@ -1,0 +1,7 @@
+@use "../utils/mediaFns" as mediaQ;
+
+@include mediaQ.allSmScreens {
+  .overview {
+    margin-block-start: 50px;
+  }
+}

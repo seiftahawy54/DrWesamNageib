@@ -15,6 +15,21 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: all 0.5s ease-in-out;
+}
+.dashboard-nav .navbar-toggler {
+  border: 1px solid #545ee3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.dashboard-nav .navbar-toggler .navbar-toggler-icon {
+  width: 100%;
+  height: 100%;
+}
+.dashboard-nav .navbar-toggler svg {
+  display: block;
+  fill: #545ee3;
 }
 .dashboard-nav .navbar-links-container .navbar-brand {
   font-size: 28px !important;
@@ -63,6 +78,100 @@
 .dashboard-nav .navbar-footer svg {
   width: 40px;
   height: 40px;
+}
+
+.remove-nav {
+  transform: translateX(-1000px);
+}
+
+.show-nav {
+  position: fixed;
+  top: 30px;
+  left: -1px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #545ee3;
+  padding-inline-start: 20px;
+  border-radius: 0 4px 4px 0;
+  font-size: 20px;
+  color: #545ee3;
+}
+.show-nav .navbar-toggler {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.show-nav .navbar-toggler .navbar-toggler-icon {
+  width: 100%;
+  height: 100%;
+}
+.show-nav .navbar-toggler svg {
+  display: block;
+  fill: #545ee3;
+}
+.show-nav.remove-show-button {
+  transform: translateX(-1000px);
+}
+
+@media (max-width: 575px) {
+  .dashboard-nav {
+    width: 80vw;
+    z-index: 10;
+    padding: 20px;
+    box-shadow: 4px 4px 28px 90px rgba(84, 94, 227, 0.5);
+    position: fixed;
+  }
+  .dashboard-nav .navbar-links-container .navbar-brand {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 20px !important;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .dashboard-nav .navbar-links-container .logged-in-user .user-img img {
+    width: 75px;
+    height: 75px;
+  }
+  .dashboard-nav .navbar-links-container .logged-in-user .user-info .user-type {
+    font-size: 13px !important;
+  }
+  .dashboard-nav .navbar-links-container .logged-in-user .user-info .user-name {
+    font-size: 16px !important;
+  }
+  .dashboard-nav .navbar-links-container .nav-links ul li a {
+    font-size: 16px !important;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .dashboard-nav {
+    width: 80vw;
+    z-index: 10;
+    padding: 20px;
+    box-shadow: 4px 4px 28px 90px rgba(84, 94, 227, 0.5);
+    position: fixed;
+  }
+  .dashboard-nav .navbar-links-container .navbar-brand {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 20px !important;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .dashboard-nav .navbar-links-container .logged-in-user .user-img img {
+    width: 75px;
+    height: 75px;
+  }
+  .dashboard-nav .navbar-links-container .logged-in-user .user-info .user-type {
+    font-size: 13px !important;
+  }
+  .dashboard-nav .navbar-links-container .logged-in-user .user-info .user-name {
+    font-size: 16px !important;
+  }
+  .dashboard-nav .navbar-links-container .nav-links ul li a {
+    font-size: 16px !important;
+  }
 }
 
 /*# sourceMappingURL=navbar.css.map */

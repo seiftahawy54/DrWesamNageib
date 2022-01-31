@@ -1,3 +1,12 @@
-
+@media (max-width: 575px) {
+  .overview {
+    margin-block-start: 50px;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .overview {
+    margin-block-start: 50px;
+  }
+}
 
 /*# sourceMappingURL=overview.css.map */

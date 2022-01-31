@@ -2,4 +2,15 @@
   min-height: calc(100% - 135px);
 }
 
+@media (max-width: 575px) {
+  .content {
+    width: 500%;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .content {
+    width: 500%;
+  }
+}
+
 /*# sourceMappingURL=dashboard.css.map */

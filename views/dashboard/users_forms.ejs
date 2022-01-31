@@ -1,7 +1,7 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css" />
-<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
-<link rel="stylesheet" href="/css/dashboard/courses.css" />
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css"/>
 </head>
 <body>
 
@@ -24,28 +24,27 @@
             method="POST">
             <div class="my-3">
               <input type="text" name="name" placeholder="User Name" class="form-control"
-                     value="<%= user.name; %>" />
+                     value="<%= user.name; %>"/>
             </div>
             <div class="my-3">
               <input type="text" name="email" placeholder="User Email" class="form-control"
-                     value="<%= user.email; %>" />
+                     value="<%= user.email; %>"/>
             </div>
             <div class="my-3">
               <input type="tel" name="whatsapp_no" placeholder="User Number" class="form-control"
-                     value="<%= user.whatsapp_no; %>" />
+                     value="<%= user.whatsapp_no; %>"/>
             </div>
             <div class="my-3">
               <input type="text" name="specialization" placeholder="User Specialization" class="form-control"
-                     value="<%= user.specialization; %>" />
+                     value="<%= user.specialization; %>"/>
             </div>
 
-            <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
             <button type="submit" class="btn">
               Update User
             </button>
           </form>
         </div>
-        <%- include("../includes/footer.ejs"); %>
       </div>
     </div>
   </div>

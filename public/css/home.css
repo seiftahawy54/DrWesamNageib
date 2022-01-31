@@ -161,6 +161,14 @@
 }
 
 @media (max-width: 575px) {
+  .join-us h2 {
+    font-size: 20px !important;
+  }
+  .join-us a,
+.join-us p {
+    font-size: 16px !important;
+  }
+
   .floating-whatsapp {
     width: 50px;
     height: 50px;
@@ -171,6 +179,14 @@
   }
 }
 @media (min-width: 576px) and (max-width: 991px) {
+  .join-us h2 {
+    font-size: 20px !important;
+  }
+  .join-us a,
+.join-us p {
+    font-size: 16px !important;
+  }
+
   .floating-whatsapp {
     width: 50px;
     height: 50px;

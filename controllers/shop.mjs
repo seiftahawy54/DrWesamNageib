@@ -56,8 +56,6 @@ const getContactPage = (req, res, next) => {
     sent = false;
   }
 
-  console.log(req.session.sentMessage);
-
   res.render("contactus/index", {
     title: "Contact Us",
     path: "/contact",

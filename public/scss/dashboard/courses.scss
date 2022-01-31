@@ -1,4 +1,5 @@
 @use "../utils/variables" as vars;
+@use "../utils/mediaFns" as mediaQ;
 
 .courses {
   #editor,

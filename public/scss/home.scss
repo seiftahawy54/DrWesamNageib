@@ -193,6 +193,17 @@
 }
 
 @include mediaQ.allSmScreens {
+  .join-us {
+    h2 {
+      font-size: vars.$sm_header_size !important;
+    }
+
+    a,
+    p {
+      font-size: vars.$sm_font_size !important;
+    }
+  }
+
   .floating-whatsapp {
     @include common.similarHW(50px);
 

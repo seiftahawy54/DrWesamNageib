@@ -1,5 +1,6 @@
-@use '../utils/common' as common;
-@use '../utils/variables' as vars;
+@use "../utils/common" as common;
+@use "../utils/variables" as vars;
+@use "../utils/mediaFns" as mediaQ;
 
 .contact-us {
   margin-block-start: 60px;
@@ -34,7 +35,7 @@
     }
     */
 
-    .form-control {
+    /*.form-control {
       border: none;
       padding: 0;
 
@@ -56,6 +57,10 @@
       &:nth-of-type(even) {
         margin-block: 20px;
       }
+    }*/
+
+    textarea {
+      height: 160px !important;
     }
 
     button {
@@ -80,6 +85,30 @@
       svg:not(:nth-of-type(1)) {
         @include common.similarHW(28px);
       }
+    }
+  }
+}
+
+@include mediaQ.allSmScreens {
+  .contact-us {
+    min-height: 100vh;
+
+    .contact-alternative {
+      gap: 30px;
+      border-top: 1px solid vars.$main_color;
+      margin-block: 30px;
+
+      * {
+        font-size: vars.$sm_font_size !important;
+      }
+    }
+  }
+}
+
+@include mediaQ.tabletIpad {
+  .contact-us {
+    h3 {
+      font-size: vars.$md_header_size !important;
     }
   }
 }

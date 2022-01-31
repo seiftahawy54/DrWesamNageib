@@ -1,8 +1,8 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css" />
-<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
-<link rel="stylesheet" href="/css/dashboard/courses.css" />
-<link rel="stylesheet" href="/css/dashboard/messages.css" />
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css"/>
+<link rel="stylesheet" href="/css/dashboard/messages.css"/>
 </head>
 <body>
 
@@ -37,7 +37,7 @@
                 <span class="message-content"><%= message.message; %></span>
                 <div class="course-delete">
                   <form action="/dashboard/delete-message" method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
                     <input type="hidden" name="messageId" value="<%= message.messageid; %>">
                     <button type="submit" class="btn btn-danger">Delete message</button>
                   </form>
@@ -46,7 +46,6 @@
             <% }); %>
           </div>
         </div>
-        <%- include("../includes/footer.ejs"); %>
       </div>
     </div>
   </div>

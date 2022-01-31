@@ -1,6 +1,6 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css" />
-<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
 <link rel="stylesheet" href="/css/dashboard/courses.css">
 <link rel="stylesheet" href="/css/dashboard/users.css">
 </head>
@@ -42,7 +42,7 @@
                 </div>
                 <div class="course-delete">
                   <form action="/dashboard/delete-user" method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
                     <input type="hidden" name="userId" value="<%= user.user_id %>">
                     <button type="submit" class="btn btn-danger">Delete User</button>
                   </form>
@@ -51,7 +51,6 @@
             <% }) %>
           </div>
         </div>
-        <%- include("../includes/footer.ejs"); %>
       </div>
     </div>
   </div>

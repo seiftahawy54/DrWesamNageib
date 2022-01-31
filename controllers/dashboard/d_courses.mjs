@@ -5,14 +5,18 @@ import {
   getSingleCourse,
   updateSingleCourse,
 } from "../../models/courses.mjs";
-import { validationResult } from "express-validator";
+import {validationResult} from "express-validator";
+import {sortCourses} from "../../utits/general_helper.mjs";
 
 const getCourses = async (req, res, next) => {
   const allCourses = await getAllCourses();
+
+  const sortedCourses = sortCourses(allCourses.rows);
+
   res.render("dashboard/courses", {
     title: "Courses page",
     path: "/dashboard/courses",
-    courses: allCourses.rows,
+    courses: sortedCourses,
   });
 };
 
