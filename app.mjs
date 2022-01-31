@@ -103,6 +103,7 @@ app.use((error, req, res, next) => {
     title: "Server Error",
     path: "",
   });
+  console.log(error);
 });
 
 app.use((req, res, next) => {

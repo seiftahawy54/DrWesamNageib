@@ -15,3 +15,12 @@ export const sortCourses = (courses) => {
     return coursesArr.find((course) => course.course_rank === rank);
   });
 };
+
+export const extractError = (req) => {
+  // Check if the message we extract is there not empty arr!
+  let message = req.flash("error")[0];
+  if (!(typeof message === "string")) {
+    message = null;
+  }
+  return message;
+};

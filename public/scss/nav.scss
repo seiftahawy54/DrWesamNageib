@@ -104,6 +104,18 @@
   }
 }
 
+@include mediaQ.allSmScreens {
+  .navbar {
+    height: 80px;
+
+    .navbar-brand {
+      a {
+        font-size: vars.$sm_header_size - 2 !important;
+      }
+    }
+  }
+}
+
 @include mediaQ.laptops {
   .navbar {
     .navbar-nav {

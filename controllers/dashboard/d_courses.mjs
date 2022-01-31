@@ -5,8 +5,8 @@ import {
   getSingleCourse,
   updateSingleCourse,
 } from "../../models/courses.mjs";
-import {validationResult} from "express-validator";
-import {sortCourses} from "../../utits/general_helper.mjs";
+import { validationResult } from "express-validator";
+import { extractError, sortCourses } from "../../utits/general_helper.mjs";
 
 const getCourses = async (req, res, next) => {
   const allCourses = await getAllCourses();
@@ -21,11 +21,15 @@ const getCourses = async (req, res, next) => {
 };
 
 const getAddNewCourse = (req, res, next) => {
+  const errorMessage = extractError(req);
+
   res.render("dashboard/courses_forms", {
     title: "New Course",
     path: "/dashboard/courses",
-    editMode: "false",
+    editMode: false,
     course: {},
+    errorMessage,
+    validationErrors: [],
   });
 };
 
@@ -33,12 +37,25 @@ const postAddNewCourse = async (req, res, next) => {
   const courseName = req.body.name;
   const coursePrice = req.body.price;
   const courseDescription = req.body.description;
+  const courseThumbnail = req.body.thumbnail;
+  const arCourseName = req.body.arabic_name;
+  const courseRank = req.body.rank;
   const courseImage = req.file;
-  const imgUrl = courseImage.path;
-
+  const imgUrl = courseImage?.path;
   const errors = validationResult(req);
+
+  console.log("course name: ", courseName);
+  console.log(errors.array().find((e) => e.param === "price"));
+
   if (!errors.isEmpty()) {
-    res.redirect("/dashboard/add-new-course");
+    res.status(422).render("dashboard/courses_forms", {
+      title: "New Course",
+      path: "/dashboard/courses",
+      editMode: false,
+      course: { name: courseName, price: coursePrice },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
   } else {
     const addingResult = await addNewCourse(
       courseName,

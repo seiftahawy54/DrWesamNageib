@@ -38,7 +38,15 @@ router
   .get("/add-new-course", getAddNewCourse)
   .post(
     "/add-new-course",
-    [body("name").isString().notEmpty(), body("price").isNumeric().notEmpty()],
+    [
+      body("name").isString().notEmpty(),
+      body("price").isNumeric().notEmpty(),
+      body("arabic_name").isString().notEmpty(),
+      body("course_rank").isNumeric().notEmpty(),
+      body("thumbnail").isString().notEmpty(),
+      body("description").isString().notEmpty(),
+      body("course_img").notEmpty(),
+    ],
     postAddNewCourse
   )
   .get("/edit-course/:courseId", getEditCourse)
