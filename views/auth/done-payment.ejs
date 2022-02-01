@@ -1,11 +1,13 @@
 <%- include("../includes/top_part.ejs"); %>
 <style>
-
+    .success-page {
+        min-height: 100%;
+    }
 </style>
 </head>
 <body>
 
-<section class="cancel-page">
+<section class="success-page">
   <div class="container">
     <h2>Your payment is transacted successfully! 🎉</h2>
     <p>We will contact you as soon as possible</p>
@@ -16,7 +18,7 @@
 <script>
   setTimeout(() => {
     window.location = '/'
-  }, 1000 * 30);
+  }, 1000 * 10);
 </script>
 
 <%- include("../includes/footer.ejs"); %>

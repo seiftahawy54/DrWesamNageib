@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 export const sortCourses = (courses) => {
   let coursesRanks = [];
   const coursesArr = courses;
@@ -14,4 +16,9 @@ export const sortCourses = (courses) => {
   return coursesRanks.map((rank) => {
     return coursesArr.find((course) => course.course_rank === rank);
   });
+};
+
+export const hashCreator = () => {
+  const idHash = crypto.randomBytes(10);
+  return idHash.toString("hex");
 };

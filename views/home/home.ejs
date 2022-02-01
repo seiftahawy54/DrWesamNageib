@@ -26,9 +26,6 @@
   <div class="container">
     <% courses.forEach((course, index) => { %>
       <div class="row courses-container justify-content-center">
-        <div class="course-thumbnail col ">
-          <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
-        </div>
         <div class="course-text col">
           <h3 class="course-title-en"><%- course.name %></h3>
           <h3 class="course-title-ar"><%- course.ar_course_name %></h3>
@@ -41,6 +38,9 @@
               Sample Session
             </a>
           </div>
+        </div>
+        <div class="course-thumbnail col ">
+          <img src="<%- course.course_img %>" alt="<%- course.name %>"/>
         </div>
       </div>
     <% }) %>
