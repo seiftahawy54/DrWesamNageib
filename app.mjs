@@ -5,12 +5,14 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 import expressSession from "express-session";
-import pgSession from "connect-pg-simple";
+import SessionStore from "connect-session-sequelize";
+// import pgSession from "connect-pg-simple";
+import { Sequelize } from "sequelize";
 import csrf from "csurf";
 import flash from "connect-flash";
-import Multer from "multer";
 
-import Pool from "./utits/db.mjs";
+import Multer from "multer";
+import { sequelize } from "./utits/db.mjs";
 import { coursesRoutes } from "./routes/courses.mjs";
 import { shoppingRoutes } from "./routes/shopping.mjs";
 import { authRoutes } from "./routes/auth.mjs";
@@ -54,19 +56,13 @@ app.use(express.static(path.resolve("public")));
 app.use("/uploaded_images", express.static(path.resolve("uploaded_images")));
 
 // Session Configurations
-const nPgSession = pgSession(expressSession);
-// console.log("pg_session: ", pgSession(Pool));
+const SequelizeStore = SessionStore(expressSession.Store);
 
 app.use(
   expressSession({
-    store: new nPgSession({
-      pool: Pool,
-      table: "session",
+    store: new SequelizeStore({
+      db: sequelize,
     }),
-    /*    store: nPgSession({
-          pool: Pool,
-          table: "session",
-        }),*/
     secret: "app_secret",
     resave: false,
     saveUninitialized: false,
@@ -76,15 +72,6 @@ app.use(
 const csrfProtection = csrf();
 app.use(flash());
 app.use(csrfProtection);
-
-/*app.use(csrfProtection);
- */
-
-/*app.get("*", function (req, res, next) {
-  if (req.headers["x-forwarded-proto"] != "http")
-    res.redirect("http://www.drwesamnageib.com" + req.url);
-  else next(); /!* Continue to other routes if we're not redirecting *!/
-});*/
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticated;
@@ -115,12 +102,15 @@ app.use((req, res, next) => {
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
-Pool.connect()
-  .then((pool) => {
-    app.listen(port, () => {
-      console.log(`working on ${port}`);
-    });
-  })
-  .catch((err) => {
-    console.log();
+try {
+  const connectionResult = await sequelize.authenticate();
+  const syncingResult = await sequelize.sync({
+    logging: false,
   });
+
+  app.listen(port, () => {
+    console.log(`working on ${port}`);
+  });
+} catch (e) {
+  throw new Error(e.message);
+}

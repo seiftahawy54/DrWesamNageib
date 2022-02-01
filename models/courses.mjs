@@ -1,3 +1,51 @@
+import Sequelize from "sequelize";
+import { sequelize } from "../utits/db.mjs";
+import { hashCreator } from "../utits/general_helper.mjs";
+
+const Courses = sequelize.define("course", {
+  course_id: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    primaryKey: true,
+    defaultValue: hashCreator(),
+  },
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  price: {
+    type: Sequelize.DOUBLE,
+    allowNull: false,
+  },
+  created_at: {
+    type: Sequelize.DATE,
+    defaultValue: sequelize.literal("current_timestamp"),
+  },
+  course_img: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
+  description: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
+  ar_course_name: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
+  course_thumbnail: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
+  course_rank: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+});
+
+export { Courses };
+
+/*
 import db from "../utits/db.mjs";
 import crypto from "crypto";
 
@@ -102,3 +150,4 @@ export {
   getNumberOfCourses,
   deleteCourse,
 };
+*/

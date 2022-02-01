@@ -1,4 +1,41 @@
-// const db = require("../utits/db");
+import Sequelize from "sequelize";
+import { sequelize } from "../utits/db.mjs";
+
+const Users = sequelize.define("user", {
+  user_id: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    primaryKey: true,
+  },
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  created_on: {
+    type: Sequelize.DATE,
+    defaultValue: sequelize.literal("current_timestamp"),
+    allowNull: false,
+  },
+  whatsapp_no: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  specialization: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  payment_details: {
+    type: Sequelize.JSON,
+  },
+});
+
+export { Users };
+
+/*
 import db from "../utits/db.mjs";
 
 const getSingleUser = (userId) => {
@@ -75,3 +112,4 @@ export {
   addUserInfoWithoutCart,
   addUserPaymentDetails,
 };
+*/

@@ -1,11 +1,14 @@
-import { getSingleCourse } from "../models/courses.mjs";
-import {
-  addUserPaymentDetails,
-  addUserInfoWithoutCart,
-} from "../models/users.mjs";
+// import { getSingleCourse } from "../models/courses.mjs";
+// import {
+//   addUserPaymentDetails,
+//   addUserInfoWithoutCart,
+// } from "../models/users.mjs";
 import crypto from "crypto";
 import paypal from "@paypal/checkout-server-sdk";
 import { validationResult } from "express-validator";
+import { Courses } from "../models/courses.mjs";
+import { errorRaiser } from "../utits/error_raiser.mjs";
+import { Users } from "../models/users.mjs";
 
 const Environment =
   process.env.NODE_ENV === "production"
@@ -42,7 +45,7 @@ const postLogin = (req, res, next) => {
     return res.status(400).render("auth/login", {
       title: "Login",
       path: "/login",
-      errorMessage: errors.array().msg,
+      errorMessage: errors.array()[0].msg,
     });
   } else {
     req.session.isAuthenticated = true;
@@ -61,9 +64,9 @@ const getRegister = (req, res, next) => {
   }
 
   if (selectedCourse) {
-    getSingleCourse(selectedCourse)
+    Courses.findByPk(selectedCourse)
       .then((courseData) => {
-        SelectedCourseData = courseData.rows[0];
+        SelectedCourseData = courseData;
         req.session.savedCourse = SelectedCourseData;
         res.render("auth/register", {
           title: "Register",
@@ -88,9 +91,9 @@ const getCompletePayment = (req, res, next) => {
   }
 
   if (selectedCourse) {
-    getSingleCourse(selectedCourse)
+    Courses.findByPk(selectedCourse)
       .then((dbResult) => {
-        const selectedData = dbResult.rows[0];
+        const selectedData = dbResult;
         // Removing Arabic Description for avoiding parsing error;
         const filteredCourse = {
           name: selectedData.name,
@@ -107,7 +110,7 @@ const getCompletePayment = (req, res, next) => {
         });
       })
       .catch((err) => {
-        console.error(err);
+        errorRaiser(err, next);
       });
   } else {
     res.redirect("/");
@@ -173,35 +176,50 @@ const postCreateOrder = async (req, res, next) => {
 
   try {
     const order = await paypalClient.execute(request);
-    const userDataFromSession = req.session.newUser;
-    /*      id: token,
-          name,
-          email,
-          whatsapp_no,
-          specialization,
-        };*/
-    const addedUser = await addUserInfoWithoutCart(
-      userDataFromSession.id,
-      userDataFromSession.name,
-      userDataFromSession.email,
-      userDataFromSession.whatsapp_no,
-      userDataFromSession.specialization
-    );
-    const addingResult = await addUserPaymentDetails(
-      userDataFromSession.id,
-      order
-    );
 
-    console.log("addedUserResult: ", addedUser);
-    console.log("addingPurchaseResult: ", addingResult);
+    console.log("order: ", order);
+    req.session.userOrder = order;
     res.json({ id: order.result.id });
   } catch (e) {
     res.status(500).json({ error: e });
+    // errorRaiser(e, next);
   }
 };
 
-const postSuccess = (req, res, next) => {
-  res.redirect("/success_payment");
+const postSuccess = async (req, res, next) => {
+  try {
+    const userDataFromSession = req.session.newUser;
+    Users.create({
+      user_id: userDataFromSession.id,
+      name: userDataFromSession.name,
+      email: userDataFromSession.email,
+      whatsapp_no: userDataFromSession.whatsapp_no,
+      specialization: userDataFromSession.specialization,
+    })
+      .then((result) => {
+        console.log("adding result", result);
+        Users.update(
+          { payment_details: req.session.userOrder },
+          { where: { user_id: userDataFromSession.id } }
+        ).then((result) => {
+          console.log("updating result", result);
+          res.redirect("/success_payment");
+        });
+      })
+      .catch((err) => {
+        errorRaiser(err, next);
+      });
+
+    // console.log("addedUserResult: ", addedUser);
+    // console.log("addingPurchaseResult: ", addingResult);
+    // if (addedUser && addingPayment) {
+    //   return res.redirect("/success_payment");
+    // } else {
+    //   errorRaiser("Database error", next);
+    // }
+  } catch (e) {
+    errorRaiser(e, next);
+  }
 };
 
 const getSuccess = (req, res, next) => {

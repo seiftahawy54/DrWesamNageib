@@ -1,4 +1,28 @@
+import { Sequelize } from "sequelize";
+import { sequelize } from "../utits/db.mjs";
+
+const Messages = sequelize.define("message", {
+  message_id: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    primaryKey: true,
+  },
+  sender_name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  sender_email: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  message: Sequelize.STRING,
+});
+
+export { Messages };
+
+/*
 import db from "../utits/db.mjs";
+
 import crypto from "crypto";
 
 const getAllMessages = () => {
@@ -30,3 +54,4 @@ const deleteMessage = (messageId) => {
 };
 
 export { getAllMessages, addMessage, deleteMessage };
+*/

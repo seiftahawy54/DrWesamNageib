@@ -1,33 +1,33 @@
-import { getAllCourses, getSingleCourse } from "../models/courses.mjs";
+// import { getAllCourses, getSingleCourse } from "../models/courses.mjs";
 import { errorRaiser } from "../utits/error_raiser.mjs";
 import { sortCourses } from "../utits/general_helper.mjs";
+import { Courses } from "../models/courses.mjs";
 
 const getIndex = async (req, res, next) => {
   try {
-    const fetchingResult = await getAllCourses();
+    const fetchingResult = await Courses.findAll();
     res.render("courses/index", {
       title: "Courses",
       path: "/courses",
-      courses: sortCourses(fetchingResult.rows),
+      courses: sortCourses(fetchingResult),
     });
   } catch (e) {
     errorRaiser(e, next);
   }
 };
 
-const singleCourse = (req, res, next) => {
-  getSingleCourse(req.params.courseId)
-    .then((course) => {
-      console.log(course.rows[0]);
-      res.render("courses/single_course", {
-        title: "Course Name",
-        path: "/courses",
-        course: course.rows[0],
-      });
-    })
-    .catch((err) => {
-      console.log(err);
+const singleCourse = async (req, res, next) => {
+  try {
+    const course = await Courses.findByPk(req.params.courseId);
+
+    res.render("courses/single_course", {
+      title: "Course Name",
+      path: "/courses",
+      course,
     });
+  } catch (e) {
+    errorRaiser(e, next);
+  }
 };
 
 const addCourseToCart = (req, res, next) => {

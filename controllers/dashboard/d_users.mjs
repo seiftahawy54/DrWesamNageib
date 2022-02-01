@@ -1,23 +1,18 @@
-import {
-  deleteUser,
-  getAllUsers,
-  getSingleUser,
-  updateSingleUser,
-} from "../../models/users.mjs";
+import { Users } from "../../models/users.mjs";
 
 const getUsers = async (req, res, next) => {
-  const allUsers = await getAllUsers();
+  const allUsers = await Users.findAll();
   res.render("dashboard/users", {
     title: "Users page",
     path: "/dashboard/users",
-    users: allUsers.rows,
+    users: allUsers,
   });
 };
 
 const postDeleteUser = async (req, res, next) => {
   const userId = req.body.userId;
-  const deletingResult = await deleteUser(userId);
-  if (deletingResult.command === "DELETE") {
+  const deletingResult = await (await Users.findByPk(userId)).destroy();
+  if (deletingResult[0] >= 1) {
     res.redirect("/dashboard/users");
   } else {
     res.status(400).redirect("/dashboard/users");
@@ -27,12 +22,12 @@ const postDeleteUser = async (req, res, next) => {
 const getUpdateUser = async (req, res, next) => {
   const userId = req.params.userId;
 
-  const findingResult = await getSingleUser(userId);
+  const findingResult = await Users.findByPk(userId);
 
   res.render("dashboard/users_forms", {
     title: "Update User",
     path: "/dashboard/users",
-    user: findingResult.rows[0],
+    user: findingResult,
   });
 };
 
@@ -43,22 +38,24 @@ const postUpdateUser = async (req, res, next) => {
   const whatsapp_no = req.body.whatsapp_no;
   const specialization = req.body.specialization;
 
-  const updatingSingleUser = await updateSingleUser(
-    userId,
-    name,
-    email,
-    whatsapp_no,
-    specialization
+  const updatingSingleUser = await Users.update(
+    {
+      name,
+      email,
+      whatsapp_no,
+      specialization,
+    },
+    { where: { user_id: userId } }
   );
 
-  if (updatingSingleUser.command === "UPDATE") {
+  if (updatingSingleUser[0] >= 1) {
     res.redirect("/dashboard/users");
   } else {
-    const findingResult = await getSingleUser(userId);
+    const findingResult = await Users.findByPk(userId);
     res.render("dashboard/users_forms", {
       title: "Update User",
       path: "/dashboard/users",
-      user: findingResult.rows[0],
+      user: findingResult,
     });
   }
 };

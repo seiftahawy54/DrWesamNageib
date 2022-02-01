@@ -1,30 +1,28 @@
-import db from "../utits/db.mjs";
-import crypto from "crypto";
+import Sequelize from "sequelize";
+import { sequelize } from "../utits/db.mjs";
 
-const addOneOpinion = (senderName, senderCourse, senderMessage) => {
-  return db
-    .query("INSERT INTO opinions VALUES ($1, $2, $3, $4, current_timestamp);", [
-      crypto.randomBytes(10).toString("hex"),
-      senderName,
-      senderCourse,
-      senderMessage,
-    ])
-    .then((res) => res)
-    .catch((err) => err);
-};
+const Opinions = sequelize.define("opinions", {
+  opinion_id: {
+    type: Sequelize.STRING,
+    primaryKey: true,
+    allowNull: false,
+  },
+  sender_name: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  sender_course: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  sender_message: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
+  created_on: {
+    type: Sequelize.DATE,
+    allowNull: true,
+  },
+});
 
-const fetchAllOpinions = () => {
-  return db
-    .query("SELECT * FROM opinions;")
-    .then((res) => res)
-    .catch((err) => err);
-};
-
-const deleteSingleOpinion = (opinionId) => {
-  return db
-    .query("DELETE FROM opinions WHERE opinion_id=$1", [opinionId])
-    .then((res) => res)
-    .catch((err) => err);
-};
-
-export { addOneOpinion, fetchAllOpinions, deleteSingleOpinion };
+export { Opinions };

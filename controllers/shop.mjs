@@ -1,8 +1,8 @@
 import path from "path";
 import { validationResult } from "express-validator";
-import { addMessage } from "../models/messages.mjs";
-import { getAllCourses } from "../models/courses.mjs";
-import { addOneOpinion, fetchAllOpinions } from "../models/opinions.mjs";
+// import { addMessage } from "../models/messages.mjs";
+import { Courses } from "../models/courses.mjs";
+import { Opinions } from "../models/opinions.mjs";
 import { errorRaiser } from "../utits/error_raiser.mjs";
 import { sortCourses } from "../utits/general_helper.mjs";
 
@@ -19,16 +19,16 @@ const getShoppingCart = (req, res, next) => {
 
 const getHomePage = async (req, res, next) => {
   try {
-    const getCoursesResult = await getAllCourses();
-    const getAllOpinionsResult = await fetchAllOpinions();
+    const getCoursesResult = await Courses.findAll();
+    const getAllOpinionsResult = await Opinions.findAll();
 
-    let sortedCourses = sortCourses(getCoursesResult.rows);
+    let sortedCourses = sortCourses(getCoursesResult);
 
     res.render("home/home.ejs", {
       title: "Homepage",
       path: "/",
       courses: sortedCourses,
-      opinions: getAllOpinionsResult.rows,
+      opinions: getAllOpinionsResult,
     });
   } catch (e) {
     errorRaiser(e, next);
