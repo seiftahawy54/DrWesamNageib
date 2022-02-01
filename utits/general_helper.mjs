@@ -21,4 +21,12 @@ export const sortCourses = (courses) => {
 export const hashCreator = () => {
   const idHash = crypto.randomBytes(10);
   return idHash.toString("hex");
+
+export const extractError = (req) => {
+  // Check if the message we extract is there not empty arr!
+  let message = req.flash("error")[0];
+  if (!(typeof message === "string")) {
+    message = null;
+  }
+  return message;
 };

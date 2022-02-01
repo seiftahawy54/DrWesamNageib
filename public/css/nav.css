@@ -83,6 +83,22 @@
     font-size: 16px !important;
   }
 }
+@media (max-width: 575px) {
+  .navbar {
+    height: 80px;
+  }
+  .navbar .navbar-brand a {
+    font-size: 18px !important;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .navbar {
+    height: 80px;
+  }
+  .navbar .navbar-brand a {
+    font-size: 18px !important;
+  }
+}
 @media (min-width: 1200px) and (max-width: 1399px) {
   .navbar .navbar-nav {
     gap: 23px !important;
