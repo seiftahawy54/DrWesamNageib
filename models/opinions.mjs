@@ -22,6 +22,7 @@ const Opinions = sequelize.define("opinions", {
   created_on: {
     type: Sequelize.DATE,
     allowNull: true,
+    defaultValue: sequelize.literal("current_timestamp"),
   },
 });
 

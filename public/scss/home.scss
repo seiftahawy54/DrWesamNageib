@@ -86,6 +86,7 @@
 
   .course-text {
     .course-title-ar {
+      direction: rtl;
       font-family: vars.$arabic_font;
     }
 
@@ -193,6 +194,10 @@
 }
 
 @include mediaQ.allSmScreens {
+  video {
+    object-fit: contain;
+  }
+
   .join-us {
     h2 {
       font-size: vars.$sm_header_size !important;

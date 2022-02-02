@@ -4,6 +4,7 @@ import {
   postDeleteMessage,
   getOpinionsPage,
   postDeleteOpinion,
+  getAboutPage,
 } from "../controllers/dashboard/dashboard.mjs";
 
 import {
@@ -57,6 +58,7 @@ router
   .post("/edit-user/:userId", postUpdateUser)
   .post("/delete-message", postDeleteMessage)
   .get("/opinions", getOpinionsPage)
-  .post("/delete-opinion", postDeleteOpinion);
+  .post("/delete-opinion", postDeleteOpinion)
+  .get("/about", getAboutPage);
 //
 export { router as dashboardRoutes };

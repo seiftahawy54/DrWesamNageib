@@ -2,16 +2,16 @@ import { Sequelize } from "sequelize";
 import { sequelize } from "../utits/db.mjs";
 
 const Messages = sequelize.define("message", {
-  message_id: {
+  messageid: {
     type: Sequelize.STRING,
     allowNull: false,
     primaryKey: true,
   },
-  sender_name: {
+  sendername: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  sender_email: {
+  senderemail: {
     type: Sequelize.STRING,
     allowNull: false,
   },

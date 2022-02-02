@@ -2,6 +2,7 @@ import { Courses } from "../../models/courses.mjs";
 import { Users } from "../../models/users.mjs";
 import { Messages } from "../../models/messages.mjs";
 import { Opinions } from "../../models/opinions.mjs";
+import { Certificates } from "../../models/about.mjs";
 
 const getOverview = async (req, res, next) => {
   const numberOfUsers = (await Users.findAll()).length;
@@ -19,7 +20,6 @@ const getOverview = async (req, res, next) => {
 
 const getMessages = async (req, res, next) => {
   const allMessages = await Messages.findAll();
-  res.send(allMessages);
   res.render("dashboard/messages", {
     title: "Messages page",
     path: "/dashboard/messages",
@@ -63,10 +63,24 @@ const postDeleteOpinion = async (req, res, next) => {
   }
 };
 
+const getAboutPage = async (req, res, next) => {
+  const certificates = await Certificates.findAll();
+
+  res.render("dashboard/about", {
+    title: "Certificate",
+    path: "/dashboard/about",
+    editMode: false,
+    certificates: certificates,
+    errorMessage: "",
+    validationErrors: [],
+  });
+};
+
 export {
   getOverview,
   getMessages,
   postDeleteMessage,
   getOpinionsPage,
   postDeleteOpinion,
+  getAboutPage,
 };

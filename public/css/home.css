@@ -70,6 +70,7 @@
   margin: auto;
 }
 .our-courses .course-text .course-title-ar {
+  direction: rtl;
   font-family: "Cairo", sans-serif !important;
 }
 .our-courses .course-text p {
@@ -161,6 +162,10 @@
 }
 
 @media (max-width: 575px) {
+  video {
+    object-fit: contain;
+  }
+
   .join-us h2 {
     font-size: 20px !important;
   }
@@ -179,6 +184,10 @@
   }
 }
 @media (min-width: 576px) and (max-width: 991px) {
+  video {
+    object-fit: contain;
+  }
+
   .join-us h2 {
     font-size: 20px !important;
   }

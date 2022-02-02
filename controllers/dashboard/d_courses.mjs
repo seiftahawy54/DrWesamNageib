@@ -1,6 +1,6 @@
 import { Courses } from "../../models/courses.mjs";
 import { validationResult } from "express-validator";
-import { sortCourses } from "../../utits/general_helper.mjs";
+import { extractError, sortCourses } from "../../utits/general_helper.mjs";
 
 const getCourses = async (req, res, next) => {
   const allCourses = await Courses.findAll();
@@ -32,13 +32,10 @@ const postAddNewCourse = async (req, res, next) => {
   const coursePrice = req.body.price;
   const courseDescription = req.body.description;
   const courseThumbnail = req.body.thumbnail;
-  const arCourseName = req.body.arabic_name;
   const courseRank = req.body.rank;
   const courseImage = req.file;
   const imgUrl = courseImage.path;
   const courseArName = req.body.arabic_name;
-  const courseThumbnail = req.body.thumbnail;
-  const courseRank = req.body.course_rank;
   const errors = validationResult(req);
 
   console.log("course name: ", courseName);
@@ -98,6 +95,8 @@ const getEditCourse = async (req, res, next) => {
     path: "/dashboard/courses",
     editMode: "true",
     course: findingCourse,
+    errorMessage: null,
+    validationErrors: [],
   });
 };
 

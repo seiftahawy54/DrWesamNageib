@@ -83,8 +83,16 @@
               <% } %>
             </div>
             <div class="my-3">
+              <label for="brief_img">Brief Image</label>
               <input type="file" name="course_img" placeholder="Upload course image"
-                     class="form-control editor-<%- course.course_id %> <%= validationErrors.find(e => e.param === 'course_img') ? "is-invalid" : "" %>"
+                     id="brief_img"
+                     class="form-control <%= validationErrors.find(e => e.param === 'course_img') ? "is-invalid" : "" %>"
+                     accept="image/*"/>
+            </div>
+            <div class="my-3">
+              <label for="detailed_img">Detailed Image</label>
+              <input type="file" name="detailed_img" placeholder="Upload course image"
+                     class="form-control <%= validationErrors.find(e => e.param === 'detailed_img') ? "is-invalid" : "" %>"
                      accept="image/*"/>
             </div>
 
