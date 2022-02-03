@@ -41,6 +41,7 @@ const getLogin = (req, res, next) => {
 const postLogin = (req, res, next) => {
   const email = req.body.email;
   const errors = validationResult(req);
+  // console.log("login errors", errors.array());
   if (!errors.isEmpty()) {
     return res.status(400).render("auth/login", {
       title: "Login",
@@ -238,8 +239,9 @@ const getCancelled = (req, res, next) => {
 };
 
 const postLogout = (req, res, next) => {
+  // req.logout();
   req.session.destroy((err) => {
-    console.log(err);
+    console.log(`A Destroy `, err);
     res.redirect("/");
   });
 };

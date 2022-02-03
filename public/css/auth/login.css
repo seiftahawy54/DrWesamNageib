@@ -8,6 +8,12 @@
   align-content: center;
   margin-block: 100px 110px;
 }
+.login-form .container,
+.register-form .container,
+.opinions-form .container {
+  display: flex;
+  justify-content: center;
+}
 .login-form .content-container,
 .register-form .content-container,
 .opinions-form .content-container {
@@ -19,6 +25,7 @@
   border-radius: 4px;
   padding: 100px 80px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  width: 50vw;
 }
 .login-form .content-container .header-dash-line,
 .register-form .content-container .header-dash-line,
@@ -35,6 +42,13 @@
   flex-direction: column;
   align-content: center;
   justify-content: center;
+  width: auto;
+}
+.login-form .content-container form .login-options,
+.register-form .content-container form .login-options,
+.opinions-form .content-container form .login-options {
+  display: flex;
+  justify-content: space-between;
 }
 .login-form .content-container form input,
 .login-form .content-container form textarea,
@@ -45,10 +59,6 @@
 .opinions-form .content-container form input,
 .opinions-form .content-container form textarea,
 .opinions-form .content-container form select {
-  width: 465px;
-  height: 44px;
-  margin-block-end: 30px;
-  padding: 12px;
   border-radius: 4px;
   border: 1px solid #545ee3;
 }
@@ -98,6 +108,43 @@
 
 .opinions-form form button {
   font-size: 20px;
+}
+
+@media (max-width: 575px) {
+  .login-form .content-container,
+.register-form .content-container,
+.opinions-form .content-container {
+    width: 90vw !important;
+    padding: 30px;
+  }
+  .login-form .content-container h2,
+.register-form .content-container h2,
+.opinions-form .content-container h2 {
+    text-align: center;
+  }
+  .login-form .content-container form,
+.register-form .content-container form,
+.opinions-form .content-container form {
+    width: 100%;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .login-form .content-container,
+.register-form .content-container,
+.opinions-form .content-container {
+    width: 90vw !important;
+    padding: 30px;
+  }
+  .login-form .content-container h2,
+.register-form .content-container h2,
+.opinions-form .content-container h2 {
+    text-align: center;
+  }
+  .login-form .content-container form,
+.register-form .content-container form,
+.opinions-form .content-container form {
+    width: 100%;
+  }
 }
 
 /*# sourceMappingURL=login.css.map */

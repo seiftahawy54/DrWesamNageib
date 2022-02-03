@@ -1,4 +1,5 @@
 @use "../utils/variables" as vars;
+@use "../utils/mediaFns" as mediaQ;
 
 .login-form,
 .register-form,
@@ -10,6 +11,11 @@
   align-content: center;
   margin-block: 100px 110px;
 
+  .container {
+    display: flex;
+    justify-content: center;
+  }
+
   .content-container {
     border: 1px solid vars.$main_color;
     display: flex;
@@ -19,6 +25,7 @@
     border-radius: 4px;
     padding: 100px 80px;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    width: 50vw;
 
     .header-dash-line {
       margin-block: 15px 55px;
@@ -32,14 +39,20 @@
       flex-direction: column;
       align-content: center;
       justify-content: center;
+      width: auto;
+
+      .login-options {
+        display: flex;
+        justify-content: space-between;
+      }
 
       input,
       textarea,
       select {
-        width: 465px;
-        height: 44px;
-        margin-block-end: 30px;
-        padding: 12px;
+        //width: 465px;
+        //height: 44px;
+        //margin-block-end: 30px;
+        //padding: 12px;
         border-radius: 4px;
         border: 1px solid vars.$main_color;
 
@@ -91,6 +104,25 @@
   form {
     button {
       font-size: vars.$lg_font_size;
+    }
+  }
+}
+
+@include mediaQ.allSmScreens {
+  .login-form,
+  .register-form,
+  .opinions-form {
+    .content-container {
+      width: 90vw !important;
+      padding: 30px;
+
+      h2 {
+        text-align: center;
+      }
+
+      form {
+        width: 100%;
+      }
     }
   }
 }

@@ -110,8 +110,15 @@ const downloadCV = (req, res, next) => {
 
 const getOpinionsPage = (req, res, next) => {
   res.render("opinions/index", {
-    title: "Your Opinions",
+    title: "Opinions",
     path: "/opinions",
+  });
+};
+
+const getOpinionsForm = (req, res, next) => {
+  res.render("opinions/form", {
+    title: "Opinion Form",
+    path: "/opinions/form",
   });
 };
 
@@ -158,5 +165,6 @@ export {
   getShoppingCart,
   downloadCV,
   getOpinionsPage,
+  getOpinionsForm,
   postOpinions,
 };

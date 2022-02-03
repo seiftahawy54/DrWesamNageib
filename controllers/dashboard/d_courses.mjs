@@ -33,20 +33,32 @@ const postAddNewCourse = async (req, res, next) => {
   const courseDescription = req.body.description;
   const courseThumbnail = req.body.thumbnail;
   const courseRank = req.body.rank;
-  const courseImage = req.file;
-  const imgUrl = courseImage.path;
+  const courseImage = req.files[0].path;
+  const detailedImage = req.files[1].path;
+  // const imgUrl = courseImage.path;
+  // const detailedImage = courseImage.path;
   const courseArName = req.body.arabic_name;
   const errors = validationResult(req);
 
-  console.log("course name: ", courseName);
-  console.log(errors.array().find((e) => e.param === "price"));
+  // console.log("course name: ", courseName);
+  // console.log(errors.array().find((e) => e.param === "price"));
+  // console.log(`detailed image: `, );
 
   if (!errors.isEmpty()) {
     res.status(422).render("dashboard/courses_forms", {
       title: "New Course",
       path: "/dashboard/courses",
       editMode: false,
-      course: { name: courseName, price: coursePrice },
+      course: {
+        name: courseName,
+        price: coursePrice,
+        course_img: courseImage,
+        detailed_img: detailedImage,
+        description: courseDescription,
+        ar_course_name: courseArName,
+        course_thumbnail: courseThumbnail,
+        course_rank: courseRank,
+      },
       errorMessage: errors.array()[0].msg,
       validationErrors: errors.array(),
     });
@@ -54,14 +66,13 @@ const postAddNewCourse = async (req, res, next) => {
     const addingResult = await Courses.create({
       name: courseName,
       price: coursePrice,
-      course_img: imgUrl,
+      course_img: courseImage,
+      detailed_img: detailedImage,
       description: courseDescription,
       ar_course_name: courseArName,
       course_thumbnail: courseThumbnail,
       course_rank: courseRank,
     });
-
-    console.log(addingResult);
 
     if (addingResult._options.isNewRecord) {
       res.redirect("/dashboard/courses");

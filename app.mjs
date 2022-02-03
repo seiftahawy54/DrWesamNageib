@@ -49,7 +49,10 @@ app.set("views", "views");
 app.use(express.json());
 app.use(cookieParser());
 app.use(
-  Multer({ storage: fileStorage, fileFilter: fileFilter }).single("course_img")
+  Multer({ storage: fileStorage, fileFilter: fileFilter }).any(
+    "course_img",
+    "detailed_img"
+  )
 );
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve("public")));
@@ -62,6 +65,7 @@ app.use(
   expressSession({
     store: new SequelizeStore({
       db: sequelize,
+      // table: "sessions",
     }),
     secret: "app_secret",
     resave: false,
@@ -70,13 +74,15 @@ app.use(
 );
 
 const csrfProtection = csrf();
-app.use(flash());
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticated;
   res.locals.csrfToken = req.csrfToken();
-  res.set("Cache-Control", "no-store");
+  // req.session.reload((err) => {
+  //   console.log(`session things: `, err);
+  // });
   next();
 });
 
@@ -105,6 +111,7 @@ const port = process.env.PORT || process.env.DEV_PORT || 4000;
 try {
   const connectionResult = await sequelize.authenticate();
   const syncingResult = await sequelize.sync({
+    alter: true,
     logging: false,
   });
 
@@ -112,5 +119,5 @@ try {
     console.log(`working on ${port}`);
   });
 } catch (e) {
-  throw new Error(e.message);
+  throw new Error(e);
 }

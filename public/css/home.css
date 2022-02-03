@@ -163,7 +163,7 @@
 
 @media (max-width: 575px) {
   video {
-    object-fit: contain;
+    object-fit: contain !important;
   }
 
   .join-us h2 {
@@ -185,7 +185,7 @@
 }
 @media (min-width: 576px) and (max-width: 991px) {
   video {
-    object-fit: contain;
+    object-fit: contain !important;
   }
 
   .join-us h2 {

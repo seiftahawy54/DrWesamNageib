@@ -5,43 +5,48 @@
 <%- include("../includes/navigation.ejs"); %>
 
 <section class="register-form">
-  <% if (errorMessage) { %>
-    <div class="error-container">
-      <%- errorMessage %>
+  <div class="container">
+    <div class="content-container">
+      <% if (errorMessage) { %>
+        <div class="error-container">
+          <%- errorMessage %>
+        </div>
+      <% } %>
+
+      <h2>Register</h2>
+      <div class="header-dash-line"></div>
+      <form action="/register" method="POST" class="opinions">
+        <div class="form-floating my-3">
+          <input type="text" name="name" id="name" placeholder="Enter your name" class="form-control"/>
+          <label for="name">Your Name</label>
+        </div>
+        <div class="form-floating my-3">
+          <input type="email" name="email" id="email" placeholder="Enter your email" class="form-control"/>
+          <label for="email">Your Email</label>
+        </div>
+        <div class="form-floating my-3">
+          <input type="tel" name="whatsapp_number" id="whatsapp_number" placeholder="Your whatsapp number"
+                 class="form-control"/>
+          <label for="whatsapp_number">Whatsapp Number</label>
+        </div>
+        <div class="form-floating my-3">
+          <input type="text" name="specialization" id="specialization" placeholder="Enter your specialization"
+                 class="form-control"/>
+          <label for="specialization">Specialization</label>
+        </div>
+        <div class="cart-courses">
+          <h4>Course you buy:</h4>
+          <span class="course-name"><%= course.name %>: &dollar;<%= course.price %></span>
+          <input type="hidden" name="courseId" value="<%= course.course_id %>"/>
+          <input type="hidden" name="courseName" value="<%= course.name %>"/>
+          <input type="hidden" name="coursePrice" value="<%= course.price %>"/>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        </div>
+        <button class="btn" type="submit">
+          Proceed To Checkout
+        </button>
+      </form>
     </div>
-  <% } %>
-  <div class="content-container">
-    <h2>Register</h2>
-    <div class="header-dash-line"></div>
-    <form action="/register" method="POST">
-      <div class="my-form-control">
-        <input type="text" name="name" id="name" placeholder="Enter your name"/>
-        <div class="name-error"></div>
-      </div>
-      <div class="my-form-control">
-        <input type="email" name="email" id="email" placeholder="Enter your email"/>
-        <div class="email-error"></div>
-      </div>
-      <div class="my-form-control">
-        <input type="tel" name="whatsapp_number" id="whatsapp_number" placeholder="Your whatsapp number"/>
-        <div class="number-error"></div>
-      </div>
-      <div class="my-form-control">
-        <input type="text" name="specialization" id="specialization" placeholder="Enter your specialization"/>
-        <div class="specialization-error"></div>
-      </div>
-      <div class="cart-courses">
-        <h4>Course you buy:</h4>
-        <span class="course-name"><%= course.name %>: &dollar;<%= course.price %></span>
-        <input type="hidden" name="courseId" value="<%= course.course_id %>"/>
-        <input type="hidden" name="courseName" value="<%= course.name %>"/>
-        <input type="hidden" name="coursePrice" value="<%= course.price %>"/>
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-      </div>
-      <button class="btn" type="submit">
-        Proceed To Checkout
-      </button>
-    </form>
   </div>
 </section>
 

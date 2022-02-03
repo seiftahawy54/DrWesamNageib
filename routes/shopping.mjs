@@ -7,6 +7,7 @@ import {
   postContactPage,
   getOpinionsPage,
   postOpinions,
+  getOpinionsForm,
 } from "../controllers/shop.mjs";
 import express from "express";
 import { body } from "express-validator";
@@ -31,6 +32,7 @@ router
     postContactPage
   )
   .get("/opinions", getOpinionsPage)
+  .get("/opinions_form", getOpinionsForm)
   .post(
     "/opinions",
     [

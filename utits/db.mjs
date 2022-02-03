@@ -22,6 +22,14 @@ const sequelize = new Sequelize(
   }
 );
 
+/*sequelize.Session.destroy()
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((err) => {
+    console.log(error);
+  });*/
+
 export { sequelize };
 
 /*

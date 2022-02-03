@@ -47,6 +47,7 @@ router
       body("thumbnail").isString().notEmpty(),
       body("description").isString().notEmpty(),
       body("course_img").notEmpty(),
+      body("detailed_img").notEmpty(),
     ],
     postAddNewCourse
   )

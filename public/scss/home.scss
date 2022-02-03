@@ -195,7 +195,7 @@
 
 @include mediaQ.allSmScreens {
   video {
-    object-fit: contain;
+    object-fit: contain !important;
   }
 
   .join-us {
