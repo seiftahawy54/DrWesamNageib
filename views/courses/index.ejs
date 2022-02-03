@@ -16,7 +16,15 @@
           <div class="featured-courses-container ">
             <div class="course-title-container">
               <div class="course-thumbnail">
-                <img src="<%- course.course_img %>" alt="<%= course.name %>"/>
+                <!--                <img src="<%- course.course_img %>" alt="<%= course.name %>"/>-->
+                <% if (process.env.NODE_ENV === 'development') { %>
+                  <img src="http://localhost:<%- process.env.DEV_PORT %>/<%- course.course_img %>"
+                       alt="<%- course.name %>"
+                       class="w-100 "/>
+                <% } else { %>
+                  <img src="https://www.drwesamnageib.com/<%- course.course_img %>" alt="<%- course.name %>"
+                       class="w-100 "/>
+                <% } %>
               </div>
               <div class="course-title">
                 <%= course.name %>

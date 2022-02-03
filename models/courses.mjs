@@ -25,6 +25,9 @@ const Courses = sequelize.define("course", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
+  detailed_img: {
+    type: Sequelize.TEXT,
+  },
   description: {
     type: Sequelize.TEXT,
     allowNull: false,
