@@ -29,7 +29,7 @@ const getMessages = async (req, res, next) => {
 
 const postDeleteMessage = async (req, res, next) => {
   const messageId = req.body.messageId;
-  const deletingResult = (await Messages.findByPk(messageId)).destroy();
+  const deletingResult = await (await Messages.findByPk(messageId)).destroy();
   console.log(deletingResult);
   res.redirect("/dashboard/messages");
 };

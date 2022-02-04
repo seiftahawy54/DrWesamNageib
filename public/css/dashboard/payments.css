@@ -1,0 +1,12 @@
+.payments .content {
+  padding-inline-start: 80px !important;
+}
+.payments .content .table-head {
+  font-size: 18px !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+}
+.payments .content .table-row {
+  grid-template-columns: repeat(5, 1fr) !important;
+}
+
+/*# sourceMappingURL=payments.css.map */

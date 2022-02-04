@@ -23,6 +23,7 @@ import {
   postUpdateCourse,
 } from "../controllers/dashboard/d_courses.mjs";
 
+import { getPaymentsPage } from "../controllers/dashboard/payments.mjs";
 import express from "express";
 import { body } from "express-validator";
 
@@ -60,6 +61,7 @@ router
   .post("/delete-message", postDeleteMessage)
   .get("/opinions", getOpinionsPage)
   .post("/delete-opinion", postDeleteOpinion)
-  .get("/about", getAboutPage);
+  .get("/about", getAboutPage)
+  .get("/payments", getPaymentsPage);
 //
 export { router as dashboardRoutes };

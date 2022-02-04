@@ -20,8 +20,6 @@ const singleCourse = async (req, res, next) => {
   try {
     const course = await Courses.findByPk(req.params.courseId);
 
-    console.log(course.detailed_img);
-
     res.render("courses/single_course", {
       title: "Course Name",
       path: "/courses",

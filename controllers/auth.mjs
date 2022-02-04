@@ -9,6 +9,7 @@ import { validationResult } from "express-validator";
 import { Courses } from "../models/courses.mjs";
 import { errorRaiser } from "../utits/error_raiser.mjs";
 import { Users } from "../models/users.mjs";
+import { Payment } from "../models/payment.mjs";
 
 const Environment =
   process.env.NODE_ENV === "production"
@@ -189,6 +190,7 @@ const postCreateOrder = async (req, res, next) => {
 
 const postSuccess = async (req, res, next) => {
   try {
+    const selectedCourse = req.cookies["courseId"];
     const userDataFromSession = req.session.newUser;
     Users.create({
       user_id: userDataFromSession.id,
@@ -197,17 +199,31 @@ const postSuccess = async (req, res, next) => {
       whatsapp_no: userDataFromSession.whatsapp_no,
       specialization: userDataFromSession.specialization,
     })
-      .then((result) => {
-        console.log("adding result", result);
+      .then((createdUser) => {
+        /*console.log("adding result", result);
         Users.update(
           { payment_details: req.session.userOrder },
           { where: { user_id: userDataFromSession.id } }
         ).then((result) => {
           console.log("updating result", result);
           res.redirect("/success_payment");
+        });*/
+        Payment.create({
+          user_id: userDataFromSession.id,
+          course_id: selectedCourse,
+          status: "success",
+          details: req.session.userOrder,
         });
+
+        res.redirect("/success_payment");
       })
       .catch((err) => {
+        Payment.create({
+          user_id: userDataFromSession.id,
+          course_id: selectedCourse,
+          status: "failed",
+          details: req.session.userOrder,
+        });
         errorRaiser(err, next);
       });
 
