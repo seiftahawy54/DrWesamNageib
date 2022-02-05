@@ -5,6 +5,8 @@ import {
   getOpinionsPage,
   postDeleteOpinion,
   getAboutPage,
+  getNewAbout,
+  postAddNewAbout,
 } from "../controllers/dashboard/dashboard.mjs";
 
 import {
@@ -47,8 +49,8 @@ router
       body("course_rank").isNumeric().notEmpty(),
       body("thumbnail").isString().notEmpty(),
       body("description").isString().notEmpty(),
-      body("course_img").notEmpty(),
-      body("detailed_img").notEmpty(),
+      // body("course_img").notEmpty(),
+      // body("detailed_img").notEmpty(),
     ],
     postAddNewCourse
   )
@@ -62,6 +64,8 @@ router
   .get("/opinions", getOpinionsPage)
   .post("/delete-opinion", postDeleteOpinion)
   .get("/about", getAboutPage)
+  .get("/add-new-about", getNewAbout)
+  .post("/add-new-about", postAddNewAbout)
   .get("/payments", getPaymentsPage);
 //
 export { router as dashboardRoutes };

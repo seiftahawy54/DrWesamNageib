@@ -1,11 +1,13 @@
 import { Sequelize } from "sequelize";
 import { sequelize } from "../utits/db.mjs";
+import { hashCreator } from "../utits/general_helper.mjs";
 
 const Messages = sequelize.define("message", {
   messageid: {
     type: Sequelize.STRING,
     allowNull: false,
     primaryKey: true,
+    defaultValue: hashCreator(),
   },
   sendername: {
     type: Sequelize.STRING,

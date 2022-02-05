@@ -32,7 +32,7 @@ const postAddNewCourse = async (req, res, next) => {
   const coursePrice = req.body.price;
   const courseDescription = req.body.description;
   const courseThumbnail = req.body.thumbnail;
-  const courseRank = req.body.rank;
+  const courseRank = req.body.course_rank;
   const courseImage = req.files[0].path;
   const detailedImage = req.files[1].path;
   // const imgUrl = courseImage.path;
@@ -123,6 +123,8 @@ const postUpdateCourse = async (req, res, next) => {
   const courseArName = req.body.arabic_name;
   const courseThumbnail = req.body.thumbnail;
   const courseRank = req.body.course_rank;
+
+  console.log(`course rank`, courseRank);
 
   const errors = validationResult(req);
   const findingCourse = await Courses.findByPk(courseId);

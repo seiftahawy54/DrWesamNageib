@@ -19,6 +19,7 @@ import { authRoutes } from "./routes/auth.mjs";
 import { dashboardRoutes } from "./routes/dashboard.mjs";
 import { isAuthenticated } from "./middlewares/dashboard-auth.mjs";
 import crypto from "crypto";
+import { errorRaiser } from "./utits/error_raiser.mjs";
 
 dotenv.config();
 const app = express();
@@ -51,9 +52,11 @@ app.use(cookieParser());
 app.use(
   Multer({ storage: fileStorage, fileFilter: fileFilter }).any(
     "course_img",
-    "detailed_img"
+    "detailed_img",
+    "certificate_img"
   )
 );
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve("public")));
 app.use("/uploaded_images", express.static(path.resolve("uploaded_images")));
@@ -79,7 +82,9 @@ app.use(flash());
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticated;
-  res.locals.csrfToken = req.csrfToken();
+  const token = req.csrfToken();
+  res.cookie("XSRF-TOKEN", token);
+  res.locals.csrfToken = token;
   // req.session.reload((err) => {
   //   console.log(`session things: `, err);
   // });

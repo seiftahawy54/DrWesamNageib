@@ -1,5 +1,45 @@
 .opinions {
   min-height: calc(100vh - 160px - 161px);
 }
+.opinions .custom-head span {
+  margin-block: 30px 60px;
+  margin-inline: auto;
+}
+.opinions .opinions-images {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(5, auto);
+}
+.opinions .opinions-images img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid rgba(84, 94, 227, 0.5);
+  padding: 13px;
+  box-shadow: 4px 4px 5px rgba(84, 94, 227, 0.1);
+  border-radius: 4px;
+}
+.opinions .opinions-join {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-block-start: 30px;
+  gap: 20px;
+  text-shadow: 3px 3px 3px rgba(84, 94, 227, 0.3);
+  font-size: 24px;
+}
+.opinions .opinions-join a {
+  font-size: 24px;
+}
+
+@media (max-width: 575px) {
+  .opinions .opinions-images {
+    grid-template-columns: auto auto !important;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .opinions .opinions-images {
+    grid-template-columns: auto auto !important;
+  }
+}
 
 /*# sourceMappingURL=index.css.map */

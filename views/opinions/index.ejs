@@ -6,7 +6,20 @@
 
 <section class="opinions">
   <div class="container">
-    <h2 class="h1 text-center">What our clients say about us 😄</h2>
+    <div class="custom-head">
+      <h2 class="h1 text-center">What our clients say about us 😄</h2>
+      <span></span>
+    </div>
+    <section class="opinions-images">
+      <% opinionsImages.forEach((opinion, index) => { %>
+        <div class="opinion-<%= index + 1 %>">
+          <img src="/imgs/imgs/opinions/<%- opinion %>" alt="<%= index %>" class="img-fluid"/>
+        </div>
+      <% }) %>
+    </section>
+    <section class="opinions-join text-center">
+      What are you waiting for?! <a href="/courses/" class="btn">join now!</a>
+    </section>
   </div>
 </section>
 

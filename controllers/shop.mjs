@@ -5,6 +5,9 @@ import { Courses } from "../models/courses.mjs";
 import { Opinions } from "../models/opinions.mjs";
 import { errorRaiser } from "../utits/error_raiser.mjs";
 import { sortCourses } from "../utits/general_helper.mjs";
+import { Messages } from "../models/messages.mjs";
+import { Certificates } from "../models/about.mjs";
+import fs from "fs";
 
 const getShoppingCart = (req, res, next) => {
   res.render("shopping/index", {
@@ -35,10 +38,13 @@ const getHomePage = async (req, res, next) => {
   }
 };
 
-const getAboutPage = (req, res, next) => {
+const getAboutPage = async (req, res, next) => {
+  const aboutCertificates = await Certificates.findAll();
+
   res.render("about/index", {
     title: "Who am i",
     path: "/aboutme",
+    certificates: aboutCertificates,
   });
 };
 
@@ -82,13 +88,13 @@ const postContactPage = async (req, res, next) => {
     });
   } else {
     req.session.sentMessage = true;
-    const sendingResult = await addMessage(
-      senderName,
-      senderEmail,
-      senderContent
-    );
+    const sendingResult = await Messages.create({
+      sendername: senderName,
+      senderemail: senderEmail,
+      message: senderContent,
+    });
     console.log(sendingResult);
-    if (sendingResult.command === "INSERT") {
+    if (sendingResult._options.isNewRecord) {
       res.redirect("/contact");
     } else {
       res.render("contactus/index", {
@@ -109,9 +115,18 @@ const downloadCV = (req, res, next) => {
 };
 
 const getOpinionsPage = (req, res, next) => {
-  res.render("opinions/index", {
-    title: "Opinions",
-    path: "/opinions",
+  fs.readdir(path.resolve("public/imgs/imgs/opinions"), (err, files) => {
+    if (!err) {
+      let opinionsImages = files;
+
+      res.render("opinions/index", {
+        title: "Opinions",
+        path: "/opinions",
+        opinionsImages,
+      });
+    } else {
+      errorRaiser(err, next);
+    }
   });
 };
 

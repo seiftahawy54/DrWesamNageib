@@ -12,6 +12,7 @@
 }
 .courses .content .courses-data {
   border: 2px solid #000;
+  border-radius: 4px;
 }
 .courses .content .courses-data .table-head {
   display: grid;
@@ -38,7 +39,6 @@
 .courses .content .courses-data .table-row .course-update button,
 .courses .content .courses-data .table-row .course-delete button {
   width: fit-content;
-  height: max-content;
   /*width: 100px;
   height: 25px;*/
 }

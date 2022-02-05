@@ -47,7 +47,7 @@ const postLogin = (req, res, next) => {
     return res.status(400).render("auth/login", {
       title: "Login",
       path: "/login",
-      errorMessage: errors.array()[0].msg,
+      errorMessage: "Sorry, login is currently unavailable",
     });
   } else {
     req.session.isAuthenticated = true;

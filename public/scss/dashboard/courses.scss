@@ -18,6 +18,7 @@
 
     .courses-data {
       border: 2px solid #000;
+      border-radius: 4px;
 
       .table-head {
         display: grid;
@@ -47,7 +48,7 @@
         .course-delete {
           button {
             width: fit-content;
-            height: max-content;
+            //height: max-content;
             /*width: 100px;
             height: 25px;*/
           }

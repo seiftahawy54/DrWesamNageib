@@ -29,21 +29,13 @@
       <!-- Additional required wrapper -->
       <div class="swiper-wrapper">
         <!-- Slides -->
-        <div class="swiper-slide">
-          <div class="img-container">
-            <img src="/imgs/imgs/certificates/01.png" alt="First Certificate"/>
+        <% certificates.forEach(certificate => { %>
+          <div class="swiper-slide">
+            <div class="img-container">
+              <img src="<%- certificate.certificate_img %>" alt="First Certificate"/>
+            </div>
           </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="img-container">
-            <img src="/imgs/imgs/certificates/02.png" alt="Second Certificate"/>
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="img-container">
-            <img src="/imgs/imgs/certificates/03.png" alt="Third Certificate"/>
-          </div>
-        </div>
+        <% }) %>
       </div>
       <!-- If we need pagination -->
       <div class="swiper-pagination"></div>

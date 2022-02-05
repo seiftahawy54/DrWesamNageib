@@ -6,8 +6,7 @@
 <link rel="stylesheet" href="/css/dashboard/courses.css"/>
 </head>
 <body>
-courses
-<section class="certificate">
+<section class="courses certificate">
   <div class="container-fluid g-0">
     <div class="row g-0">
       <div class="col-3">
@@ -31,17 +30,11 @@ courses
             </div>
           <% } %>
           <form
-            action="/dashboard/<% if (editMode === 'true') { %><%= "edit-certificate/" + certificate.certificate_id %><% } else { %>add-new-certificate<% } %>"
+            action="/dashboard/<% if (editMode === 'true') { %><%= "edit-certificate/" + certificate.certificate_id %><% } else { %>add-new-about<% } %>"
             method="POST" enctype="multipart/form-data">
-            <div class="form-floating my-3">
-              <input type="text" name="name" placeholder="Certificate Name"
-                     class="form-control <%= validationErrors.find(e => e.param === 'name') ? "is-invalid" : "" %>"
-                     value="<% if (editMode === 'true') { %><%= certificate.name %><% } %>" id="certificate_name"/>
-              <label for="certificate_name">Certificate Name</label>
-            </div>
             <div class="my-3">
               <input type="file" name="certificate_img" placeholder="Upload certificate image"
-                     class="form-control editor-<%- certificate.certificate_id %> <%= validationErrors.find(e => e.param === 'certificate_img') ? "is-invalid" : "" %>"
+                     class="form-control <%= validationErrors.find(e => e.param === 'certificate_img') ? "is-invalid" : "" %>"
                      accept="image/*"/>
             </div>
 
