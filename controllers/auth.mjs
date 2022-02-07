@@ -54,7 +54,7 @@ export const postLogin = async (req, res, next) => {
     password.localeCompare(process.env.ADMIN_PASSWORD) === 0
   ) {
     req.session.isAuthenticatedAdmin = true;
-    req.session.user = {
+    req.session.adminUser = {
       email,
     };
     res.redirect("/dashboard/overview");
