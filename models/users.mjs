@@ -35,7 +35,7 @@ const Users = sequelize.define("user", {
   },
   password: {
     type: Sequelize.TEXT,
-    allowNull: false,
+    allowNull: true,
   },
   cart: {
     type: Sequelize.TEXT,
@@ -43,7 +43,7 @@ const Users = sequelize.define("user", {
   },
   type: {
     type: Sequelize.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
