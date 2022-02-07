@@ -19,14 +19,8 @@ router
   .get("/login", getLogin)
   .post(
     "/login",
-    body("email")
-      .isEmail()
-      .custom((value, { req }) => {
-        return value === "admin@wesam.com";
-      }),
-    body("password").custom((value, { req }) => {
-      return value === "wesam@wesam.com";
-    }),
+    body("email").isEmail().notEmpty(),
+    body("password").isString().notEmpty(),
     postLogin
   )
   .post("/logout", postLogout)
@@ -37,12 +31,23 @@ router
     body("email").isEmail().notEmpty(),
     body("whatsapp_number").isMobilePhone("any").notEmpty(),
     body("specialization").isString().notEmpty(),
+    body("password").isString().isLength({ min: 8 }).notEmpty(),
+    body("confirmPassword")
+      .isString()
+      .notEmpty()
+      .custom((value, { req }) => {
+        if (req.body.password.localeCompare(value) === 0) {
+          return true;
+        } else {
+          return new Error("Passwords doesn't match");
+        }
+      }),
     postRegister
   )
   .get("/success_payment", getSuccess)
   .post("/success_payment", postSuccess)
   .get("/cancel_payment", getCancelled)
-  .get("/complete-payment", getCompletePayment)
+  .get("/complete_payment", getCompletePayment)
   .post("/create-order", postCreateOrder);
 
 export { router as authRoutes };

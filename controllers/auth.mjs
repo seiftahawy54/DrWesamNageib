@@ -10,6 +10,7 @@ import { Courses } from "../models/courses.mjs";
 import { errorRaiser } from "../utits/error_raiser.mjs";
 import { Users } from "../models/users.mjs";
 import { Payment } from "../models/payment.mjs";
+import bcrypt from "bcrypt";
 
 const Environment =
   process.env.NODE_ENV === "production"
@@ -25,67 +26,145 @@ const paypalClient = new paypal.core.PayPalHttpClient(
 
 let SelectedCourseData = {};
 
-const getLogin = (req, res, next) => {
-  let message = req.flash("error")[0];
-
-  if (!(typeof message === "string")) {
-    message = null;
-  }
-
+export const getLogin = (req, res, next) => {
   res.render("auth/login", {
     title: "Login",
     path: "/login",
-    errorMessage: message,
+    validationErrors: {},
+    user: {},
+    errorMessage: "",
   });
 };
 
-const postLogin = (req, res, next) => {
+export const postLogin = async (req, res, next) => {
   const email = req.body.email;
+  const password = req.body.password;
   const errors = validationResult(req);
   // console.log("login errors", errors.array());
   if (!errors.isEmpty()) {
-    return res.status(400).render("auth/login", {
+    return res.status(422).render("auth/login", {
       title: "Login",
       path: "/login",
-      errorMessage: "Sorry, login is currently unavailable",
+      user: { email, password },
+      validationErrors: { email: true, password: true },
+      errorMessage: "Maybe user name or password is invalid!",
     });
-  } else {
-    req.session.isAuthenticated = true;
+  } else if (
+    email.localeCompare(process.env.ADMIN_EMAIL) === 0 &&
+    password.localeCompare(process.env.ADMIN_PASSWORD) === 0
+  ) {
+    req.session.isAuthenticatedAdmin = true;
     req.session.user = {
       email,
     };
     res.redirect("/dashboard/overview");
-  }
-};
-
-const getRegister = (req, res, next) => {
-  const selectedCourse = req.cookies["courseId"];
-  let message = req.flash("error")[0];
-  if (!(typeof message === "string")) {
-    message = null;
-  }
-
-  if (selectedCourse) {
-    Courses.findByPk(selectedCourse)
-      .then((courseData) => {
-        SelectedCourseData = courseData;
-        req.session.savedCourse = SelectedCourseData;
-        res.render("auth/register", {
-          title: "Register",
-          path: "/register",
-          course: SelectedCourseData,
-          errorMessage: message,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
   } else {
-    res.redirect("/");
+    const findingUserResult = await Users.findAll({
+      where: {
+        email,
+      },
+    });
+
+    if (findingUserResult) {
+      const comparingResult = await bcrypt.compare(
+        password,
+        findingUserResult[0].password
+      );
+      if (comparingResult) {
+        req.session.userIsAuthenticated = true;
+        req.session.user = {
+          email: email,
+          user_id: findingUserResult[0].user_id,
+        };
+        return res.redirect("/profile");
+      } else {
+        return res.status(422).render("auth/login", {
+          title: "Login",
+          path: "/login",
+          user: { email, password },
+          validationErrors: { email: true, password: true },
+          errorMessage: "Maybe username or password is invalid!",
+        });
+      }
+    } else {
+      return res.status(422).render("auth/login", {
+        title: "Login",
+        path: "/login",
+        user: { email, password },
+        validationErrors: { email: true, password: true },
+        errorMessage: "Maybe user name or password is invalid!",
+      });
+    }
+
+    /**/
   }
 };
 
-const getCompletePayment = (req, res, next) => {
+export const getRegister = (req, res, next) => {
+  res.render("auth/register", {
+    title: "Register",
+    path: "/register",
+    validationErrors: [{}],
+    user: {},
+    errorMessage: "",
+  });
+};
+
+export const postRegister = async (req, res, next) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const whatsapp_no = req.body.whatsapp_number;
+  const specialization = req.body.specialization;
+  const password = req.body.password;
+  const confirmPassword = req.body.password;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/register", {
+      title: "Register",
+      path: "/register",
+      validationErrors: errors.array(),
+      user: {
+        name,
+        email,
+        whatsapp_no,
+        specialization,
+        password,
+        confirmPassword,
+      },
+      errorMessage: errors.array()[0].msg,
+    });
+  } else {
+    const encryptionResult = await bcrypt.hash(password, 12);
+    if (await encryptionResult) {
+      Users.create({
+        name,
+        email,
+        whatsapp_no,
+        specialization,
+        password: await encryptionResult,
+        type: 2,
+      });
+      res.redirect("/login");
+    } else {
+      errorRaiser(new Error("Encryption error"), next);
+    }
+    /*crypto.randomBytes(10, (err, buffer) => {
+      errorRaiser(err, next);
+      const token = buffer.toString("hex");
+      req.session.newUser = {
+        id: token,
+        name,
+        email,
+        whatsapp_no,
+        specialization,
+      };
+      res.redirect("/complete-payment");
+    });*/
+  }
+};
+
+export const getCompletePayment = (req, res, next) => {
   const selectedCourse = req.cookies["courseId"];
   let message = req.flash("error")[0];
   if (!(typeof message === "string")) {
@@ -119,42 +198,7 @@ const getCompletePayment = (req, res, next) => {
   }
 };
 
-const postRegister = (req, res, next) => {
-  const errors = validationResult(req);
-  const name = req.body.name;
-  const email = req.body.email;
-  const whatsapp_no = req.body.whatsapp_number;
-  const specialization = req.body.specialization;
-
-  if (!errors.isEmpty()) {
-    return res.status(400).render("auth/register", {
-      title: "Register",
-      path: "/register",
-      course: req.session.savedCourse,
-      errorMessage: "Please Enter Correct Data !",
-    });
-  } else {
-    crypto.randomBytes(10, (err, buffer) => {
-      if (err) {
-        console.log(err);
-        req.flash("there's an error in the website, please contact us!");
-        res.redirect("/register");
-      }
-      const token = buffer.toString("hex");
-      req.session.newUser = {
-        id: token,
-        name,
-        email,
-        whatsapp_no,
-        specialization,
-      };
-      res.redirect("/complete-payment");
-      /**/
-    });
-  }
-};
-
-const postCreateOrder = async (req, res, next) => {
+export const postCreateOrder = async (req, res, next) => {
   const request = new paypal.orders.OrdersCreateRequest();
   const total = req.body.item.price;
   request.prefer("return=representation");
@@ -188,7 +232,7 @@ const postCreateOrder = async (req, res, next) => {
   }
 };
 
-const postSuccess = async (req, res, next) => {
+export const postSuccess = async (req, res, next) => {
   try {
     const selectedCourse = req.cookies["courseId"];
     const userDataFromSession = req.session.newUser;
@@ -239,14 +283,14 @@ const postSuccess = async (req, res, next) => {
   }
 };
 
-const getSuccess = (req, res, next) => {
+export const getSuccess = (req, res, next) => {
   res.render("auth/done-payment", {
     title: "Payment is Done",
     path: "/done-payment",
   });
 };
 
-const getCancelled = (req, res, next) => {
+export const getCancelled = (req, res, next) => {
   res.render("auth/cancel", {
     title: "Cancel payment",
     path: "/cancel_payment",
@@ -254,23 +298,10 @@ const getCancelled = (req, res, next) => {
   });
 };
 
-const postLogout = (req, res, next) => {
+export const postLogout = (req, res, next) => {
   // req.logout();
   req.session.destroy((err) => {
     console.log(`A Destroy `, err);
     res.redirect("/");
   });
-};
-
-export {
-  getLogin,
-  postLogin,
-  postLogout,
-  getRegister,
-  postSuccess,
-  getSuccess,
-  postRegister,
-  getCancelled,
-  getCompletePayment,
-  postCreateOrder,
 };

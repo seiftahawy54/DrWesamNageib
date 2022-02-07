@@ -29,12 +29,7 @@
     <div class="row">
       <div class="col-lg-5 offset-lg-1 col-xs-12">
         <div class="course-image">
-          <% if (process.env.NODE_ENV === 'development') { %>
-            <img src="http://localhost:<%- process.env.DEV_PORT %><%- course.detailed_img %>" alt="<%- course.name %>"
-                 class="w-100 "/>
-          <% } else { %>
-            <img src="https://www.drwesamnageib.com<%- course.detailed_img %>" alt="<%- course.name %>" class="w-100 "/>
-          <% } %>
+          <img src="/<%- course.detailed_img %>" alt="<%- course.name %>" class="w-100 "/>
         </div>
       </div>
       <div class="col-lg-4 col-xs-12">

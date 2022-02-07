@@ -20,6 +20,8 @@ import { dashboardRoutes } from "./routes/dashboard.mjs";
 import { isAuthenticated } from "./middlewares/dashboard-auth.mjs";
 import crypto from "crypto";
 import { errorRaiser } from "./utits/error_raiser.mjs";
+import { userRoutes } from "./routes/user.mjs";
+import { Users } from "./models/users.mjs";
 
 dotenv.config();
 const app = express();
@@ -81,7 +83,8 @@ app.use(csrfProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isAuthenticated;
+  res.locals.isAuthenticated = req.session.isAuthenticatedAdmin;
+  res.locals.isUserAuthenticated = req.session.userIsAuthenticated;
   const token = req.csrfToken();
   res.cookie("XSRF-TOKEN", token);
   res.locals.csrfToken = token;
@@ -91,10 +94,28 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(async (req, res, next) => {
+  if (req.session.user) {
+    const findingUser = await Users.findAll({
+      where: { user_id: req.session.user.user_id },
+    });
+
+    if (!findingUser) {
+      return next();
+    } else {
+      req.user = findingUser[0];
+      return next();
+    }
+  } else {
+    return next();
+  }
+});
+
 app.use("/courses", coursesRoutes);
 app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
+app.use(userRoutes);
 
 app.use((error, req, res, next) => {
   res.render("500", {

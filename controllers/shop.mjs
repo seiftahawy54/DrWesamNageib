@@ -134,11 +134,13 @@ const getOpinionsForm = (req, res, next) => {
   res.render("opinions/form", {
     title: "Opinion Form",
     path: "/opinions/form",
+    errorMessage: "",
   });
 };
 
 const postOpinions = async (req, res, next) => {
   const senderName = req.body.name;
+  const senderEmail = req.body.email;
   const senderCourse = req.body.sender_course;
   const senderOpinion = req.body.opinion;
   const errors = validationResult(req);
@@ -149,26 +151,33 @@ const postOpinions = async (req, res, next) => {
     res.render("opinions/index", {
       title: "Your Opinions",
       path: "/opinions",
+      errorMessage: errors.array()[0].msg,
     });
   } else {
-    try {
-      const sendingResult = await addOneOpinion(
-        senderName,
-        senderCourse,
-        senderOpinion
-      );
-
-      if (sendingResult.rowCount > 0) {
-        res.redirect("/");
-      } else {
+    Opinions.create({
+      sender_name: senderName,
+      sender_email: senderEmail,
+      sender_course: senderCourse,
+      sender_message: senderOpinion,
+    })
+      .then((result) => {
+        if (result) {
+          res.redirect("/");
+        } else {
+          res.render("opinions/index", {
+            title: "Your Opinions",
+            path: "/opinions",
+            errorMessage: "You've entered an opinion before!",
+          });
+        }
+      })
+      .catch((err) => {
         res.render("opinions/index", {
           title: "Your Opinions",
           path: "/opinions",
+          errorMessage: "You've entered an opinion before!",
         });
-      }
-    } catch (e) {
-      console.log(e);
-    }
+      });
   }
 };
 

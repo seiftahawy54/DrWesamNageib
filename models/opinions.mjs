@@ -1,19 +1,26 @@
 import Sequelize from "sequelize";
 import { sequelize } from "../utits/db.mjs";
+import { hashCreator } from "../utits/general_helper.mjs";
 
 const Opinions = sequelize.define("opinions", {
   opinion_id: {
     type: Sequelize.STRING,
     primaryKey: true,
     allowNull: false,
+    defaultValue: hashCreator(),
+  },
+  sender_email: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true,
   },
   sender_name: {
     type: Sequelize.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   sender_course: {
     type: Sequelize.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   sender_message: {
     type: Sequelize.TEXT,

@@ -10,9 +10,14 @@
       <h2>Leave your feedback about our courses</h2>
       <div class="header-dash-line"></div>
       <form action="/opinions" method="POST" class="opinions">
+        <%- include("../includes/errorMessage"); %>
         <div class="form-floating my-3">
           <input type="text" name="name" id="opinion_name" class="form-control" placeholder="Your name"/>
           <label for="opinion_name">Your Name</label>
+        </div>
+        <div class="form-floating my-3">
+          <input type="email" name="email" id="opinion_email" class="form-control" placeholder="Your name"/>
+          <label for="opinion_email">Your Email</label>
         </div>
         <select name="sender_course" class="form-control my-3" id="enrolled-course">
           <option value="">Select your course</option>

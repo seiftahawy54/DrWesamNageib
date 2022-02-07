@@ -37,8 +37,9 @@ router
     "/opinions",
     [
       body("name").isString().notEmpty(),
+      body("email").isEmail().notEmpty(),
       body("sender_course").isString().notEmpty(),
-      body("opinion").isString(),
+      body("opinion").isString().notEmpty(),
     ],
     postOpinions
   );

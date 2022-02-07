@@ -38,11 +38,22 @@ export const postDeleteMessage = async (req, res, next) => {
 
 export const getOpinionsPage = async (req, res, next) => {
   try {
-    const fetchingResults = await Opinions.findAll();
+    let pageNumber = req.query.page;
+    if (!pageNumber) {
+      pageNumber = 1;
+    }
+    const MAX_NUMBER = 5;
+    const numberOfResults = await Opinions.findAndCountAll();
+    const fetchingResults = await Opinions.findAll({
+      limit: MAX_NUMBER,
+      offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+    });
+
     res.render("dashboard/opinions", {
       title: "Opinions",
       path: "/dashboard/opinions",
       opinions: fetchingResults,
+      numberOfLinks: Math.ceil(numberOfResults.count / 5),
     });
   } catch (e) {
     errorRaiser(e, next);

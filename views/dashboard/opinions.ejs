@@ -47,6 +47,22 @@
               </div>
             <% }) %>
           </div>
+          <nav aria-label="navigation" class="my-3">
+            <ul class="pagination justify-content-center">
+              <% for (let i = 0; i < numberOfLinks; i++) { %>
+                <li class="page-item">
+                  <a class="page-link" href="<%= path %>/?page=<%= i + 1 %>">
+                    <%= i + 1 %>
+                  </a>
+                </li>
+                <!--<li class="page-item"><a class="page-link" href="<%= path %>/?page=1">1</a></li>
+              <li class="page-item"><a class="page-link" href="<%= path %>/?page=2">2</a></li>
+              <li class="page-item"><a class="page-link" href="<%= path %>/?page=3">3</a></li>
+              <li class="page-item"><a class="page-link" href="<%= path %>/?page=4">4</a></li>
+              <li class="page-item"><a class="page-link" href="<%= path %>/?page=5">5</a></li>-->
+              <% } %>
+            </ul>
+          </nav>
         </div>
       </div>
     </div>

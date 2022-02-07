@@ -25,11 +25,20 @@
         <li class="nav-item">
           <a class="nav-link <%- path === "/opinions" ? "active" : ""; %>" href="/opinions">Opinions</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link login-button btn" href="/login">
-            Login
-          </a>
-        </li>
+        <% if (!isUserAuthenticated && !isAuthenticated) { %>
+          <li class="nav-item">
+            <a class="nav-link login-button btn" href="/login">
+              Login
+            </a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <form action="/logout" method="POST">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+              <button class="nav-link login-button btn">Logout</button>
+            </form>
+          </li>
+        <% } %>
         <% if (isAuthenticated) { %>
           <li class="nav-item">
             <a class="nav-link" href="/dashboard/overview">
