@@ -11,11 +11,15 @@ const getUsers = async (req, res, next) => {
 
 const postDeleteUser = async (req, res, next) => {
   const userId = req.body.userId;
-  const deletingResult = await (await Users.findByPk(userId)).destroy();
-  if (deletingResult[0] >= 1) {
-    res.redirect("/dashboard/users");
-  } else {
-    res.status(400).redirect("/dashboard/users");
+  try {
+    const deletingResult = await (await Users.findByPk(userId)).destroy();
+    if (deletingResult[0] >= 1) {
+      res.redirect("/dashboard/users");
+    } else {
+      res.status(500).redirect("/dashboard/users");
+    }
+  } catch (e) {
+    console.error(e, next);
   }
 };
 

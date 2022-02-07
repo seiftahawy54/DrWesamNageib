@@ -17,6 +17,8 @@ const Payment = sequelize.define("payments", {
       model: "courses",
       key: "course_id",
     },
+    onDelete: "cascade",
+    onUpdate: "cascade",
   },
   user_id: {
     type: Sequelize.STRING,
@@ -26,6 +28,8 @@ const Payment = sequelize.define("payments", {
       model: "users",
       key: "user_id",
     },
+    onDelete: "cascade",
+    onUpdate: "cascade",
   },
   status: {
     type: Sequelize.STRING,
