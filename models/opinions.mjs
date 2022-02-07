@@ -11,7 +11,7 @@ const Opinions = sequelize.define("opinions", {
   },
   sender_email: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: true,
   },
   sender_name: {
