@@ -10,6 +10,31 @@ import { Certificates } from "../models/about.mjs";
 import fs from "fs";
 import { Users } from "../models/users.mjs";
 
+export const getHomePage = async (req, res, next) => {
+  try {
+    const getCoursesResult = await Courses.findAll();
+    const getAllOpinionsResult = await Opinions.findAll();
+
+    let sortedCourses = sortCourses(getCoursesResult);
+
+    fs.readdir(path.resolve("public/imgs/imgs/opinions"), (err, files) => {
+      if (err) {
+        return errorRaiser(err, next);
+      }
+
+      res.render("home/home.ejs", {
+        title: "Homepage",
+        path: "/",
+        courses: sortedCourses,
+        opinions: getAllOpinionsResult,
+        whatsapp_opinions: files,
+      });
+    });
+  } catch (e) {
+    errorRaiser(e, next);
+  }
+};
+
 export const getShoppingCart = async (req, res, next) => {
   const cartJSON = JSON.parse(req.user.cart);
   const findingBoughtCourses = cartJSON.map(async (e) => {
@@ -59,24 +84,6 @@ export const postDeleteFromCart = async (req, res, next) => {
   // );
 
   res.redirect("/cart");
-};
-
-export const getHomePage = async (req, res, next) => {
-  try {
-    const getCoursesResult = await Courses.findAll();
-    const getAllOpinionsResult = await Opinions.findAll();
-
-    let sortedCourses = sortCourses(getCoursesResult);
-
-    res.render("home/home.ejs", {
-      title: "Homepage",
-      path: "/",
-      courses: sortedCourses,
-      opinions: getAllOpinionsResult,
-    });
-  } catch (e) {
-    errorRaiser(e, next);
-  }
 };
 
 export const getAboutPage = async (req, res, next) => {

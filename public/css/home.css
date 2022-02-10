@@ -60,6 +60,14 @@
   color: #545ee3;
 }
 
+.whatsapp_opinions .swiper {
+  height: 350px;
+  padding-block-end: 20px;
+}
+.whatsapp_opinions .swiper .swiper-pagination {
+  bottom: -3px;
+}
+
 .our-courses .courses-container {
   margin-block: 50px;
 }

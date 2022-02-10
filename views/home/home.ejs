@@ -22,6 +22,41 @@
   </div>
 </section>
 <!-- End main header Section -->
+<!-- Start Whatsapp Opinions -->
+
+
+<section class="testimonials whatsapp_opinions">
+  <div class="container">
+    <div class="text-center">
+      After Exams Opinions
+    </div>
+    <!-- Starting Slider -->
+    <!-- Slider main container -->
+    <div class="swiper main-slider">
+      <!-- Additional required wrapper -->
+
+      <div class="swiper-wrapper">
+        <!-- Slides -->
+        <% whatsapp_opinions.forEach((opinion, index) => { %>
+          <div class="swiper-slide">
+            <section class="client-container">
+              <img src="/imgs/imgs/opinions/<%- opinion %>" alt="opinion-<%= index %>"/>
+            </section>
+          </div>
+        <% }) %>
+      </div>
+      <!-- If we need pagination -->
+      <div class="swiper-pagination"></div>
+
+      <!-- If we need navigation buttons -->
+      <div class="swiper-button-prev d-none d-lg-block"></div>
+      <div class="swiper-button-next d-none d-lg-block"></div>
+    </div>
+    <!-- End Slider -->
+  </div>
+</section>
+
+<!-- End Whatsapp Opinions -->
 <!-- Start Our Courses Sections -->
 <section class="our-courses">
   <div class="container">
