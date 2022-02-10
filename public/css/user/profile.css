@@ -1,0 +1,17 @@
+.profile {
+  min-height: calc(100vh - 160px - 161px);
+}
+.profile .user-content {
+  line-height: 50px;
+  font-size: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.profile .user-img img {
+  height: 50vh;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 4px 4px 10px rgba(84, 94, 227, 0.4);
+}
+
+/*# sourceMappingURL=profile.css.map */

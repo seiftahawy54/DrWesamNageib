@@ -1,11 +1,66 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/auth/login.css"/>
+<link rel="stylesheet" href="/css/user/profile.css"/>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
 
 <section class="profile">
-  <h1>Welcome Mr. <%= title %></h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-6">
+        <div class="custom-head">
+          <h2>Your Data</h2>
+          <span></span>
+        </div>
+        <div class="user-content">
+          <div class="labels">
+            <div class="info">
+              Name
+            </div>
+            <div class="info">
+              Phone Number
+            </div>
+            <div class="info">
+              Email
+            </div>
+            <div class="info">
+              Specialization
+            </div>
+            <div class="info">
+              Your Courses
+            </div>
+          </div>
+          <div class="data">
+            <div class="info">
+              <%= user.name %>
+            </div>
+            <div class="info">
+              <%= user.whatsapp_no %>
+            </div>
+            <div class="info">
+              <%= user.email %>
+            </div>
+            <div class="info">
+              <%= user.specialization %>
+            </div>
+            <div class="info">
+              <% if (bought_courses.length !== 0) { %>
+                <% bought_courses.forEach(course => { %>
+                  <%- course %>
+                <% }); %>
+              <% } else { %> You've bought not courses yet! <a href="/courses">Buy now</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="user-img">
+          <img src="/imgs/imgs/user_img.png" alt="<%= user.name %>"/>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <%- include("../includes/footer.ejs"); %>

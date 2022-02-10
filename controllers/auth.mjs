@@ -65,7 +65,7 @@ export const postLogin = async (req, res, next) => {
       },
     });
 
-    if (findingUserResult) {
+    if (findingUserResult.length > 0) {
       const comparingResult = await bcrypt.compare(
         password,
         findingUserResult[0].password
@@ -95,8 +95,6 @@ export const postLogin = async (req, res, next) => {
         errorMessage: "Maybe user name or password is invalid!",
       });
     }
-
-    /**/
   }
 };
 
@@ -166,6 +164,7 @@ export const postRegister = async (req, res, next) => {
 
 export const getCompletePayment = (req, res, next) => {
   const selectedCourse = req.cookies["courseId"];
+  const coursesJSON = JSON.parse(req.user.cart);
   let message = req.flash("error")[0];
   if (!(typeof message === "string")) {
     message = null;

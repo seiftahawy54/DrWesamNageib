@@ -8,19 +8,60 @@ import { sortCourses } from "../utits/general_helper.mjs";
 import { Messages } from "../models/messages.mjs";
 import { Certificates } from "../models/about.mjs";
 import fs from "fs";
+import { Users } from "../models/users.mjs";
 
-const getShoppingCart = (req, res, next) => {
+export const getShoppingCart = async (req, res, next) => {
+  const cartJSON = JSON.parse(req.user.cart);
+  const findingBoughtCourses = cartJSON.map(async (e) => {
+    return await Courses.findByPk(e.item);
+  });
+
+  const bought_courses = [];
+
+  for (const course of findingBoughtCourses) {
+    bought_courses.push(await course);
+  }
+
+  let fullPrice = 0;
+
+  for (const course of bought_courses) {
+    fullPrice += parseFloat(course.price);
+  }
+
   res.render("shopping/index", {
     title: "Shopping Cart",
     path: "/cart",
-    cart: {
-      courses: [courseOptions, courseOptions],
-      totalPrice: 399,
-    },
+    cart: req.user.cart,
+    bought_courses,
+    totalPrice: fullPrice,
   });
 };
 
-const getHomePage = async (req, res, next) => {
+export const postDeleteFromCart = async (req, res, next) => {
+  const wantedToDelete = req.body.courseId;
+  const cartJSON = JSON.parse(req.user.cart);
+
+  const deletingIndex = cartJSON.findIndex((e) => e.item === wantedToDelete);
+  cartJSON.splice(deletingIndex, 1);
+  const filteredCart = cartJSON;
+
+  console.log(filteredCart);
+
+  const deletingResult = await Users.update(
+    { cart: JSON.stringify(filteredCart) },
+    { where: { user_id: req.user.user_id } }
+  );
+
+  console.log(deletingResult);
+
+  // console.log(
+  //   `deleted: ${wantedToDelete}, filtered: ${filteredCart}, ${deletingResult}`
+  // );
+
+  res.redirect("/cart");
+};
+
+export const getHomePage = async (req, res, next) => {
   try {
     const getCoursesResult = await Courses.findAll();
     const getAllOpinionsResult = await Opinions.findAll();
@@ -38,7 +79,7 @@ const getHomePage = async (req, res, next) => {
   }
 };
 
-const getAboutPage = async (req, res, next) => {
+export const getAboutPage = async (req, res, next) => {
   const aboutCertificates = await Certificates.findAll();
 
   res.render("about/index", {
@@ -48,7 +89,7 @@ const getAboutPage = async (req, res, next) => {
   });
 };
 
-const getContactPage = (req, res, next) => {
+export const getContactPage = (req, res, next) => {
   let message = req.flash("error")[0];
   if (!(typeof message === "string")) {
     message = null;
@@ -70,7 +111,7 @@ const getContactPage = (req, res, next) => {
   });
 };
 
-const postContactPage = async (req, res, next) => {
+export const postContactPage = async (req, res, next) => {
   const senderName = req.body.contact_name;
   const senderEmail = req.body.contact_email;
   const senderContent = req.body.contact_content;
@@ -108,13 +149,13 @@ const postContactPage = async (req, res, next) => {
   }
 };
 
-const downloadCV = (req, res, next) => {
+export const downloadCV = (req, res, next) => {
   const cvPath = path.resolve("public", "files");
   res.download(cvPath + "/dr_wesam_nageib.docx");
   res.status(200);
 };
 
-const getOpinionsPage = (req, res, next) => {
+export const getOpinionsPage = (req, res, next) => {
   fs.readdir(path.resolve("public/imgs/imgs/opinions"), (err, files) => {
     if (!err) {
       let opinionsImages = files;
@@ -130,7 +171,7 @@ const getOpinionsPage = (req, res, next) => {
   });
 };
 
-const getOpinionsForm = (req, res, next) => {
+export const getOpinionsForm = (req, res, next) => {
   res.render("opinions/form", {
     title: "Opinion Form",
     path: "/opinions/form",
@@ -138,7 +179,7 @@ const getOpinionsForm = (req, res, next) => {
   });
 };
 
-const postOpinions = async (req, res, next) => {
+export const postOpinions = async (req, res, next) => {
   const senderName = req.body.name;
   const senderEmail = req.body.email;
   const senderCourse = req.body.sender_course;
@@ -179,16 +220,4 @@ const postOpinions = async (req, res, next) => {
         });
       });
   }
-};
-
-export {
-  postContactPage,
-  getContactPage,
-  getAboutPage,
-  getHomePage,
-  getShoppingCart,
-  downloadCV,
-  getOpinionsPage,
-  getOpinionsForm,
-  postOpinions,
 };

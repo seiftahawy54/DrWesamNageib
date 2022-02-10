@@ -1,5 +1,5 @@
-@use '../utils/common' as common;
-@use '../utils/variables' as vars;
+@use "../utils/common" as common;
+@use "../utils/variables" as vars;
 
 .shopping-cart {
   margin-block: 30px;
@@ -12,8 +12,29 @@
 
   .cart-content {
     .purchase-details {
-      &:nth-of-type(odd) {
-        margin-block-end: 20px;
+      margin-block: 20px;
+      position: relative;
+
+      h3 {
+        word-break: break-word;
+      }
+
+      .delete-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: fit-content;
+
+        svg {
+          fill: red;
+          transition: transform 0.2s ease-in-out;
+          @include common.similarHW(40px);
+          cursor: pointer;
+
+          &:hover {
+            transform: rotate(30deg);
+          }
+        }
       }
     }
   }
@@ -24,7 +45,7 @@
     align-items: center;
     gap: 30px;
     font-size: vars.$lg_font_size;
-    background-color: #F2BA36;
+    background-color: #f2ba36;
     color: rgba(0, 0, 0, 0.9);
     margin-block-start: 30px;
 
@@ -33,5 +54,4 @@
       object-fit: contain;
     }
   }
-
 }

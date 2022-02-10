@@ -8,6 +8,7 @@ import {
   getOpinionsPage,
   postOpinions,
   getOpinionsForm,
+  postDeleteFromCart,
 } from "../controllers/shop.mjs";
 import express from "express";
 import { body } from "express-validator";
@@ -42,6 +43,7 @@ router
       body("opinion").isString().notEmpty(),
     ],
     postOpinions
-  );
+  )
+  .post("/delete_from_cart", postDeleteFromCart);
 
 export { router as shoppingRoutes };

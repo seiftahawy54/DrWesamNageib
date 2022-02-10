@@ -21,11 +21,11 @@
       padding: 13px;
       box-shadow: 4px 4px 5px rgb(vars.$main_color, 0.1);
       border-radius: 4px;
+      object-fit: cover;
     }
   }
 
   .opinions-join {
-
     display: flex;
     justify-content: center;
     align-items: center;

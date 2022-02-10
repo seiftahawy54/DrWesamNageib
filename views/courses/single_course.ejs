@@ -34,6 +34,7 @@
       </div>
       <div class="col-lg-4 col-xs-12">
         <div class="course-data">
+          <%- include("../includes/errorMessage.ejs"); %>
           <h2>
             <%- course.name %>
           </h2>
@@ -47,7 +48,7 @@
           </div>
           <form action="/courses/addToCart" method="post">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <input type="hidden" name="courseId" value="<%- course.course_id %>"/>
+            <input type="hidden" name="courseId" value="<%= course.course_id %>"/>
             <button class="btn" type="submit">
               Add to cart
             </button>

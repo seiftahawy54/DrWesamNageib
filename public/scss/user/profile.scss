@@ -1,0 +1,23 @@
+@use "../utils/variables" as vars;
+@use "../utils/mediaFns" as mediaQ;
+
+.profile {
+  min-height: calc(100vh - 160px - 161px);
+
+  .user-content {
+    line-height: 50px;
+    font-size: vars.$xl_font_size;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .user-img img {
+    height: 50vh;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 4px 4px 10px rgba(vars.$main_color, 0.4);
+  }
+}
+
+@include mediaQ.allSmScreens {
+}

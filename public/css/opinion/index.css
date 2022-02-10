@@ -17,6 +17,7 @@
   padding: 13px;
   box-shadow: 4px 4px 5px rgba(84, 94, 227, 0.1);
   border-radius: 4px;
+  object-fit: cover;
 }
 .opinions .opinions-join {
   display: flex;

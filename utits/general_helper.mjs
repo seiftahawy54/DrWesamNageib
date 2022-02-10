@@ -26,6 +26,7 @@ export const hashCreator = () => {
 export const extractError = (req) => {
   // Check if the message we extract is there not empty arr!
   let message = req.flash("error")[0];
+  console.log(`custom error message`, message);
   if (!(typeof message === "string")) {
     message = null;
   }
