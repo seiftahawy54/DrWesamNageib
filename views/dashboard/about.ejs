@@ -41,7 +41,7 @@
                 <div class="course-delete">
                   <form action="/dashboard/delete-certificate" method="post">
                     <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
-                    <input type="hidden" name="courseId" value="<%= certificate.certificate_id; %>">
+                    <input type="hidden" name="certificateId" value="<%= certificate.certificate_id; %>">
                     <button type="submit" class="btn btn-danger">Delete Certificate</button>
                   </form>
                 </div>

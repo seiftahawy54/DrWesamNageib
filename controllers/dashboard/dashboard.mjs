@@ -66,9 +66,9 @@ export const postDeleteOpinion = async (req, res, next) => {
       await Opinions.findByPk(req.body.opinionId)
     ).destroy();
     if (fetchingResults.rowCount === 1) {
-      res.redirect("/dashboard/opinions");
+      res.redirect("opinions");
     } else {
-      res.redirect("/dashboard/opinions");
+      res.redirect("opinions");
     }
   } catch (e) {
     errorRaiser(e, next);
@@ -100,43 +100,46 @@ export const getNewAbout = (req, res, next) => {
 };
 
 export const postAddNewAbout = async (req, res, next) => {
-  const certificateImage = req.files[0];
-  const errors = validationResult(req);
+  try {
+    const certificateImage = req.files[0];
 
-  if (certificateImage?.path) {
-    const addingResult = await Certificates.create({
-      certificate_img: certificateImage.path,
-    });
-  } else {
-    return res.render("dashboard/about_forms", {
-      title: "Certificate",
-      path: "/dashboard/about",
-      editMode: false,
-      certificates: [],
-      errorMessage: "Please enter a correct certificate image",
-      validationErrors: [
-        {
-          param: "certificate_img",
-        },
-      ],
-    });
+    if (certificateImage?.path) {
+      const addingResult = await Certificates.create({
+        certificate_img: certificateImage.path,
+      });
+
+      if (addingResult) {
+        console.log(`adding_result`, await addingResult);
+        res.redirect("about");
+      }
+    } else {
+      return res.render("dashboard/about_forms", {
+        title: "Certificate",
+        path: "/dashboard/about",
+        editMode: false,
+        certificates: [],
+        errorMessage: "Please enter a correct certificate image",
+        validationErrors: [
+          {
+            param: "certificate_img",
+          },
+        ],
+      });
+    }
+  } catch (e) {
+    errorRaiser(e, next);
   }
+};
 
-  if (addingResult._options.isNewRecord) {
-    console.log(`adding_result`, await addingResult);
-    res.redirect("/dashboard/about");
-  } else {
-    res.render("dashboard/about_forms", {
-      title: "Certificate",
-      path: "/dashboard/about",
-      editMode: false,
-      certificates: [],
-      errorMessage: "Please enter a correct certificate image",
-      validationErrors: [
-        {
-          param: "certificate_img",
-        },
-      ],
-    });
+export const postDeleteCertificate = async (req, res, next) => {
+  try {
+    const certificateId = req.body.certificateId;
+    const deletingResult = await (
+      await Certificates.findByPk(certificateId)
+    ).destroy();
+    console.log(deletingResult);
+    res.redirect("about");
+  } catch (e) {
+    errorRaiser(e, next);
   }
 };

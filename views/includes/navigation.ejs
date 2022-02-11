@@ -50,11 +50,13 @@
             </a>
           </li>
         <% } %>
-        <li class="nav-item">
-          <a class="nav-link <%- path === "/cart" ? "active" : ""; %>" href="/cart">
-            <%- include('../../public/imgs/svgs/cart.svg') %>
-          </a>
-        </li>
+        <% if (isUserAuthenticated) { %>
+          <li class="nav-item">
+            <a class="nav-link <%- path === "/cart" ? "active" : ""; %>" href="/cart">
+              <%- include('../../public/imgs/svgs/cart.svg') %>
+            </a>
+          </li>
+        <% } %>
       </ul>
     </div>
   </div>

@@ -1,11 +1,17 @@
 import { Payment } from "../../models/payment.mjs";
 import { Courses } from "../../models/courses.mjs";
 import { Users } from "../../models/users.mjs";
+import { extractCart } from "../../utits/cart_helpers.mjs";
 
 export const getPaymentsPage = async (req, res, next) => {
   const allPayments = await Payment.findAll();
-  let courses_names = allPayments.map(async (payment) => {
-    return await Courses.findByPk(payment.course_id);
+
+  const coursesFromString = extractCart({
+    user: { cart: allPayments[0].course_id },
+  });
+
+  let courses_names = coursesFromString.map(async (payment) => {
+    return await Courses.findByPk(payment.item);
   });
 
   let users_names = allPayments.map(async (payment) => {

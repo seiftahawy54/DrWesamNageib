@@ -7,6 +7,7 @@ import {
   getAboutPage,
   getNewAbout,
   postAddNewAbout,
+  postDeleteCertificate,
 } from "../controllers/dashboard/dashboard.mjs";
 
 import {
@@ -66,6 +67,7 @@ router
   .get("/about", getAboutPage)
   .get("/add-new-about", getNewAbout)
   .post("/add-new-about", postAddNewAbout)
-  .get("/payments", getPaymentsPage);
+  .get("/payments", getPaymentsPage)
+  .post("/delete-certificate", postDeleteCertificate);
 //
 export { router as dashboardRoutes };

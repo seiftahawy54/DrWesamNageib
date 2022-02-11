@@ -1,12 +1,30 @@
 import { Users } from "../../models/users.mjs";
+import { Opinions } from "../../models/opinions.mjs";
+import { errorRaiser } from "../../utits/error_raiser.mjs";
 
 const getUsers = async (req, res, next) => {
-  const allUsers = await Users.findAll();
-  res.render("dashboard/users", {
-    title: "Users page",
-    path: "/dashboard/users",
-    users: allUsers,
-  });
+  // const allUsers = await Users.findAll();
+  try {
+    let pageNumber = req.query.page;
+    if (!pageNumber) {
+      pageNumber = 1;
+    }
+    const MAX_NUMBER = 5;
+    const numberOfResults = await Users.findAndCountAll();
+    const fetchingResults = await Users.findAll({
+      limit: MAX_NUMBER,
+      offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+    });
+
+    res.render("dashboard/users", {
+      title: "Users page",
+      path: "/dashboard/users",
+      users: fetchingResults,
+      numberOfLinks: Math.ceil(numberOfResults.count / 5),
+    });
+  } catch (e) {
+    errorRaiser(e, next);
+  }
 };
 
 const postDeleteUser = async (req, res, next) => {
