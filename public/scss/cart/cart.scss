@@ -3,6 +3,7 @@
 
 .shopping-cart {
   margin-block: 30px;
+  min-height: calc(100vh - 311px);
 
   .cart-header {
     display: flex;

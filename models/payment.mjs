@@ -12,13 +12,13 @@ const Payment = sequelize.define("payments", {
   course_id: {
     type: Sequelize.STRING,
     allowNull: false,
-    foreignKey: true,
-    references: {
-      model: "courses",
-      key: "course_id",
-    },
-    onDelete: "cascade",
-    onUpdate: "cascade",
+    // foreignKey: true,
+    // references: {
+    //   model: "courses",
+    //   key: "course_id",
+    // },
+    // onDelete: "cascade",
+    // onUpdate: "cascade",
   },
   user_id: {
     type: Sequelize.STRING,

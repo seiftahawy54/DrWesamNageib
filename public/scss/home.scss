@@ -76,6 +76,17 @@
     height: 350px;
     padding-block-end: 20px;
 
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    img {
+      object-fit: cover;
+      max-width: 100%;
+    }
+
     .swiper-pagination {
       bottom: -3px;
     }

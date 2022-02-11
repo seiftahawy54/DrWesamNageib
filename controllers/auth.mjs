@@ -11,6 +11,11 @@ import { errorRaiser } from "../utits/error_raiser.mjs";
 import { Users } from "../models/users.mjs";
 import { Payment } from "../models/payment.mjs";
 import bcrypt from "bcrypt";
+import {
+  calcTotalFromCart,
+  extractCart,
+  getCoursesFormCart,
+} from "../utits/cart_helpers.mjs";
 
 const Environment =
   process.env.NODE_ENV === "production"
@@ -141,6 +146,7 @@ export const postRegister = async (req, res, next) => {
         whatsapp_no,
         specialization,
         password: await encryptionResult,
+        cart: [],
         type: 2,
       });
       res.redirect("/login");
@@ -162,16 +168,27 @@ export const postRegister = async (req, res, next) => {
   }
 };
 
-export const getCompletePayment = (req, res, next) => {
-  const selectedCourse = req.cookies["courseId"];
-  const coursesJSON = JSON.parse(req.user.cart);
+export const getCompletePayment = async (req, res, next) => {
+  // const selectedCourse = req.cookies["courseId"];
+  const coursesJSON = extractCart(req);
   let message = req.flash("error")[0];
   if (!(typeof message === "string")) {
     message = null;
   }
 
-  if (selectedCourse) {
-    Courses.findByPk(selectedCourse)
+  if (coursesJSON.length !== 0 && Array.isArray(coursesJSON)) {
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+
+    const boughtCourses = await getCoursesFormCart(coursesJSON, req);
+
+    res.render("auth/complete-payment", {
+      title: "complete payment",
+      path: "/complete-payment",
+      bought_courses: boughtCourses,
+      clientId,
+      errorMessage: message,
+    });
+    /*Courses.findByPk(selectedCourse)
       .then((dbResult) => {
         const selectedData = dbResult;
         // Removing Arabic Description for avoiding parsing error;
@@ -191,15 +208,17 @@ export const getCompletePayment = (req, res, next) => {
       })
       .catch((err) => {
         errorRaiser(err, next);
-      });
+      });*/
   } else {
-    res.redirect("/");
+    res.redirect("/courses");
   }
 };
 
 export const postCreateOrder = async (req, res, next) => {
   const request = new paypal.orders.OrdersCreateRequest();
-  const total = req.body.item.price;
+  const cart = await extractCart(req);
+  const total = await calcTotalFromCart(cart, req);
+
   request.prefer("return=representation");
   request.requestBody({
     intent: "CAPTURE",
@@ -221,8 +240,6 @@ export const postCreateOrder = async (req, res, next) => {
 
   try {
     const order = await paypalClient.execute(request);
-
-    console.log("order: ", order);
     req.session.userOrder = order;
     res.json({ id: order.result.id });
   } catch (e) {
@@ -233,37 +250,27 @@ export const postCreateOrder = async (req, res, next) => {
 
 export const postSuccess = async (req, res, next) => {
   try {
-    const selectedCourse = req.cookies["courseId"];
-    const userDataFromSession = req.session.newUser;
-    Users.create({
-      user_id: userDataFromSession.id,
-      name: userDataFromSession.name,
-      email: userDataFromSession.email,
-      whatsapp_no: userDataFromSession.whatsapp_no,
-      specialization: userDataFromSession.specialization,
+    Payment.create({
+      user_id: req.user.user_id,
+      course_id: req.user.cart,
+      status: "success",
+      details: req.session.userOrder,
     })
-      .then((createdUser) => {
-        /*console.log("adding result", result);
-        Users.update(
-          { payment_details: req.session.userOrder },
-          { where: { user_id: userDataFromSession.id } }
-        ).then((result) => {
-          console.log("updating result", result);
-          res.redirect("/success_payment");
-        });*/
-        Payment.create({
-          user_id: userDataFromSession.id,
-          course_id: selectedCourse,
-          status: "success",
-          details: req.session.userOrder,
-        });
-
-        res.redirect("/success_payment");
+      .then((result) => {
+        return Users.update(
+          {
+            cart: "[]",
+          },
+          { where: { user_id: req.user.user_id } }
+        );
+      })
+      .then((result) => {
+        return res.redirect("/success_payment");
       })
       .catch((err) => {
         Payment.create({
-          user_id: userDataFromSession.id,
-          course_id: selectedCourse,
+          user_id: req.user.user_id,
+          course_id: req.user.cart,
           status: "failed",
           details: req.session.userOrder,
         });

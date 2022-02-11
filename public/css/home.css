@@ -64,6 +64,15 @@
   height: 350px;
   padding-block-end: 20px;
 }
+.whatsapp_opinions .swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.whatsapp_opinions .swiper img {
+  object-fit: cover;
+  max-width: 100%;
+}
 .whatsapp_opinions .swiper .swiper-pagination {
   bottom: -3px;
 }

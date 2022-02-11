@@ -5,7 +5,7 @@
 }
 */
 .single-course-section {
-  margin-block: 30px;
+  min-height: calc(100vh - 161px - 131px);
 }
 .single-course-section .bread-crumb {
   display: flex;

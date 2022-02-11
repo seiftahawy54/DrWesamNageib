@@ -6,6 +6,7 @@
 */
 .shopping-cart {
   margin-block: 30px;
+  min-height: calc(100vh - 311px);
 }
 .shopping-cart .cart-header {
   display: flex;

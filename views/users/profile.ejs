@@ -7,7 +7,7 @@
 <section class="profile">
   <div class="container">
     <div class="row">
-      <div class="col-6">
+      <div class="col-lg-6 col-xs-12">
         <div class="custom-head">
           <h2>Your Data</h2>
           <span></span>
@@ -43,18 +43,23 @@
             <div class="info">
               <%= user.specialization %>
             </div>
-            <div class="info">
-              <% if (bought_courses.length !== 0) { %>
-                <% bought_courses.forEach(course => { %>
-                  <%- course %>
-                <% }); %>
+            <div class="info payments-details">
+              <% if (bought_courses?.length !== 0) { %>
+                <div class="bought_courses">
+                  <span>Course Name</span>
+                  <span>Course Price</span>
+                  <% bought_courses.forEach(course => { %>
+                    <span><%= course.name %></span>
+                    <span><%= course.price %></span>
+                  <% }); %>
+                </div>
               <% } else { %> You've bought not courses yet! <a href="/courses">Buy now</a>
               <% } %>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-lg-6 col-xs-12">
         <div class="user-img">
           <img src="/imgs/imgs/user_img.png" alt="<%= user.name %>"/>
         </div>

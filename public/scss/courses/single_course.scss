@@ -2,7 +2,7 @@
 @use "../utils/variables" as vars;
 
 .single-course-section {
-  margin-block: 30px;
+  min-height: calc(100vh - 161px - 131px);
 
   .bread-crumb {
     display: flex;

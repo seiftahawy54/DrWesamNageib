@@ -3,7 +3,7 @@
 }
 .profile .user-content {
   line-height: 50px;
-  font-size: 24px;
+  font-size: 20px;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
@@ -12,6 +12,39 @@
   object-fit: cover;
   border-radius: 50%;
   box-shadow: 4px 4px 10px rgba(84, 94, 227, 0.4);
+}
+.profile .payments-details .bought_courses {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 575px) {
+  .profile .user-content {
+    font-size: 12px;
+  }
+  .profile .user-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-block-start: 90px;
+  }
+  .profile .user-img img {
+    height: 200px;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .profile .user-content {
+    font-size: 12px;
+  }
+  .profile .user-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-block-start: 90px;
+  }
+  .profile .user-img img {
+    height: 200px;
+  }
 }
 
 /*# sourceMappingURL=profile.css.map */

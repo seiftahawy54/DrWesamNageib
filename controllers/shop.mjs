@@ -9,6 +9,10 @@ import { Messages } from "../models/messages.mjs";
 import { Certificates } from "../models/about.mjs";
 import fs from "fs";
 import { Users } from "../models/users.mjs";
+import {
+  calcTotalFromCart,
+  getCoursesFormCart,
+} from "../utits/cart_helpers.mjs";
 
 export const getHomePage = async (req, res, next) => {
   try {
@@ -37,21 +41,8 @@ export const getHomePage = async (req, res, next) => {
 
 export const getShoppingCart = async (req, res, next) => {
   const cartJSON = JSON.parse(req.user.cart);
-  const findingBoughtCourses = cartJSON.map(async (e) => {
-    return await Courses.findByPk(e.item);
-  });
-
-  const bought_courses = [];
-
-  for (const course of findingBoughtCourses) {
-    bought_courses.push(await course);
-  }
-
-  let fullPrice = 0;
-
-  for (const course of bought_courses) {
-    fullPrice += parseFloat(course.price);
-  }
+  const bought_courses = await getCoursesFormCart(req);
+  const fullPrice = await calcTotalFromCart(cartJSON, req);
 
   res.render("shopping/index", {
     title: "Shopping Cart",

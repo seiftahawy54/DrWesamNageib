@@ -27,9 +27,9 @@
 
 <section class="testimonials whatsapp_opinions">
   <div class="container">
-    <div class="text-center">
+    <h2 class="text-center my-5">
       After Exams Opinions
-    </div>
+    </h2>
     <!-- Starting Slider -->
     <!-- Slider main container -->
     <div class="swiper main-slider">
@@ -39,8 +39,8 @@
         <!-- Slides -->
         <% whatsapp_opinions.forEach((opinion, index) => { %>
           <div class="swiper-slide">
-            <section class="client-container">
-              <img src="/imgs/imgs/opinions/<%- opinion %>" alt="opinion-<%= index %>"/>
+            <section class="opinion-container">
+              <img src="/imgs/imgs/opinions/<%- opinion %>" alt="opinion-<%= index %>" class="img-fluid"/>
             </section>
           </div>
         <% }) %>
