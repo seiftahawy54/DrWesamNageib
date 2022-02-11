@@ -61,7 +61,6 @@
 }
 
 .whatsapp_opinions .swiper {
-  height: 350px;
   padding-block-end: 20px;
 }
 .whatsapp_opinions .swiper .swiper-slide {
@@ -70,8 +69,10 @@
   align-items: center;
 }
 .whatsapp_opinions .swiper img {
-  object-fit: cover;
+  object-fit: contain;
   max-width: 100%;
+  width: 500px;
+  height: 500px;
 }
 .whatsapp_opinions .swiper .swiper-pagination {
   bottom: -3px;
