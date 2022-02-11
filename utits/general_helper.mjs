@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { unlink } from "fs/promises";
 
 export const sortCourses = (courses) => {
   let coursesRanks = [];
@@ -31,4 +32,13 @@ export const extractError = (req) => {
     message = null;
   }
   return message;
+};
+
+export const deleteFile = async (filePath) => {
+  try {
+    await unlink(filePath);
+    return true;
+  } catch (e) {
+    return false;
+  }
 };
