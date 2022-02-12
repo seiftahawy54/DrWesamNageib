@@ -8,6 +8,8 @@ import {
   getNewAbout,
   postAddNewAbout,
   postDeleteCertificate,
+  getUpdateOpinion,
+  postUpdateOpinion,
 } from "../controllers/dashboard/dashboard.mjs";
 
 import {
@@ -63,6 +65,17 @@ router
   .post("/edit-user/:userId", postUpdateUser)
   .post("/delete-message", postDeleteMessage)
   .get("/opinions", getOpinionsPage)
+  .get("/edit-opinion/:opinionId", getUpdateOpinion)
+  .post(
+    "/edit-opinion",
+    [
+      body("sender_name").isString().notEmpty(),
+      body("sender_email").isEmail().notEmpty(),
+      body("sender_course").isString().notEmpty(),
+      body("opinion").isString().notEmpty(),
+    ],
+    postUpdateOpinion
+  )
   .post("/delete-opinion", postDeleteOpinion)
   .get("/about", getAboutPage)
   .get("/add-new-about", getNewAbout)

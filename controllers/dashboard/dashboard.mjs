@@ -5,6 +5,7 @@ import { Opinions } from "../../models/opinions.mjs";
 import { Certificates } from "../../models/about.mjs";
 import { errorRaiser } from "../../utits/error_raiser.mjs";
 import { validationResult } from "express-validator";
+import moment from "moment";
 
 export const getOverview = async (req, res, next) => {
   const numberOfUsers = await Users.findAndCountAll();
@@ -69,6 +70,55 @@ export const postDeleteOpinion = async (req, res, next) => {
       res.redirect("opinions");
     } else {
       res.redirect("opinions");
+    }
+  } catch (e) {
+    errorRaiser(e, next);
+  }
+};
+
+export const getUpdateOpinion = async (req, res, next) => {
+  try {
+    const opinionId = req.params.opinionId;
+    const findingOpinion = await Opinions.findByPk(opinionId);
+
+    res.render("dashboard/opinions_form", {
+      title: "Update Opinion",
+      path: "/dashboard/update_opinion",
+      opinion: findingOpinion,
+      errorMessage: "",
+      validationErrors: [],
+      editMode: true,
+      moment: moment,
+    });
+  } catch (e) {
+    errorRaiser(e, next);
+  }
+};
+
+export const postUpdateOpinion = async (req, res, next) => {
+  try {
+    const email = req.body.sender_email;
+    const name = req.body.sender_name;
+    const course = req.body.sender_course;
+    const opinion = req.body.opinion;
+    const errors = validationResult(errors);
+
+    if (!errors.isEmpty()) {
+      res.render("dashboard/opinions_form", {
+        title: "Update Opinion",
+        path: "/dashboard/update_opinion",
+        opinion: {
+          sender_name: name,
+          sender_email: email,
+          sender_course: course,
+          sender_message: opinion,
+        },
+        errorMessage: "",
+        validationErrors: [],
+        editMode: true,
+      });
+    } else {
+      const updatingResult = await Opinions.update();
     }
   } catch (e) {
     errorRaiser(e, next);

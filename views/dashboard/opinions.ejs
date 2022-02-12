@@ -26,7 +26,7 @@
               <span class="opinion-name">Sender Name</span>
               <span class="opinion-course">Sender Course</span>
               <span class="opinion-message">Sender Message</span>
-              <!--              <span class="course-update">Update Opinion</span>-->
+              <span class="course-update">Update Opinion</span>
               <span class="course-delete">Delete Opinion</span>
             </div>
             <% opinions.forEach(opinion => { %>
@@ -34,9 +34,9 @@
                 <span class="opinion-name"><%= opinion.sender_name; %></span>
                 <span class="opinion-course"><%= opinion.sender_course; %></span>
                 <span class="opinion-message"><%= opinion.sender_message; %></span>
-                <!--<div class="opinion-update">
+                <div class="opinion-update">
                   <a href="/dashboard/edit-opinion/<%= opinion.opinion_id %>" class="btn btn-success">Update Opinion</a>
-                </div>-->
+                </div>
                 <div class="course-delete">
                   <form action="/dashboard/delete-opinion" method="post">
                     <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
