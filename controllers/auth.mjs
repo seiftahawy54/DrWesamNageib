@@ -13,6 +13,7 @@ import { Payment } from "../models/payment.mjs";
 import bcrypt from "bcrypt";
 import {
   calcTotalFromCart,
+  convertCartToArr,
   extractCart,
   getCoursesFormCart,
 } from "../utits/cart_helpers.mjs";
@@ -146,7 +147,7 @@ export const postRegister = async (req, res, next) => {
         whatsapp_no,
         specialization,
         password: await encryptionResult,
-        cart: [],
+        cart: "{}",
         type: 2,
       });
       res.redirect("/login");
@@ -170,7 +171,7 @@ export const postRegister = async (req, res, next) => {
 
 export const getCompletePayment = async (req, res, next) => {
   // const selectedCourse = req.cookies["courseId"];
-  const coursesJSON = extractCart(req);
+  const coursesJSON = extractCart(req.body.cart);
   let message = req.flash("error")[0];
   if (!(typeof message === "string")) {
     message = null;
@@ -179,7 +180,7 @@ export const getCompletePayment = async (req, res, next) => {
   if (coursesJSON.length !== 0 && Array.isArray(coursesJSON)) {
     const clientId = process.env.PAYPAL_CLIENT_ID;
 
-    const boughtCourses = await getCoursesFormCart(coursesJSON, req);
+    const boughtCourses = await getCoursesFormCart(coursesJSON);
 
     res.render("auth/complete-payment", {
       title: "complete payment",
@@ -249,6 +250,9 @@ export const postCreateOrder = async (req, res, next) => {
 };
 
 export const postSuccess = async (req, res, next) => {
+  // const coursesArrayJSON = extractCart(req.user.cart);
+  // const courseIdsArr = convertCartToArr(coursesArrayJSON);
+  // res.send(courseIdsArr);
   try {
     Payment.create({
       user_id: req.user.user_id,
@@ -259,7 +263,7 @@ export const postSuccess = async (req, res, next) => {
       .then((result) => {
         return Users.update(
           {
-            cart: "[]",
+            cart: "{}",
           },
           { where: { user_id: req.user.user_id } }
         );

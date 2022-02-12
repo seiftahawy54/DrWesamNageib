@@ -71,6 +71,7 @@
               <label for="opinion">Opinion</label>
             </div>
 
+            <input type="hidden" name="opinionId" value="<%= opinion.opinion_id %>"/>
             <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
             <button type="submit" class="btn submitBtn">
               Update Opinion

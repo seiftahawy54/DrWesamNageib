@@ -18,9 +18,8 @@ export const updateCart = async (courseId, req, newCart, next) => {
   }
 };
 
-export const getCoursesFormCart = async (req) => {
-  const coursesJSON = JSON.parse(req.user.cart);
-  const boughtCoursesPromises = await coursesJSON.map(async (course) => {
+export const getCoursesFormCart = async (cart) => {
+  const boughtCoursesPromises = await cart.map(async (course) => {
     return await Courses.findByPk(course.item);
   });
 
@@ -30,11 +29,13 @@ export const getCoursesFormCart = async (req) => {
     boughtCourses.push(await key);
   }
 
+  console.log(`bought_courses: `, boughtCourses);
+
   return boughtCourses;
 };
 
-export const calcTotalFromCart = async (cart, req) => {
-  const courses = await getCoursesFormCart(req);
+export const calcTotalFromCart = async (cart) => {
+  const courses = await getCoursesFormCart(cart);
 
   let fullPrice = 0;
 
@@ -47,4 +48,21 @@ export const calcTotalFromCart = async (cart, req) => {
 
 export const extractCart = (req) => {
   return JSON.parse(req.user.cart);
+};
+
+export const convertCartToArr = (cart) => {
+  return cart.map(({ item }) => {
+    return item;
+  });
+};
+
+export const getArray = (cart) => {
+  return cart.match(/[\w.-]+/g).map(Number);
+};
+
+export const getPgArray = (cart) => {
+  cart = cart.replace("[", "{");
+  cart = cart.replace("]", "}");
+  cart = cart.replace(new RegExp(/ /g), "");
+  return Array.from(cart);
 };

@@ -40,6 +40,7 @@ router
       body("name").isString().notEmpty(),
       body("email").isEmail().notEmpty(),
       body("sender_course").isString().notEmpty(),
+      body("date").isDate().notEmpty(),
       body("opinion").isString().notEmpty(),
     ],
     postOpinions

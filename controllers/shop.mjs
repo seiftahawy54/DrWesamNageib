@@ -40,17 +40,28 @@ export const getHomePage = async (req, res, next) => {
 };
 
 export const getShoppingCart = async (req, res, next) => {
-  const cartJSON = JSON.parse(req.user.cart);
-  const bought_courses = await getCoursesFormCart(req);
-  const fullPrice = await calcTotalFromCart(cartJSON, req);
+  const cartJSON = extractCart(req);
+  if (!Array.isArray(cartJSON)) {
+    const bought_courses = await getCoursesFormCart([cartJSON]);
 
-  res.render("shopping/index", {
-    title: "Shopping Cart",
-    path: "/cart",
-    cart: req.user.cart,
-    bought_courses,
-    totalPrice: fullPrice,
-  });
+    res.render("shopping/index", {
+      title: "Shopping Cart",
+      path: "/cart",
+      cart: req.user.cart,
+      bought_courses: [],
+      totalPrice: 0,
+    });
+  } else {
+    const bought_courses = await getCoursesFormCart(cartJSON);
+
+    res.render("shopping/index", {
+      title: "Shopping Cart",
+      path: "/cart",
+      cart: req.user.cart,
+      bought_courses: [],
+      totalPrice: 0,
+    });
+  }
 };
 
 export const postDeleteFromCart = async (req, res, next) => {

@@ -87,8 +87,8 @@ export const getUpdateOpinion = async (req, res, next) => {
       opinion: findingOpinion,
       errorMessage: "",
       validationErrors: [],
-      editMode: true,
       moment: moment,
+      editMode: true,
     });
   } catch (e) {
     errorRaiser(e, next);
@@ -97,28 +97,64 @@ export const getUpdateOpinion = async (req, res, next) => {
 
 export const postUpdateOpinion = async (req, res, next) => {
   try {
+    const opinionId = req.body.opinionId;
     const email = req.body.sender_email;
     const name = req.body.sender_name;
     const course = req.body.sender_course;
     const opinion = req.body.opinion;
-    const errors = validationResult(errors);
+    const date = req.body.date;
+    const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       res.render("dashboard/opinions_form", {
         title: "Update Opinion",
         path: "/dashboard/update_opinion",
         opinion: {
+          opinion_id: opinionId,
           sender_name: name,
           sender_email: email,
           sender_course: course,
           sender_message: opinion,
+          created_on: date,
         },
         errorMessage: "",
         validationErrors: [],
         editMode: true,
+        moment: moment,
       });
     } else {
-      const updatingResult = await Opinions.update();
+      console.log(`date: `, moment(date).format("YYYY-MM-DD HH:mm:ss"));
+      const updatingResult = await Opinions.update(
+        {
+          sender_name: name,
+          sender_email: email,
+          sender_course: course,
+          sender_message: opinion,
+          created_on: moment(date).format("YYYY-MM-DD HH:mm:ss"),
+        },
+        { where: { opinion_id: opinionId } }
+      );
+
+      if (updatingResult[0] === 1) {
+        return res.status(201).redirect("/dashboard/opinions");
+      } else {
+        return res.status(500).render("dashboard/opinions_form", {
+          title: "Update Opinion",
+          path: "/dashboard/update_opinion",
+          opinion: {
+            opinion_id: opinionId,
+            sender_name: name,
+            sender_email: email,
+            sender_course: course,
+            sender_message: opinion,
+            created_on: date,
+          },
+          errorMessage: "There's an error from database",
+          validationErrors: [],
+          editMode: true,
+          moment: moment,
+        });
+      }
     }
   } catch (e) {
     errorRaiser(e, next);
