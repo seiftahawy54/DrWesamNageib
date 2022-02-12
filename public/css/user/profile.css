@@ -7,15 +7,35 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
+.profile .user-img {
+  position: relative;
+}
 .profile .user-img img {
   height: 50vh;
-  object-fit: cover;
+  max-width: 100%;
+  object-fit: contain;
   border-radius: 50%;
   box-shadow: 4px 4px 10px rgba(84, 94, 227, 0.4);
+}
+.profile .user-img form {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 5px;
+}
+.profile .user-img form button {
+  width: 50%;
 }
 .profile .payments-details .bought_courses {
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+.profile .payments-details .bought_courses span {
+  border: 1px solid #545ee3;
+  border-radius: 2px;
+  display: block;
+  padding: 4px;
 }
 
 @media (max-width: 575px) {

@@ -13,6 +13,7 @@ import { Payment } from "../models/payment.mjs";
 import bcrypt from "bcrypt";
 import {
   calcTotalFromCart,
+  calcTotalPrice,
   convertCartToArr,
   extractCart,
   getCoursesFormCart,
@@ -147,7 +148,7 @@ export const postRegister = async (req, res, next) => {
         whatsapp_no,
         specialization,
         password: await encryptionResult,
-        cart: "{}",
+        cart: "",
         type: 2,
       });
       res.redirect("/login");
@@ -171,21 +172,22 @@ export const postRegister = async (req, res, next) => {
 
 export const getCompletePayment = async (req, res, next) => {
   // const selectedCourse = req.cookies["courseId"];
-  const coursesJSON = extractCart(req.body.cart);
+  // const coursesJSON = extractCart(req.body.cart);
+  const courseId = req.user.cart;
   let message = req.flash("error")[0];
   if (!(typeof message === "string")) {
     message = null;
   }
 
-  if (coursesJSON.length !== 0 && Array.isArray(coursesJSON)) {
+  if (typeof req.user.cart === "string" && req.user.cart.length >= 0) {
     const clientId = process.env.PAYPAL_CLIENT_ID;
-
-    const boughtCourses = await getCoursesFormCart(coursesJSON);
+    // const boughtCourses = await getCoursesFormCart();
+    const boughtCourses = await Courses.findByPk(courseId);
 
     res.render("auth/complete-payment", {
       title: "complete payment",
       path: "/complete-payment",
-      bought_courses: boughtCourses,
+      bought_courses: [boughtCourses],
       clientId,
       errorMessage: message,
     });
@@ -211,14 +213,20 @@ export const getCompletePayment = async (req, res, next) => {
         errorRaiser(err, next);
       });*/
   } else {
+    req.flash("Please select a course to buy");
     res.redirect("/courses");
   }
 };
 
 export const postCreateOrder = async (req, res, next) => {
   const request = new paypal.orders.OrdersCreateRequest();
-  const cart = await extractCart(req);
-  const total = await calcTotalFromCart(cart, req);
+  // const cart = await extractCart(req);
+  // const total = await calcTotalFromCart(cart, req);
+  const cart = [req.user.cart];
+
+  const course = await Courses.findByPk(cart[0]);
+
+  const total = course.price;
 
   request.prefer("return=representation");
   request.requestBody({
@@ -263,7 +271,7 @@ export const postSuccess = async (req, res, next) => {
       .then((result) => {
         return Users.update(
           {
-            cart: "{}",
+            cart: "",
           },
           { where: { user_id: req.user.user_id } }
         );

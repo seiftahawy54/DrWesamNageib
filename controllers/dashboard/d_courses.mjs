@@ -1,12 +1,12 @@
-import { Courses } from "../../models/courses.mjs";
-import { validationResult } from "express-validator";
+import {Courses} from "../../models/courses.mjs";
+import {validationResult} from "express-validator";
 import {
   deleteFile,
   extractError,
   sortCourses,
 } from "../../utits/general_helper.mjs";
-import { resolve } from "path";
-import { errorRaiser } from "../../utits/error_raiser.mjs";
+import {resolve} from "path";
+import {errorRaiser} from "../../utits/error_raiser.mjs";
 
 const getCourses = async (req, res, next) => {
   const allCourses = await Courses.findAll();
@@ -34,28 +34,43 @@ const getAddNewCourse = (req, res, next) => {
 };
 
 const postAddNewCourse = async (req, res, next) => {
-  const courseName = req.body.name;
-  const coursePrice = req.body.price;
-  const courseDescription = req.body.description;
-  const courseThumbnail = req.body.thumbnail;
-  const courseRank = req.body.course_rank;
-  const courseImage = req.files[0].path;
-  const detailedImage = req.files[1].path;
-  // const imgUrl = courseImage.path;
-  // const detailedImage = courseImage.path;
-  const courseArName = req.body.arabic_name;
-  const errors = validationResult(req);
+  try {
+    const courseName = req.body.name;
+    const coursePrice = req.body.price;
+    const courseDescription = req.body.description;
+    const courseThumbnail = req.body.thumbnail;
+    const courseRank = req.body.course_rank;
+    const courseImage = req.files[0].path;
+    const detailedImage = req.files[1].path;
+    // const imgUrl = courseImage.path;
+    // const detailedImage = courseImage.path;
+    const courseArName = req.body.arabic_name;
+    const errors = validationResult(req);
 
-  // console.log("course name: ", courseName);
-  // console.log(errors.array().find((e) => e.param === "price"));
-  // console.log(`detailed image: `, );
+    // console.log("course name: ", courseName);
+    // console.log(errors.array().find((e) => e.param === "price"));
+    // console.log(`detailed image: `, );
 
-  if (!errors.isEmpty()) {
-    res.status(422).render("dashboard/courses_forms", {
-      title: "New Course",
-      path: "/dashboard/courses",
-      editMode: false,
-      course: {
+    if (!errors.isEmpty()) {
+      res.status(422).render("dashboard/courses_forms", {
+        title: "New Course",
+        path: "/dashboard/courses",
+        editMode: false,
+        course: {
+          name: courseName,
+          price: coursePrice,
+          course_img: courseImage,
+          detailed_img: detailedImage,
+          description: courseDescription,
+          ar_course_name: courseArName,
+          course_thumbnail: courseThumbnail,
+          course_rank: courseRank,
+        },
+        errorMessage: errors.array()[0].msg,
+        validationErrors: errors.array(),
+      });
+    } else {
+      const addingResult = await Courses.create({
         name: courseName,
         price: coursePrice,
         course_img: courseImage,
@@ -64,27 +79,16 @@ const postAddNewCourse = async (req, res, next) => {
         ar_course_name: courseArName,
         course_thumbnail: courseThumbnail,
         course_rank: courseRank,
-      },
-      errorMessage: errors.array()[0].msg,
-      validationErrors: errors.array(),
-    });
-  } else {
-    const addingResult = await Courses.create({
-      name: courseName,
-      price: coursePrice,
-      course_img: courseImage,
-      detailed_img: detailedImage,
-      description: courseDescription,
-      ar_course_name: courseArName,
-      course_thumbnail: courseThumbnail,
-      course_rank: courseRank,
-    });
+      });
 
-    if (addingResult._options.isNewRecord) {
-      res.redirect("/dashboard/courses");
-    } else {
-      res.redirect("/dashboard/add-new-course");
+      if (addingResult._options.isNewRecord) {
+        res.redirect("/dashboard/courses");
+      } else {
+        res.redirect("/dashboard/add-new-course");
+      }
     }
+  } catch (e) {
+    errorRaiser(e, next)
   }
 };
 
@@ -155,7 +159,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
           },
-          { where: { course_id: courseId } }
+          {where: {course_id: courseId}}
         );
 
         if (addingResult[0] === 1) {
@@ -189,7 +193,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
           },
-          { where: { course_id: courseId } }
+          {where: {course_id: courseId}}
         );
 
         // console.log(addingResult);
@@ -227,7 +231,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
           },
-          { where: { course_id: courseId } }
+          {where: {course_id: courseId}}
         );
 
         if (addingResult[0] === 1) {
@@ -268,7 +272,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
           },
-          { where: { course_id: courseId } }
+          {where: {course_id: courseId}}
         );
 
         if (addingResult[0] === 1) {

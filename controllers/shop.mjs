@@ -11,8 +11,10 @@ import fs from "fs";
 import { Users } from "../models/users.mjs";
 import {
   calcTotalFromCart,
+  getArray,
   getCoursesFormCart,
 } from "../utits/cart_helpers.mjs";
+import moment from "moment";
 
 export const getHomePage = async (req, res, next) => {
   try {
@@ -32,6 +34,7 @@ export const getHomePage = async (req, res, next) => {
         courses: sortedCourses,
         opinions: getAllOpinionsResult,
         whatsapp_opinions: files,
+        moment: moment,
       });
     });
   } catch (e) {
@@ -40,20 +43,18 @@ export const getHomePage = async (req, res, next) => {
 };
 
 export const getShoppingCart = async (req, res, next) => {
-  const cartJSON = extractCart(req);
-  if (!Array.isArray(cartJSON)) {
-    const bought_courses = await getCoursesFormCart([cartJSON]);
-
+  // const cartJSON = extractCart(req);
+  // const cart = getArray(req.user.cart);
+  if (typeof req.user.cart === "string" && req.user.cart.length > 0) {
+    const boughtCourse = await Courses.findByPk(req.user.cart);
     res.render("shopping/index", {
       title: "Shopping Cart",
       path: "/cart",
       cart: req.user.cart,
-      bought_courses: [],
-      totalPrice: 0,
+      bought_courses: [boughtCourse],
+      totalPrice: boughtCourse.price,
     });
   } else {
-    const bought_courses = await getCoursesFormCart(cartJSON);
-
     res.render("shopping/index", {
       title: "Shopping Cart",
       path: "/cart",
@@ -65,21 +66,45 @@ export const getShoppingCart = async (req, res, next) => {
 };
 
 export const postDeleteFromCart = async (req, res, next) => {
-  const wantedToDelete = req.body.courseId;
-  const cartJSON = JSON.parse(req.user.cart);
+  try {
+    const wantedToDelete = req.body.courseId;
+    const deletingResult = await Users.update(
+      {
+        cart: "",
+      },
+      { where: { user_id: req.user.user_id } }
+    );
 
-  const deletingIndex = cartJSON.findIndex((e) => e.item === wantedToDelete);
-  cartJSON.splice(deletingIndex, 1);
-  const filteredCart = cartJSON;
+    if (deletingResult[0] === 1) {
+      return res.redirect("/cart");
+    } else {
+      res.render("shopping/index", {
+        title: "Shopping Cart",
+        path: "/cart",
+        cart: req.user.cart,
+        bought_courses: [],
+        totalPrice: 0,
+        errorMessage: "Error in deleting that item, please contact moderators",
+      });
+    }
+  } catch (e) {
+    errorRaiser(e, next);
+  }
 
-  console.log(filteredCart);
-
-  const deletingResult = await Users.update(
-    { cart: JSON.stringify(filteredCart) },
-    { where: { user_id: req.user.user_id } }
-  );
-
-  console.log(deletingResult);
+  // const cartJSON = JSON.parse(req.user.cart);
+  //
+  // const deletingIndex = cartJSON.findIndex((e) => e.item === wantedToDelete);
+  // cartJSON.splice(deletingIndex, 1);
+  // const filteredCart = cartJSON;
+  //
+  // console.log(filteredCart);
+  //
+  // const deletingResult = await Users.update(
+  //   { cart: JSON.stringify(filteredCart) },
+  //   { where: { user_id: req.user.user_id } }
+  // );
+  //
+  // console.log(deletingResult);
 
   // console.log(
   //   `deleted: ${wantedToDelete}, filtered: ${filteredCart}, ${deletingResult}`

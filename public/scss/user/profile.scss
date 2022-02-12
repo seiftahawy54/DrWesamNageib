@@ -11,17 +11,44 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .user-img img {
-    height: 50vh;
-    object-fit: cover;
-    border-radius: 50%;
-    box-shadow: 4px 4px 10px rgba(vars.$main_color, 0.4);
+  .user-img {
+    position: relative;
+    //display: flex;
+    //justify-content: flex-end;
+    //align-items: center;
+
+    img {
+      height: 50vh;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      box-shadow: 4px 4px 10px rgba(vars.$main_color, 0.4);
+    }
+
+    form {
+      display: flex;
+      width: 100%;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 5px;
+
+      button {
+        width: 50%;
+      }
+    }
   }
 
   .payments-details {
     .bought_courses {
       display: grid;
       grid-template-columns: 1fr 1fr;
+
+      span {
+        border: 1px solid vars.$main_color;
+        border-radius: 2px;
+        display: block;
+        padding: 4px;
+      }
     }
   }
 }

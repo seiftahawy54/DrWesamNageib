@@ -16,28 +16,33 @@
           </a>
         </div>
         <hr/>
-        <div class="cart-content">
-          <% bought_courses.forEach(course => { %>
-            <div class="row purchase-details">
-              <div class="col-6">
-                <img src="<%- course.course_img %>" alt="<%- course.name %>" class="w-100 img-fluid"/>
+        <% if (bought_courses.length > 0) { %>
+          <div class="cart-content">
+            <% bought_courses.forEach(course => { %>
+              <div class="row purchase-details">
+                <div class="col-6">
+                  <img src="<%- course.course_img %>" alt="<%- course.name %>" class="w-100 img-fluid"/>
+                </div>
+                <div class="col-5">
+                  <h3><%- course.name; %></h3>
+                  <p>&dollar; <%- course.price; %></p>
+                  <p><%- course.description; %></p>
+                  <p><%- course.created_at; %></p>
+                </div>
+                <form action="/delete_from_cart" class="delete-icon" method="POST">
+                  <input type="hidden" name="courseId" value="<%- course.course_id %>">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                  <button class="reset-btn" type="submit">
+                    <%- include('../../public/imgs/svgs/delete_icon.svg') %>
+                  </button>
+                </form>
               </div>
-              <div class="col-5">
-                <h3><%- course.name; %></h3>
-                <p>&dollar; <%- course.price; %></p>
-                <p><%- course.description; %></p>
-                <p><%- course.created_at; %></p>
-              </div>
-              <form action="/delete_from_cart" class="delete-icon" method="POST">
-                <input type="hidden" name="courseId" value="<%- course.course_id %>">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <button class="reset-btn" type="submit">
-                  <%- include('../../public/imgs/svgs/delete_icon.svg') %>
-                </button>
-              </form>
-            </div>
-          <% }); %>
-        </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <h4>There's no courses in your cart, you can go and add some</h4>
+          <a href="/courses" class="btn">Courses</a>
+        <% } %>
       </div>
       <div class="col-4 offset-2">
         <h3>Order Summary</h3>

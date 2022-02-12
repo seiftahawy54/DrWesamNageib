@@ -26,25 +26,13 @@
               <span class="payment-rank">Course Name</span>
               <span class="payment-name">Payee Name</span>
               <span class="payment-price">Status</span>
-              <span class="payment-update">Update Payment</span>
-              <span class="payment-delete">Delete Payment</span>
             </div>
             <% payments.forEach((payment, index) => { %>
               <div class="table-row">
                 <span class="payment-rank"><%= courses[index].name; %></span>
                 <span class="payment-name"><%= users[index].name; %></span>
-                <span class="payment-price"><%= payment.status; %></span>
-                <div class="payment-update">
-                  <a href="/dashboard/edit-payment/<%= payment.payment_id %>?edit=true" class="btn btn-success">Update
-                    Payment</a>
-                </div>
-                <div class="payment-delete">
-                  <form action="/dashboard/delete-payment" method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
-                    <input type="hidden" name="paymentId" value="<%= payment.payment_id; %>">
-                    <button type="submit" class="btn btn-danger">Delete Payment</button>
-                  </form>
-                </div>
+                <span
+                  class="payment-price"><%= payment.status; %></span>
               </div>
             <% }); %>
           </div>

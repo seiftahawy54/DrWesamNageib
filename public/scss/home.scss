@@ -217,6 +217,14 @@
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
 }
 
+.social-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-block-start: 50px;
+}
+
 @include mediaQ.allSmScreens {
   video {
     object-fit: contain !important;

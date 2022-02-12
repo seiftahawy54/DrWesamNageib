@@ -123,7 +123,7 @@
                     <%- opinion.sender_name %>
                   </div>
                   <div class="client-date">
-                    <bdi><%- opinion.created_on ? opinion.created_on : new Date("01-22-2022").getDate() + '-' + new Date("01-22-2022").getMonth() + 1 + '-' + new Date("01-22-2022").getFullYear() %></bdi>
+                    <bdi><%- opinion.created_on ? moment(opinion.created_on).format("YYYY-MM-DD") : moment("22-01-2022").format("YYYY-MM-DD") %></bdi>
                   </div>
                 </div>
               </div>
@@ -160,6 +160,24 @@
 </div>
 
 <!-- End Floating Whatsapp -->
+<!-- Start Social Media -->
+
+<section class="social-media">
+  <a href="https://www.facebook.com/groups/690198168518293/?ref=share" class="reset-link" target="_blank">
+    <%- include("../../public/imgs/svgs/social_media/facebook.svg"); %>
+  </a>
+  <a href="https://www.linkedin.com/in/wesam-nageib-00132116a" class="reset-link" target="_blank">
+    <%- include("../../public/imgs/svgs/social_media/linkedin.svg"); %>
+  </a>
+  <a href="https://t.me/joinchat/HIXyqBaQ6su0JL3Q3jzjNg" class="reset-link" target="_blank">
+    <%- include("../../public/imgs/svgs/social_media/telegram.svg"); %>
+  </a>
+  <a href="https://youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA" class="reset-link" target="_blank">
+    <%- include("../../public/imgs/svgs/social_media/youtube.svg"); %>
+  </a>
+</section>
+
+<!-- End Social Media -->
 
 <%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>

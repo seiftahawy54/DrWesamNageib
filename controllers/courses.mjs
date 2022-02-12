@@ -3,7 +3,7 @@ import { errorRaiser } from "../utits/error_raiser.mjs";
 import { extractError, sortCourses } from "../utits/general_helper.mjs";
 import { Courses } from "../models/courses.mjs";
 import { Users } from "../models/users.mjs";
-import { getArray, updateCart } from "../utits/cart_helpers.mjs";
+import { getArray, getPgArray, updateCart } from "../utits/cart_helpers.mjs";
 
 const getIndex = async (req, res, next) => {
   try {
@@ -42,54 +42,62 @@ const singleCourse = async (req, res, next) => {
 const addCourseToCart = async (req, res, next) => {
   try {
     const courseId = req.body.courseId;
-    const cart = getArray(req.user.cart);
-    console.log(cart);
+    // const cart = getArray(req.user.cart);
+    const course = await Courses.findByPk(courseId);
 
-    // if (!req.user.cart) {
-    //   req.user.cart = [{ item: courseId }];
-    //   req.user.cart = JSON.stringify(req.user.cart);
-    //   await Users.update(
-    //     { cart: req.user.cart },
+    if (
+      req.user.cart.length !== 0 &&
+      req.user.cart.localeCompare(courseId) === 0
+    ) {
+      return res.render("courses/single_course", {
+        title: course.name,
+        path: "/courses",
+        course,
+        errorMessage: `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`,
+      });
+    } else if (
+      req.user.cart.length === 0 &&
+      req.user.cart.localeCompare(courseId) === 0
+    ) {
+      return res.render("courses/single_course", {
+        title: course.name,
+        path: "/courses",
+        course,
+        errorMessage: `You've already have item in your card! proceed to <a href='/cart'>checkout</a>?`,
+      });
+    } else {
+      req.user.cart = courseId;
+      const addingResult = await Users.update(
+        { cart: req.user.cart },
+        { where: { user_id: req.user.user_id } }
+      );
+
+      if (addingResult[0] === 1) {
+        res.redirect("/cart");
+      } else {
+        errorRaiser(addingResult, next);
+      }
+    }
+
+    // if (cart.find((id) => id === courseId)) {
+    //   return res.render("courses/single_course", {
+    //     title: course.name,
+    //     path: "/courses",
+    //     course,
+    //     errorMessage: `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`,
+    //   });
+    // } else {
+    //   cart.push(courseId);
+    //   console.log(cart);
+    //   const pgArr = getPgArray(cart);
+    //   console.log(pgArr);
+    //   const addingResult = await Users.update(
+    //     { cart: pgArr },
     //     { where: { user_id: req.user.user_id } }
     //   );
-    //   console.log(`cart: `, req.user.cart);
-    // } else {
-    //   let cartJSON = JSON.parse(req.user.cart);
-    //   if (cartJSON?.length === 0) {
-    //     const newCart = [{ item: courseId }];
-    //     const addingResult = await updateCart(courseId, req, newCart, next);
-    //     if (addingResult) {
-    //       return res.redirect("/cart");
-    //     } else {
-    //       return res.render("courses/single_course", {
-    //         title: course.name,
-    //         path: "/courses",
-    //         course,
-    //         errorMessage: `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`,
-    //       });
-    //     }
-    //   } else {
-    //     console.log(`cart: `, cartJSON);
-    //     const findingResult = cartJSON.find((e) => {
-    //       return e.item.localeCompare(courseId) === 0;
-    //     });
-    //     if (findingResult) {
-    //       return res.render("courses/single_course", {
-    //         title: course.name,
-    //         path: "/courses",
-    //         course,
-    //         errorMessage: `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`,
-    //       });
-    //     } else {
-    //       const newCart = [...cartJSON, { item: courseId }];
-    //       req.user.cart = JSON.stringify(newCart);
-    //       await Users.update(
-    //         { cart: req.user.cart },
-    //         { where: { user_id: req.user.user_id } }
-    //       );
-    //       console.log(req.user.cart);
-    //       res.redirect("/cart");
-    //     }
+    //
+    //   if (addingResult[0] === 1) {
+    //     res.redirect("/cart");
     //   }
     // }
   } catch (e) {

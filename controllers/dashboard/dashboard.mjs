@@ -22,19 +22,38 @@ export const getOverview = async (req, res, next) => {
 };
 
 export const getMessages = async (req, res, next) => {
-  const allMessages = await Messages.findAll();
-  res.render("dashboard/messages", {
-    title: "Messages page",
-    path: "/dashboard/messages",
-    messages: allMessages,
-  });
+  try {
+    let pageNumber = req.query.page;
+    if (!pageNumber) {
+      pageNumber = 1;
+    }
+    const MAX_NUMBER = 5;
+    const numberOfResults = await Messages.findAndCountAll();
+    const allMessages = await Messages.findAll({
+      limit: MAX_NUMBER,
+      offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+    });
+
+    res.render("dashboard/messages", {
+      title: "Messages page",
+      path: "/dashboard/messages",
+      messages: allMessages,
+      numberOfLinks: numberOfResults,
+    });
+  } catch (e) {
+    errorRaiser(e, next);
+  }
 };
 
 export const postDeleteMessage = async (req, res, next) => {
-  const messageId = req.body.messageId;
-  const deletingResult = await (await Messages.findByPk(messageId)).destroy();
-  console.log(deletingResult);
-  res.redirect("/dashboard/messages");
+  try {
+    const messageId = req.body.messageId;
+    const deletingResult = await (await Messages.findByPk(messageId)).destroy();
+    console.log(deletingResult);
+    res.redirect("/dashboard/messages");
+  } catch (e) {
+    errorRaiser(e, next);
+  }
 };
 
 export const getOpinionsPage = async (req, res, next) => {
@@ -162,16 +181,20 @@ export const postUpdateOpinion = async (req, res, next) => {
 };
 
 export const getAboutPage = async (req, res, next) => {
-  const certificates = await Certificates.findAll();
+  try {
+    const certificates = await Certificates.findAll();
 
-  res.render("dashboard/about", {
-    title: "Certificate",
-    path: "/dashboard/about",
-    editMode: false,
-    certificates: certificates,
-    errorMessage: "",
-    validationErrors: [],
-  });
+    res.render("dashboard/about", {
+      title: "Certificate",
+      path: "/dashboard/about",
+      editMode: false,
+      certificates: certificates,
+      errorMessage: "",
+      validationErrors: [],
+    });
+  } catch (e) {
+    errorRaiser(e, next);
+  }
 };
 
 export const getNewAbout = (req, res, next) => {

@@ -55,7 +55,8 @@ app.use(
   Multer({ storage: fileStorage, fileFilter: fileFilter }).any(
     "course_img",
     "detailed_img",
-    "certificate_img"
+    "certificate_img",
+    "user_img"
   )
 );
 

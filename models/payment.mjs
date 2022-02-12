@@ -10,7 +10,7 @@ const Payment = sequelize.define("payments", {
     defaultValue: hashCreator(),
   },
   course_id: {
-    type: Sequelize.ARRAY(Sequelize.STRING),
+    type: Sequelize.STRING,
     allowNull: false,
     foreignKey: true,
     references: {

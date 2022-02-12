@@ -20,7 +20,7 @@ export const updateCart = async (courseId, req, newCart, next) => {
 
 export const getCoursesFormCart = async (cart) => {
   const boughtCoursesPromises = await cart.map(async (course) => {
-    return await Courses.findByPk(course.item);
+    return await Courses.findByPk(course);
   });
 
   const boughtCourses = [];
@@ -28,9 +28,6 @@ export const getCoursesFormCart = async (cart) => {
   for (const key of boughtCoursesPromises) {
     boughtCourses.push(await key);
   }
-
-  console.log(`bought_courses: `, boughtCourses);
-
   return boughtCourses;
 };
 
@@ -57,12 +54,22 @@ export const convertCartToArr = (cart) => {
 };
 
 export const getArray = (cart) => {
-  return cart.match(/[\w.-]+/g).map(Number);
+  if (cart === "{}") {
+    return [];
+  } else {
+    return cart.match(/[\w.-]+/g).map(Number);
+  }
 };
 
 export const getPgArray = (cart) => {
+  cart = JSON.stringify(cart);
   cart = cart.replace("[", "{");
   cart = cart.replace("]", "}");
-  cart = cart.replace(new RegExp(/ /g), "");
-  return Array.from(cart);
+  return cart;
+};
+
+export const calcTotalPrice = (cart) => {
+  return cart.reduce((currentValue, previousValue) => {
+    return currentValue.price + previousValue.price;
+  });
 };

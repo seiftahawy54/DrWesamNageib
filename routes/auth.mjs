@@ -12,11 +12,12 @@ import {
 } from "../controllers/auth.mjs";
 import { Router } from "express";
 import { body } from "express-validator";
+import { notRepeatedForUser } from "../middlewares/user-auth.mjs";
 
 const router = Router();
 
 router
-  .get("/login", getLogin)
+  .get("/login", notRepeatedForUser, getLogin)
   .post(
     "/login",
     body("email").isEmail().notEmpty(),
@@ -24,7 +25,7 @@ router
     postLogin
   )
   .post("/logout", postLogout)
-  .get("/register", getRegister)
+  .get("/register", notRepeatedForUser, getRegister)
   .post(
     "/register",
     body("name").isString().notEmpty(),
@@ -44,10 +45,10 @@ router
       }),
     postRegister
   )
-  .get("/success_payment", getSuccess)
-  .post("/success_payment", postSuccess)
-  .get("/cancel_payment", getCancelled)
-  .get("/complete_payment", getCompletePayment)
-  .post("/create-order", postCreateOrder);
+  .get("/success_payment", notRepeatedForUser, getSuccess)
+  .post("/success_payment", notRepeatedForUser, postSuccess)
+  .get("/cancel_payment", notRepeatedForUser, getCancelled)
+  .get("/complete_payment", notRepeatedForUser, getCompletePayment)
+  .post("/create-order", notRepeatedForUser, postCreateOrder);
 
 export { router as authRoutes };

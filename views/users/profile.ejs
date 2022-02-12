@@ -61,7 +61,19 @@
       </div>
       <div class="col-lg-6 col-xs-12">
         <div class="user-img">
-          <img src="/imgs/imgs/user_img.png" alt="<%= user.name %>"/>
+          <form action="/update-user-img" method="POST" enctype="multipart/form-data">
+            <div class="custom-input">
+              <label for="user_img">
+                <img src="<%= user.user_img ? user.user_img : "/imgs/imgs/user_img.png" %>" alt="<%= user.name %>"
+                     class="<%= validationError.error === 'img' ? 'is-invalid' : "" %>"/>
+              </label>
+              <input type="file" name="user_img" id="user_img" placeholder="Update your image" class="form-control">
+            </div>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <button type="submit" class="btn btn-outlined">
+              update image
+            </button>
+          </form>
         </div>
       </div>
     </div>
