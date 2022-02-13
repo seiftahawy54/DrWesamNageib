@@ -1,12 +1,12 @@
-import {Courses} from "../../models/courses.mjs";
-import {validationResult} from "express-validator";
+import { Courses } from "../../models/courses.mjs";
+import { validationResult } from "express-validator";
 import {
   deleteFile,
   extractError,
   sortCourses,
 } from "../../utits/general_helper.mjs";
-import {resolve} from "path";
-import {errorRaiser} from "../../utits/error_raiser.mjs";
+import { resolve } from "path";
+import { errorRaiser } from "../../utits/error_raiser.mjs";
 
 const getCourses = async (req, res, next) => {
   const allCourses = await Courses.findAll();
@@ -88,7 +88,7 @@ const postAddNewCourse = async (req, res, next) => {
       }
     }
   } catch (e) {
-    errorRaiser(e, next)
+    errorRaiser(e, next);
   }
 };
 
@@ -159,7 +159,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
           },
-          {where: {course_id: courseId}}
+          { where: { course_id: courseId } }
         );
 
         if (addingResult[0] === 1) {
@@ -180,7 +180,7 @@ const postUpdateCourse = async (req, res, next) => {
           resolve(findingCourse.course_img)
         );
 
-        console.log(`delete old image: `, deleteUnWantedImage);
+        // console.log(`delete old image: `, deleteUnWantedImage);
 
         const addingResult = await Courses.update(
           {
@@ -193,7 +193,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
           },
-          {where: {course_id: courseId}}
+          { where: { course_id: courseId } }
         );
 
         // console.log(addingResult);
@@ -231,7 +231,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
           },
-          {where: {course_id: courseId}}
+          { where: { course_id: courseId } }
         );
 
         if (addingResult[0] === 1) {
@@ -245,8 +245,8 @@ const postUpdateCourse = async (req, res, next) => {
           });
         }
       } else if (
-        typeof courseImg !== "object" &&
-        typeof detailedImg !== "object"
+        typeof courseImg === "object" &&
+        typeof detailedImg === "object"
       ) {
         const deleteUnWantedImage = await deleteFile(
           resolve(findingCourse.course_img)
@@ -272,7 +272,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
           },
-          {where: {course_id: courseId}}
+          { where: { course_id: courseId } }
         );
 
         if (addingResult[0] === 1) {
