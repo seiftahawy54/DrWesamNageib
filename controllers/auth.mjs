@@ -255,6 +255,8 @@ export const postCreateOrder = async (req, res, next) => {
 
   const total = course.price;
 
+  console.log(`we're here: `, cart, total, course);
+
   request.prefer("return=representation");
   request.requestBody({
     intent: "CAPTURE",
@@ -273,6 +275,8 @@ export const postCreateOrder = async (req, res, next) => {
       },
     ],
   });
+
+  console.log(`we entered here: `);
 
   try {
     const order = await paypalClient.execute(request);

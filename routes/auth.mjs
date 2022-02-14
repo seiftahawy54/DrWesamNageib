@@ -52,6 +52,6 @@ router
   .post("/success_payment", isUserAuthenticated, postSuccess)
   .get("/cancel_payment", isUserAuthenticated, getCancelled)
   .get("/complete_payment", isUserAuthenticated, getCompletePayment)
-  .post("/create-order", notRepeatedForUser, postCreateOrder);
+  .post("/create-order", postCreateOrder);
 
 export { router as authRoutes };

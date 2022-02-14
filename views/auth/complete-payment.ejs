@@ -59,20 +59,19 @@
         }
       })
 
+      const strigifiedCourses = JSON.stringify(boughtArray)
+
       paypal.Buttons({
         createOrder: function () {
           return fetch("/create-order", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "x-csrf-token": "<%- csrfToken %>"
+              "x-csrf-token": "<%= csrfToken %>"
             },
-            body: JSON.stringify({
-              ...boughtArray
-            })
+            body: strigifiedCourses
           })
-            .then(response => {
-              console.log(`response: `, response)
+            .then((response) => {
               if (response.ok) {
                 return response.json();
               }
@@ -97,7 +96,7 @@
             fetch("/success_payment", {
               method: "POST",
               headers: {
-                "x-csrf-token": "<%- csrfToken %>"
+                "x-csrf-token": "<%= csrfToken %>"
               },
               redirect: "follow",
               body: JSON.stringify({
@@ -128,6 +127,9 @@
               console.error(`approve error`, err);
             });
         },
+        // onError: () => {
+        //   return window.location = '/';
+        // },
         style: {
           layout: "vertical",
           color: "blue",
