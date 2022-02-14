@@ -17,6 +17,7 @@ const Users = sequelize.define("user", {
   email: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
   created_on: {
     type: Sequelize.DATE,
