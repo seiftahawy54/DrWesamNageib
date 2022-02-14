@@ -10,7 +10,7 @@
       <%- errorMessage %>
     </div>
   <% } %>
-  <div class="content-container">
+  <div class="container content-container">
     <h2>Login</h2>
     <div class="header-dash-line"></div>
     <form action="/login" method="POST" novalidate>
@@ -28,7 +28,7 @@
       </div>
       <div class="login-options">
         <a href="/forget_password" class="reset-link">Forget Password</a>
-        <a href="/register" class="reset-link">Do not have an account</a>
+        <a href="/register" class="reset-link register-link">Do not have an account</a>
       </div>
       <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
       <button class="btn">
