@@ -65,7 +65,11 @@
             <div class="custom-input">
               <label for="user_img">
                 <img
+                <% if (user.user_img.length > 0) { %>
                   src="https://seiftahawy.s3.amazonaws.com/<%= user.user_img %>"
+                <% } else { %>
+                  src="/imgs/imgs/user_img.png"
+                  <% } %>
                   alt="<%= user.name %>"
                   class="<%= validationError.error === 'img' ? 'is-invalid' : "" %>"/>
               </label>
