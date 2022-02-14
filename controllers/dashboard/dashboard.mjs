@@ -6,6 +6,7 @@ import { Certificates } from "../../models/about.mjs";
 import { errorRaiser } from "../../utits/error_raiser.mjs";
 import { validationResult } from "express-validator";
 import moment from "moment";
+import { Sequelize } from "sequelize";
 
 export const getOverview = async (req, res, next) => {
   const numberOfUsers = await Users.findAndCountAll();
@@ -121,8 +122,10 @@ export const postUpdateOpinion = async (req, res, next) => {
     const name = req.body.sender_name;
     const course = req.body.sender_course;
     const opinion = req.body.opinion;
-    const date = req.body.date;
     const errors = validationResult(req);
+    const date = req.body.date;
+
+    const findingOpinion = await Opinions.findByPk(opinionId);
 
     if (!errors.isEmpty()) {
       res.render("dashboard/opinions_form", {
@@ -134,25 +137,26 @@ export const postUpdateOpinion = async (req, res, next) => {
           sender_email: email,
           sender_course: course,
           sender_message: opinion,
-          created_on: date,
+          created_on: findingOpinion,
         },
-        errorMessage: "",
-        validationErrors: [],
+        errorMessage: errors.array()[0].msg,
+        validationErrors: errors.array(),
         editMode: true,
         moment: moment,
       });
     } else {
-      console.log(`date: `, moment(date).format("YYYY-MM-DD HH:mm:ss"));
       const updatingResult = await Opinions.update(
         {
           sender_name: name,
           sender_email: email,
           sender_course: course,
           sender_message: opinion,
-          created_on: moment(date).format("YYYY-MM-DD HH:mm:ss"),
+          created_on: moment(date).toISOString(),
         },
         { where: { opinion_id: opinionId } }
       );
+
+      console.log(`updating opinion: `, updatingResult);
 
       if (updatingResult[0] === 1) {
         return res.status(201).redirect("/dashboard/opinions");
@@ -166,7 +170,7 @@ export const postUpdateOpinion = async (req, res, next) => {
             sender_email: email,
             sender_course: course,
             sender_message: opinion,
-            created_on: date,
+            created_on: findingOpinion.created_on,
           },
           errorMessage: "There's an error from database",
           validationErrors: [],

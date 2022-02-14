@@ -64,8 +64,10 @@
           <form action="/update-user-img" method="POST" enctype="multipart/form-data">
             <div class="custom-input">
               <label for="user_img">
-                <img src="<%= user.user_img ? user.user_img : "/imgs/imgs/user_img.png" %>" alt="<%= user.name %>"
-                     class="<%= validationError.error === 'img' ? 'is-invalid' : "" %>"/>
+                <img
+                  src="https://seiftahawy.s3.amazonaws.com/<%= user.user_img %>"
+                  alt="<%= user.name %>"
+                  class="<%= validationError.error === 'img' ? 'is-invalid' : "" %>"/>
               </label>
               <input type="file" name="user_img" id="user_img" placeholder="Update your image" class="form-control">
             </div>

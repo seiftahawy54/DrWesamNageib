@@ -112,6 +112,7 @@
       <!-- Additional required wrapper -->
 
       <div class="swiper-wrapper">
+
         <!-- Slides -->
         <% opinions.forEach(opinion => { %>
           <div class="swiper-slide">
@@ -123,7 +124,7 @@
                     <%- opinion.sender_name %>
                   </div>
                   <div class="client-date">
-                    <bdi><%- opinion.created_on ? moment(opinion.created_on).format("YYYY-MM-DD") : moment("22-01-2022").format("YYYY-MM-DD") %></bdi>
+                    <bdi><%= opinion.created_on ? moment(opinion.created_on).format("YYYY-MM-DD") : moment("2022-01-22").format("YYYY-MM-DD") %></bdi>
                   </div>
                 </div>
               </div>

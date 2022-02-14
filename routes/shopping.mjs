@@ -5,7 +5,6 @@ import {
   getShoppingCart,
   downloadCV,
   postContactPage,
-  getOpinionsPage,
   postOpinions,
   getOpinionsForm,
   postDeleteFromCart,
@@ -32,7 +31,6 @@ router
     ],
     postContactPage
   )
-  .get("/opinions", getOpinionsPage)
   .get("/opinions_form", getOpinionsForm)
   .post(
     "/opinions",
@@ -40,7 +38,7 @@ router
       body("name").isString().notEmpty(),
       body("email").isEmail().notEmpty(),
       body("sender_course").isString().notEmpty(),
-      body("date").isDate().notEmpty(),
+      // body("date").isDate().notEmpty(),
       body("opinion").isString().notEmpty(),
     ],
     postOpinions

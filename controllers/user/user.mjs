@@ -4,6 +4,7 @@ import { Courses } from "../../models/courses.mjs";
 // import { extractCart, getCoursesFormCart } from "../../utits/cart_helpers.mjs";
 import { Users } from "../../models/users.mjs";
 import { deleteFile } from "../../utits/general_helper.mjs";
+import { uploadFile } from "../../utits/aws.mjs";
 
 export const getUserProfile = async (req, res, next) => {
   try {
@@ -50,25 +51,27 @@ export const getUserProfile = async (req, res, next) => {
 export const postUpdateUserImg = async (req, res, next) => {
   try {
     const userImg = req?.files[0];
+    console.log(userImg);
 
     if (userImg?.path) {
-      if (req.user.user_img) {
-        await deleteFile(req.user.user_img);
-      }
-      const updatingResult = await Users.update(
-        {
-          user_img: userImg.path,
-        },
-        { where: { user_id: req.user.user_id } }
-      );
+      uploadFile(userImg.path, userImg.filename, userImg.mimetype, res, next)
+        .then(async (result) => {
+          const updatingResult = await Users.update(
+            {
+              user_img: userImg.path,
+            },
+            { where: { user_id: req.user.user_id } }
+          );
 
-      if (updatingResult[0] === 1) {
-        req.flash("success", "Success");
-        return res.redirect("/profile");
-      } else {
-        req.flash("error", "Something wrong happened");
-        return res.redirect("/profile");
-      }
+          if (updatingResult[0] === 1) {
+            req.flash("success", "Success");
+            return res.redirect("/profile");
+          } else {
+            req.flash("error", "Something wrong happened");
+            return res.redirect("/profile");
+          }
+        })
+        .catch((err) => errorRaiser(err, next));
     } else {
       const findingUserPayments = await Payment.findAll({
         where: { user_id: req.user.user_id },

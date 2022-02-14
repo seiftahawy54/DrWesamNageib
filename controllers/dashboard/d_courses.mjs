@@ -177,7 +177,7 @@ const postUpdateCourse = async (req, res, next) => {
         typeof detailedImg !== "object"
       ) {
         const deleteUnWantedImage = await deleteFile(
-          resolve(findingCourse.course_img)
+          resolve("/", findingCourse.course_img)
         );
 
         // console.log(`delete old image: `, deleteUnWantedImage);
@@ -215,7 +215,7 @@ const postUpdateCourse = async (req, res, next) => {
         typeof detailedImg === "object"
       ) {
         const deleteUnWantedImage = await deleteFile(
-          resolve(findingCourse.detailed_img)
+          resolve("/", findingCourse.detailed_img)
         );
 
         console.log(`delete old image: `, deleteUnWantedImage);
@@ -249,10 +249,10 @@ const postUpdateCourse = async (req, res, next) => {
         typeof detailedImg === "object"
       ) {
         const deleteUnWantedImage = await deleteFile(
-          resolve(findingCourse.course_img)
+          resolve("/", findingCourse.course_img)
         );
         const deleteUnWantedImage2 = await deleteFile(
-          resolve(findingCourse.detailed_img)
+          resolve("/", findingCourse.detailed_img)
         );
 
         console.log(

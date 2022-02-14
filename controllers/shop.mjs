@@ -189,21 +189,21 @@ export const downloadCV = (req, res, next) => {
   res.status(200);
 };
 
-export const getOpinionsPage = (req, res, next) => {
-  fs.readdir(path.resolve("public/imgs/imgs/opinions"), (err, files) => {
-    if (!err) {
-      let opinionsImages = files;
-
-      res.render("opinions/index", {
-        title: "Opinions",
-        path: "/opinions",
-        opinionsImages,
-      });
-    } else {
-      errorRaiser(err, next);
-    }
-  });
-};
+// export const getOpinionsPage = (req, res, next) => {
+//   fs.readdir(path.resolve("public/imgs/imgs/opinions"), (err, files) => {
+//     if (!err) {
+//       let opinionsImages = files;
+//
+//       res.render("opinions/index", {
+//         title: "Opinions",
+//         path: "/opinions",
+//         opinionsImages,
+//       });
+//     } else {
+//       errorRaiser(err, next);
+//     }
+//   });
+// };
 
 export const getOpinionsForm = (req, res, next) => {
   res.render("opinions/form", {

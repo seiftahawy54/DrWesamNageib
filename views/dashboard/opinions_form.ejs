@@ -46,7 +46,7 @@
             <div class="form-floating my-3">
               <input type="date" name="date" placeholder="Opinion Email"
                      class="form-control <%= validationErrors.find(e => e.param === 'date') ? "is-invalid" : "" %>"
-                     value="<%= moment(opinion.created_on).format("yyy-MM-DD") %>"
+                     value="<%= moment(opinion.created_on).format("MM-DD-YYYY") %>"
                      id="date"/>
               <label for="date">Date</label>
             </div>

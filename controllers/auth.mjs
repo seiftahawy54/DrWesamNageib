@@ -44,56 +44,12 @@ export const getLogin = (req, res, next) => {
 };
 
 export const postLogin = async (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const errors = validationResult(req);
-  // console.log("login errors", errors.array());
-  if (!errors.isEmpty()) {
-    return res.status(422).render("auth/login", {
-      title: "Login",
-      path: "/login",
-      user: { email, password },
-      validationErrors: { email: true, password: true },
-      errorMessage: "Maybe user name or password is invalid!",
-    });
-  } else if (
-    email.localeCompare(process.env.ADMIN_EMAIL) === 0 &&
-    password.localeCompare(process.env.ADMIN_PASSWORD) === 0
-  ) {
-    req.session.isAuthenticatedAdmin = true;
-    req.session.adminUser = {
-      email,
-    };
-    res.redirect("/dashboard/overview");
-  } else {
-    const findingUserResult = await Users.findAll({
-      where: {
-        email,
-      },
-    });
-
-    if (findingUserResult.length > 0) {
-      const comparingResult = await bcrypt.compare(
-        password,
-        findingUserResult[0].password
-      );
-      if (comparingResult) {
-        req.session.userIsAuthenticated = true;
-        req.session.user = {
-          email: email,
-          user_id: findingUserResult[0].user_id,
-        };
-        return res.redirect("/profile");
-      } else {
-        return res.status(422).render("auth/login", {
-          title: "Login",
-          path: "/login",
-          user: { email, password },
-          validationErrors: { email: true, password: true },
-          errorMessage: "Maybe username or password is invalid!",
-        });
-      }
-    } else {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+    const errors = validationResult(req);
+    // console.log("login errors", errors.array());
+    if (!errors.isEmpty()) {
       return res.status(422).render("auth/login", {
         title: "Login",
         path: "/login",
@@ -101,7 +57,55 @@ export const postLogin = async (req, res, next) => {
         validationErrors: { email: true, password: true },
         errorMessage: "Maybe user name or password is invalid!",
       });
+    } else if (
+      email.localeCompare(process.env.ADMIN_EMAIL) === 0 &&
+      password.localeCompare(process.env.ADMIN_PASSWORD) === 0
+    ) {
+      req.session.isAuthenticatedAdmin = true;
+      req.session.adminUser = {
+        email,
+      };
+      res.redirect("/dashboard/overview");
+    } else {
+      Users.findAll({
+        where: {
+          email,
+        },
+      })
+        .then(async (findingUserResult) => {
+          const comparingResult = await bcrypt.compare(
+            password,
+            findingUserResult[0].password
+          );
+          if (comparingResult) {
+            req.session.userIsAuthenticated = true;
+            req.session.user = {
+              email: email,
+              user_id: findingUserResult[0].user_id,
+            };
+            return res.redirect("/profile");
+          } else {
+            return res.status(422).render("auth/login", {
+              title: "Login",
+              path: "/login",
+              user: { email, password },
+              validationErrors: { email: true, password: true },
+              errorMessage: "Maybe username or password is invalid!",
+            });
+          }
+        })
+        .catch((err) => {
+          return res.status(422).render("auth/login", {
+            title: "Login",
+            path: "/login",
+            user: { email, password },
+            validationErrors: { email: true, password: true },
+            errorMessage: "Maybe user name or password is invalid!",
+          });
+        });
     }
+  } catch (e) {
+    errorRaiser(e, next);
   }
 };
 
@@ -116,58 +120,79 @@ export const getRegister = (req, res, next) => {
 };
 
 export const postRegister = async (req, res, next) => {
-  const name = req.body.name;
-  const email = req.body.email;
-  const whatsapp_no = req.body.whatsapp_number;
-  const specialization = req.body.specialization;
-  const password = req.body.password;
-  const confirmPassword = req.body.password;
-  const errors = validationResult(req);
+  try {
+    const name = req.body.name;
+    const email = req.body.email;
+    const whatsapp_no = req.body.whatsapp_number;
+    const specialization = req.body.specialization;
+    const password = req.body.password;
+    const confirmPassword = req.body.password;
+    const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return res.status(422).render("auth/register", {
-      title: "Register",
-      path: "/register",
-      validationErrors: errors.array(),
-      user: {
-        name,
-        email,
-        whatsapp_no,
-        specialization,
-        password,
-        confirmPassword,
-      },
-      errorMessage: errors.array()[0].msg,
-    });
-  } else {
-    const encryptionResult = await bcrypt.hash(password, 12);
-    if (await encryptionResult) {
-      Users.create({
-        name,
-        email,
-        whatsapp_no,
-        specialization,
-        password: await encryptionResult,
-        cart: "",
-        type: 2,
+    if (!errors.isEmpty()) {
+      return res.status(422).render("auth/register", {
+        title: "Register",
+        path: "/register",
+        validationErrors: errors.array(),
+        user: {
+          name,
+          email,
+          whatsapp_no,
+          specialization,
+          password,
+          confirmPassword,
+        },
+        errorMessage: errors.array()[0].msg,
       });
-      res.redirect("/login");
     } else {
-      errorRaiser(new Error("Encryption error"), next);
+      const encryptionResult = await bcrypt.hash(password, 12);
+      if (await encryptionResult) {
+        Users.create({
+          name,
+          email,
+          whatsapp_no,
+          specialization,
+          password: await encryptionResult,
+          cart: "",
+          type: 2,
+        })
+          .then((result) => {
+            res.redirect("/login");
+          })
+          .catch((err) => {
+            res.render("auth/register", {
+              title: "Register",
+              path: "/register",
+              validationErrors: errors.array(),
+              user: {
+                name,
+                email,
+                whatsapp_no,
+                specialization,
+                password,
+                confirmPassword,
+              },
+              errorMessage: err.errors[0].message,
+            });
+          });
+      }
     }
-    /*crypto.randomBytes(10, (err, buffer) => {
-      errorRaiser(err, next);
-      const token = buffer.toString("hex");
-      req.session.newUser = {
-        id: token,
-        name,
-        email,
-        whatsapp_no,
-        specialization,
-      };
-      res.redirect("/complete-payment");
-    });*/
+  } catch (e) {
+    errorRaiser(e, next);
   }
+  /*crypto.randomBytes(10, (err, buffer) => {
+    errorRaiser(err, next);
+    const token = buffer.toString("hex");
+    req.session.newUser = {
+      id: token,
+      name,
+      email,
+      whatsapp_no,
+      specialization,
+    };
+    res.redirect("/complete-payment");
+  });*/
+  // }
 };
 
 export const getCompletePayment = async (req, res, next) => {

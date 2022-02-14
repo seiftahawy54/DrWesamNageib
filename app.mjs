@@ -28,7 +28,7 @@ const app = express();
 
 const fileStorage = Multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploaded_images");
+    cb(null, "");
   },
   filename: (req, file, cb) => {
     cb(null, crypto.randomBytes(10).toString("hex") + "-" + file.originalname);
@@ -62,7 +62,6 @@ app.use(
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve("public")));
-app.use("/uploaded_images", express.static(path.resolve("uploaded_images")));
 
 // Session Configurations
 const SequelizeStore = SessionStore(expressSession.Store);
