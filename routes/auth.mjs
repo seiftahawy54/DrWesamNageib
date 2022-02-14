@@ -12,7 +12,10 @@ import {
 } from "../controllers/auth.mjs";
 import { Router } from "express";
 import { body } from "express-validator";
-import { notRepeatedForUser } from "../middlewares/user-auth.mjs";
+import {
+  isUserAuthenticated,
+  notRepeatedForUser,
+} from "../middlewares/user-auth.mjs";
 
 const router = Router();
 
@@ -45,10 +48,10 @@ router
       }),
     postRegister
   )
-  .get("/success_payment", notRepeatedForUser, getSuccess)
-  .post("/success_payment", notRepeatedForUser, postSuccess)
-  .get("/cancel_payment", notRepeatedForUser, getCancelled)
-  .get("/complete_payment", notRepeatedForUser, getCompletePayment)
+  .get("/success_payment", isUserAuthenticated, getSuccess)
+  .post("/success_payment", isUserAuthenticated, postSuccess)
+  .get("/cancel_payment", isUserAuthenticated, getCancelled)
+  .get("/complete_payment", isUserAuthenticated, getCompletePayment)
   .post("/create-order", notRepeatedForUser, postCreateOrder);
 
 export { router as authRoutes };
