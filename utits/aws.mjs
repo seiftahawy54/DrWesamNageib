@@ -19,13 +19,13 @@ const s3 = new AWS.S3();
 export const uploadFile = (filepath, filename, mimetype, res, next) => {
   return fs
     .readFile(filepath)
-    .then((r) => {
+    .then((uploadingBuffer) => {
       const params = {
         Bucket: process.env.BUCKET_NAME, // pass your bucket name
         Key: `${filename}`, // file will be saved as testBucket/contacts.csv
         contentType: mimetype,
         contentDisposition: false,
-        Body: createReadStream(r),
+        Body: JSON.stringify(uploadingBuffer, null, 2),
       };
       s3.upload(params, function (s3Err, data) {
         if (s3Err) {
