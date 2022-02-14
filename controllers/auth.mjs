@@ -204,11 +204,17 @@ export const getCompletePayment = async (req, res, next) => {
     const clientId = process.env.PAYPAL_CLIENT_ID;
     // const boughtCourses = await getCoursesFormCart();
     const boughtCourses = await Courses.findByPk(courseId);
+    const filteredCourses = [boughtCourses].map((course) => {
+      return {
+        name: course.name,
+        price: course.price,
+      };
+    });
 
     res.render("auth/complete-payment", {
       title: "complete payment",
       path: "/complete-payment",
-      bought_courses: [boughtCourses],
+      bought_courses: filteredCourses,
       clientId,
       errorMessage: message,
     });
