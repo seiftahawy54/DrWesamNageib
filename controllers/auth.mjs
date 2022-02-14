@@ -44,68 +44,64 @@ export const getLogin = (req, res, next) => {
 };
 
 export const postLogin = async (req, res, next) => {
-  try {
-    const email = req.body.email;
-    const password = req.body.password;
-    const errors = validationResult(req);
-    // console.log("login errors", errors.array());
-    if (!errors.isEmpty()) {
-      return res.status(422).render("auth/login", {
-        title: "Login",
-        path: "/login",
-        user: { email, password },
-        validationErrors: { email: true, password: true },
-        errorMessage: "Maybe user name or password is invalid!",
-      });
-    } else if (
-      email.localeCompare(process.env.ADMIN_EMAIL) === 0 &&
-      password.localeCompare(process.env.ADMIN_PASSWORD) === 0
-    ) {
-      req.session.isAuthenticatedAdmin = true;
-      req.session.adminUser = {
+  const email = req.body.email;
+  const password = req.body.password;
+  const errors = validationResult(req);
+  // console.log("login errors", errors.array());
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      title: "Login",
+      path: "/login",
+      user: { email, password },
+      validationErrors: { email: true, password: true },
+      errorMessage: "Maybe user name or password is invalid!",
+    });
+  } else if (
+    email.localeCompare(process.env.ADMIN_EMAIL) === 0 &&
+    password.localeCompare(process.env.ADMIN_PASSWORD) === 0
+  ) {
+    req.session.isAuthenticatedAdmin = true;
+    req.session.adminUser = {
+      email,
+    };
+    res.redirect("/dashboard/overview");
+  } else {
+    Users.findAll({
+      where: {
         email,
-      };
-      res.redirect("/dashboard/overview");
-    } else {
-      Users.findAll({
-        where: {
-          email,
-        },
-      })
-        .then(async (findingUserResult) => {
-          const comparingResult = await bcrypt.compare(
-            password,
-            findingUserResult[0].password
-          );
-          if (comparingResult) {
-            req.session.userIsAuthenticated = true;
-            req.session.user = {
-              email: email,
-              user_id: findingUserResult[0].user_id,
-            };
-            return res.redirect("/profile");
-          } else {
-            return res.status(422).render("auth/login", {
-              title: "Login",
-              path: "/login",
-              user: { email, password },
-              validationErrors: { email: true, password: true },
-              errorMessage: "Maybe username or password is invalid!",
-            });
-          }
-        })
-        .catch((err) => {
+      },
+    })
+      .then(async (findingUserResult) => {
+        const comparingResult = await bcrypt.compare(
+          password,
+          findingUserResult[0].password
+        );
+        if (comparingResult) {
+          req.session.userIsAuthenticated = true;
+          req.session.user = {
+            email: email,
+            user_id: findingUserResult[0].user_id,
+          };
+          return res.redirect("/profile");
+        } else {
           return res.status(422).render("auth/login", {
             title: "Login",
             path: "/login",
             user: { email, password },
             validationErrors: { email: true, password: true },
-            errorMessage: "Maybe user name or password is invalid!",
+            errorMessage: "Maybe username or password is invalid!",
           });
+        }
+      })
+      .catch((err) => {
+        return res.status(422).render("auth/login", {
+          title: "Login",
+          path: "/login",
+          user: { email, password },
+          validationErrors: { email: true, password: true },
+          errorMessage: "Maybe user name or password is invalid!",
         });
-    }
-  } catch (e) {
-    errorRaiser(e, next);
+      });
   }
 };
 
