@@ -122,6 +122,11 @@ app.use(authRoutes);
 app.use(shoppingRoutes);
 app.use(userRoutes);
 
+app.get("*", function (req, res) {
+  const index = path.join(__dirname, "build", "");
+  res.sendFile(index);
+});
+
 app.use((error, req, res, next) => {
   res.render("500", {
     title: "Server Error",
