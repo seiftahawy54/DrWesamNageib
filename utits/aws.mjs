@@ -49,27 +49,31 @@ export const getSingleFile = async (filename) => {
     const downloadingUrl = `https://seiftahawy.s3.amazonaws.com/${filename}`;
     const filePath = path.resolve("downloaded_images", filename);
 
-    const response = await axios({
-      method: "GET",
-      url: downloadingUrl,
-      responseType: "blob",
-    });
+    try {
+      const response = await axios({
+        method: "GET",
+        url: downloadingUrl,
+        responseType: "blob",
+      });
 
-    const buffer = Buffer.from(response.data.data).toString("base64");
+      const buffer = Buffer.from(response.data.data).toString("base64");
 
-    const writingStream = await fs2.createWriteStream(filePath);
+      const writingStream = await fs2.createWriteStream(filePath);
 
-    writingStream.write(buffer, "base64");
+      writingStream.write(buffer, "base64");
 
-    writingStream.on("finish", () => {
-      res(true);
-    });
+      writingStream.on("finish", () => {
+        res(true);
+      });
 
-    writingStream.on("error", (err) => {
-      console.log(err);
-      rej(false);
-    });
+      writingStream.on("error", (err) => {
+        console.log(err);
+        rej(false);
+      });
 
-    writingStream.end();
+      writingStream.end();
+    } catch (e) {
+      rej(e);
+    }
   });
 };
