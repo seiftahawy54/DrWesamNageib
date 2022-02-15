@@ -46,8 +46,8 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
 
 export const getSingleFile = async (filename) => {
   const statSync = await fs.stat(path.resolve("downloaded_images"));
+  console.log(`stats path: `, statSync);
   if (!statSync.isDirectory()) {
-    console.log(`stats path: `, statSync);
     fs2.mkdirSync(path.resolve("testing"));
     return getSingleFile(filename);
   } else {
