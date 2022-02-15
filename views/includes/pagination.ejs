@@ -2,8 +2,9 @@
   <ul class="pagination justify-content-center">
     <% if (numberOfLinks) { %>
       <% for (let i = 0; i < numberOfLinks; i++) { %>
-        <li class="page-item">
-          <a class="page-link" href="<%= path %>/?page=<%= i + 1 %>">
+        <li class="page-item  <%= activePage ? 'active' : "" %>">
+          <a class="page-link"
+             href="<%= path %>/?page=<%= i + 1 %>" <%- activePage ? `aria-current="page"` : "" %>>
             <%= i + 1 %>
           </a>
         </li>

@@ -21,6 +21,7 @@ const getUsers = async (req, res, next) => {
       path: "/dashboard/users",
       users: fetchingResults,
       numberOfLinks: Math.ceil(numberOfResults.count / 5),
+      activePage: pageNumber,
     });
   } catch (e) {
     errorRaiser(e, next);

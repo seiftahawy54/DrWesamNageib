@@ -75,6 +75,7 @@ export const getOpinionsPage = async (req, res, next) => {
       path: "/dashboard/opinions",
       opinions: fetchingResults,
       numberOfLinks: Math.ceil(numberOfResults.count / 5),
+      activePage: pageNumber,
     });
   } catch (e) {
     errorRaiser(e, next);
