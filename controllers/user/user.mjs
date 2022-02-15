@@ -17,7 +17,7 @@ export const getUserProfile = async (req, res, next) => {
         const fetchingResult = await getSingleFile(req.user.user_img);
         console.log(fetchingResult?.err);
       } catch (e) {
-        res.render("users/profile", {
+        return res.render("users/profile", {
           title: req.user.name,
           path: "/profile",
           user: req.user,
@@ -53,7 +53,7 @@ export const getUserProfile = async (req, res, next) => {
       // const userImgBuffer = await getSingleFile(req.user.user_img);
       // const userImg = JSON.stringify(userImgBuffer);
 
-      res.render("users/profile", {
+      return res.render("users/profile", {
         title: req.user.name,
         path: "/profile",
         user: req.user,
@@ -62,7 +62,7 @@ export const getUserProfile = async (req, res, next) => {
         validationError: {},
       });
     } else {
-      res.render("users/profile", {
+      return res.render("users/profile", {
         title: req.user.name,
         path: "/profile",
         user: req.user,
@@ -72,7 +72,7 @@ export const getUserProfile = async (req, res, next) => {
       });
     }
   } catch (e) {
-    res.render("users/profile", {
+    return res.render("users/profile", {
       title: req.user.name,
       path: "/profile",
       user: req.user,
