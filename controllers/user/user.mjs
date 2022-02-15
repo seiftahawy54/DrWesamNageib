@@ -13,17 +13,24 @@ export const getUserProfile = async (req, res, next) => {
   try {
     if (!fs.existsSync(path.resolve("downloaded_images", req.user.user_img))) {
       console.log("we entered here", req.user.user_img);
-      const fetchingResult = await getSingleFile(req.user.user_img);
-      console.log(fetchingResult?.err);
+      try {
+        const fetchingResult = await getSingleFile(req.user.user_img);
+        console.log(fetchingResult?.err);
+      } catch (e) {
+        res.render("users/profile", {
+          title: req.user.name,
+          path: "/profile",
+          user: req.user,
+          errorMessage: e.message,
+          bought_courses: [],
+          validationError: {},
+        });
+      }
     }
     console.log(
       fs.existsSync(path.resolve("downloaded_images", req.user.user_img))
     );
-  } catch (e) {
-    errorRaiser(err, next);
-  }
 
-  try {
     const findingUserPayments = await Payment.findAll({
       where: { user_id: req.user.user_id },
     });
@@ -50,6 +57,7 @@ export const getUserProfile = async (req, res, next) => {
         title: req.user.name,
         path: "/profile",
         user: req.user,
+        errorMessage: "",
         bought_courses: boughtCourses,
         validationError: {},
       });
@@ -58,12 +66,20 @@ export const getUserProfile = async (req, res, next) => {
         title: req.user.name,
         path: "/profile",
         user: req.user,
+        errorMessage: "",
         bought_courses: [],
         validationError: {},
       });
     }
   } catch (e) {
-    errorRaiser(e, next);
+    res.render("users/profile", {
+      title: req.user.name,
+      path: "/profile",
+      user: req.user,
+      errorMessage: "There is an error from our side, please contact ASAP!",
+      bought_courses: [],
+      validationError: {},
+    });
   }
 };
 
