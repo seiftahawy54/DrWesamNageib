@@ -4,9 +4,25 @@ import { Courses } from "../../models/courses.mjs";
 // import { extractCart, getCoursesFormCart } from "../../utits/cart_helpers.mjs";
 import { Users } from "../../models/users.mjs";
 import { deleteFile } from "../../utits/general_helper.mjs";
-import { uploadFile } from "../../utits/aws.mjs";
+import { getSingleFile, uploadFile } from "../../utits/aws.mjs";
+import fs from "fs";
+import path from "path";
+import axios from "axios";
 
 export const getUserProfile = async (req, res, next) => {
+  try {
+    if (!fs.existsSync(path.resolve("downloaded_images", req.user.user_img))) {
+      console.log("we entered here", req.user.user_img);
+      const fetchingResult = await getSingleFile(req.user.user_img);
+      console.log(fetchingResult?.err);
+    }
+    console.log(
+      fs.existsSync(path.resolve("downloaded_images", req.user.user_img))
+    );
+  } catch (e) {
+    errorRaiser(err, next);
+  }
+
   try {
     const findingUserPayments = await Payment.findAll({
       where: { user_id: req.user.user_id },
@@ -26,6 +42,9 @@ export const getUserProfile = async (req, res, next) => {
       for (const key of findingBoughtCourses) {
         boughtCourses.push(await key);
       }
+
+      // const userImgBuffer = await getSingleFile(req.user.user_img);
+      // const userImg = JSON.stringify(userImgBuffer);
 
       res.render("users/profile", {
         title: req.user.name,
@@ -56,6 +75,7 @@ export const postUpdateUserImg = async (req, res, next) => {
     if (userImg?.path) {
       uploadFile(userImg.path, userImg.filename, userImg.mimetype, res, next)
         .then(async (result) => {
+          console.log(`uploading result: `, result);
           const updatingResult = await Users.update(
             {
               user_img: userImg.path,

@@ -10,10 +10,13 @@
       <%- errorMessage %>
     </div>
   <% } %>
+
   <div class="container content-container">
-    <h2>Login</h2>
-    <div class="header-dash-line"></div>
-    <form action="/login" method="POST" novalidate>
+    <div class="">
+      <h2>Login</h2>
+      <div class="header-dash-line"></div>
+    </div>
+    <form action="/login" method="POST" novalidate class="">
       <div class="form-floating my-3">
         <input type="email" name="email" id="email" placeholder="Your email"
                class="form-control <%= validationErrors.email ? "is-invalid" : "" %>"

@@ -22,6 +22,7 @@ import crypto from "crypto";
 import { errorRaiser } from "./utits/error_raiser.mjs";
 import { userRoutes } from "./routes/user.mjs";
 import { Users } from "./models/users.mjs";
+import { getSingleFile } from "./utits/aws.mjs";
 
 dotenv.config();
 const app = express();
@@ -62,6 +63,10 @@ app.use(
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.resolve("public")));
+app.use(
+  "/downloaded_images",
+  express.static(path.resolve("downloaded_images"))
+);
 
 // Session Configurations
 const SequelizeStore = SessionStore(expressSession.Store);
