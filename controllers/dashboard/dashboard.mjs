@@ -7,6 +7,8 @@ import { errorRaiser } from "../../utits/error_raiser.mjs";
 import { validationResult } from "express-validator";
 import moment from "moment";
 import { Sequelize } from "sequelize";
+import { uploadFile } from "../../utits/aws.mjs";
+import { getCertificatesImage } from "../../utits/general_helper.mjs";
 
 export const getOverview = async (req, res, next) => {
   const numberOfUsers = await Users.findAndCountAll();
@@ -189,6 +191,8 @@ export const getAboutPage = async (req, res, next) => {
   try {
     const certificates = await Certificates.findAll();
 
+    await getCertificatesImage(certificates);
+
     res.render("dashboard/about", {
       title: "Certificate",
       path: "/dashboard/about",
@@ -221,6 +225,14 @@ export const postAddNewAbout = async (req, res, next) => {
       const addingResult = await Certificates.create({
         certificate_img: certificateImage.path,
       });
+
+      await uploadFile(
+        certificateImage.path,
+        certificateImage.filename,
+        certificateImage.mimetype,
+        res,
+        next
+      );
 
       if (addingResult) {
         console.log(`adding_result`, await addingResult);

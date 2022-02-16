@@ -32,7 +32,7 @@
             </div>
             <% certificates.forEach(certificate => { %>
               <div class="table-row">
-                <span class="course-rank"><img src="/<%= certificate.certificate_img; %>"
+                <span class="course-rank"><img src="/downloaded_images/<%= certificate.certificate_img; %>"
                                                alt="<%- certificate.certificate_id %>" class="img-fluid"/></span>
                 <div class="course-update">
                   <a href="/dashboard/edit-course/<%= certificate.certificate_id %>?edit=true" class="btn btn-success">Update

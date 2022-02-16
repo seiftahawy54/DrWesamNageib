@@ -27,12 +27,13 @@
     <!-- Slider main container -->
     <div class="about-swiper swiper">
       <!-- Additional required wrapper -->
+      <%- include('../includes/errorMessage.ejs'); %>
       <div class="swiper-wrapper">
         <!-- Slides -->
         <% certificates.forEach(certificate => { %>
           <div class="swiper-slide">
             <div class="img-container">
-              <img src="<%- certificate.certificate_img %>" alt="First Certificate"/>
+              <img src="/downloaded_images/<%- certificate.certificate_img %>" alt="First Certificate"/>
             </div>
           </div>
         <% }) %>

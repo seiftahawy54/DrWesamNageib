@@ -1,20 +1,20 @@
 import path from "path";
-import {validationResult} from "express-validator";
+import { validationResult } from "express-validator";
 // import { addMessage } from "../models/messages.mjs";
-import {Courses} from "../models/courses.mjs";
-import {Opinions} from "../models/opinions.mjs";
-import {errorRaiser} from "../utits/error_raiser.mjs";
-import {downloadingCoursesImages, sortCourses} from "../utits/general_helper.mjs";
-import {Messages} from "../models/messages.mjs";
-import {Certificates} from "../models/about.mjs";
-import fs from "fs";
-import {Users} from "../models/users.mjs";
+import { Courses } from "../models/courses.mjs";
+import { Opinions } from "../models/opinions.mjs";
+import { errorRaiser } from "../utits/error_raiser.mjs";
 import {
-  calcTotalFromCart,
-  getArray,
-  getCoursesFormCart,
-} from "../utits/cart_helpers.mjs";
+  downloadingCoursesImages,
+  getCertificatesImage,
+  sortCourses,
+} from "../utits/general_helper.mjs";
+import { Messages } from "../models/messages.mjs";
+import { Certificates } from "../models/about.mjs";
+import fs from "fs";
+import { Users } from "../models/users.mjs";
 import moment from "moment";
+import { getSingleFile } from "../utits/aws.mjs";
 
 export const getHomePage = async (req, res, next) => {
   try {
@@ -23,7 +23,7 @@ export const getHomePage = async (req, res, next) => {
 
     let sortedCourses = sortCourses(getCoursesResult);
 
-    await downloadingCoursesImages(getCoursesResult)
+    await downloadingCoursesImages(getCoursesResult);
 
     fs.readdir(path.resolve("public/imgs/imgs/opinions"), (err, files) => {
       if (err) {
@@ -74,7 +74,7 @@ export const postDeleteFromCart = async (req, res, next) => {
       {
         cart: "",
       },
-      {where: {user_id: req.user.user_id}}
+      { where: { user_id: req.user.user_id } }
     );
 
     if (deletingResult[0] === 1) {
@@ -116,13 +116,25 @@ export const postDeleteFromCart = async (req, res, next) => {
 };
 
 export const getAboutPage = async (req, res, next) => {
-  const aboutCertificates = await Certificates.findAll();
+  try {
+    const aboutCertificates = await Certificates.findAll();
 
-  res.render("about/index", {
-    title: "Who am i",
-    path: "/aboutme",
-    certificates: aboutCertificates,
-  });
+    await getCertificatesImage(aboutCertificates);
+
+    res.render("about/index", {
+      title: "Who am i",
+      path: "/aboutme",
+      certificates: aboutCertificates,
+      errorMessage: "",
+    });
+  } catch (e) {
+    res.render("about/index", {
+      title: "Who am i",
+      path: "/aboutme",
+      certificates: [],
+      errorMessage: "There's an error while getting images",
+    });
+  }
 };
 
 export const getContactPage = (req, res, next) => {
