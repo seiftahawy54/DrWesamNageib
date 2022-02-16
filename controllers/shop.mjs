@@ -1,14 +1,14 @@
 import path from "path";
-import { validationResult } from "express-validator";
+import {validationResult} from "express-validator";
 // import { addMessage } from "../models/messages.mjs";
-import { Courses } from "../models/courses.mjs";
-import { Opinions } from "../models/opinions.mjs";
-import { errorRaiser } from "../utits/error_raiser.mjs";
-import { sortCourses } from "../utits/general_helper.mjs";
-import { Messages } from "../models/messages.mjs";
-import { Certificates } from "../models/about.mjs";
+import {Courses} from "../models/courses.mjs";
+import {Opinions} from "../models/opinions.mjs";
+import {errorRaiser} from "../utits/error_raiser.mjs";
+import {downloadingCoursesImages, sortCourses} from "../utits/general_helper.mjs";
+import {Messages} from "../models/messages.mjs";
+import {Certificates} from "../models/about.mjs";
 import fs from "fs";
-import { Users } from "../models/users.mjs";
+import {Users} from "../models/users.mjs";
 import {
   calcTotalFromCart,
   getArray,
@@ -22,6 +22,8 @@ export const getHomePage = async (req, res, next) => {
     const getAllOpinionsResult = await Opinions.findAll();
 
     let sortedCourses = sortCourses(getCoursesResult);
+
+    await downloadingCoursesImages(getCoursesResult)
 
     fs.readdir(path.resolve("public/imgs/imgs/opinions"), (err, files) => {
       if (err) {
@@ -72,7 +74,7 @@ export const postDeleteFromCart = async (req, res, next) => {
       {
         cart: "",
       },
-      { where: { user_id: req.user.user_id } }
+      {where: {user_id: req.user.user_id}}
     );
 
     if (deletingResult[0] === 1) {
