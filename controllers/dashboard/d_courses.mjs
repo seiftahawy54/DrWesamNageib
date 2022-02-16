@@ -300,12 +300,12 @@ const postUpdateCourse = async (req, res, next) => {
           next
         );
 
-        const deleteUnWantedImage = await deleteFile(
-          resolve("/", findingCourse.course_img)
-        );
-        const deleteUnWantedImage2 = await deleteFile(
-          resolve("/", findingCourse.detailed_img)
-        );
+        // const deleteUnWantedImage = await deleteFile(
+        //   resolve("/", findingCourse.course_img)
+        // );
+        // const deleteUnWantedImage2 = await deleteFile(
+        //   resolve("/", findingCourse.detailed_img)
+        // );
 
         console.log(
           `delete old image: `,
