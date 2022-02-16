@@ -307,12 +307,6 @@ const postUpdateCourse = async (req, res, next) => {
         //   resolve("/", findingCourse.detailed_img)
         // );
 
-        console.log(
-          `delete old image: `,
-          deleteUnWantedImage,
-          deleteUnWantedImage2
-        );
-
         const addingResult = await Courses.update(
           {
             name: courseName,
