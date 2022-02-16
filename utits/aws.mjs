@@ -5,9 +5,9 @@ dotenv.config();
 import fs from "fs/promises";
 import fs2 from "fs";
 import AWS from "aws-sdk";
-import { errorRaiser } from "./error_raiser.mjs";
+import {errorRaiser} from "./error_raiser.mjs";
 import multerS3 from "multer-s3";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import path from "path";
 import axios from "axios";
 
@@ -45,10 +45,11 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
 };
 
 export const getSingleFile = async (filename) => {
-  const statSync = await fs.stat(path.resolve("downloaded_images"));
-  console.log(`stats path: `, statSync);
-  if (!statSync.isDirectory()) {
-    fs2.mkdirSync(path.resolve("testing"));
+
+  const downloadedImagesPath = path.resolve("downloaded_images");
+
+  if (!fs2.existsSync(downloadedImagesPath)) {
+    fs2.mkdirSync(downloadedImagesPath);
     return getSingleFile(filename);
   } else {
     const downloadingUrl = `https://seiftahawy.s3.amazonaws.com/${filename}`;

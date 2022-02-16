@@ -7,6 +7,7 @@ import {
 } from "../../utits/general_helper.mjs";
 import { resolve } from "path";
 import { errorRaiser } from "../../utits/error_raiser.mjs";
+import { uploadFile } from "../../utits/aws.mjs";
 
 const getCourses = async (req, res, next) => {
   const allCourses = await Courses.findAll();
@@ -40,6 +41,8 @@ const postAddNewCourse = async (req, res, next) => {
     const courseDescription = req.body.description;
     const courseThumbnail = req.body.thumbnail;
     const courseRank = req.body.course_rank;
+    const courseImg = req.files[0];
+    const detailedImg = req.files[1];
     const courseImage = req.files[0].path;
     const detailedImage = req.files[1].path;
     // const imgUrl = courseImage.path;
@@ -81,8 +84,23 @@ const postAddNewCourse = async (req, res, next) => {
         course_rank: courseRank,
       });
 
-      if (addingResult._options.isNewRecord) {
-        res.redirect("/dashboard/courses");
+      const uploadingFirstImg = await uploadFile(
+        courseImg.path,
+        courseImg.filename,
+        courseImg.mimetype,
+        res,
+        next
+      );
+      const uploadingSecondImg = await uploadFile(
+        detailedImg.path,
+        detailedImg.filename,
+        detailedImg.mimetype,
+        res,
+        next
+      );
+
+      if (addingResult && uploadingFirstImg && uploadingSecondImg) {
+        res.status(201).redirect("/dashboard/courses");
       } else {
         res.redirect("/dashboard/add-new-course");
       }
@@ -176,8 +194,15 @@ const postUpdateCourse = async (req, res, next) => {
         typeof courseImg === "object" &&
         typeof detailedImg !== "object"
       ) {
+        const uploadingFirstImg = await uploadFile(
+          courseImg.path,
+          courseImg.filename,
+          courseImg.mimetype,
+          res,
+          next
+        );
         const deleteUnWantedImage = await deleteFile(
-          resolve("/", findingCourse.course_img)
+          resolve("/downloaded_images", findingCourse.course_img)
         );
 
         // console.log(`delete old image: `, deleteUnWantedImage);
@@ -200,7 +225,7 @@ const postUpdateCourse = async (req, res, next) => {
 
         console.log(`course id `, findingCourse.course_id);
 
-        if (addingResult[0] === 1 && deleteUnWantedImage) {
+        if (addingResult[0] === 1 && deleteUnWantedImage && uploadingFirstImg) {
           return res.redirect("/dashboard/courses");
         } else {
           return res.render("dashboard/courses_forms", {
@@ -214,8 +239,16 @@ const postUpdateCourse = async (req, res, next) => {
         typeof courseImg !== "object" &&
         typeof detailedImg === "object"
       ) {
+        const uploadingSecondImg = await uploadFile(
+          detailedImg.path,
+          detailedImg.filename,
+          detailedImg.mimetype,
+          res,
+          next
+        );
+
         const deleteUnWantedImage = await deleteFile(
-          resolve("/", findingCourse.detailed_img)
+          resolve("/downloaded_images", findingCourse.detailed_img)
         );
 
         console.log(`delete old image: `, deleteUnWantedImage);
@@ -234,7 +267,11 @@ const postUpdateCourse = async (req, res, next) => {
           { where: { course_id: courseId } }
         );
 
-        if (addingResult[0] === 1) {
+        if (
+          addingResult[0] === 1 &&
+          deleteUnWantedImage &&
+          uploadingSecondImg
+        ) {
           return res.redirect("/dashboard/courses");
         } else {
           res.render("dashboard/courses_forms", {
@@ -248,6 +285,21 @@ const postUpdateCourse = async (req, res, next) => {
         typeof courseImg === "object" &&
         typeof detailedImg === "object"
       ) {
+        const uploadingFirstImg = await uploadFile(
+          courseImg.path,
+          courseImg.filename,
+          courseImg.mimetype,
+          res,
+          next
+        );
+        const uploadingSecondImg = await uploadFile(
+          detailedImg.path,
+          detailedImg.filename,
+          detailedImg.mimetype,
+          res,
+          next
+        );
+
         const deleteUnWantedImage = await deleteFile(
           resolve("/", findingCourse.course_img)
         );
@@ -275,7 +327,7 @@ const postUpdateCourse = async (req, res, next) => {
           { where: { course_id: courseId } }
         );
 
-        if (addingResult[0] === 1) {
+        if (addingResult[0] === 1 && uploadingFirstImg && uploadingSecondImg) {
           return res.redirect("/dashboard/courses");
         } else {
           res.render("dashboard/courses_forms", {
@@ -283,6 +335,8 @@ const postUpdateCourse = async (req, res, next) => {
             path: "/dashboard/courses",
             editMode: "true",
             course: findingCourse,
+            errorMessage: "There is some error",
+            validationError: [],
           });
         }
       }

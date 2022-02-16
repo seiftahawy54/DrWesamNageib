@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { unlink } from "fs/promises";
+import { getSingleFile } from "./aws.mjs";
 
 export const sortCourses = (courses) => {
   let coursesRanks = [];
@@ -41,4 +42,27 @@ export const deleteFile = async (filePath) => {
   } catch (e) {
     return false;
   }
+};
+
+export const downloadingCoursesImages = (courses) => {
+  return new Promise((resolve, reject) => {
+    for (const course of courses) {
+      getSingleFile(course.course_img)
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      getSingleFile(course.detailed_img)
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+
+    resolve(true);
+  });
 };

@@ -1,13 +1,21 @@
 // import { getAllCourses, getSingleCourse } from "../models/courses.mjs";
 import { errorRaiser } from "../utits/error_raiser.mjs";
-import { extractError, sortCourses } from "../utits/general_helper.mjs";
+import {
+  downloadingCoursesImages,
+  extractError,
+  sortCourses,
+} from "../utits/general_helper.mjs";
 import { Courses } from "../models/courses.mjs";
 import { Users } from "../models/users.mjs";
 import { getArray, getPgArray, updateCart } from "../utits/cart_helpers.mjs";
+import { getSingleFile } from "../utits/aws.mjs";
 
 const getIndex = async (req, res, next) => {
   try {
-    const fetchingResult = await Courses.findAll();
+    let fetchingResult = await Courses.findAll();
+
+    await downloadingCoursesImages(fetchingResult);
+
     res.render("courses/index", {
       title: "Courses",
       path: "/courses",
