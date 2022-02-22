@@ -31,6 +31,15 @@ import {
 import { getPaymentsPage } from "../controllers/dashboard/payments.mjs";
 import express from "express";
 import { body } from "express-validator";
+import {
+  getRounds,
+  getStartNewRound,
+  getUpdateRound,
+  postAddNewRound,
+  postDeleteRound,
+  postUpdateRound,
+} from "../controllers/dashboard/d_rounds.mjs";
+import { isAuthenticated } from "../middlewares/dashboard-auth.mjs";
 
 const router = express.Router();
 
@@ -38,11 +47,11 @@ router
   .get("/", (req, res) => {
     res.redirect("/dashboard/overview");
   })
-  .get("/overview", getOverview)
-  .get("/courses", getCourses)
-  .get("/users", getUsers)
-  .get("/messages", getMessages)
-  .get("/add-new-course", getAddNewCourse)
+  .get("/overview", isAuthenticated, getOverview)
+  .get("/courses", isAuthenticated, getCourses)
+  .get("/users", isAuthenticated, getUsers)
+  .get("/messages", isAuthenticated, getMessages)
+  .get("/add-new-course", isAuthenticated, getAddNewCourse)
   .post(
     "/add-new-course",
     [
@@ -57,15 +66,15 @@ router
     ],
     postAddNewCourse
   )
-  .get("/edit-course/:courseId", getEditCourse)
+  .get("/edit-course/:courseId", isAuthenticated, getEditCourse)
   .post("/delete-course", postDeleteCourse)
   .post("/edit-course/:courseId", postUpdateCourse)
   .post("/delete-user", postDeleteUser)
-  .get("/edit-user/:userId", getUpdateUser)
+  .get("/edit-user/:userId", isAuthenticated, getUpdateUser)
   .post("/edit-user/:userId", postUpdateUser)
   .post("/delete-message", postDeleteMessage)
-  .get("/opinions", getOpinionsPage)
-  .get("/edit-opinion/:opinionId", getUpdateOpinion)
+  .get("/opinions", isAuthenticated, getOpinionsPage)
+  .get("/edit-opinion/:opinionId", isAuthenticated, getUpdateOpinion)
   .post(
     "/edit-opinion",
     [
@@ -77,10 +86,24 @@ router
     postUpdateOpinion
   )
   .post("/delete-opinion", postDeleteOpinion)
-  .get("/about", getAboutPage)
-  .get("/add-new-about", getNewAbout)
+  .get("/about", isAuthenticated, getAboutPage)
+  .get("/add-new-about", isAuthenticated, getNewAbout)
   .post("/add-new-about", postAddNewAbout)
-  .get("/payments", getPaymentsPage)
-  .post("/delete-certificate", postDeleteCertificate);
+  .get("/payments", isAuthenticated, getPaymentsPage)
+  .post("/delete-certificate", postDeleteCertificate)
+  .get("/rounds", isAuthenticated, getRounds)
+  .get("/start-new-round", isAuthenticated, getStartNewRound)
+  .post(
+    "/start-new-round",
+    [body("round_course").notEmpty(), body("round_date").notEmpty()],
+    postAddNewRound
+  )
+  .get("/edit-round/:roundId", isAuthenticated, getUpdateRound)
+  .post(
+    "/edit-round/:roundId",
+    [body("round_date").notEmpty()],
+    postUpdateRound
+  )
+  .post("/delete-round", postDeleteRound);
 //
 export { router as dashboardRoutes };

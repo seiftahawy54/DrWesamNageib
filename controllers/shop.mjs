@@ -15,6 +15,13 @@ import fs from "fs";
 import { Users } from "../models/users.mjs";
 import moment from "moment";
 import { getSingleFile } from "../utits/aws.mjs";
+import { Rounds } from "../models/rounds.mjs";
+import {
+  calcTotalPrice,
+  extractArrOfPrices,
+  filterCart,
+  findCartCourses,
+} from "../utits/cart_helpers.mjs";
 
 export const getHomePage = async (req, res, next) => {
   try {
@@ -45,49 +52,70 @@ export const getHomePage = async (req, res, next) => {
 };
 
 export const getShoppingCart = async (req, res, next) => {
-  // const cartJSON = extractCart(req);
-  // const cart = getArray(req.user.cart);
-  if (typeof req.user.cart === "string" && req.user.cart.length > 0) {
-    const boughtCourse = await Courses.findByPk(req.user.cart);
-    res.render("shopping/index", {
-      title: "Shopping Cart",
-      path: "/cart",
-      cart: req.user.cart,
-      bought_courses: [boughtCourse],
-      totalPrice: boughtCourse.price,
-    });
-  } else {
-    res.render("shopping/index", {
-      title: "Shopping Cart",
-      path: "/cart",
-      cart: req.user.cart,
-      bought_courses: [],
-      totalPrice: 0,
-    });
+  try {
+    if (req.user.cart) {
+      const coursesArr = await findCartCourses(req.user.cart);
+
+      if (Array.isArray(req.user.cart) && req.user.cart.length > 0) {
+        const arrOfPrices = extractArrOfPrices(coursesArr);
+        const totalPrice = calcTotalPrice(arrOfPrices);
+
+        return res.render("shopping/index", {
+          title: "Shopping Cart",
+          path: "/cart",
+          cart: req.user.cart,
+          bought_courses: coursesArr,
+          totalPrice,
+          moment,
+        });
+      } else {
+        return res.render("shopping/index", {
+          title: "Shopping Cart",
+          path: "/cart",
+          cart: req.user.cart,
+          bought_courses: [],
+          totalPrice: 0,
+          moment,
+        });
+      }
+    } else {
+      return res.render("shopping/index", {
+        title: "Shopping Cart",
+        path: "/cart",
+        cart: req.user.cart,
+        bought_courses: [],
+        totalPrice: 0,
+        moment,
+      });
+    }
+  } catch (e) {
+    errorRaiser(e, next);
   }
 };
 
 export const postDeleteFromCart = async (req, res, next) => {
   try {
     const wantedToDelete = req.body.courseId;
+
+    const updatedCart = filterCart(req.user.cart, wantedToDelete);
+
+    console.log(`updatedCart`, updatedCart);
+
     const deletingResult = await Users.update(
       {
-        cart: "",
+        cart: updatedCart,
       },
       { where: { user_id: req.user.user_id } }
     );
 
-    if (deletingResult[0] === 1) {
+    console.log(`deleting result ${deletingResult}`);
+
+    if (Array.isArray(deletingResult)) {
+      req.flash("success", "Unwanted items deleted successfully");
       return res.redirect("/cart");
     } else {
-      res.render("shopping/index", {
-        title: "Shopping Cart",
-        path: "/cart",
-        cart: req.user.cart,
-        bought_courses: [],
-        totalPrice: 0,
-        errorMessage: "Error in deleting that item, please contact moderators",
-      });
+      req.flash("error", "Deleting failed!");
+      res.redirect("/cart");
     }
   } catch (e) {
     errorRaiser(e, next);
@@ -223,7 +251,6 @@ export const getOpinionsForm = (req, res, next) => {
   res.render("opinions/form", {
     title: "Opinion Form",
     path: "/opinions/form",
-    errorMessage: "",
   });
 };
 
@@ -234,13 +261,11 @@ export const postOpinions = async (req, res, next) => {
   const senderOpinion = req.body.opinion;
   const errors = validationResult(req);
 
-  console.log(errors);
-
   if (!errors.isEmpty()) {
+    req.flash("error", errors.array()[0].msg);
     res.render("opinions/index", {
       title: "Your Opinions",
       path: "/opinions",
-      errorMessage: errors.array()[0].msg,
     });
   } else {
     Opinions.create({
@@ -251,20 +276,21 @@ export const postOpinions = async (req, res, next) => {
     })
       .then((result) => {
         if (result) {
+          req.flash("success", "Thanks for your opinion 😄");
           res.redirect("/");
         } else {
-          res.render("opinions/index", {
+          req.flash("error", "You've entered an opinion before!");
+          res.render("opinions/form", {
             title: "Your Opinions",
             path: "/opinions",
-            errorMessage: "You've entered an opinion before!",
           });
         }
       })
       .catch((err) => {
-        res.render("opinions/index", {
+        req.flash("error", err.message);
+        res.render("opinions/form", {
           title: "Your Opinions",
           path: "/opinions",
-          errorMessage: "You've entered an opinion before!",
         });
       });
   }

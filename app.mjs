@@ -23,6 +23,8 @@ import { errorRaiser } from "./utits/error_raiser.mjs";
 import { userRoutes } from "./routes/user.mjs";
 import { Users } from "./models/users.mjs";
 import { getSingleFile } from "./utits/aws.mjs";
+import { Rounds } from "./models/rounds.mjs";
+import { Payment } from "./models/payment.mjs";
 
 dotenv.config();
 const app = express();
@@ -90,6 +92,8 @@ app.use(flash());
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticatedAdmin;
   res.locals.isUserAuthenticated = req.session.userIsAuthenticated;
+  res.locals.errorMessage = req.flash("error");
+  res.locals.successMessage = req.flash("success");
   const token = req.csrfToken();
   res.cookie("XSRF-TOKEN", token);
   res.locals.csrfToken = token;
@@ -117,10 +121,12 @@ app.use(async (req, res, next) => {
 });
 
 app.use("/courses", coursesRoutes);
-app.use("/dashboard", isAuthenticated, dashboardRoutes);
+app.use("/dashboard", dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
 app.use(userRoutes);
+
+Rounds.hasMany(Users, { througth: "users_ids" });
 
 app.use((error, req, res, next) => {
   res.render("500", {

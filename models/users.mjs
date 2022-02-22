@@ -40,7 +40,7 @@ const Users = sequelize.define("user", {
     allowNull: true,
   },
   cart: {
-    type: Sequelize.TEXT,
+    type: Sequelize.ARRAY(Sequelize.JSON),
     allowNull: true,
   },
   type: {
@@ -48,6 +48,9 @@ const Users = sequelize.define("user", {
     allowNull: true,
   },
   user_img: {
+    type: Sequelize.STRING,
+  },
+  current_round: {
     type: Sequelize.STRING,
   },
 });

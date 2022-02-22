@@ -17,17 +17,14 @@
       <div class="col-lg-9">
         <div class="content p-5">
           <main class="content-header">
-            <div class="custom-head">
-              <h2>Number of Courses</h2>
-              <span></span>
-            </div>
-            <div class="fs-3"><%= statsNumbers.courses; %></div>
 
-            <div class="custom-head">
-              <h2>Number of Users</h2>
-              <span></span>
-            </div>
-            <div class="fs-3"><%= statsNumbers.users; %></div>
+            <% Object.keys(statsNumbers).forEach(key => { %>
+              <div class="custom-head">
+                <h2>Number of <%- key %></h2>
+                <span></span>
+              </div>
+              <div class="fs-3"><%= statsNumbers[key]; %></div>
+            <% }) %>
           </main>
         </div>
       </div>

@@ -1,0 +1,14 @@
+.users-select-button {
+  gap: 10px;
+}
+.users-select-button .btn-check:checked + .btn-outline-primary {
+  color: #fff !important;
+}
+.users-select-button label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=round_form.css.map */

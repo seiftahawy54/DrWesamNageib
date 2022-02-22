@@ -1,0 +1,14 @@
+.users-select-button {
+  gap: 10px;
+
+  .btn-check:checked + .btn-outline-primary {
+    color: #fff !important;
+  }
+
+  label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+}

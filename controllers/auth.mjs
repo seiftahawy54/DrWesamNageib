@@ -1,9 +1,3 @@
-// import { getSingleCourse } from "../models/courses.mjs";
-// import {
-//   addUserPaymentDetails,
-//   addUserInfoWithoutCart,
-// } from "../models/users.mjs";
-import crypto from "crypto";
 import paypal from "@paypal/checkout-server-sdk";
 import { validationResult } from "express-validator";
 import { Courses } from "../models/courses.mjs";
@@ -11,12 +5,12 @@ import { errorRaiser } from "../utits/error_raiser.mjs";
 import { Users } from "../models/users.mjs";
 import { Payment } from "../models/payment.mjs";
 import bcrypt from "bcrypt";
+import { Rounds } from "../models/rounds.mjs";
 import {
-  calcTotalFromCart,
   calcTotalPrice,
-  convertCartToArr,
-  extractCart,
-  getCoursesFormCart,
+  cartIsEmpty,
+  extractArrOfPrices,
+  findCartCourses,
 } from "../utits/cart_helpers.mjs";
 
 const Environment =
@@ -49,12 +43,12 @@ export const postLogin = async (req, res, next) => {
   const errors = validationResult(req);
   // console.log("login errors", errors.array());
   if (!errors.isEmpty()) {
+    req.flash("error", "Maybe user name or password is invalid!");
     return res.status(422).render("auth/login", {
       title: "Login",
       path: "/login",
       user: { email, password },
       validationErrors: { email: true, password: true },
-      errorMessage: "Maybe user name or password is invalid!",
     });
   } else if (
     email.localeCompare(process.env.ADMIN_EMAIL) === 0 &&
@@ -82,6 +76,8 @@ export const postLogin = async (req, res, next) => {
             email: email,
             user_id: findingUserResult[0].user_id,
           };
+
+          req.flash("success", "Welcome on Board 😄");
           return res.redirect("/profile");
         } else {
           return res.status(422).render("auth/login", {
@@ -144,18 +140,24 @@ export const postRegister = async (req, res, next) => {
       const encryptionResult = await bcrypt.hash(password, 12);
       if (await encryptionResult) {
         Users.create({
-          name,
-          email,
-          whatsapp_no,
-          specialization,
+          name: name,
+          email: email,
+          whatsapp_no: whatsapp_no,
+          specialization: specialization,
           password: await encryptionResult,
-          cart: "",
+          cart: [],
           type: 2,
         })
           .then((result) => {
+            req.flash(
+              "success",
+              "You have registered to the website successfully, please login to continue"
+            );
             res.redirect("/login");
           })
           .catch((err) => {
+            req.flash("error", err.message);
+            console.log(err);
             res.render("auth/register", {
               title: "Register",
               path: "/register",
@@ -168,7 +170,6 @@ export const postRegister = async (req, res, next) => {
                 password,
                 confirmPassword,
               },
-              errorMessage: err.errors[0].message,
             });
           });
       }
@@ -176,86 +177,47 @@ export const postRegister = async (req, res, next) => {
   } catch (e) {
     errorRaiser(e, next);
   }
-  /*crypto.randomBytes(10, (err, buffer) => {
-    errorRaiser(err, next);
-    const token = buffer.toString("hex");
-    req.session.newUser = {
-      id: token,
-      name,
-      email,
-      whatsapp_no,
-      specialization,
-    };
-    res.redirect("/complete-payment");
-  });*/
-  // }
 };
 
 export const getCompletePayment = async (req, res, next) => {
-  // const selectedCourse = req.cookies["courseId"];
-  // const coursesJSON = extractCart(req.body.cart);
-  const courseId = req.user.cart;
-  let message = req.flash("error")[0];
-  if (!(typeof message === "string")) {
-    message = null;
-  }
-
-  if (typeof req.user.cart === "string" && req.user.cart.length >= 0) {
-    const clientId = process.env.PAYPAL_CLIENT_ID;
-    // const boughtCourses = await getCoursesFormCart();
-    const boughtCourses = await Courses.findByPk(courseId);
-    const filteredCourses = [boughtCourses].map((course) => {
-      return {
-        name: course.name,
-        price: course.price,
-      };
-    });
-
-    res.render("auth/complete-payment", {
-      title: "complete payment",
-      path: "/complete-payment",
-      bought_courses: filteredCourses,
-      clientId,
-      errorMessage: message,
-    });
-    /*Courses.findByPk(selectedCourse)
-      .then((dbResult) => {
-        const selectedData = dbResult;
-        // Removing Arabic Description for avoiding parsing error;
-        const filteredCourse = {
-          name: selectedData.name,
-          price: selectedData.price,
-          course_id: selectedData.course_id,
+  try {
+    if (Array.isArray(req.user.cart) && !cartIsEmpty(req.user.cart)) {
+      const clientId = process.env.PAYPAL_CLIENT_ID;
+      const coursesArr = await findCartCourses(req.user.cart);
+      const filteredCourses = coursesArr.map((course) => {
+        return {
+          name: course.name,
+          price: course.price,
         };
-        const clientId = process.env.PAYPAL_CLIENT_ID;
-        res.render("auth/complete-payment", {
-          title: "complete payment",
-          path: "/complete-payment",
-          course: filteredCourse,
-          clientId,
-          errorMessage: message,
-        });
-      })
-      .catch((err) => {
-        errorRaiser(err, next);
-      });*/
-  } else {
-    req.flash("Please select a course to buy");
-    res.redirect("/courses");
+      });
+
+      res.render("auth/complete-payment", {
+        title: "complete payment",
+        path: "/complete-payment",
+        bought_courses: filteredCourses,
+        clientId,
+      });
+    } else {
+      req.flash("error", "Please select a course to buy!");
+      res.redirect("/courses");
+    }
+  } catch (e) {
+    errorRaiser(e, next);
   }
 };
 
 export const postCreateOrder = async (req, res, next) => {
   const request = new paypal.orders.OrdersCreateRequest();
-  // const cart = await extractCart(req);
-  // const total = await calcTotalFromCart(cart, req);
-  const cart = [req.user.cart];
+  const coursesArr = await findCartCourses(req.user.cart);
+  const filteredCourses = coursesArr.map((course) => {
+    return {
+      name: course.name,
+      price: course.price,
+    };
+  });
+  const coursesPrice = extractArrOfPrices(filteredCourses);
 
-  const course = await Courses.findByPk(cart[0]);
-
-  const total = course.price;
-
-  console.log(`we're here: `, cart, total, course);
+  const total = calcTotalPrice(coursesPrice);
 
   request.prefer("return=representation");
   request.requestBody({
@@ -276,38 +238,49 @@ export const postCreateOrder = async (req, res, next) => {
     ],
   });
 
-  console.log(`we entered here: `);
-
   try {
     const order = await paypalClient.execute(request);
     req.session.userOrder = order;
     res.json({ id: order.result.id });
   } catch (e) {
+    req.flash("error", "There's an error in payment");
     res.status(500).json({ error: e });
     // errorRaiser(e, next);
   }
 };
 
 export const postSuccess = async (req, res, next) => {
-  // const coursesArrayJSON = extractCart(req.user.cart);
-  // const courseIdsArr = convertCartToArr(coursesArrayJSON);
-  // res.send(courseIdsArr);
   try {
+    const rounds = req.user.cart.map(({ roundId }) => roundId);
+    const courses = req.user.cart.map(({ courseId }) => courseId);
+
     Payment.create({
       user_id: req.user.user_id,
-      course_id: req.user.cart,
+      course_id: courses,
+      round_id: rounds,
       status: "success",
       details: req.session.userOrder,
     })
       .then((result) => {
+        return rounds.forEach((round, index) => {
+          return Rounds.Update(
+            {
+              user_ids: req.user,
+            },
+            { where: { round_id: round, course_id: courses[index] } }
+          );
+        });
+      })
+      .then((result) => {
         return Users.update(
           {
-            cart: "",
+            cart: [],
           },
           { where: { user_id: req.user.user_id } }
         );
       })
       .then((result) => {
+        console.log("adding payment", result);
         return res.redirect("/success_payment");
       })
       .catch((err) => {
@@ -317,17 +290,17 @@ export const postSuccess = async (req, res, next) => {
           status: "failed",
           details: req.session.userOrder,
         });
+        req.flash(
+          "error",
+          "There's an error in completing your payment, please contact us!"
+        );
         errorRaiser(err, next);
       });
-
-    // console.log("addedUserResult: ", addedUser);
-    // console.log("addingPurchaseResult: ", addingResult);
-    // if (addedUser && addingPayment) {
-    //   return res.redirect("/success_payment");
-    // } else {
-    //   errorRaiser("Database error", next);
-    // }
   } catch (e) {
+    req.flash(
+      "error",
+      "There's an error in completing your payment, please contact us!"
+    );
     errorRaiser(e, next);
   }
 };
@@ -348,9 +321,12 @@ export const getCancelled = (req, res, next) => {
 };
 
 export const postLogout = (req, res, next) => {
-  // req.logout();
   req.session.destroy((err) => {
-    console.log(`A Destroy `, err);
-    res.redirect("/");
+    if (err) {
+      console.log(`A Destroy `, err);
+      res.redirect("/");
+    } else {
+      res.redirect("/");
+    }
   });
 };

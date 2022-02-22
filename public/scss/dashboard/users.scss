@@ -1,16 +1,18 @@
 @use "../utils/variables" as vars;
 
+$number_of_cols: 7;
+
 .users {
   .content {
     padding-inline-start: 80px !important;
 
     .table-head {
-      font-size: vars.$lg_font_size - 2 !important;
-      grid-template-columns: repeat(6, 1fr) !important;
+      font-size: vars.$lg_font_size - 3 !important;
+      grid-template-columns: repeat($number_of_cols, 1fr) !important;
     }
 
     .table-row {
-      grid-template-columns: repeat(6, 1fr) !important;
+      grid-template-columns: repeat($number_of_cols, 1fr) !important;
     }
   }
 }

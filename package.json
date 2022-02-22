@@ -4,7 +4,7 @@
   "main": "app.mjs",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon app.mjs",
+    "start": "nodemon app.mjs $PORT",
     "web": "node app.mjs",
     "sass": "sass --watch ./public/scss/:./public/css/",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"

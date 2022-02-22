@@ -5,16 +5,11 @@
 
 <% if (Array.isArray(bought_courses)) { %>
 
-  <% if (errorMessage) { %>
-    <div class="error-container">
-      <%- errorMessage; %>
-    </div>
-  <% } %>
-
   <section class="complete-payment">
     <div class="container">
       <h2 class="h1">
         Your Going to buy:
+        <%- include('../includes/errorMessage.ejs'); %>
       </h2>
       <div class="bought-course-data">
         <% bought_courses.forEach(course => { %>

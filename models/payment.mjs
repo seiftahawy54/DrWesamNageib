@@ -10,15 +10,10 @@ const Payment = sequelize.define("payments", {
     defaultValue: hashCreator(),
   },
   course_id: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    foreignKey: true,
-    references: {
-      model: "courses",
-      key: "course_id",
-    },
-    onDelete: "cascade",
-    onUpdate: "cascade",
+    type: Sequelize.ARRAY(Sequelize.STRING),
+  },
+  round_id: {
+    type: Sequelize.ARRAY(Sequelize.STRING),
   },
   user_id: {
     type: Sequelize.STRING,

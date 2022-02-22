@@ -31,45 +31,61 @@ export const getCoursesFormCart = async (cart) => {
   return boughtCourses;
 };
 
-export const calcTotalFromCart = async (cart) => {
-  const courses = await getCoursesFormCart(cart);
-
-  let fullPrice = 0;
-
-  for (const course of courses) {
-    fullPrice += parseFloat(course.price);
-  }
-
-  return fullPrice;
-};
-
 export const extractCart = (req) => {
   return JSON.parse(req.user.cart);
 };
 
-export const convertCartToArr = (cart) => {
-  return cart.map(({ item }) => {
-    return item;
-  });
-};
-
-export const getArray = (cart) => {
-  if (cart === "{}") {
-    return [];
-  } else {
-    return cart.match(/[\w.-]+/g).map(Number);
-  }
-};
-
-export const getPgArray = (cart) => {
-  cart = JSON.stringify(cart);
-  cart = cart.replace("[", "{");
-  cart = cart.replace("]", "}");
-  return cart;
-};
-
 export const calcTotalPrice = (cart) => {
-  return cart.reduce((currentValue, previousValue) => {
-    return currentValue.price + previousValue.price;
+  return cart.reduce(
+    (currentValue, previousValue) =>
+      parseFloat(currentValue) + parseFloat(previousValue)
+  );
+};
+
+export const findCartCourses = async (cart) => {
+  const returnCoursesArr = [];
+
+  const findCartCourses = cart.map(async (cartItem) => {
+    return await Courses.findByPk(cartItem.courseId);
   });
+
+  for (const course of findCartCourses) {
+    returnCoursesArr.push(await course);
+  }
+
+  return returnCoursesArr;
+};
+
+export const cartIsEmpty = (cart) => {
+  let isEmpty = true;
+  for (const item in cart) {
+    if (cart[item].courseId) {
+      isEmpty = false;
+      return isEmpty;
+    }
+  }
+  return isEmpty;
+};
+
+export const extractArrOfPrices = (courses) => {
+  return courses.map((course) => course.price);
+};
+
+export const courseExistsInCart = (cart, searchingItem) => {
+  let exists = false;
+
+  for (const item in cart) {
+    if (cart[item].courseId.localeCompare(searchingItem) === 0) {
+      exists = true;
+      return exists;
+    }
+  }
+
+  return exists;
+};
+
+export const filterCart = (cart, searchingItem) => {
+  return cart.filter(
+    ({ courseId }) => courseId.localeCompare(searchingItem) !== 0
+  );
 };

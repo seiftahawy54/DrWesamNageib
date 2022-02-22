@@ -1,0 +1,52 @@
+<section class="courses">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <main class="content-header">
+            <div class="custom-head">
+              <h2>Courses</h2>
+              <span></span>
+            </div>
+            <a class="btn btn-success" href="/dashboard/add-new-course">
+              Add new course
+            </a>
+          </main>
+
+          <div class="courses-data">
+            <div class="table-head">
+              <span class="course-rank">Rank</span>
+              <span class="course-name">Course Name</span>
+              <span class="course-price">Course Price</span>
+              <span class="course-price">Course Description</span>
+              <span class="course-update">Update Course</span>
+              <span class="course-delete">Delete Course</span>
+            </div>
+            <% courses.forEach(course => { %>
+              <div class="table-row">
+                <span class="course-rank">#<%= course.course_rank; %></span>
+                <span class="course-name"><%= course.name; %></span>
+                <span class="course-price">&dollar;<%= course.price; %></span>
+                <span class="course-description"><%- course.description; %></span>
+                <div class="course-update">
+                  <a href="/dashboard/edit-course/<%= course.course_id %>?edit=true" class="btn btn-success">Update
+                    Course</a>
+                </div>
+                <div class="course-delete">
+                  <form action="/dashboard/delete-course" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+                    <input type="hidden" name="courseId" value="<%= course.course_id; %>">
+                    <button type="submit" class="btn btn-danger">Delete Course</button>
+                  </form>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

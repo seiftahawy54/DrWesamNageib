@@ -1,3 +1,17 @@
+.overview .content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+.overview .content .content-header {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  justify-content: space-around;
+}
+
 @media (max-width: 575px) {
   .overview {
     margin-block-start: 50px;

@@ -62,14 +62,23 @@
       </div>
       <div class="col-lg-6 col-xs-12">
         <div class="user-img">
-          <img
-            src="/downloaded_images/<%= user.user_img %>"
-            alt="<%= user.name %>"
-          />
           <form action="/update-user-img" method="POST" enctype="multipart/form-data">
             <div class="custom-input">
               <label for="user_img">
-
+                <% if (user.user_img) { %>
+                  <img
+                    src="/downloaded_images/<%= user.user_img %>"
+                    alt="<%= user.name %>"
+                  />
+                <% } else { %>
+                  <div class="alert alert-primary" role="alert">
+                    Please select an image 😅
+                  </div>
+                  <img
+                    src="/downloaded_images/<%= user.user_img %>"
+                    alt="<%= user.name %>"
+                  />
+                <% } %>
               </label>
               <input type="file" name="user_img" id="user_img" placeholder="Update your image"
                      class="form-control <%= validationError.error === 'img' ? 'is-invalid' : "" %>">

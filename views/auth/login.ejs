@@ -5,17 +5,12 @@
 <%- include("../includes/navigation.ejs"); %>
 
 <section class="login-form">
-  <% if (errorMessage) { %>
-    <div class="error-container">
-      <%- errorMessage %>
-    </div>
-  <% } %>
-
   <div class="container content-container">
     <div class="">
       <h2>Login</h2>
       <div class="header-dash-line"></div>
     </div>
+    <%- include('../includes/errorMessage.ejs'); %>
     <form action="/login" method="POST" novalidate class="">
       <div class="form-floating my-3">
         <input type="email" name="email" id="email" placeholder="Your email"

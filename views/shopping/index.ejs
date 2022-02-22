@@ -21,13 +21,14 @@
             <% bought_courses.forEach(course => { %>
               <div class="row purchase-details">
                 <div class="col-6">
-                  <img src="<%- course.course_img %>" alt="<%- course.name %>" class="w-100 img-fluid"/>
+                  <img src="/downloaded_images/<%- course.course_img %>" alt="<%- course.name %>"
+                       class="w-100 img-fluid"/>
                 </div>
                 <div class="col-5">
                   <h3><%- course.name; %></h3>
                   <p>&dollar; <%- course.price; %></p>
-                  <p><%- course.description; %></p>
-                  <p><%- course.created_at; %></p>
+                  <p><%- course.course_thumbnail; %></p>
+                  <p><%= moment(course.created_at).format("MM-DD-YYYY"); %></p>
                 </div>
                 <form action="/delete_from_cart" class="delete-icon" method="POST">
                   <input type="hidden" name="courseId" value="<%- course.course_id %>">

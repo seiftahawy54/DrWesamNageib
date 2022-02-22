@@ -75,6 +75,7 @@
           </datalist>
         </div>
         <div class="row all-courses-cont">
+          <%- include('../includes/errorMessage.ejs'); %>
           <% courses.forEach(course => { %>
             <div class="col-lg-4 col-sm-12">
               <a href="/courses/<%- course.course_id %>" class="reset-link">

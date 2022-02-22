@@ -47,8 +47,8 @@ export const deleteFile = async (filePath) => {
 export const downloadSingleImage = (model, propertyName) => {};
 
 export const getCertificatesImage = (aboutCertificates) => {
-  aboutCertificates.forEach(({ certificate_img }) => {
-    getSingleFile(certificate_img);
+  aboutCertificates.forEach(async ({ certificate_img }) => {
+    await getSingleFile(certificate_img);
   });
 };
 

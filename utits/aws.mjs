@@ -19,28 +19,22 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 export const uploadFile = (filepath, filename, mimetype, res, next) => {
-  return new Promise((res, rej) => {
-    fs.readFile(filepath)
-      .then((uploadingBuffer) => {
-        const params = {
-          Bucket: process.env.BUCKET_NAME, // pass your bucket name
-          Key: filename, // file will be saved as testBucket/contacts.csv
-          contentType: multerS3.AUTO_CONTENT_TYPE,
-          contentDisposition: false,
-          Body: JSON.stringify(uploadingBuffer, null, 2),
-        };
-        s3.upload(params, function (s3Err, data) {
-          if (s3Err) {
-            console.log(s3Err);
-            rej(s3Err);
-          } else {
-            res(true);
-          }
-        });
-      })
-      .catch((e) => {
-        rej(e);
-      });
+  return fs.readFile(filepath).then((uploadingBuffer) => {
+    const params = {
+      Bucket: process.env.BUCKET_NAME, // pass your bucket name
+      Key: filename, // file will be saved as testBucket/contacts.csv
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      contentDisposition: false,
+      Body: JSON.stringify(uploadingBuffer, null, 2),
+    };
+    s3.upload(params, function (s3Err, data) {
+      if (s3Err) {
+        console.log(s3Err);
+        errorRaiser(err, next);
+      } else {
+        return true;
+      }
+    });
   });
 };
 

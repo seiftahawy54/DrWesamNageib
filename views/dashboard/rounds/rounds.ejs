@@ -1,0 +1,63 @@
+<%- include("../../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css"/>
+<link rel="stylesheet" href="/css/dashboard/rounds.css"/>
+</head>
+<body>
+
+<section class="courses rounds">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <%- include("../../includes/errorMessage.ejs"); %>
+          <main class="content-header">
+            <div class="custom-head">
+              <h2>Rounds</h2>
+              <span></span>
+            </div>
+
+            <a class="btn btn-success" href="/dashboard/start-new-round">
+              Add new round
+            </a>
+          </main>
+
+          <div class="courses-data rounds-data">
+            <div class="table-head">
+              <span class="round-course">Round Course Name</span>
+              <span class="round-name">Round Users</span>
+              <span class="round-message">Round Date</span>
+              <span class="course-update">Update Round</span>
+              <span class="course-delete">Delete Round</span>
+            </div>
+            <% rounds.forEach((round, index) => { %>
+              <div class="table-row">
+                <span class="round-name"><%= courses[index].name; %></span>
+                <span
+                  class="round-course"><%= round.users_ids.length === 0 ? "No Users In this round" : round.users_ids %></span>
+                <span class="round-message"><%= moment(round.round_date).format("DD-MM-YYYY"); %></span>
+                <div class="round-update">
+                  <a href="/dashboard/edit-round/<%= round.round_id %>" class="btn btn-success">Update Round</a>
+                </div>
+                <div class="course-delete">
+                  <form action="/dashboard/delete-round" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+                    <input type="hidden" name="roundId" value="<%= round.round_id %>">
+                    <button type="submit" class="btn btn-danger">Delete Round</button>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          <%- include('../../includes/pagination.ejs'); %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../../includes/bottom_part.ejs"); %>

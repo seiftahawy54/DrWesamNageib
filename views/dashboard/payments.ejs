@@ -23,14 +23,26 @@
 
           <div class="courses-data payments-data">
             <div class="table-head">
-              <span class="payment-rank">Course Name</span>
+              <span class="payment-rank">Courses Name</span>
               <span class="payment-name">Payee Name</span>
+              <span class="payment-name">Bought Round Date</span>
               <span class="payment-price">Status</span>
             </div>
             <% payments.forEach((payment, index) => { %>
               <div class="table-row">
-                <span class="payment-rank"><%= courses[index].name; %></span>
-                <span class="payment-name"><%= users[index].name; %></span>
+                <span class="payment-rank">
+                  <% courses[index].forEach(course => { %>
+                    <%- course.name %>
+                  <% }) %>
+                </span>
+                <span class="payment-name">
+                    <%- users[index].name %>
+                </span>
+                <span class="payment-name">
+                  <% rounds[index].forEach(round => { %>
+                    <%- moment(round.round_date).format('DD-MM-YYYY') %>
+                  <% }) %>
+                </span>
                 <span
                   class="payment-price"><%= payment.status; %></span>
               </div>

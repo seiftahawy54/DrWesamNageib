@@ -7,8 +7,10 @@ import {
 } from "../utits/general_helper.mjs";
 import { Courses } from "../models/courses.mjs";
 import { Users } from "../models/users.mjs";
-import { getArray, getPgArray, updateCart } from "../utits/cart_helpers.mjs";
-import { getSingleFile } from "../utits/aws.mjs";
+import { Rounds } from "../models/rounds.mjs";
+import moment from "moment";
+import { validationResult } from "express-validator";
+import { cartIsEmpty, courseExistsInCart } from "../utits/cart_helpers.mjs";
 
 const getIndex = async (req, res, next) => {
   try {
@@ -29,18 +31,19 @@ const getIndex = async (req, res, next) => {
 const singleCourse = async (req, res, next) => {
   try {
     const course = await Courses.findByPk(req.params.courseId);
+    const roundsResult = await Rounds.findAll({
+      where: { course_id: course.course_id },
+    });
 
-    let message = req.flash("error")[0];
-    console.log(`custom error message`, message);
-    if (!(typeof message === "string")) {
-      message = null;
-    }
+    const numberOfCourses = await Courses.findAndCountAll();
 
     res.render("courses/single_course", {
       title: course.name,
       path: "/courses",
       course,
-      errorMessage: message,
+      numberOfCourses: numberOfCourses.count,
+      rounds: roundsResult,
+      moment,
     });
   } catch (e) {
     errorRaiser(e, next);
@@ -50,64 +53,66 @@ const singleCourse = async (req, res, next) => {
 const addCourseToCart = async (req, res, next) => {
   try {
     const courseId = req.body.courseId;
+    const roundId = req.body.selected_round;
     // const cart = getArray(req.user.cart);
     const course = await Courses.findByPk(courseId);
+    const errors = validationResult(req);
 
-    if (
-      req.user.cart.length !== 0 &&
-      req.user.cart.localeCompare(courseId) === 0
-    ) {
-      return res.render("courses/single_course", {
-        title: course.name,
-        path: "/courses",
-        course,
-        errorMessage: `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`,
-      });
-    } else if (
-      req.user.cart.length === 0 &&
-      req.user.cart.localeCompare(courseId) === 0
-    ) {
-      return res.render("courses/single_course", {
-        title: course.name,
-        path: "/courses",
-        course,
-        errorMessage: `You've already have item in your card! proceed to <a href='/cart'>checkout</a>?`,
-      });
+    let findingItemResult = false;
+
+    if (!errors.isEmpty()) {
+      req.flash("error", "Please select a valid date!");
+      res.redirect(`/courses/${courseId}`);
     } else {
-      req.user.cart = courseId;
-      const addingResult = await Users.update(
-        { cart: req.user.cart },
-        { where: { user_id: req.user.user_id } }
-      );
-
-      if (addingResult[0] === 1) {
-        res.redirect("/cart");
+      if (Array.isArray(req.user.cart)) {
+        findingItemResult = courseExistsInCart(req.user.cart, courseId);
+        // findingItemResult.push(
+        //   req.user.cart.find((cartItem) => {
+        //     return cartItem.courseId.localeCompare(courseId) === 0;
+        //   })
+        // );
       } else {
-        errorRaiser(addingResult, next);
+        req.user.cart = [];
+      }
+
+      if (Array.isArray(req.user.cart) && findingItemResult) {
+        req.flash(
+          "error",
+          `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`
+        );
+        res.redirect(`/courses/${courseId}`);
+      } else if (Array.isArray(req.user.cart) && findingItemResult) {
+        req.flash(
+          "error",
+          `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`
+        );
+      } else {
+        // if (cartIsEmpty(req.user.cart)) {
+        //   req.user.cart = [
+        //     req.user.cart,
+        //     { courseId: courseId, roundId: roundId },
+        //   ];
+        // } else {
+        //   req.user.cart = [
+        //     ...req.user.cart,
+        //     { courseId: courseId, roundId: roundId },
+        //   ];
+        // }
+
+        req.user.cart.push({ courseId: courseId, roundId: roundId });
+
+        const addingResult = await Users.update(
+          { cart: req.user.cart },
+          { where: { user_id: req.user.user_id } }
+        );
+
+        if (Array.isArray(addingResult)) {
+          res.redirect("/cart");
+        } else {
+          errorRaiser(addingResult, next);
+        }
       }
     }
-
-    // if (cart.find((id) => id === courseId)) {
-    //   return res.render("courses/single_course", {
-    //     title: course.name,
-    //     path: "/courses",
-    //     course,
-    //     errorMessage: `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`,
-    //   });
-    // } else {
-    //   cart.push(courseId);
-    //   console.log(cart);
-    //   const pgArr = getPgArray(cart);
-    //   console.log(pgArr);
-    //   const addingResult = await Users.update(
-    //     { cart: pgArr },
-    //     { where: { user_id: req.user.user_id } }
-    //   );
-    //
-    //   if (addingResult[0] === 1) {
-    //     res.redirect("/cart");
-    //   }
-    // }
   } catch (e) {
     errorRaiser(e, next);
   }

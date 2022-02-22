@@ -9,10 +9,16 @@ import moment from "moment";
 import { Sequelize } from "sequelize";
 import { uploadFile } from "../../utits/aws.mjs";
 import { getCertificatesImage } from "../../utits/general_helper.mjs";
+import { Rounds } from "../../models/rounds.mjs";
+import { Payment } from "../../models/payment.mjs";
 
 export const getOverview = async (req, res, next) => {
   const numberOfUsers = await Users.findAndCountAll();
   const numberOfCourses = await Courses.findAndCountAll();
+  const numberOfRounds = await Rounds.findAndCountAll();
+  const numberOfMessages = await Messages.findAndCountAll();
+  const numberOfPayments = await Payment.findAndCountAll();
+  const numberOfCertificates = await Certificates.findAndCountAll();
 
   res.render("dashboard/overview", {
     title: "Over View Page",
@@ -20,6 +26,10 @@ export const getOverview = async (req, res, next) => {
     statsNumbers: {
       users: numberOfUsers.count,
       courses: numberOfCourses.count,
+      rounds: numberOfRounds.count,
+      messages: numberOfMessages.count,
+      payments: numberOfPayments.count,
+      certificates: numberOfCertificates.count,
     },
   });
 };

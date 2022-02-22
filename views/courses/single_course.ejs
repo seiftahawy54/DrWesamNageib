@@ -14,13 +14,13 @@
         <a href="/courses/<%= course.course_id %>" class="course-name-page reset-link"><%- course.name %></a>
       </div>
       <div class="next-prev">
-        <a href="/courses/"
+        <a href="/courses/<%= (course.course_rank % numberOfCourses) - 1 %>"
            class="reset-link">
           <%- include('../../public/imgs/svgs/right_arrow.svg') %>
           Prev
         </a>
         |
-        <a href="/courses/" class="reset-link">
+        <a href="/courses/<%= course.course_rank % numberOfCourses + 1 %>" class="reset-link">
           Next
           <%- include('../../public/imgs/svgs/left_arrow.svg') %>
         </a>
@@ -46,13 +46,30 @@
               <%- course.description %>
             </bdi>
           </div>
-          <form action="/courses/addToCart" method="post">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <input type="hidden" name="courseId" value="<%= course.course_id %>"/>
-            <button class="btn" type="submit">
-              Add to cart
-            </button>
-          </form>
+          <% if (Array.isArray(rounds) && rounds.length > 1) { %>
+            <form action="/courses/addToCart" method="post">
+
+              <% rounds.forEach(round => { %>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="selected_round" value="<%- round.round_id %>"
+                         id="<%- round.round_id %>">
+                  <label class="form-check-label"
+                         for="<%- round.round_id %>"><%- moment(round.round_date).format("DD-MM-YYYY") %></label>
+                </div>
+              <% }) %>
+
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+              <input type="hidden" name="courseId" value="<%= course.course_id %>"/>
+              <button class="btn mt-5" type="submit">
+                Add to cart
+              </button>
+            </form>
+          <% } else { %>
+            <div class="alert alert-primary">
+              Sorry, There's no available rounds for this course.
+            </div>
+            <button class="btn btn-disabled" disabled>Add to cart</button>
+          <% } %>
         </div>
       </div>
     </div>

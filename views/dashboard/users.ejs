@@ -26,6 +26,7 @@
               <span class="course-name">User Name</span>
               <span class="course-price">Whatsapp Number</span>
               <span class="course-price">User email</span>
+              <span class="course-price">Current Round</span>
               <span class="course-name">User Specialization</span>
               <span class="course-update">Update User</span>
               <span class="course-delete">Delete User</span>
@@ -35,7 +36,13 @@
                 <span class="user-name"><%= user.name; %></span>
                 <span class="user-number"><a class="reset-link"
                                              href="tel:+<%= user.whatsapp_no; %>"><%= user.whatsapp_no; %></a></span>
-                <span class="user-email"><%= user.email; %></span>
+                <span class="user-email">
+                  <a class="reset-link" href="mailto:<%= user.email %>">
+                    <%= user.email; %>
+                  </a>
+                </span>
+                <span
+                  class="user-email"><%= user.current_round === null ? "No Rounds" : user.current_round; %></span>
                 <span class="user-specilization"><%= user.specialization; %></span>
                 <div class="course-update">
                   <a href="/dashboard/edit-user/<%= user.user_id %>" class="btn btn-success">Update User</a>
