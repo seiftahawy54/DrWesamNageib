@@ -1,2 +1,1 @@
-web: node app.mjs
-debug: node --inspect app.mjs
+web: node --inspect=9090 app.mjs
