@@ -11,6 +11,7 @@ import {
 } from "../controllers/shop.mjs";
 import express from "express";
 import { body } from "express-validator";
+import { isAuthenticated } from "../middlewares/dashboard-auth.mjs";
 
 const router = express.Router();
 
@@ -31,9 +32,12 @@ router
     ],
     postContactPage
   )
-  .get("/opinions_form", getOpinionsForm)
+  .get("/opinions", isAuthenticated, (req, res, next) =>
+    res.redirect("/opinions_form")
+  )
+  .get("/opinions_form", isAuthenticated, getOpinionsForm)
   .post(
-    "/opinions",
+    "/opinions_form",
     [
       body("name").isString().notEmpty(),
       body("email").isEmail().notEmpty(),

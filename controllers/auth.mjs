@@ -80,22 +80,22 @@ export const postLogin = async (req, res, next) => {
           req.flash("success", "Welcome on Board 😄");
           return res.redirect("/profile");
         } else {
+          req.flash("error", "Maybe username or password is invalid!");
           return res.status(422).render("auth/login", {
             title: "Login",
             path: "/login",
             user: { email, password },
             validationErrors: { email: true, password: true },
-            errorMessage: "Maybe username or password is invalid!",
           });
         }
       })
       .catch((err) => {
+        req.flash("error", "Maybe user name or password is invalid!");
         return res.status(422).render("auth/login", {
           title: "Login",
           path: "/login",
           user: { email, password },
           validationErrors: { email: true, password: true },
-          errorMessage: "Maybe user name or password is invalid!",
         });
       });
   }
@@ -107,7 +107,6 @@ export const getRegister = (req, res, next) => {
     path: "/register",
     validationErrors: [{}],
     user: {},
-    errorMessage: "",
   });
 };
 
@@ -122,6 +121,7 @@ export const postRegister = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
+      req.flash("", errors.array()[0].msg);
       return res.status(422).render("auth/register", {
         title: "Register",
         path: "/register",
@@ -134,7 +134,6 @@ export const postRegister = async (req, res, next) => {
           password,
           confirmPassword,
         },
-        errorMessage: errors.array()[0].msg,
       });
     } else {
       const encryptionResult = await bcrypt.hash(password, 12);

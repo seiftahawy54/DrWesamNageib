@@ -121,7 +121,7 @@ app.use(async (req, res, next) => {
 });
 
 app.use("/courses", coursesRoutes);
-app.use("/dashboard", dashboardRoutes);
+app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
 app.use(userRoutes);

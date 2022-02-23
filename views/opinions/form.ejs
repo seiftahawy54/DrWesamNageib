@@ -9,25 +9,36 @@
     <div class="content-container">
       <h2>Leave your feedback about our courses</h2>
       <div class="header-dash-line"></div>
-      <form action="/opinions" method="POST" class="opinions">
+      <form action="/opinions_form" method="POST" class="opinions">
         <%- include("../includes/errorMessage"); %>
         <div class="form-floating my-3">
-          <input type="text" name="name" id="opinion_name" class="form-control" placeholder="Your name"/>
+          <input type="text" name="name" id="opinion_name"
+                 class="form-control <%- validationErrors.find(e => e.param === 'name') ? 'is-invalid' : '' %>"
+                 value="<%= opinion.sender_name %>"
+                 placeholder="Your name"/>
           <label for="opinion_name">Your Name</label>
         </div>
         <div class="form-floating my-3">
-          <input type="email" name="email" id="opinion_email" class="form-control" placeholder="Your name"/>
+          <input type="email" name="email" id="opinion_email"
+                 class="form-control <%- validationErrors.find(e => e.param === 'email') ? 'is-invalid' : '' %>"
+                 value="<%= opinion.sender_email %>"
+                 placeholder="Your name"/>
           <label for="opinion_email">Your Email</label>
         </div>
-        <select name="sender_course" class="form-control my-3" id="enrolled-course">
-          <option value="">Select your course</option>
-          <option value="full">CPHQ Full Course</option>
-          <option value="focused">CPHQ Focused Revision</option>
-          <option value="revision">CPHQ Revision only</option>
+        <select name="sender_course"
+                class="form-control my-3 <%- validationErrors.find(e => e.param === 'sender_course') ? 'is-invalid' : '' %>"
+                id="enrolled-course">
+          <option <%- opinion.sender_course === '' ? 'selected' : "" %>value="">Select your course</option>
+          <option <%- opinion.sender_course === 'full' ? 'selected' : "" %>value="full">CPHQ Full Course</option>
+          <option <%- opinion.sender_course === 'focused' ? 'selected' : "" %>value="focused">CPHQ Focused Revision
+          </option>
+          <option <%- opinion.sender_course === 'revision' ? 'selected' : "" %>value="revision">CPHQ Revision only
+          </option>
         </select>
         <div class="form-floating my-3">
-          <textarea name="opinion" id="opinion" placeholder="Your Opinion" class="form-control"
-                    minlength="80"></textarea>
+          <textarea name="opinion" id="opinion" placeholder="Your Opinion"
+                    class="form-control <%- validationErrors.find(e => e.param === 'opinion') ? 'is-invalid' : '' %>"
+                    minlength="80"><%= opinion.opinion %></textarea>
           <label for="opinion">Your Opinion</label>
         </div>
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>

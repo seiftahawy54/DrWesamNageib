@@ -60,7 +60,7 @@ export const getShoppingCart = async (req, res, next) => {
         const arrOfPrices = extractArrOfPrices(coursesArr);
         const totalPrice = calcTotalPrice(arrOfPrices);
 
-        return res.render("shopping/index", {
+        return res.render("shopping/form", {
           title: "Shopping Cart",
           path: "/cart",
           cart: req.user.cart,
@@ -251,6 +251,8 @@ export const getOpinionsForm = (req, res, next) => {
   res.render("opinions/form", {
     title: "Opinion Form",
     path: "/opinions/form",
+    validationErrors: [],
+    opinion: {},
   });
 };
 
@@ -263,9 +265,17 @@ export const postOpinions = async (req, res, next) => {
 
   if (!errors.isEmpty()) {
     req.flash("error", errors.array()[0].msg);
-    res.render("opinions/index", {
+    console.log(errors.array());
+    res.render("opinions/form", {
       title: "Your Opinions",
-      path: "/opinions",
+      path: "/opinions_form",
+      validationErrors: errors.array(),
+      opinion: {
+        sender_name: senderName,
+        sender_email: senderEmail,
+        sender_course: senderCourse,
+        opinion: senderOpinion,
+      },
     });
   } else {
     Opinions.create({
@@ -280,17 +290,24 @@ export const postOpinions = async (req, res, next) => {
           res.redirect("/");
         } else {
           req.flash("error", "You've entered an opinion before!");
-          res.render("opinions/form", {
-            title: "Your Opinions",
-            path: "/opinions",
-          });
+          res.redirect("/");
         }
       })
       .catch((err) => {
-        req.flash("error", err.message);
+        req.flash(
+          "error",
+          "Sorry, there's an error from our end, please try again later!"
+        );
         res.render("opinions/form", {
           title: "Your Opinions",
-          path: "/opinions",
+          path: "/opinions_form",
+          validationResult: [],
+          opinion: {
+            sender_name: senderName,
+            sender_email: senderEmail,
+            sender_course: senderCourse,
+            opinion: senderOpinion,
+          },
         });
       });
   }
