@@ -261,10 +261,11 @@ export const postSuccess = async (req, res, next) => {
       details: req.session.userOrder,
     })
       .then((result) => {
-        return rounds.forEach((round, index) => {
+        return rounds.forEach(async (round, index) => {
+          const specificRound = await Rounds.findByPk(round);
           return Rounds.Update(
             {
-              user_ids: req.user,
+              user_ids: [...specificRound.users_ids, req.user],
             },
             { where: { round_id: round, course_id: courses[index] } }
           );
