@@ -1,1 +1,1 @@
-web: node --inspect=9090 app.mjs
+web: node app.mjs
