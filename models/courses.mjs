@@ -43,6 +43,7 @@ const Courses = sequelize.define("course", {
   course_rank: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    unique: true,
   },
 });
 

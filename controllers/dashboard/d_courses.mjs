@@ -10,26 +10,27 @@ import { errorRaiser } from "../../utits/error_raiser.mjs";
 import { uploadFile } from "../../utits/aws.mjs";
 
 const getCourses = async (req, res, next) => {
-  const allCourses = await Courses.findAll();
+  try {
+    const allCourses = await Courses.findAll();
 
-  const sortedCourses = sortCourses(allCourses);
+    const sortedCourses = sortCourses(allCourses);
 
-  res.render("dashboard/courses", {
-    title: "Courses page",
-    path: "/dashboard/courses",
-    courses: sortedCourses,
-  });
+    res.render("dashboard/courses", {
+      title: "Courses page",
+      path: "/dashboard/courses",
+      courses: sortedCourses,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
 };
 
 const getAddNewCourse = (req, res, next) => {
-  const errorMessage = extractError(req);
-
   res.render("dashboard/courses_forms", {
     title: "New Course",
     path: "/dashboard/courses",
     editMode: false,
     course: {},
-    errorMessage,
     validationErrors: [],
   });
 };
@@ -55,6 +56,7 @@ const postAddNewCourse = async (req, res, next) => {
     // console.log(`detailed image: `, );
 
     if (!errors.isEmpty()) {
+      req.flash("error", errors.array()[0].msg);
       res.status(422).render("dashboard/courses_forms", {
         title: "New Course",
         path: "/dashboard/courses",
@@ -69,7 +71,6 @@ const postAddNewCourse = async (req, res, next) => {
           course_thumbnail: courseThumbnail,
           course_rank: courseRank,
         },
-        errorMessage: errors.array()[0].msg,
         validationErrors: errors.array(),
       });
     } else {
@@ -106,7 +107,7 @@ const postAddNewCourse = async (req, res, next) => {
       }
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -122,47 +123,52 @@ const postDeleteCourse = async (req, res, next) => {
 };
 
 const getEditCourse = async (req, res, next) => {
-  const editMode = req.query.edit;
-  if (editMode === "false") return res.redirect("/dashboard/courses");
+  try {
+    const editMode = req.query.edit;
+    if (editMode === "false") return res.redirect("/dashboard/courses");
 
-  const courseId = req.params.courseId;
+    const courseId = req.params.courseId;
 
-  const findingCourse = await Courses.findByPk(courseId);
+    const findingCourse = await Courses.findByPk(courseId);
 
-  res.render("dashboard/courses_forms", {
-    title: "New Course",
-    path: "/dashboard/courses",
-    editMode: "true",
-    course: findingCourse,
-    errorMessage: null,
-    validationErrors: [],
-  });
+    res.render("dashboard/courses_forms", {
+      title: "New Course",
+      path: "/dashboard/courses",
+      editMode: true,
+      course: findingCourse,
+      validationErrors: [],
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
 };
 
 const postUpdateCourse = async (req, res, next) => {
+  const editMode = req.query.edit;
+  if (editMode === "false") return res.redirect("courses");
+  const courseId = req.body.courseId;
+
+  const courseName = req.body.name;
+  const coursePrice = req.body.price;
+  const courseImg = req.files[0];
+  const detailedImg = req.files[1];
+  const courseDescription = req.body.description;
+  const courseArName = req.body.arabic_name;
+  const courseThumbnail = req.body.thumbnail;
+  const courseRank = req.body.course_rank;
+
   try {
-    const editMode = req.query.edit;
-    if (editMode === "false") return res.redirect("courses");
-    const courseId = req.params.courseId;
-
-    const courseName = req.body.name;
-    const coursePrice = req.body.price;
-    const courseImg = req.files[0];
-    const detailedImg = req.files[1];
-    const courseDescription = req.body.description;
-    const courseArName = req.body.arabic_name;
-    const courseThumbnail = req.body.thumbnail;
-    const courseRank = req.body.course_rank;
-
     const errors = validationResult(req);
     const findingCourse = await Courses.findByPk(courseId);
 
     if (!errors.isEmpty()) {
+      req.flash("error", errors.array()[0].msg);
       res.render("dashboard/courses_forms", {
         title: "Update Course",
         path: "/dashboard/courses",
-        editMode: "true",
+        editMode: true,
         course: findingCourse,
+        validationErrors: errors.array(),
       });
     } else {
       if (typeof courseImg !== "object" && typeof detailedImg !== "object") {
@@ -186,7 +192,7 @@ const postUpdateCourse = async (req, res, next) => {
           res.render("dashboard/courses_forms", {
             title: "Update Course",
             path: "/dashboard/courses",
-            editMode: "true",
+            editMode: true,
             course: findingCourse,
           });
         }
@@ -231,7 +237,7 @@ const postUpdateCourse = async (req, res, next) => {
           return res.render("dashboard/courses_forms", {
             title: "Update Course",
             path: "/dashboard/courses",
-            editMode: "true",
+            editMode: true,
             course: findingCourse,
           });
         }
@@ -277,7 +283,7 @@ const postUpdateCourse = async (req, res, next) => {
           res.render("dashboard/courses_forms", {
             title: "Update Course",
             path: "/dashboard/courses",
-            editMode: "true",
+            editMode: true,
             course: findingCourse,
           });
         }
@@ -327,7 +333,7 @@ const postUpdateCourse = async (req, res, next) => {
           res.render("dashboard/courses_forms", {
             title: "Update Course",
             path: "/dashboard/courses",
-            editMode: "true",
+            editMode: true,
             course: findingCourse,
             errorMessage: "There is some error",
             validationError: [],
@@ -336,7 +342,28 @@ const postUpdateCourse = async (req, res, next) => {
       }
     }
   } catch (e) {
-    errorRaiser(e, next);
+    const errorsArray = Object.keys(e.fields).map((key) => {
+      return {
+        param: key,
+        value: e.fields[key],
+      };
+    });
+
+    req.flash("error", e.errors[0].message);
+    return res.render("dashboard/courses_forms", {
+      title: "Update Course",
+      path: "/dashboard/courses",
+      editMode: true,
+      course: {
+        name: courseName,
+        price: coursePrice,
+        course_description: courseDescription,
+        ar_course_name: courseArName,
+        thumbnail: courseThumbnail,
+        course_rank: courseRank,
+      },
+      validationErrors: errorsArray,
+    });
   }
 };
 

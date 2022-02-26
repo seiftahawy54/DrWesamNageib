@@ -14,7 +14,7 @@ export const updateCart = async (courseId, req, newCart, next) => {
 
     return updatingResult[0] === 1;
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 

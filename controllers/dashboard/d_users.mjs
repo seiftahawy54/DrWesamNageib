@@ -24,7 +24,7 @@ const getUsers = async (req, res, next) => {
       activePage: pageNumber,
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 

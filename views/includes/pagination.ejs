@@ -1,11 +1,11 @@
 <nav aria-label="navigation" class="my-3">
   <ul class="pagination justify-content-center">
     <% if (numberOfLinks) { %>
-      <% for (let i = 0; i < numberOfLinks; i++) { %>
-        <li class="page-item  <%= activePage === i ? 'active' : "" %>">
+      <% for (let i = 1; i <= numberOfLinks; i++) { %>
+        <li class="page-item  <%= parseInt(activePage) === i ? 'active' : "" %>">
           <a class="page-link"
-             href="<%= path %>/?page=<%= i + 1 %>" <%- activePage ? `aria-current="page"` : "" %>>
-            <%= i + 1 %>
+             href="<%= path %>/?page=<%= i %>" <%- activePage ? `aria-current="page"` : "" %>>
+            <%= i %>
           </a>
         </li>
       <% } %>

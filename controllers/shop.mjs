@@ -47,7 +47,7 @@ export const getHomePage = async (req, res, next) => {
       });
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -89,7 +89,7 @@ export const getShoppingCart = async (req, res, next) => {
       });
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -118,7 +118,7 @@ export const postDeleteFromCart = async (req, res, next) => {
       res.redirect("/cart");
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 
   // const cartJSON = JSON.parse(req.user.cart);
@@ -294,14 +294,12 @@ export const postOpinions = async (req, res, next) => {
         }
       })
       .catch((err) => {
-        req.flash(
-          "error",
-          "Sorry, there's an error from our end, please try again later!"
-        );
+        console.log(err);
+        req.flash("error", err.message);
         res.render("opinions/form", {
           title: "Your Opinions",
           path: "/opinions_form",
-          validationResult: [],
+          validationErrors: [],
           opinion: {
             sender_name: senderName,
             sender_email: senderEmail,

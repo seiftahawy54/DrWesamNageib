@@ -25,6 +25,6 @@ export const getPaymentsPage = async (req, res, next) => {
       moment,
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };

@@ -65,7 +65,7 @@ export const getStartNewRound = async (req, res, next) => {
       round: {},
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -75,10 +75,8 @@ export const postAddNewRound = async (req, res, next) => {
     // moment(date).toISOString()
     const roundCourse = req.body.round_course;
     const roundDate = req.body.round_date;
+    const roundLink = req.body.round_link;
     const errors = validationResult(req);
-
-    console.log(errors);
-    console.log(roundCourse, roundDate);
 
     if (!errors.isEmpty()) {
       req.flash("error", errors.array()[0].msg);
@@ -92,23 +90,39 @@ export const postAddNewRound = async (req, res, next) => {
         round: {
           round_course: roundCourse,
           round_date: roundDate,
+          round_link: roundLink,
         },
       });
     } else {
       const addingResult = await Rounds.create({
         course_id: roundCourse,
         round_date: moment(roundDate).toISOString(),
+        round_link: roundLink,
         users_ids: [],
       });
 
-      if (addingResult) {
+      if (typeof addingResult === "object") {
         req.flash("success", "Round Added Successfully");
-        res.redirect("/dashboard/rounds");
+        return res.status(201).redirect("/dashboard/rounds");
       } else {
+        req.flash("error", "Error in adding new round");
+        return res.status(402).render("dashboard/rounds/round_form", {
+          title: "Rounds",
+          // path: "/dashboard/rounds",
+          path: "/dashboard/rounds",
+          courses: allCourses,
+          editMode: false,
+          validationErrors: errors.array(),
+          round: {
+            round_course: roundCourse,
+            round_date: roundDate,
+            round_link: roundLink,
+          },
+        });
       }
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -122,13 +136,11 @@ export const getUpdateRound = async (req, res, next) => {
     let findingRoundUsersArr = [];
 
     if (findingRound.users_ids.length !== 0) {
-      const findingRoundUsers = findingRound.users_ids.map(async (userId) => {
-        return await Users.findByPk(userId);
-      });
-
-      for (const key of findingRoundUsers) {
-        findingRoundUsersArr.push(await key);
-      }
+      findingRoundUsersArr = await Promise.all(
+        findingRound.users_ids.map(async (userId) => {
+          return await Users.findByPk(userId);
+        })
+      );
     }
 
     res.render("dashboard/rounds/round_form", {
@@ -143,7 +155,7 @@ export const getUpdateRound = async (req, res, next) => {
       moment,
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -246,7 +258,7 @@ export const postUpdateRound = async (req, res, next) => {
       }
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -266,6 +278,6 @@ export const postDeleteRound = async (req, res, next) => {
       res.redirect("rounds");
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };

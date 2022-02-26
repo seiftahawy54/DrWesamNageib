@@ -27,10 +27,10 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
       contentDisposition: false,
       Body: JSON.stringify(uploadingBuffer, null, 2),
     };
-    s3.upload(params, function (s3Err, data) {
+    s3.upload(params, async function (s3Err, data) {
       if (s3Err) {
         console.log(s3Err);
-        errorRaiser(err, next);
+        await errorRaiser(err, next);
       } else {
         return true;
       }

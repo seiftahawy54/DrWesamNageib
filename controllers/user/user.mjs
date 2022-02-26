@@ -139,6 +139,6 @@ export const postUpdateUserImg = async (req, res, next) => {
       });
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };

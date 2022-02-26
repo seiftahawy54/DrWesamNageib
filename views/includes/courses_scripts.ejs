@@ -8,7 +8,7 @@
     .then(editorData => {
       editor = editorData;
 
-      <% if (editMode === 'true') { %>
+      <% if (editMode === true) { %>
       editor.setData("<%- course.description %>")
       <% } %>
     })

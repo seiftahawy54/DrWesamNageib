@@ -26,8 +26,15 @@ const getIndex = async (req, res, next) => {
         where: { course_rank: courseRank },
       });
 
+      console.log(findingCourseId);
+
+      if (Array.isArray(findingCourseId) && findingCourseId.length > 0) {
+        req.flash("error", "There's no course with this id!");
+        return res.redirect(`/courses/${findingCourseId[0].courseId}`);
+      } else {
+        return res.redirect("/courses");
+      }
       // console.log(findingCourseId[0].course_id);
-      return res.redirect(`/courses/${findingCourseId[0].courseId}`);
     }
 
     let fetchingResult = await Courses.findAll();
@@ -40,7 +47,7 @@ const getIndex = async (req, res, next) => {
       courses: sortCourses(fetchingResult),
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -70,7 +77,7 @@ const singleCourse = async (req, res, next) => {
       moment,
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -133,12 +140,12 @@ const addCourseToCart = async (req, res, next) => {
         if (Array.isArray(addingResult)) {
           res.redirect("/cart");
         } else {
-          errorRaiser(addingResult, next);
+          await errorRaiser(addingResult, next);
         }
       }
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 

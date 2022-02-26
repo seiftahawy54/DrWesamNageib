@@ -155,8 +155,8 @@ export const postRegister = async (req, res, next) => {
             res.redirect("/login");
           })
           .catch((err) => {
+            // errorRaiser(err, next);
             req.flash("error", err.message);
-            console.log(err);
             res.render("auth/register", {
               title: "Register",
               path: "/register",
@@ -174,7 +174,7 @@ export const postRegister = async (req, res, next) => {
       }
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -201,7 +201,7 @@ export const getCompletePayment = async (req, res, next) => {
       res.redirect("/courses");
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -285,7 +285,7 @@ export const postSuccess = async (req, res, next) => {
       .then((result) => {
         return res.redirect("/success_payment");
       })
-      .catch((err) => {
+      .catch(async (err) => {
         Payment.create({
           user_id: req.user.user_id,
           course_id: req.user.cart,
@@ -296,14 +296,14 @@ export const postSuccess = async (req, res, next) => {
           "error",
           "There's an error in completing your payment, please contact us!"
         );
-        errorRaiser(err, next);
+        await errorRaiser(err, next);
       });
   } catch (e) {
     req.flash(
       "error",
       "There's an error in completing your payment, please contact us!"
     );
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 

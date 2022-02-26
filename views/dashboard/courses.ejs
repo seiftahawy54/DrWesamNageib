@@ -37,7 +37,9 @@
                 <span class="course-rank">#<%= course.course_rank; %></span>
                 <span class="course-name"><%= course.name; %></span>
                 <span class="course-price">&dollar;<%= course.price; %></span>
-                <span class="course-description"><%- course.description; %></span>
+                <span class="course-description">
+                    <%- course.description; %>
+                </span>
                 <div class="course-update">
                   <a href="/dashboard/edit-course/<%= course.course_id %>?edit=true" class="btn btn-success">Update
                     Course</a>

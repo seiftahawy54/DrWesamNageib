@@ -54,7 +54,7 @@ export const getMessages = async (req, res, next) => {
       numberOfLinks: numberOfResults,
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -65,7 +65,7 @@ export const postDeleteMessage = async (req, res, next) => {
     console.log(deletingResult);
     res.redirect("/dashboard/messages");
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -90,7 +90,7 @@ export const getOpinionsPage = async (req, res, next) => {
       activePage: pageNumber,
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -105,7 +105,7 @@ export const postDeleteOpinion = async (req, res, next) => {
       res.redirect("opinions");
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -124,7 +124,7 @@ export const getUpdateOpinion = async (req, res, next) => {
       editMode: true,
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -193,7 +193,7 @@ export const postUpdateOpinion = async (req, res, next) => {
       }
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -212,7 +212,7 @@ export const getAboutPage = async (req, res, next) => {
       validationErrors: [],
     });
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -263,7 +263,7 @@ export const postAddNewAbout = async (req, res, next) => {
       });
     }
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };
 
@@ -276,6 +276,6 @@ export const postDeleteCertificate = async (req, res, next) => {
     console.log(deletingResult);
     res.redirect("about");
   } catch (e) {
-    errorRaiser(e, next);
+    await errorRaiser(e, next);
   }
 };

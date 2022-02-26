@@ -18,7 +18,7 @@
         <div class="content">
           <div class="custom-head">
             <h2>
-              <% if (editMode === "true") { %>
+              <% if (editMode === true) { %>
                 <%= "Update Course"; %>
               <% } else { %>
                 <%= "Add new course"; %>
@@ -26,30 +26,26 @@
             </h2>
             <span></span>
           </div>
-          <% if (errorMessage) { %>
-            <div class="error-container">
-              <%- errorMessage; %>
-            </div>
-          <% } %>
+          <%- include('../includes/errorMessage.ejs'); %>
           <form
-            action="/dashboard/<% if (editMode === 'true') { %><%= "edit-course/" + course.course_id %><% } else { %>add-new-course<% } %>"
+            action="/dashboard/<% if (editMode === true) { %><%= "edit-course/" + course.course_id %><% } else { %>add-new-course<% } %>"
             method="POST" enctype="multipart/form-data">
             <div class="form-floating my-3">
               <input type="text" name="name" placeholder="Course Name"
                      class="form-control <%= validationErrors.find(e => e.param === 'name') ? "is-invalid" : "" %>"
-                     value="<% if (editMode === 'true') { %><%= course.name %><% } %>" id="course_name"/>
+                     value="<% if (editMode === true) { %><%= course.name %><% } %>" id="course_name"/>
               <label for="course_name">Course Name</label>
             </div>
             <div class="form-floating my-3">
               <input type="number" name="price" placeholder="Course Price"
                      class="form-control <%= validationErrors.find(e => e.param === 'price') ? "is-invalid" : "" %>"
-                     value="<% if (editMode === 'true') { %><%= course.price %><% } %>" id="course_price"/>
+                     value="<% if (editMode === true) { %><%= course.price %><% } %>" id="course_price"/>
               <label for="course_price">Course Price</label>
             </div>
             <div class="form-floating my-3">
               <input type="text" name="thumbnail" placeholder="Course Thumbnail"
                      class="form-control <%= validationErrors.find(e => e.param === 'thumbnail') ? "is-invalid" : "" %>"
-                     value="<% if (editMode === 'true') { %><%= course.course_thumbnail %><% } %>"
+                     value="<% if (editMode === true) { %><%= course.course_thumbnail %><% } %>"
                      id="course_thumbnail"/>
               <label for="course_thumbnail">Course Thumbnail</label>
             </div>
@@ -58,7 +54,7 @@
               <input type="text" name="arabic_name" placeholder="Arabic Name"
 
                      class="form-control <%= validationErrors.find(e => e.param === 'arabic_name') ? "is-invalid" : "" %>"
-                     value="<% if (editMode === 'true') { %><%= course.ar_course_name %><% } %>"
+                     value="<% if (editMode === true) { %><%= course.ar_course_name %><% } %>"
                      id="arabic_name"/>
               <label for="arabic_name">Arabic Course Name</label>
             </div>
@@ -67,7 +63,7 @@
               <input type="number" name="course_rank" placeholder="Course Rank"
 
                      class="form-control <%= validationErrors.find(e => e.param === 'course_rank') ? "is-invalid" : "" %>"
-                     value="<% if (editMode === 'true') { %><%= course.course_rank %><% } %>"
+                     value="<% if (editMode === true) { %><%= course.course_rank %><% } %>"
                      id="course_rank" min="0"/>
               <label for="course_rank">Course Rank</label>
             </div>
@@ -76,7 +72,6 @@
               <textarea name="description" placeholder="Course Description"
                         class="form-control editor-<%- course.course_id %>"
               >
-
               </textarea>
               <% if (validationErrors.find(e => e.param === 'description')) { %>
                 <div class="danger">Please enter a valid description</div>
@@ -97,8 +92,9 @@
             </div>
 
             <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+            <input type="hidden" name="courseId" value="<%= course.course_id %>">
             <button type="submit" class="btn submitBtn">
-              <% if (editMode === "true") { %>
+              <% if (editMode === true) { %>
                 <%= "Update Course"; %>
               <% } else { %>
                 <%= "Add new course"; %>
