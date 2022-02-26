@@ -32,10 +32,8 @@ router
     ],
     postContactPage
   )
-  .get("/opinions", isAuthenticated, (req, res, next) =>
-    res.redirect("/opinions_form")
-  )
-  .get("/opinions_form", isAuthenticated, getOpinionsForm)
+  .get("/opinions", (req, res, next) => res.redirect("/opinions_form"))
+  .get("/opinions_form", getOpinionsForm)
   .post(
     "/opinions_form",
     [
