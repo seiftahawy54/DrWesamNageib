@@ -25,6 +25,7 @@ import { Users } from "./models/users.mjs";
 import { getSingleFile } from "./utits/aws.mjs";
 import { Rounds } from "./models/rounds.mjs";
 import { Payment } from "./models/payment.mjs";
+import { Courses } from "./models/courses.mjs";
 
 dotenv.config();
 const app = express();
@@ -126,7 +127,12 @@ app.use(authRoutes);
 app.use(shoppingRoutes);
 app.use(userRoutes);
 
-Rounds.hasMany(Users, { througth: "users_ids" });
+Payment.hasOne(Courses, { foreignKey: "course_id", through: "course_id" });
+Payment.hasOne(Users, { foreignKey: "user_id", through: "user_id" });
+Payment.hasOne(Rounds, { foreignKey: "round_id", through: "round_id" });
+
+Users.hasOne(Rounds, { through: "current_round" });
+Rounds.belongsToMany(Users, { through: "users_ids" });
 
 app.use((error, req, res, next) => {
   res.render("500", {

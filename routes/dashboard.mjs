@@ -95,7 +95,11 @@ router
   .get("/start-new-round", getStartNewRound)
   .post(
     "/start-new-round",
-    [body("round_course").notEmpty(), body("round_date").notEmpty()],
+    [
+      body("round_course").notEmpty(),
+      body("round_date").notEmpty(),
+      body("round_link").isURL().notEmpty(),
+    ],
     postAddNewRound
   )
   .get("/edit-round/:roundId", getUpdateRound)

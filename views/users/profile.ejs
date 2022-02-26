@@ -30,6 +30,11 @@
             <div class="info">
               Your Courses
             </div>
+            <div class="info">
+              <% if (bought_courses?.length !== 0) { %>
+                Your round link
+              <% } %>
+            </div>
           </div>
           <div class="data">
             <div class="info">
@@ -57,6 +62,11 @@
               <% } else { %> You've bought not courses yet! <a href="/courses">Buy now</a>
               <% } %>
             </div>
+            <div class="info">
+              <% if (bought_courses?.length !== 0) { %>
+                <a href="<%= roundLink %>" target="_blank"><%= roundLink %></a>
+              <% } %>
+            </div>
           </div>
         </div>
       </div>
@@ -72,7 +82,7 @@
                   />
                 <% } else { %>
                   <div class="alert alert-primary" role="alert">
-                    Please select an image 😅
+                    Do you want to add an image ?
                   </div>
                   <img
                     src="/downloaded_images/<%= user.user_img %>"

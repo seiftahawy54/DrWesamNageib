@@ -60,7 +60,7 @@ export const getShoppingCart = async (req, res, next) => {
         const arrOfPrices = extractArrOfPrices(coursesArr);
         const totalPrice = calcTotalPrice(arrOfPrices);
 
-        return res.render("shopping/form", {
+        return res.render("shopping/index", {
           title: "Shopping Cart",
           path: "/cart",
           cart: req.user.cart,

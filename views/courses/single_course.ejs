@@ -11,10 +11,10 @@
       <div class="crumb-links">
         <a href="/" class="home-page reset-link">Home</a> /
         <a href="/courses" class="courses-page reset-link">Courses</a> /
-        <a href="/courses/<%= course.course_id %>" class="course-name-page reset-link"><%- course.name %></a>
+        <a href="/courses/<%=    %>" class="course-name-page reset-link"><%- course.name %></a>
       </div>
       <div class="next-prev">
-        <a href="/courses/<%= (course.course_rank % numberOfCourses) - 1 %>"
+        <a href="/courses/<%=    %>"
            class="reset-link">
           <%- include('../../public/imgs/svgs/right_arrow.svg') %>
           Prev

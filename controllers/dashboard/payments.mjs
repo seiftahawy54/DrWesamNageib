@@ -5,47 +5,23 @@ import { extractCart, findCartCourses } from "../../utits/cart_helpers.mjs";
 import { errorRaiser } from "../../utits/error_raiser.mjs";
 import { Rounds } from "../../models/rounds.mjs";
 import moment from "moment";
+import { sequelize } from "../../utits/db.mjs";
 
 export const getPaymentsPage = async (req, res, next) => {
   try {
-    const allPayments = await Payment.findAll();
-    let coursesIds = [],
-      usersIds = [],
-      roundIds = [];
-
-    allPayments.forEach((payment) => {
-      coursesIds.push(payment.course_id);
-      usersIds.push(payment.user_id);
-      roundIds.push(payment.round_id);
-    });
-
-    const users = await Promise.all(
-      usersIds.map(async (id) => await Users.findByPk(id))
-    );
-
-    const courses = await Promise.all(
-      coursesIds.map(async (coursesForSingle) => {
-        return Promise.all(
-          coursesForSingle.map(async (id) => await Courses.findByPk(id))
-        );
-      })
-    );
-
-    const rounds = await Promise.all(
-      roundIds.map(async (roundsForSingle) => {
-        return Promise.all(
-          roundsForSingle.map(async (id) => await Rounds.findByPk(id))
-        );
-      })
+    const allPayments = await sequelize.query(
+      `
+      select payments.status, users.name as user_name, course.name as course_name, round.round_date as round_date from payments
+        Inner JOIN users on users.user_id = payments.user_id
+        Inner Join courses course on course.course_id = payments.course_id
+        Inner Join rounds round on round.round_id = payments.round_id;
+      `
     );
 
     res.render("dashboard/payments", {
       title: "Payments",
       path: "/dashboard/payments",
       payments: allPayments,
-      users,
-      courses,
-      rounds,
       moment,
     });
   } catch (e) {

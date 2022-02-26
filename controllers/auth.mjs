@@ -253,34 +253,36 @@ export const postSuccess = async (req, res, next) => {
     const rounds = req.user.cart.map(({ roundId }) => roundId);
     const courses = req.user.cart.map(({ courseId }) => courseId);
 
+    // const round = req.user.cart.find((roundId) => roundId);
+    // const course = req.user.cart.find((roundId) => roundId);
+    console.log(`post success: `, rounds, courses);
+
     Payment.create({
       user_id: req.user.user_id,
-      course_id: courses,
-      round_id: rounds,
+      course_id: courses[0],
+      round_id: rounds[0],
       status: "success",
       details: req.session.userOrder,
     })
-      .then((result) => {
-        return rounds.forEach(async (round, index) => {
-          const specificRound = await Rounds.findByPk(round);
-          return Rounds.Update(
-            {
-              user_ids: [...specificRound.users_ids, req.user],
-            },
-            { where: { round_id: round, course_id: courses[index] } }
-          );
-        });
+      .then(async (result) => {
+        const findingSingleRound = await Rounds.findByPk(rounds[0]);
+        return Rounds.update(
+          {
+            users_ids: [...findingSingleRound.users_ids, req.user.user_id],
+          },
+          { where: { round_id: rounds[0], course_id: courses[0] } }
+        );
       })
       .then((result) => {
         return Users.update(
           {
             cart: [],
+            current_round: rounds[0],
           },
           { where: { user_id: req.user.user_id } }
         );
       })
       .then((result) => {
-        console.log("adding payment", result);
         return res.redirect("/success_payment");
       })
       .catch((err) => {

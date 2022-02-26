@@ -38,7 +38,13 @@
               <div class="table-row">
                 <span class="round-name"><%= courses[index].name; %></span>
                 <span
-                  class="round-course"><%= round.users_ids.length === 0 ? "No Users In this round" : round.users_ids %></span>
+                  class="round-course">
+                  <% if (round.users_ids.length !== 0) { %>
+                    <%= users[index].join(', ') %>
+                  <% } else { %>
+                    No users for this round.
+                  <% } %>
+                </span>
                 <span class="round-message"><%= moment(round.round_date).format("DD-MM-YYYY"); %></span>
                 <div class="round-update">
                   <a href="/dashboard/edit-round/<%= round.round_id %>" class="btn btn-success">Update Round</a>

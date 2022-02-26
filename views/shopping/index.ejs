@@ -28,7 +28,7 @@
                   <h3><%- course.name; %></h3>
                   <p>&dollar; <%- course.price; %></p>
                   <p><%- course.course_thumbnail; %></p>
-                  <p><%= moment(course.created_at).format("MM-DD-YYYY"); %></p>
+                  <p><%= moment(course.created_at).format("DD-MM-YYYY"); %></p>
                 </div>
                 <form action="/delete_from_cart" class="delete-icon" method="POST">
                   <input type="hidden" name="courseId" value="<%- course.course_id %>">

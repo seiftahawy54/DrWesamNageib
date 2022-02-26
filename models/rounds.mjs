@@ -28,6 +28,9 @@ const Rounds = sequelize.define("rounds", {
   round_date: {
     type: Sequelize.DATE,
   },
+  round_link: {
+    type: Sequelize.TEXT,
+  },
 });
 
 export { Rounds };

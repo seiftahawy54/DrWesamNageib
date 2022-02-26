@@ -8,20 +8,20 @@ import { getSingleFile, uploadFile } from "../../utits/aws.mjs";
 import fs from "fs";
 import path from "path";
 import axios from "axios";
+import { sequelize } from "../../utits/db.mjs";
 
 export const getUserProfile = async (req, res, next) => {
   try {
     if (!fs.existsSync(path.resolve("downloaded_images", req.user.user_img))) {
-      console.log("we entered here", req.user.user_img);
       try {
         const fetchingResult = await getSingleFile(req.user.user_img);
-        console.log(fetchingResult?.err);
       } catch (e) {
         req.flash("error", e.message);
         return res.render("users/profile", {
           title: req.user.name,
           path: "/profile",
           user: req.user,
+          roundLink: "",
           bought_courses: [],
           validationError: {},
         });
@@ -37,15 +37,16 @@ export const getUserProfile = async (req, res, next) => {
         return payment.course_id;
       });
 
-      const findingBoughtCourses = coursesPayments.map(async (courses) => {
-        return await Courses.findByPk(courses);
-      });
+      const findingBoughtCourses = await Promise.all(
+        coursesPayments.map(async (courses) => {
+          return await Courses.findByPk(courses);
+        })
+      );
 
-      const boughtCourses = [];
-
-      for (const key of findingBoughtCourses) {
-        boughtCourses.push(await key);
-      }
+      const roundLink = await sequelize.query(
+        `select round_link from rounds where ? LIKE ANY (rounds.users_ids)`,
+        { replacements: [req.user.user_id] }
+      );
 
       // const userImgBuffer = await getSingleFile(req.user.user_img);
       // const userImg = JSON.stringify(userImgBuffer);
@@ -54,15 +55,18 @@ export const getUserProfile = async (req, res, next) => {
         title: req.user.name,
         path: "/profile",
         user: req.user,
-        bought_courses: boughtCourses,
+        roundLink: roundLink[0][0].round_link,
+        bought_courses: findingBoughtCourses,
         validationError: {},
       });
     } else {
+      req.flash("error", "There's an error from our end!");
       return res.render("users/profile", {
         title: req.user.name,
         path: "/profile",
         user: req.user,
         bought_courses: [],
+        roundLink: "",
         validationError: {},
       });
     }
@@ -72,6 +76,7 @@ export const getUserProfile = async (req, res, next) => {
       title: req.user.name,
       path: "/profile",
       user: req.user,
+      roundLink: "",
       bought_courses: [],
       validationError: {},
     });

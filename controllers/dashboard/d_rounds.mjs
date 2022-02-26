@@ -13,21 +13,30 @@ export const getRounds = async (req, res, next) => {
 
     const findingRounds = await Rounds.findAll();
 
-    const roundsCourses = findingRounds.map(async (round) => {
-      return await Courses.findByPk(round.course_id);
-    });
+    const roundsCourses = await Promise.all(
+      findingRounds.map(async (round) => {
+        return await Courses.findByPk(round.course_id);
+      })
+    );
 
-    const boughtCourses = [];
+    const usersForEachRound = await Promise.all(
+      findingRounds.map(({ users_ids }) => {
+        return Promise.all(
+          users_ids.map(async (user_id) => {
+            return (await Users.findByPk(user_id)).name;
+          })
+        );
+      })
+    );
 
-    for (const key of roundsCourses) {
-      boughtCourses.push(await key);
-    }
+    console.log(usersForEachRound);
 
     res.render("dashboard/rounds/rounds", {
       title: "Rounds",
       path: "/dashboard/rounds",
       rounds: findingRounds,
-      courses: boughtCourses,
+      courses: roundsCourses,
+      users: usersForEachRound,
       numberOfLinks: 0,
       moment: moment,
     });
@@ -142,6 +151,7 @@ export const postUpdateRound = async (req, res, next) => {
   try {
     const roundId = req.params.roundId;
     const roundDate = req.body.round_date;
+    const roundLink = req.body.round_link;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -200,7 +210,7 @@ export const postUpdateRound = async (req, res, next) => {
         if (updateUsersValues.indexOf(user.user_id) === -1) {
           await Users.update(
             {
-              current_round: "",
+              current_round: null,
             },
             { where: { user_id: user.user_id } }
           );
@@ -210,6 +220,7 @@ export const postUpdateRound = async (req, res, next) => {
       const updatingRoundsResult = await Rounds.update(
         {
           round_date: moment(roundDate).toISOString(),
+          round_link: roundLink,
           users_ids: updateUsersValues,
         },
         { where: { round_id: roundId } }

@@ -61,9 +61,18 @@
             <div class="form-floating my-3">
               <input type="date" name="round_date" placeholder="Round Date"
                      class="form-control <%= validationErrors.find(e => e.param === 'round_date') ? "is-invalid" : "" %>"
-                     value="<% if (editMode === true) { %><%= moment(round.round_date).format("MM/DD/YYYY") %><% } %>"
+                     value="<% if (editMode === true) { %><%= moment(round.round_date).format("YYYY-MM-DD") %><% } %>"
                      id="round_date"/>
               <label for="round_date">Round Date</label>
+            </div>
+
+
+            <div class="form-floating my-3">
+              <input type="url" name="round_link" placeholder="Round Link"
+                     class="form-control <%= validationErrors.find(e => e.param === 'round_link') ? "is-invalid" : "" %>"
+                     value="<% if (editMode === true) { %><%= round.round_link %><% } %>"
+                     id="round_date"/>
+              <label for="round_date">Round Link</label>
             </div>
 
             <div>
