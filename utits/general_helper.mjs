@@ -56,16 +56,12 @@ export const downloadingCoursesImages = (courses) => {
   return new Promise((resolve, reject) => {
     for (const course of courses) {
       getSingleFile(course.course_img)
-        .then((result) => {
-          console.log(result);
-        })
+        .then((result) => {})
         .catch((err) => {
           console.error(err);
         });
       getSingleFile(course.detailed_img)
-        .then((result) => {
-          console.log(result);
-        })
+        .then((result) => {})
         .catch((err) => {
           console.error(err);
         });

@@ -14,11 +14,27 @@ import { cartIsEmpty, courseExistsInCart } from "../utits/cart_helpers.mjs";
 
 const getIndex = async (req, res, next) => {
   try {
+    let courseRank = parseInt(req.query.rank);
+
+    if (
+      !isNaN(courseRank) &&
+      courseRank !== 0 &&
+      typeof courseRank === "number"
+    ) {
+      const findingCourseId = await Courses.findAll({
+        attributes: ["course_id"],
+        where: { course_rank: courseRank },
+      });
+
+      // console.log(findingCourseId[0].course_id);
+      return res.redirect(`/courses/${findingCourseId[0].courseId}`);
+    }
+
     let fetchingResult = await Courses.findAll();
 
     await downloadingCoursesImages(fetchingResult);
 
-    res.render("courses/index", {
+    return res.render("courses/index", {
       title: "Courses",
       path: "/courses",
       courses: sortCourses(fetchingResult),
