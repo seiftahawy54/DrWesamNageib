@@ -1,13 +1,14 @@
 import Sequelize from "sequelize";
 import { sequelize } from "../utits/db.mjs";
 import { hashCreator } from "../utits/general_helper.mjs";
+import { UUIDV4 } from "sequelize";
 
 const Opinions = sequelize.define("opinions", {
   opinion_id: {
     type: Sequelize.STRING,
     primaryKey: true,
     allowNull: false,
-    defaultValue: hashCreator(),
+    defaultValue: UUIDV4,
   },
   sender_email: {
     type: Sequelize.STRING,
