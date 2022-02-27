@@ -1,4 +1,4 @@
-import Sequelize from "sequelize";
+import Sequelize, { UUIDV4 } from "sequelize";
 import { sequelize } from "../utits/db.mjs";
 import { hashCreator } from "../utits/general_helper.mjs";
 
@@ -7,7 +7,7 @@ const Certificates = sequelize.define("about", {
     type: Sequelize.STRING,
     allowNull: false,
     primaryKey: true,
-    defaultValue: hashCreator(),
+    defaultValue: UUIDV4,
   },
   certificate_img: {
     type: Sequelize.STRING,
