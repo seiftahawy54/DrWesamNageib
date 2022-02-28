@@ -11,6 +11,11 @@ import axios from "axios";
 import { sequelize } from "../../utits/db.mjs";
 
 export const getUserProfile = async (req, res, next) => {
+  const roundLink = await sequelize.query(
+    `select round_link from rounds where ? LIKE ANY (rounds.users_ids)`,
+    { replacements: [req.user.user_id] }
+  );
+
   try {
     if (!fs.existsSync(path.resolve("downloaded_images", req.user.user_img))) {
       try {
@@ -43,11 +48,6 @@ export const getUserProfile = async (req, res, next) => {
         })
       );
 
-      const roundLink = await sequelize.query(
-        `select round_link from rounds where ? LIKE ANY (rounds.users_ids)`,
-        { replacements: [req.user.user_id] }
-      );
-
       // const userImgBuffer = await getSingleFile(req.user.user_img);
       // const userImg = JSON.stringify(userImgBuffer);
 
@@ -66,7 +66,7 @@ export const getUserProfile = async (req, res, next) => {
         path: "/profile",
         user: req.user,
         bought_courses: [],
-        roundLink: "",
+        roundLink: roundLink[0][0].round_link,
         validationError: {},
       });
     }
@@ -76,7 +76,10 @@ export const getUserProfile = async (req, res, next) => {
       title: req.user.name,
       path: "/profile",
       user: req.user,
-      roundLink: "",
+      roundLink:
+        Array.isArray(roundLink[0]) && roundLink[0].length > 0
+          ? roundLink[0][0].roundLink
+          : "",
       bought_courses: [],
       validationError: {},
     });
