@@ -1,5 +1,7 @@
 .users-select-button {
   gap: 10px;
+  //width: 100%;
+  //overflow: scroll;
 
   .btn-check:checked + .btn-outline-primary {
     color: #fff !important;

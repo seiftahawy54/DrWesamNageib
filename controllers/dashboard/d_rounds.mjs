@@ -23,7 +23,9 @@ export const getRounds = async (req, res, next) => {
       findingRounds.map(({ users_ids }) => {
         return Promise.all(
           users_ids.map(async (user_id) => {
-            return (await Users.findByPk(user_id)).name;
+            return await (
+              await Users.findByPk(user_id)
+            ).name;
           })
         );
       })
