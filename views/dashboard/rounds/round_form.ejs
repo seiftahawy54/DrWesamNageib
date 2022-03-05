@@ -67,12 +67,14 @@
             </div>
 
 
-            <div class="form-floating my-3">
-              <input type="url" name="round_link" placeholder="Round Link"
-                     class="form-control <%= validationErrors.find(e => e.param === 'round_link') ? "is-invalid" : "" %>"
-                     value="<% if (editMode === true) { %><%= round.round_link %><% } %>"
-                     id="round_date"/>
-              <label for="round_date">Round Link</label>
+            <div class="my-3">
+              <textarea name="round_link" placeholder="Round Links"
+                        class="form-control editor-<%- round.round_id %>"
+              >
+              </textarea>
+              <% if (validationErrors.find(e => e.param === 'round_link')) { %>
+                <div class="danger">Please enter a valid description</div>
+              <% } %>
             </div>
 
             <div>
@@ -122,4 +124,7 @@
   </div>
 </section>
 
+
+<script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+<%- include("./rounds_scripts.ejs"); %>
 <%- include("../../includes/bottom_part.ejs"); %>

@@ -98,7 +98,7 @@ router
     [
       body("round_course").notEmpty(),
       body("round_date").notEmpty(),
-      body("round_link").isURL().notEmpty(),
+      body("round_link").notEmpty(),
     ],
     postAddNewRound
   )

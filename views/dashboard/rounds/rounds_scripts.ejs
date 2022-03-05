@@ -1,0 +1,20 @@
+<script>
+  const editorTag = document.querySelector(".editor-<%- round.round_id %>");
+  let editor;
+  ClassicEditor
+    .create(editorTag, {
+      toolbar: ['bold', 'italic', 'bulletedList', 'numberedList', 'link']
+    })
+    .then(editorData => {
+      editor = editorData;
+
+      <% if (editMode === true) { %>
+      editor.setData("<%- round.round_link %>")
+      <% } %>
+    })
+    .catch(err => {
+      console.error(err)
+    })
+
+  ClassicEditor.replaceAll();
+</script>

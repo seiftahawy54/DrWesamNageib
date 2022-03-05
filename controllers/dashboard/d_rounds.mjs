@@ -168,6 +168,8 @@ export const postUpdateRound = async (req, res, next) => {
     const roundLink = req.body.round_link;
     const errors = validationResult(req);
 
+    console.log(`Round Link: `, roundLink);
+
     if (!errors.isEmpty()) {
       const findingRound = await Rounds.findByPk(roundId);
       const findingRoundCourse = await Courses.findByPk(findingRound.course_id);
