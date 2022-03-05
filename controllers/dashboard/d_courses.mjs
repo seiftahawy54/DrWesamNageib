@@ -145,7 +145,7 @@ const getEditCourse = async (req, res, next) => {
 
 const postUpdateCourse = async (req, res, next) => {
   const editMode = req.query.edit;
-  if (editMode === "false") return res.redirect("courses");
+  if (editMode === false) return res.redirect("/dashboard/courses");
   const courseId = req.body.courseId;
 
   const courseName = req.body.name;
@@ -187,7 +187,7 @@ const postUpdateCourse = async (req, res, next) => {
         );
 
         if (addingResult[0] === 1) {
-          res.redirect("courses");
+          res.redirect("/dashboard/courses");
         } else {
           res.render("dashboard/courses_forms", {
             title: "Update Course",

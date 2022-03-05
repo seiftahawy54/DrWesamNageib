@@ -33,12 +33,10 @@
             <select name="round_course" class="form-control my-3"
                     id="enrolled-course" <%- editMode ? 'disabled' : "" %>>
               <% if (editMode === true) { %>
-                <% courses.forEach(course => { %>
-                  <option <%- round.round_course === course.name ? 'selected=""' : "" %>
-                    value="<%- course.course_id %>">
-                    <%= course.name %>
-                  </option>
-                <% }) %>
+                <option selected
+                        value="<%- roundCourse.course_id %>">
+                  <%= roundCourse.name %>
+                </option>
               <% } else { %>
                 <option selected="<%- Object.keys(round).length === 0 ? 'selected' : "" %>" value="">
                   Please Select A Course

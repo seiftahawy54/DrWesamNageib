@@ -6,6 +6,7 @@ import { validationResult } from "express-validator";
 import { getCoursesFormCart } from "../../utits/cart_helpers.mjs";
 import { Users } from "../../models/users.mjs";
 import { Sequelize } from "sequelize";
+import { sequelize } from "../../utits/db.mjs";
 
 export const getRounds = async (req, res, next) => {
   try {
@@ -134,7 +135,14 @@ export const getUpdateRound = async (req, res, next) => {
     const findingRound = await Rounds.findByPk(roundId);
     const findingRoundCourse = await Courses.findByPk(findingRound.course_id);
     const allUsers = await Users.findAll();
-    const allCourses = await Courses.findAll();
+    const roundCourse = (
+      await sequelize.query(`SELECT * FROM courses WHERE course_id=?`, {
+        replacements: [findingRound.course_id],
+      })
+    )[0][0];
+
+    console.log(roundCourse);
+
     let findingRoundUsersArr = [];
 
     if (findingRound.users_ids.length !== 0) {
@@ -148,7 +156,7 @@ export const getUpdateRound = async (req, res, next) => {
     res.render("dashboard/rounds/round_form", {
       title: "Update Single Round",
       path: "/dashboard/rounds",
-      courses: allCourses,
+      roundCourse: roundCourse,
       editMode: true,
       validationErrors: [],
       roundUsers: findingRoundUsersArr,
@@ -167,8 +175,6 @@ export const postUpdateRound = async (req, res, next) => {
     const roundDate = req.body.round_date;
     const roundLink = req.body.round_link;
     const errors = validationResult(req);
-
-    console.log(`Round Link: `, roundLink);
 
     if (!errors.isEmpty()) {
       const findingRound = await Rounds.findByPk(roundId);
