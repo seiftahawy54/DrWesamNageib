@@ -46,7 +46,7 @@
               <%- course.description %>
             </bdi>
           </div>
-          <% if (Array.isArray(rounds) && rounds.length > 1) { %>
+          <% if (Array.isArray(rounds) && rounds.length > 0) { %>
             <form action="/courses/addToCart" method="post">
 
               <% rounds.forEach(round => { %>
