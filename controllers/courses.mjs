@@ -74,70 +74,78 @@ const singleCourse = async (req, res, next) => {
 };
 
 const addCourseToCart = async (req, res, next) => {
-  try {
-    const courseId = req.body.courseId;
-    const roundId = req.body.selected_round;
-    // const cart = getArray(req.user.cart);
-    // const course = await Courses.findByPk(courseId);
-    const errors = validationResult(req);
+  if (req.isUserAuthenticated) {
+    try {
+      const courseId = req.body.courseId;
+      const roundId = req.body.selected_round;
+      // const cart = getArray(req.user.cart);
+      // const course = await Courses.findByPk(courseId);
+      const errors = validationResult(req);
 
-    let findingItemResult = false;
+      let findingItemResult = false;
 
-    if (!errors.isEmpty()) {
-      req.flash("error", "Please select a valid date!");
-      res.redirect(`/courses/${courseId}`);
-    } else {
-      if (Array.isArray(req.user.cart)) {
-        findingItemResult = courseExistsInCart(req.user.cart, courseId);
-        // findingItemResult.push(
-        //   req.user.cart.find((cartItem) => {
-        //     return cartItem.courseId.localeCompare(courseId) === 0;
-        //   })
-        // );
-      } else {
-        req.user.cart = [];
-      }
-
-      if (Array.isArray(req.user.cart) && findingItemResult) {
-        req.flash(
-          "error",
-          `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`
-        );
+      if (!errors.isEmpty()) {
+        req.flash("error", "Please select a valid date!");
         res.redirect(`/courses/${courseId}`);
-      } else if (Array.isArray(req.user.cart) && findingItemResult) {
-        req.flash(
-          "error",
-          `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`
-        );
       } else {
-        // if (cartIsEmpty(req.user.cart)) {
-        //   req.user.cart = [
-        //     req.user.cart,
-        //     { courseId: courseId, roundId: roundId },
-        //   ];
-        // } else {
-        //   req.user.cart = [
-        //     ...req.user.cart,
-        //     { courseId: courseId, roundId: roundId },
-        //   ];
-        // }
-
-        req.user.cart.push({ courseId: courseId, roundId: roundId });
-
-        const addingResult = await Users.update(
-          { cart: req.user.cart },
-          { where: { user_id: req.user.user_id } }
-        );
-
-        if (Array.isArray(addingResult)) {
-          res.redirect("/cart");
+        if (Array.isArray(req.user.cart)) {
+          findingItemResult = courseExistsInCart(req.user.cart, courseId);
+          // findingItemResult.push(
+          //   req.user.cart.find((cartItem) => {
+          //     return cartItem.courseId.localeCompare(courseId) === 0;
+          //   })
+          // );
         } else {
-          await errorRaiser(addingResult, next);
+          req.user.cart = [];
+        }
+
+        if (Array.isArray(req.user.cart) && findingItemResult) {
+          req.flash(
+            "error",
+            `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`
+          );
+          res.redirect(`/courses/${courseId}`);
+        } else if (Array.isArray(req.user.cart) && findingItemResult) {
+          req.flash(
+            "error",
+            `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`
+          );
+        } else {
+          // if (cartIsEmpty(req.user.cart)) {
+          //   req.user.cart = [
+          //     req.user.cart,
+          //     { courseId: courseId, roundId: roundId },
+          //   ];
+          // } else {
+          //   req.user.cart = [
+          //     ...req.user.cart,
+          //     { courseId: courseId, roundId: roundId },
+          //   ];
+          // }
+
+          req.user.cart.push({ courseId: courseId, roundId: roundId });
+
+          const addingResult = await Users.update(
+            { cart: req.user.cart },
+            { where: { user_id: req.user.user_id } }
+          );
+
+          if (Array.isArray(addingResult)) {
+            res.redirect("/cart");
+          } else {
+            await errorRaiser(addingResult, next);
+          }
         }
       }
+    } catch (e) {
+      await errorRaiser(e, next);
     }
-  } catch (e) {
-    await errorRaiser(e, next);
+  } else {
+    req.flash(
+      "error",
+      `Please log in first to add this course to your cart <a href="/login">Login!</a>`
+    );
+    res.redirect("/courses");
   }
 };
 
