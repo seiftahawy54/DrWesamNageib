@@ -89,7 +89,6 @@ export const getUserProfile = async (req, res, next) => {
 export const postUpdateUserImg = async (req, res, next) => {
   try {
     const userImg = req?.files[0];
-    console.log(userImg);
 
     if (userImg?.path) {
       uploadFile(userImg.path, userImg.filename, userImg.mimetype, res, next)
@@ -112,34 +111,8 @@ export const postUpdateUserImg = async (req, res, next) => {
         })
         .catch((err) => errorRaiser(err, next));
     } else {
-      const findingUserPayments = await Payment.findAll({
-        where: { user_id: req.user.user_id },
-      });
-
-      const coursesPayments = findingUserPayments.map((payment) => {
-        return payment.course_id;
-      });
-
-      const findingBoughtCourses = coursesPayments.map(async (courses) => {
-        return await Courses.findByPk(courses);
-      });
-
-      const boughtCourses = [];
-
-      for (const key of findingBoughtCourses) {
-        boughtCourses.push(await key);
-      }
-
-      res.render("users/profile", {
-        title: req.user.name,
-        path: "/profile",
-        user: req.user,
-        bought_courses: boughtCourses,
-        errorMessage: "Please enter a valid img!",
-        validationError: {
-          error: "img",
-        },
-      });
+      req.flash("error", "Please select a valid image!");
+      res.redirect("/profile");
     }
   } catch (e) {
     await errorRaiser(e, next);
