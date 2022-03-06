@@ -60,14 +60,6 @@ const singleCourse = async (req, res, next) => {
 
     const numberOfCourses = await Courses.findAndCountAll();
 
-    const nextCourse = await Courses.findAll({
-      where: { course_rank: course.course_rank + 1 },
-    });
-
-    const prevCourse = await Courses.findAll({
-      where: { course_rank: course.course_rank - 1 },
-    });
-
     res.render("courses/single_course", {
       title: course.name,
       path: "/courses",
