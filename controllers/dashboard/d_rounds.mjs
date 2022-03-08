@@ -30,6 +30,8 @@ export const getRounds = async (req, res, next) => {
       })
     );
 
+    console.log(`rounds users: `, usersForEachRound);
+
     usersForEachRound = usersForEachRound.map((usersPerRound) =>
       usersPerRound.map((user) => user.name)
     );
