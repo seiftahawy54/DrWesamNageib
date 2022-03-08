@@ -33,8 +33,10 @@ export const getRounds = async (req, res, next) => {
     console.log(`rounds users: `, usersForEachRound);
 
     usersForEachRound = usersForEachRound.map((usersPerRound) =>
-      usersPerRound.map((user) => user.name)
+      usersPerRound.map((user) => user?.name)
     );
+
+    console.log(usersForEachRound);
 
     res.render("dashboard/rounds/rounds", {
       title: "Rounds",
