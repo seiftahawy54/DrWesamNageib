@@ -20,19 +20,19 @@ export const getRounds = async (req, res, next) => {
       })
     );
 
-    const usersForEachRound = await Promise.all(
+    let usersForEachRound = await Promise.all(
       findingRounds.map(({ users_ids }) => {
         return Promise.all(
           users_ids.map(async (user_id) => {
-            return await (
-              await Users.findByPk(user_id)
-            ).name;
+            return await Users.findByPk(user_id);
           })
         );
       })
     );
 
-    console.log(``, usersForEachRound);
+    usersForEachRound = usersForEachRound.map((usersPerRound) =>
+      usersPerRound.map((user) => user.name)
+    );
 
     res.render("dashboard/rounds/rounds", {
       title: "Rounds",
