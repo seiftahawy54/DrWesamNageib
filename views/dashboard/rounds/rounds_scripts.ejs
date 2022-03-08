@@ -9,8 +9,7 @@
       editor = editorData;
 
       <% if (editMode === true) { %>
-      console.log(<%- round.round_link %>)
-      editor.setData(<%- round.round_link %>)
+      editor.setData(`<%- round.round_link %>`)
       <% } %>
     })
     .catch(err => {
