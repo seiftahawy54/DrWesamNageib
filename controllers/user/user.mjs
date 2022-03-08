@@ -16,20 +16,26 @@ export const getUserProfile = async (req, res, next) => {
     { replacements: [req.user.user_id] }
   );
 
+  console.log(roundLink);
+
   try {
-    if (!fs.existsSync(path.resolve("downloaded_images", req.user.user_img))) {
-      try {
-        const fetchingResult = await getSingleFile(req.user.user_img);
-      } catch (e) {
-        req.flash("error", e.message);
-        return res.render("users/profile", {
-          title: req.user.name,
-          path: "/profile",
-          user: req.user,
-          roundLink: "",
-          bought_courses: [],
-          validationError: {},
-        });
+    if (req.user.user_img) {
+      if (
+        !fs.existsSync(path.resolve("downloaded_images", req.user.user_img))
+      ) {
+        try {
+          const fetchingResult = await getSingleFile(req.user.user_img);
+        } catch (e) {
+          req.flash("error", e.message);
+          return res.render("users/profile", {
+            title: req.user.name,
+            path: "/profile",
+            user: req.user,
+            roundLink: "",
+            bought_courses: [],
+            validationError: {},
+          });
+        }
       }
     }
 
@@ -72,6 +78,7 @@ export const getUserProfile = async (req, res, next) => {
     }
   } catch (e) {
     req.flash("error", e.message);
+    // res.redirect("/profile");
     return res.render("users/profile", {
       title: req.user.name,
       path: "/profile",
