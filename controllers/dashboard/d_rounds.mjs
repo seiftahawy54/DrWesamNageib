@@ -151,25 +151,19 @@ export const getUpdateRound = async (req, res, next) => {
       })
     )[0][0];
 
-    console.log(roundCourse);
-
     let findingRoundUsersArr = [];
 
     if (findingRound.users_ids.length !== 0) {
       findingRoundUsersArr = await Promise.all(
         findingRound.users_ids.map(async (userId) => {
-          return await Users.findByPk(userId);
+          if (userId) {
+            return await Users.findByPk(userId);
+          } else {
+            return null;
+          }
         })
       );
     }
-
-    let test = findingRoundUsersArr.map((roundUsers) => {
-      return roundUsers.map((user) => {
-        return user;
-      });
-    });
-
-    console.log(test);
 
     res.render("dashboard/rounds/round_form", {
       title: "Update Single Round",
