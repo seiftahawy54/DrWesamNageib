@@ -163,6 +163,14 @@ export const getUpdateRound = async (req, res, next) => {
       );
     }
 
+    let test = findingRoundUsersArr.map((roundUsers) => {
+      return roundUsers.map((user) => {
+        return user;
+      });
+    });
+
+    console.log(test);
+
     res.render("dashboard/rounds/round_form", {
       title: "Update Single Round",
       path: "/dashboard/rounds",
