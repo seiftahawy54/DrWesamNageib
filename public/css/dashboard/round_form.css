@@ -10,5 +10,8 @@
   align-items: center;
   cursor: pointer;
 }
+.users-select-button .users-selection-container {
+  overflow: scroll;
+}
 
 /*# sourceMappingURL=round_form.css.map */
