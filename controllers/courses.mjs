@@ -77,51 +77,30 @@ const addCourseToCart = async (req, res, next) => {
   try {
     const courseId = req.body.courseId;
     const roundId = req.body.selected_round;
-    // const cart = getArray(req.user.cart);
-    // const course = await Courses.findByPk(courseId);
     const errors = validationResult(req);
 
     let findingItemResult = false;
 
     if (!errors.isEmpty()) {
-      req.flash("error", "Please select a valid date!");
-      res.redirect(`/courses/${courseId}`);
+      res.status(422).json({ message: "Please select a valid date!" });
+      // req.flash("error", "Please select a valid date!");
+      // res.redirect(`/courses/${courseId}`);
     } else {
       if (Array.isArray(req.user.cart)) {
         findingItemResult = courseExistsInCart(req.user.cart, courseId);
-        // findingItemResult.push(
-        //   req.user.cart.find((cartItem) => {
-        //     return cartItem.courseId.localeCompare(courseId) === 0;
-        //   })
-        // );
       } else {
         req.user.cart = [];
       }
 
       if (Array.isArray(req.user.cart) && findingItemResult) {
-        req.flash(
-          "error",
-          `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`
-        );
-        res.redirect(`/courses/${courseId}`);
+        res.status(422).json({
+          message: `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`,
+        });
       } else if (Array.isArray(req.user.cart) && findingItemResult) {
-        req.flash(
-          "error",
-          `You've already chosen this course and added to your cart! proceed to <a href='/cart'>checkout</a>?`
-        );
+        res.status(422).json({
+          message: `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`,
+        });
       } else {
-        // if (cartIsEmpty(req.user.cart)) {
-        //   req.user.cart = [
-        //     req.user.cart,
-        //     { courseId: courseId, roundId: roundId },
-        //   ];
-        // } else {
-        //   req.user.cart = [
-        //     ...req.user.cart,
-        //     { courseId: courseId, roundId: roundId },
-        //   ];
-        // }
-
         req.user.cart.push({ courseId: courseId, roundId: roundId });
 
         const addingResult = await Users.update(
@@ -130,7 +109,7 @@ const addCourseToCart = async (req, res, next) => {
         );
 
         if (Array.isArray(addingResult)) {
-          res.redirect("/cart");
+          res.status(201).json({ message: "Item added successfully" });
         } else {
           await errorRaiser(addingResult, next);
         }

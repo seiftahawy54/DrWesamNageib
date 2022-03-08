@@ -32,7 +32,7 @@ export const getRounds = async (req, res, next) => {
       })
     );
 
-    console.log(usersForEachRound);
+    console.log(``, usersForEachRound);
 
     res.render("dashboard/rounds/rounds", {
       title: "Rounds",

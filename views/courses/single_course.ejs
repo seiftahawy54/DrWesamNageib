@@ -47,8 +47,9 @@
             </bdi>
           </div>
           <% if (Array.isArray(rounds) && rounds.length > 0) { %>
-            <form action="/courses/addToCart" method="post">
+            <!--            <form action="/courses/addToCart" method="post">-->
 
+            <div class="form-container">
               <% rounds.forEach(round => { %>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="selected_round" value="<%- round.round_id %>"
@@ -60,10 +61,11 @@
 
               <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
               <input type="hidden" name="courseId" value="<%= course.course_id %>"/>
-              <button class="btn mt-5" type="submit">
+              <button class="btn mt-5" onclick="addingToCart(this)">
                 Add to cart
               </button>
-            </form>
+            </div>
+            <!--            </form>-->
           <% } else { %>
             <div class="alert alert-primary">
               Sorry, There's no available rounds for this course.
@@ -76,5 +78,29 @@
   </div>
 </section>
 
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/single_course.js"></script>
 <%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>
