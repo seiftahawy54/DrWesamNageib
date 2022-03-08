@@ -9,6 +9,7 @@
     font-size: vars.$lg_font_size;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
   }
 
   .user-img {
