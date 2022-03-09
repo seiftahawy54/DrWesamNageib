@@ -75,8 +75,6 @@ export const getShoppingCart = async (req, res, next) => {
 
       coursesRoundsDates = coursesRoundsDates.map((courseRound) => courseRound);
 
-      console.log(coursesRoundsDates);
-
       if (Array.isArray(req.user.cart) && req.user.cart.length > 0) {
         const arrOfPrices = extractArrOfPrices(coursesArr);
         const totalPrice = calcTotalPrice(arrOfPrices);

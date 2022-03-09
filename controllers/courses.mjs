@@ -82,9 +82,9 @@ const addCourseToCart = async (req, res, next) => {
     let findingItemResult = false;
 
     if (!errors.isEmpty()) {
-      res.status(422).json({ message: "Please select a valid date!" });
-      // req.flash("error", "Please select a valid date!");
-      // res.redirect(`/courses/${courseId}`);
+      // res.status(422).json({ message: "Please select a valid date!" });
+      req.flash("error", "Please select a valid date!");
+      res.redirect(`/courses/${courseId}`);
     } else {
       if (Array.isArray(req.user.cart)) {
         findingItemResult = courseExistsInCart(req.user.cart, courseId);
@@ -93,13 +93,21 @@ const addCourseToCart = async (req, res, next) => {
       }
 
       if (Array.isArray(req.user.cart) && findingItemResult) {
-        res.status(422).json({
-          message: `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`,
-        });
+        req.flash(
+          "error",
+          `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`
+        );
+        res.redirect(`/courses/${courseId}`);
       } else if (Array.isArray(req.user.cart) && findingItemResult) {
-        res.status(422).json({
-          message: `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`,
-        });
+        // res.status(422).json({
+        //   message: ,
+        // });
+
+        req.flash(
+          "error",
+          `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`
+        );
+        res.redirect(`/courses/${courseId}`);
       } else {
         req.user.cart.push({ courseId: courseId, roundId: roundId });
 
@@ -109,7 +117,12 @@ const addCourseToCart = async (req, res, next) => {
         );
 
         if (Array.isArray(addingResult)) {
-          res.status(201).json({ message: "Item added successfully" });
+          // res.status(201).json({ message: "Item added successfully" });
+          req.flash(
+            "success",
+            `Item add successfully, proceed to <a href="/cart">checkout</a> or continue <a href="/courses">Shopping</a>?`
+          );
+          res.redirect(`/courses/${courseId}`);
         } else {
           await errorRaiser(addingResult, next);
         }
