@@ -18,7 +18,7 @@
         <hr/>
         <% if (bought_courses.length > 0) { %>
           <div class="cart-content">
-            <% bought_courses.forEach(course => { %>
+            <% bought_courses.forEach((course, index)=> { %>
               <div class="row purchase-details">
                 <div class="col-6">
                   <img src="/downloaded_images/<%- course.course_img %>" alt="<%- course.name %>"
@@ -28,7 +28,7 @@
                   <h3><%- course.name; %></h3>
                   <p>&dollar; <%- course.price; %></p>
                   <p><%- course.course_thumbnail; %></p>
-                  <p><%= moment(course.created_at).format("DD-MM-YYYY"); %></p>
+                  <p><%= moment(roundsDates[index]).format("DD-MM-YYYY"); %></p>
                 </div>
                 <form action="/delete_from_cart" class="delete-icon" method="POST">
                   <input type="hidden" name="courseId" value="<%- course.course_id %>">

@@ -22,6 +22,8 @@ import {
   filterCart,
   findCartCourses,
 } from "../utits/cart_helpers.mjs";
+import { sequelize } from "../utits/db.mjs";
+import { QueryTypes } from "sequelize";
 
 export const getHomePage = async (req, res, next) => {
   try {
@@ -55,6 +57,25 @@ export const getShoppingCart = async (req, res, next) => {
   try {
     if (req.user.cart) {
       const coursesArr = await findCartCourses(req.user.cart);
+      // console.log(coursesArr);
+
+      let coursesRoundsDates = await Promise.all(
+        coursesArr.map(async ({ course_id }) => {
+          return (
+            await sequelize.query(
+              `select round_date from rounds inner join courses course on course.course_id = rounds.course_id`,
+              {
+                replacements: [course_id],
+                type: QueryTypes.SELECT,
+              }
+            )
+          )[0]?.round_date;
+        })
+      );
+
+      coursesRoundsDates = coursesRoundsDates.map((courseRound) => courseRound);
+
+      console.log(coursesRoundsDates);
 
       if (Array.isArray(req.user.cart) && req.user.cart.length > 0) {
         const arrOfPrices = extractArrOfPrices(coursesArr);
@@ -65,6 +86,7 @@ export const getShoppingCart = async (req, res, next) => {
           path: "/cart",
           cart: req.user.cart,
           bought_courses: coursesArr,
+          roundsDates: coursesRoundsDates,
           totalPrice,
           moment,
         });
@@ -74,6 +96,7 @@ export const getShoppingCart = async (req, res, next) => {
           path: "/cart",
           cart: req.user.cart,
           bought_courses: [],
+          roundsDates: [],
           totalPrice: 0,
           moment,
         });
