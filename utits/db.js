@@ -39,39 +39,4 @@ if (process.env.NODE_ENV === "production") {
   );
 }
 
-/*sequelize.Session.destroy()
-  .then((result) => {
-    console.log(result);
-  })
-  .catch((err) => {
-    console.log(error);
-  });*/
-
 export { sequelize };
-
-/*
-import pg from "pg";
-
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const pool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL,
-  max: 20,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-
-pool
-  .connect()
-  .then((result) => {
-    return result;
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
-export default pool;
-*/
