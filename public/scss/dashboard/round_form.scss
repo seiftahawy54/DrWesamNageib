@@ -7,7 +7,7 @@ input[type="checkbox"] ~ label {
 
   .users-select-button {
     display: grid !important;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     //width: 100%;
     //overflow: scroll;
