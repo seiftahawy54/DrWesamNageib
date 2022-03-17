@@ -21,22 +21,31 @@
     img {
       max-width: 100%;
       object-fit: contain;
-      border-radius: 50%;
+      border-radius: 5px;
+      margin-block-end: 5px;
       box-shadow: 4px 4px 10px rgba(vars.$main_color, 0.4);
     }
+  }
 
-    form {
-      display: flex;
-      width: 100%;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 5px;
 
-      button {
-        width: 50%;
-      }
+  form {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-direction: column;
+
+    button {
+      width: 50%;
     }
   }
+
+  /*
+
+}
+  */
 
   .payments-details {
     .bought_courses {

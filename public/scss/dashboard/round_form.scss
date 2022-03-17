@@ -1,20 +1,24 @@
-.users-select-button {
-  gap: 10px;
-  //width: 100%;
-  //overflow: scroll;
+input[type='checkbox'] ~ label {
+  cursor: pointer;
+}
 
-  .btn-check:checked + .btn-outline-primary {
-    color: #fff !important;
-  }
+.users-selection-container {
+  overflow: scroll;
 
-  label {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-  }
+  .users-select-button {
+    gap: 10px;
+    //width: 100%;
+    //overflow: scroll;
 
-  .users-selection-container {
-    overflow: scroll;
+    .btn-check:checked + .btn-outline-primary {
+      color: #fff !important;
+    }
+
+    label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
   }
 }
