@@ -107,6 +107,13 @@
               <% } %>
             </div>
 
+            <div class="form-check my-3">
+              <input type="checkbox" name="finish_round" class="form-check-input" id="finish_round"
+                <%- round.finished ? `checked` : "" %>
+              />
+              <label for="finish_round" class="form-check-label">Finish Round?</label>
+            </div>
+
             <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
             <button type="submit" class="btn submitBtn">
               <% if (editMode === true) { %>

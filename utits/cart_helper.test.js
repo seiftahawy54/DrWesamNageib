@@ -1,4 +1,4 @@
-import { calcTotalPrice, cartIsEmpty } from "./cart_helpers.mjs";
+import { calcTotalPrice, cartIsEmpty } from "./cart_helpers.js";
 
 test("Is empty", () => {
   expect(cartIsEmpty([{}])).toBe(true);

@@ -5,7 +5,7 @@ dotenv.config();
 import fs from "fs/promises";
 import fs2 from "fs";
 import AWS from "aws-sdk";
-import { errorRaiser } from "./error_raiser.mjs";
+import { errorRaiser } from "./error_raiser.js";
 import multerS3 from "multer-s3";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import path from "path";

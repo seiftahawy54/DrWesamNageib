@@ -1,6 +1,6 @@
-import { Users } from "../models/users.mjs";
-import { errorRaiser } from "./error_raiser.mjs";
-import { Courses } from "../models/courses.mjs";
+import { Users } from "../models/users.js";
+import { errorRaiser } from "./error_raiser.js";
+import { Courses } from "../models/courses.js";
 
 export const createEmptyCart = () => {};
 

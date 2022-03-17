@@ -7,7 +7,7 @@
 <section class="profile">
   <div class="container">
     <div class="row">
-      <div class="col-lg-6 col-xs-12">
+      <div class="col-12 mb-5">
         <%- include("../includes/errorMessage.ejs"); %>
         <div class="custom-head">
           <h2>Your Data</h2>
@@ -35,6 +35,7 @@
           <div class="info">
             <%= user.email %>
           </div>
+
           <div class="info">
             Specialization
           </div>
@@ -42,6 +43,7 @@
           <div class="info">
             <%= user.specialization %>
           </div>
+
           <div class="info">
             Your Courses
           </div>
@@ -70,36 +72,59 @@
               <%- roundLink %>
             <% } %>
           </div>
+
+          <% if (courseName) { %>
+            <div class="info">
+              Your Certificate
+            </div>
+
+            <div class="info">
+              <a href="/certificates/<%- courseId %>" class="link-success"><%= courseName %></a>
+            </div>
+          <% } %>
+
+          <div class="info">
+            <a href="#" class="reset-link">
+              <button class="btn" disabled>
+                Update your data?
+              </button>
+            </a>
+          </div>
+
         </div>
       </div>
-      <div class="col-lg-6 col-xs-12">
-        <div class="user-img">
-          <form action="/update-user-img" method="POST" enctype="multipart/form-data">
-            <div class="custom-input">
-              <label for="user_img">
-                <% if (user.user_img) { %>
-                  <img
-                    src="/downloaded_images/<%= user.user_img %>"
-                    alt="<%= user.name %>"
-                  />
-                <% } else { %>
-                  <div class="alert alert-primary" role="alert">
-                    Do you want to add an image ?
-                  </div>
-                  <img
-                    src="/downloaded_images/<%= user.user_img %>"
-                    alt="<%= user.name %>"
-                  />
-                <% } %>
-              </label>
-              <input type="file" name="user_img" id="user_img" placeholder="Update your image"
-                     class="form-control <%= validationError.error === 'img' ? 'is-invalid' : "" %>">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-lg-6 col-xs-12">
+            <div class="user-img">
+              <% if (user.user_img) { %>
+                <img
+                  src="/downloaded_images/<%= user.user_img %>"
+                  alt="<%= user.name %>"
+                />
+              <% } else { %>
+                <div class="alert alert-primary" role="alert">
+                  Do you want to add an image ?
+                </div>
+                <img
+                  src="/imgs/imgs/user_img.png"
+                  alt="<%= user.name %>"
+                />
+              <% } %>
             </div>
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-            <button type="submit" class="btn btn-outlined">
-              update image
-            </button>
-          </form>
+          </div>
+          <div class="col-lg-5 col-xs-12">
+            <form action="/update-user-img" method="POST" enctype="multipart/form-data">
+              <div class="custom-input">
+                <input type="file" name="user_img" id="user_img" placeholder="Update your image"
+                       class="form-control <%= validationError.error === 'img' ? 'is-invalid' : "" %>">
+              </div>
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+              <button type="submit" class="btn btn-outlined">
+                update image
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
