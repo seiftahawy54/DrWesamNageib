@@ -7,10 +7,7 @@ import { createCertificate, deleteFile } from "../../utits/general_helper.js";
 import { getSingleFile, uploadFile } from "../../utits/aws.js";
 import fs from "fs";
 import path from "path";
-import axios from "axios";
 import { sequelize } from "../../utits/db.js";
-import moment from "moment";
-import PDFMake from "pdfmake";
 
 export const getUserProfile = async (req, res, next) => {
   const roundLink = await sequelize.query(
@@ -80,9 +77,6 @@ export const getUserProfile = async (req, res, next) => {
         })
       );
 
-      // const userImgBuffer = await getSingleFile(req.user.user_img);
-      // const userImg = JSON.stringify(userImgBuffer);
-
       return res.render("users/profile", {
         title: req.user.name,
         path: "/profile",
@@ -94,7 +88,7 @@ export const getUserProfile = async (req, res, next) => {
         validationError: {},
       });
     } else {
-      req.flash("error", "There's an error from our end!");
+      // req.flash("error", "There's an error from our end!");
       return res.render("users/profile", {
         title: req.user.name,
         path: "/profile",
