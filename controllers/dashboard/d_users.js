@@ -15,6 +15,7 @@ const getUsers = async (req, res, next) => {
     const fetchingResults = await Users.findAll({
       limit: MAX_NUMBER,
       offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+      order: [["created_on", "DESC"]],
     });
 
     res.render("dashboard/users", {

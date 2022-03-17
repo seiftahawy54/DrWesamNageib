@@ -1,4 +1,4 @@
-input[type='checkbox'] ~ label {
+input[type="checkbox"] ~ label {
   cursor: pointer;
 }
 
@@ -6,6 +6,8 @@ input[type='checkbox'] ~ label {
   overflow: scroll;
 
   .users-select-button {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr);
     gap: 10px;
     //width: 100%;
     //overflow: scroll;
@@ -19,6 +21,9 @@ input[type='checkbox'] ~ label {
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      text-align: center;
+      width: fit-content;
+      padding: 20px;
     }
   }
 }

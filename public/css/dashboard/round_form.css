@@ -6,6 +6,8 @@ input[type=checkbox] ~ label {
   overflow: scroll;
 }
 .users-selection-container .users-select-button {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
 }
 .users-selection-container .users-select-button .btn-check:checked + .btn-outline-primary {
@@ -16,6 +18,9 @@ input[type=checkbox] ~ label {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  text-align: center;
+  width: fit-content;
+  padding: 20px;
 }
 
 /*# sourceMappingURL=round_form.css.map */
