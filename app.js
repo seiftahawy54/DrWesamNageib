@@ -100,7 +100,7 @@ const accessLogStream = fs.createWriteStream(path.resolve("access.log"), {
   flags: "a",
 });
 
-app.use(helmet());
+// app.use(helmet());
 app.use(compression());
 app.use(morgan("combined", { steam: accessLogStream }));
 
