@@ -19,8 +19,9 @@ input[type=checkbox] ~ label {
   align-items: center;
   cursor: pointer;
   text-align: center;
-  width: fit-content;
-  padding: 20px;
+  padding: 20px 40px;
+  font-size: 14px;
+  width: 100%;
 }
 
 /*# sourceMappingURL=round_form.css.map */
