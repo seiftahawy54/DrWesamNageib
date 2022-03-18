@@ -132,7 +132,7 @@ export const createCertificate = (
         {
           text: `Certificate of Attendance of Professional in Healthcare Quality "${courseName}"`,
           alignment: "center",
-          fontSize: "42",
+          fontSize: "38",
           bold: true,
           marginTop: 30,
           width: 100,
