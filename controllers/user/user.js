@@ -8,6 +8,7 @@ import { getSingleFile, uploadFile } from "../../utits/aws.js";
 import fs from "fs";
 import path from "path";
 import { sequelize } from "../../utits/db.js";
+import { Rounds } from "../../models/rounds.js";
 
 export const getUserProfile = async (req, res, next) => {
   const roundLink = await sequelize.query(
@@ -26,17 +27,37 @@ export const getUserProfile = async (req, res, next) => {
   ) {
     round = roundLink[0].round_link;
 
-    if (typeof req.user.finished_course === "string") {
-      let courseResult = await sequelize.query(
-        `select course.name, course.course_id from rounds inner join courses course on rounds.round_id = ? and course.course_id = ?`,
-        {
-          replacements: [req.user.finished_course, roundLink[0].course_id],
-          type: "SELECT",
-        }
+    // if (typeof req.user.finished_course === "string") {
+    //   let courseResult = await sequelize.query(
+    //     `select course.name, course.course_id from rounds inner join courses course on rounds.round_id = ? and course.course_id = ?`,
+    //     {
+    //       replacements: [req.user.finished_course, roundLink[0].course_id],
+    //       type: "SELECT",
+    //     }
+    //   );
+    //
+    //   finishedCourseName = courseResult[0].name;
+    //   courseId = roundLink[0].course_id;
+    // }
+  }
+
+  if (typeof req.user.finished_course === "string") {
+    const findingFinishedRoundResult = await Rounds.findByPk(
+      req.user.finished_course,
+      {
+        attributes: ["course_id"],
+      }
+    );
+
+    if (findingFinishedRoundResult) {
+      const findingFinishedCourseResult = await Courses.findByPk(
+        findingFinishedRoundResult.course_id
       );
 
-      finishedCourseName = courseResult[0].name;
-      courseId = roundLink[0].course_id;
+      if (findingFinishedCourseResult) {
+        finishedCourseName = findingFinishedCourseResult.name;
+        courseId = findingFinishedCourseResult.course_id;
+      }
     }
   }
 
