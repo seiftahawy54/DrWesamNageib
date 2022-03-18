@@ -60,12 +60,14 @@ const singleCourse = async (req, res, next) => {
 
     const numberOfCourses = await Courses.findAndCountAll();
 
+    const filteredRounds = roundsResult.filter((round) => !round.finished);
+
     res.render("courses/single_course", {
       title: course.name,
       path: "/courses",
       course,
       numberOfCourses: numberOfCourses.count,
-      rounds: roundsResult,
+      rounds: filteredRounds,
       moment,
     });
   } catch (e) {
