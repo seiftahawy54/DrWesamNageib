@@ -4,11 +4,10 @@
 <link rel="stylesheet" href="/css/dashboard/navbar.css"/>
 <link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
 <link rel="stylesheet" href="/css/dashboard/courses.css"/>
-<script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
 </head>
 <body>
 
-<section class="opinions courses">
+<section class="courses <%= tableName %>">
   <div class="container-fluid g-0">
     <div class="row g-0">
       <div class="col-3">
@@ -18,15 +17,14 @@
         <div class="content">
           <div class="custom-head">
             <h2>
-              Update Opinion
+              Update <%= tableName %>
             </h2>
             <span></span>
           </div>
-
           <%- include("../includes/errorMessage.ejs"); %>
           <form
-            action="/dashboard/edit-opinion/<%- opinion.opinion_id %>"
-            method="POST" enctype="multipart/form-data">
+            action="/dashboard/edit-opinion/<%- primaryKey %>"
+            method="POST" <%- includingImage ? `enctype="multipart/form-data"` : "" %> >
             <div class="form-floating my-3">
               <input type="text" name="sender_name" placeholder="Opinion Name"
                      class="form-control <%= validationErrors.find(e => e.param === 'sender_name') ? "is-invalid" : "" %>"
@@ -79,9 +77,5 @@
     </div>
   </div>
 </section>
-
-<script>
-  console.log('<%= opinion.created_on %>')
-</script>
 
 <%- include("../includes/bottom_part.ejs"); %>

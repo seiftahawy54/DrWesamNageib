@@ -1,7 +1,7 @@
 import paypal from "@paypal/checkout-server-sdk";
 import { validationResult } from "express-validator";
 import { Courses } from "../models/courses.js";
-import { errorRaiser } from "../utits/error_raiser.js";
+import { errorRaiser } from "../utils/error_raiser.js";
 import { Users } from "../models/users.js";
 import { Payment } from "../models/payment.js";
 import bcrypt from "bcrypt";
@@ -11,7 +11,7 @@ import {
   cartIsEmpty,
   extractArrOfPrices,
   findCartCourses,
-} from "../utits/cart_helpers.js";
+} from "../utils/cart_helpers.js";
 
 const Environment =
   process.env.NODE_ENV === "production"

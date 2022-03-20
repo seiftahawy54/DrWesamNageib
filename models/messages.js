@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
-import { sequelize } from "../utits/db.js";
-import { hashCreator } from "../utits/general_helper.js";
+import { sequelize } from "../utils/db.js";
+import { hashCreator } from "../utils/general_helper.js";
 import { UUIDV4 } from "sequelize";
 
 const Messages = sequelize.define("message", {
@@ -24,7 +24,7 @@ const Messages = sequelize.define("message", {
 export { Messages };
 
 /*
-import db from "../utits/db.js";
+import db from "../utils/db.js";
 
 import crypto from "crypto";
 

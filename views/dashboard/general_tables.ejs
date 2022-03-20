@@ -1,0 +1,80 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css">
+<link rel="stylesheet" href="/css/dashboard/about.css"/>
+
+<style>
+    .table-head {
+        grid-template-columns: repeat(<%= tableHead.length %>, 1fr) !important;
+    }
+
+    .table-row {
+        grid-template-columns: repeat(<%= tableHead.length %>, 1fr) !important;
+    }
+</style>
+</head>
+<body>
+
+<section class="courses <%= tableName %>">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <main class="content-header">
+            <%- include("../includes/errorMessage.ejs"); %>
+            <div class="custom-head">
+              <h2><%= tableName %></h2>
+              <span></span>
+            </div>
+            <a class="btn btn-success" href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
+              Add new <%= tableName %>
+            </a>
+          </main>
+
+          <div class="courses-data">
+            <div class="table-head">
+              <% tableHead.forEach(column => { %>
+                <span class="<%= tableName %>-<%= column.name %>"><%- column.title %></span>
+              <% }) %>
+            </div>
+            <% tableRows.forEach(({
+                                    data,
+                                    primaryKey,
+                                    updateInputName
+                                  }, index) => { %>
+              <div class="table-row">
+
+                <% Object.entries(data.item).forEach((item, index) => { %>
+                  <span class="<%- tableName %>-<%- index %>">
+                    <%= item[1] %>
+                  </span>
+                <% }) %>
+
+                <div class="course-update">
+                  <a href="/dashboard/edit-<%= tableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
+                     class="btn btn-success">
+                    Update <%= tableName %>
+                  </a>
+                </div>
+                <div class="course-delete">
+                  <form action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= tableName.toLowerCase() %>"
+                        method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+                    <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey; %>">
+                    <button type="submit" class="btn btn-danger">Delete <%= tableName %></button>
+                  </form>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/bottom_part.ejs"); %>

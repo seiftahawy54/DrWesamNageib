@@ -40,13 +40,17 @@ import {
   postUpdateRound,
 } from "../controllers/dashboard/d_rounds.js";
 import { isAuthenticated } from "../middlewares/dashboard-auth.js";
+import {
+  addNewDiscount,
+  getDiscountsPage,
+  postAddNewDiscount,
+  postDeleteDiscount,
+} from "../controllers/dashboard/discounts.js";
 
 const router = express.Router();
 
 router
-  .get("/", (req, res) => {
-    res.redirect("/dashboard/overview");
-  })
+  .get("/", (req, res) => res.redirect("/dashboard/overview"))
   .get("/overview", getOverview)
   .get("/courses", getCourses)
   .get("/users", getUsers)
@@ -108,6 +112,18 @@ router
     [body("round_date").notEmpty()],
     postUpdateRound
   )
-  .post("/delete-round", postDeleteRound);
-//
+  .post("/delete-round", postDeleteRound)
+  .get("/discounts", getDiscountsPage)
+  .get("/discounts/add-new-discounts", addNewDiscount)
+  .post(
+    "/discounts/add-new-discount",
+    [
+      body("discount_course").notEmpty(),
+      body("discount_percentage").isNumeric().isLength({ min: 2 }),
+      body("coupon_name").notEmpty().isString(),
+    ],
+    postAddNewDiscount
+  )
+  .post("/discounts/delete-discounts", postDeleteDiscount);
+
 export { router as dashboardRoutes };

@@ -1,28 +1,32 @@
 import Sequelize from "sequelize";
 import { sequelize } from "../utils/db.js";
-import { hashCreator } from "../utils/general_helper.js";
 import { UUIDV4 } from "sequelize";
 
-const Certificates = sequelize.define("certificates", {
-  cert_id: {
+const Discounts = sequelize.define("discount", {
+  discount_id: {
     type: Sequelize.STRING,
     allowNull: false,
     primaryKey: true,
     defaultValue: UUIDV4,
   },
-  user_id: {
+  discount_course: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  course_name: {
-    type: Sequelize.STRING,
+  discount_percentage: {
+    type: Sequelize.DOUBLE,
     allowNull: false,
   },
-  created_at: {
-    type: Sequelize.DATE,
-    defaultValue: sequelize.literal("current_timestamp"),
+  discount_usage: {
+    type: Sequelize.INTEGER,
     allowNull: false,
+    defaultValue: 0,
+  },
+  coupon_name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true,
   },
 });
 
-export default Certificates;
+export default Discounts;

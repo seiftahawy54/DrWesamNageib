@@ -4,10 +4,10 @@ import {
   deleteFile,
   extractError,
   sortCourses,
-} from "../../utits/general_helper.js";
+} from "../../utils/general_helper.js";
 import { resolve } from "path";
-import { errorRaiser } from "../../utits/error_raiser.js";
-import { uploadFile } from "../../utits/aws.js";
+import { errorRaiser } from "../../utils/error_raiser.js";
+import { uploadFile } from "../../utils/aws.js";
 
 const getCourses = async (req, res, next) => {
   try {

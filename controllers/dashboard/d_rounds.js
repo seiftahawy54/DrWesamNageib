@@ -1,12 +1,12 @@
 import { Rounds } from "../../models/rounds.js";
 import { Courses } from "../../models/courses.js";
-import { errorRaiser } from "../../utits/error_raiser.js";
+import { errorRaiser } from "../../utils/error_raiser.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
-import { getCoursesFormCart } from "../../utits/cart_helpers.js";
+import { getCoursesFormCart } from "../../utils/cart_helpers.js";
 import { Users } from "../../models/users.js";
 import { QueryTypes, Sequelize } from "sequelize";
-import { sequelize } from "../../utits/db.js";
+import { sequelize } from "../../utils/db.js";
 
 export const getRounds = async (req, res, next) => {
   try {

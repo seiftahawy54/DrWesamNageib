@@ -3,26 +3,26 @@ import { validationResult } from "express-validator";
 // import { addMessage } from "../models/messages.js";
 import { Courses } from "../models/courses.js";
 import { Opinions } from "../models/opinions.js";
-import { errorRaiser } from "../utits/error_raiser.js";
+import { errorRaiser } from "../utils/error_raiser.js";
 import {
   downloadingCoursesImages,
   getCertificatesImage,
   sortCourses,
-} from "../utits/general_helper.js";
+} from "../utils/general_helper.js";
 import { Messages } from "../models/messages.js";
 import { Certificates } from "../models/about.js";
 import fs from "fs";
 import { Users } from "../models/users.js";
 import moment from "moment";
-import { getSingleFile } from "../utits/aws.js";
+import { getSingleFile } from "../utils/aws.js";
 import { Rounds } from "../models/rounds.js";
 import {
   calcTotalPrice,
   extractArrOfPrices,
   filterCart,
   findCartCourses,
-} from "../utits/cart_helpers.js";
-import { sequelize } from "../utits/db.js";
+} from "../utils/cart_helpers.js";
+import { sequelize } from "../utils/db.js";
 import { QueryTypes } from "sequelize";
 
 export const getHomePage = async (req, res, next) => {
