@@ -90,10 +90,26 @@ export const createCertificate = (
 
   const fonts = {
     Roboto: {
-      normal: path.resolve(fontsPath, `${fontName}-Regular.ttf`),
-      bold: path.resolve(fontsPath, `${fontName}-Bold.ttf`),
-      italics: path.resolve(fontsPath, `${fontName}-Italic.ttf`),
-      bolditalics: path.resolve(fontsPath, `${fontName}-BoldItalic.ttf`),
+      normal: path.resolve(
+        fontsPath,
+        fontName.toLowerCase(),
+        `${fontName}-Regular.ttf`
+      ),
+      bold: path.resolve(
+        fontsPath,
+        fontName.toLowerCase(),
+        `${fontName}-Bold.ttf`
+      ),
+      italics: path.resolve(
+        fontsPath,
+        fontName.toLowerCase(),
+        `${fontName}-Italic.ttf`
+      ),
+      bolditalics: path.resolve(
+        fontsPath,
+        fontName.toLowerCase(),
+        `${fontName}-BoldItalic.ttf`
+      ),
     },
     Pacifico: {
       normal: path.resolve(fontsPath, `Pacifico-Regular.ttf`),

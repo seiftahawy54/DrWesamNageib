@@ -55,8 +55,9 @@
                 <% }) %>
 
                 <div class="course-update">
-                  <a href="/dashboard/edit-<%= tableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
-                     class="btn btn-success">
+                  <a
+                    href="/dashboard/<%= tableName.toLowerCase() %>/edit-<%= tableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
+                    class="btn btn-success">
                     Update <%= tableName %>
                   </a>
                 </div>

@@ -9,6 +9,11 @@ const Discounts = sequelize.define("discount", {
     primaryKey: true,
     defaultValue: UUIDV4,
   },
+  status: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
   discount_course: {
     type: Sequelize.STRING,
     allowNull: false,

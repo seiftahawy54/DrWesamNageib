@@ -45,6 +45,8 @@ import {
   getDiscountsPage,
   postAddNewDiscount,
   postDeleteDiscount,
+  postUpdateDiscount,
+  getUpdateDiscount,
 } from "../controllers/dashboard/discounts.js";
 
 const router = express.Router();
@@ -119,10 +121,19 @@ router
     "/discounts/add-new-discount",
     [
       body("discount_course").notEmpty(),
-      body("discount_percentage").isNumeric().isLength({ min: 2 }),
+      body("discount_percentage").isNumeric(),
       body("coupon_name").notEmpty().isString(),
     ],
     postAddNewDiscount
+  )
+  .get("/discounts/edit-discounts/:discountId", getUpdateDiscount)
+  .post(
+    "/discounts/edit-discount",
+    [
+      body("discount_percentage").isNumeric(),
+      body("coupon_name").notEmpty().isString(),
+    ],
+    postUpdateDiscount
   )
   .post("/discounts/delete-discounts", postDeleteDiscount);
 
