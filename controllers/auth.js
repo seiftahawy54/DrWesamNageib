@@ -224,7 +224,10 @@ export const getCompletePayment = async (req, res, next) => {
           let price = course.price;
 
           if (couponData) {
-            price *= 1 - findingCouponData.discount_percentage / 100;
+            price = price * (1 - findingCouponData.discount_percentage / 100);
+
+            console.log(`Coupon Data --#--`);
+            console.log(price);
           }
 
           return {
@@ -277,7 +280,9 @@ export const postCreateOrder = async (req, res, next) => {
       let price = course.price;
 
       if (couponData) {
-        price *= 1 - findingCouponData.discount_percentage / 100;
+        price = price * (1 - findingCouponData.discount_percentage / 100);
+        console.log(`Coupon Data --#--`);
+        console.log(price);
       }
 
       return {

@@ -54,7 +54,7 @@
 
             <div class="input-group my-3">
               <label for="discount_percentage" class="input-group-text">&percnt;</label>
-              <input type="number" name="discount_percentage" placeholder="Discount Percentage"
+              <input type="number" name="discount_percentage" placeholder="Discount Percentage" min="1" max="80"
                      class="form-control <%= validationErrors.find(e => e.param === 'discount_percentage') ? "is-invalid" : "" %>"
                      value="<%= editMode ? discount.discount_percentage : "" %>" id="discount_percentage"/>
             </div>
