@@ -7,12 +7,104 @@ import { getCoursesFormCart } from "../../utils/cart_helpers.js";
 import { Users } from "../../models/users.js";
 import { QueryTypes, Sequelize } from "sequelize";
 import { sequelize } from "../../utils/db.js";
+import Discounts from "../../models/discounts.js";
 
 export const getRounds = async (req, res, next) => {
   try {
-    console.log(`req flash`, req.flash());
+    const findingDiscounts = await Rounds.findAll();
+    const allPrimaryKeys = [];
 
-    const findingRounds = await Rounds.findAll();
+    let data = await Promise.all(
+      await findingDiscounts.map(
+        async ({ round_id, course_id, users_ids, round_date, finished }) => {
+          allPrimaryKeys.push(round_id);
+
+          let usersForEachRound = await Promise.all(
+            users_ids.map(async (user_id) => {
+              return await Users.findByPk(user_id);
+            })
+          );
+
+          usersForEachRound = usersForEachRound.map((user) => {
+            if ("name" in user) {
+              return user.name;
+            } else {
+              return "DELETED USER";
+            }
+          });
+
+          const name = (
+            await Courses.findByPk(course_id, {
+              attributes: ["name"],
+            })
+          )?.name;
+
+          if (usersForEachRound.length === 0) {
+            usersForEachRound = "No users for this round.";
+          }
+
+          return {
+            course_id: name,
+            users_ids: usersForEachRound,
+            round_date: moment(round_date).format("DD-MM-YYYY"),
+          };
+        }
+      )
+    );
+
+    data = Object.entries(data).map(([key, value], index) => {
+      return {
+        item: value,
+        entry: key,
+      };
+    });
+
+    let finalData = [];
+
+    data.forEach((value, key) => {
+      finalData.push({
+        data: data[key],
+        primaryKey: allPrimaryKeys[key],
+        updateInputName: "roundId",
+      });
+    });
+
+    return res.render("dashboard/rounds/rounds_modified", {
+      title: "Rounds",
+      path: "/dashboard/rounds",
+      tableName: "Rounds",
+      addingNewLink: "round",
+      singleTableName: "round",
+      tableHead: [
+        {
+          title: "#",
+          name: "rounds-numbers",
+        },
+        {
+          title: "Round Course Name",
+          name: "round-course-name",
+        },
+        {
+          title: "Round Users",
+          name: "round-users",
+        },
+        {
+          title: "Round Date",
+          name: "round-date",
+        },
+        {
+          title: "Update Round",
+          name: "update-round",
+        },
+        {
+          title: "Delete Round",
+          name: "delete-round",
+        },
+      ],
+      tableRows: finalData,
+    });
+
+    /*const findingRounds = await Rounds.findAll();
 
     const roundsCourses = await Promise.all(
       findingRounds.map(async (round) => {
@@ -30,7 +122,6 @@ export const getRounds = async (req, res, next) => {
       })
     );
 
-    console.log(`rounds users: `, usersForEachRound);
 
     usersForEachRound = usersForEachRound.map((usersPerRound) =>
       usersPerRound.map((user) => {
@@ -42,8 +133,6 @@ export const getRounds = async (req, res, next) => {
       })
     );
 
-    console.log(usersForEachRound);
-
     res.render("dashboard/rounds/rounds", {
       title: "Rounds",
       path: "/dashboard/rounds",
@@ -52,16 +141,10 @@ export const getRounds = async (req, res, next) => {
       users: usersForEachRound,
       numberOfLinks: 0,
       moment: moment,
-    });
+    });*/
   } catch (e) {
     console.log(e);
-    req.flash("error", e.message);
-    res.render("dashboard/rounds/rounds", {
-      title: "Rounds",
-      path: "/dashboard/rounds",
-      rounds: [],
-      numberOfLinks: 0,
-    });
+    await errorRaiser(e, next);
   }
 };
 
@@ -226,8 +309,6 @@ export const postUpdateRound = async (req, res, next) => {
     const allCourses = await Courses.findAll();
     let findingRoundUsersArr = [];
 
-    console.log(typeof finishRound);
-
     if (finishRound === "on") {
       for (const user of allUsers) {
         if (user.current_round === roundId) {
@@ -238,11 +319,6 @@ export const postUpdateRound = async (req, res, next) => {
               type: QueryTypes.UPDATE,
             }
           );
-
-          console.log(
-            `UPDATING ${user.name} CURRENT ROUND`,
-            updateUserRound[0]
-          );
         }
       }
 
@@ -252,8 +328,6 @@ export const postUpdateRound = async (req, res, next) => {
         },
         { where: { round_id: roundId } }
       );
-
-      console.log(`UPDATING RESULT: `, updateResult[0]);
 
       if (updateResult) {
         req.flash("success", "Round Closed Successfully");
@@ -325,9 +399,7 @@ export const postDeleteRound = async (req, res, next) => {
   try {
     const deletingResult = await (await Rounds.findByPk(roundId)).destroy();
 
-    console.log(`deleting round result: `, deletingResult);
-
-    if (deletingResult) {
+    if (deletingResult.length === 0) {
       req.flash("success", "Round deleted successfully");
       res.redirect("rounds");
     } else {

@@ -9,6 +9,7 @@ import fs from "fs";
 import path from "path";
 import { sequelize } from "../../utils/db.js";
 import { Rounds } from "../../models/rounds.js";
+import moment from "moment";
 
 export const getUserProfile = async (req, res, next) => {
   const roundLink = await sequelize.query(
@@ -18,7 +19,8 @@ export const getUserProfile = async (req, res, next) => {
 
   let round = "",
     finishedCourseName = "",
-    courseId = "";
+    courseId = "",
+    roundDate = "";
 
   if (
     Array.isArray(roundLink) &&
@@ -43,10 +45,7 @@ export const getUserProfile = async (req, res, next) => {
 
   if (typeof req.user.finished_course === "string") {
     const findingFinishedRoundResult = await Rounds.findByPk(
-      req.user.finished_course,
-      {
-        attributes: ["course_id"],
-      }
+      req.user.finished_course
     );
 
     if (findingFinishedRoundResult) {
@@ -54,8 +53,10 @@ export const getUserProfile = async (req, res, next) => {
         findingFinishedRoundResult.course_id
       );
 
+      roundDate = findingFinishedRoundResult.round_date;
+
       if (findingFinishedCourseResult) {
-        finishedCourseName = findingFinishedCourseResult.name;
+        finishedCourseName = findingFinishedCourseResult;
         courseId = findingFinishedCourseResult.course_id;
       }
     }
@@ -78,6 +79,8 @@ export const getUserProfile = async (req, res, next) => {
             courseName: "",
             bought_courses: [],
             validationError: {},
+            moment,
+            roundDate,
           });
         }
       }
@@ -107,6 +110,8 @@ export const getUserProfile = async (req, res, next) => {
         courseId: courseId,
         bought_courses: findingBoughtCourses,
         validationError: {},
+        moment,
+        roundDate,
       });
     } else {
       // req.flash("error", "There's an error from our end!");
@@ -119,6 +124,8 @@ export const getUserProfile = async (req, res, next) => {
         courseId: courseId,
         roundLink: round,
         validationError: {},
+        moment,
+        roundDate,
       });
     }
   } catch (e) {
@@ -135,6 +142,8 @@ export const getUserProfile = async (req, res, next) => {
       courseId: courseId,
       bought_courses: [],
       validationError: {},
+      moment,
+      roundDate,
     });
   }
 };
@@ -187,6 +196,9 @@ export const getUserCertificate = async (req, res, next) => {
       type: "SELECT",
     }
   );
+
+  console.log(`selected rounds: `, roundAndCourse[0].round_date);
+  // console.log(`new certificate: `, roundAndCourse[0].round_date);
 
   const certificateDoc = createCertificate(
     req.user.name,

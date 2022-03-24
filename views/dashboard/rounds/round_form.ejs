@@ -28,7 +28,7 @@
           </div>
           <%- include('../../includes/errorMessage.ejs'); %>
           <form
-            action="/dashboard/<% if (editMode === true) { %><%= "edit-round/" + round.round_id %><% } else { %>start-new-round<% } %>"
+            action="/dashboard/rounds/<% if (editMode === true) { %><%= "edit-round/" + round.round_id %><% } else { %>add-new-round<% } %>"
             method="POST">
             <select name="round_course" class="form-select form-control my-3" aria-label="Default select example"
                     id="enrolled-course" <%- editMode ? 'disabled=disabled' : "" %>>
@@ -71,7 +71,7 @@
               >
               </textarea>
               <% if (validationErrors.find(e => e.param === 'round_link')) { %>
-                <div class="danger">Please enter a valid description</div>
+                <div class="alert alert-danger" role="alert">Please enter a valid description</div>
               <% } %>
             </div>
 
@@ -97,9 +97,9 @@
                   <% usersArr.forEach((user, index) => { %>
                     <% if (user.current_round === null) { %>
                       <input class="btn-check" type="checkbox"
-                             id="user-<%- index %>"
-                             name="user-<%- index %>" value="<%= user.user_id %>">
-                      <label class="btn-outlined btn-outline-primary" for="user-<%- index %>">
+                             id="user-<%- roundUsers.length + index %>"
+                             name="user-<%- roundUsers.length + index %>" value="<%= user.user_id %>">
+                      <label class="btn-outlined btn-outline-primary" for="user-<%- roundUsers.length + index %>">
                         <%- user.name %> <br/>
                         <%- user.email %>
                       </label>

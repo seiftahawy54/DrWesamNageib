@@ -12,6 +12,18 @@
     .table-row {
         grid-template-columns: repeat(<%= tableHead.length %>, 1fr) !important;
     }
+
+    td.<%= singleTableName.toLowerCase() %>-update a, td.<%= singleTableName.toLowerCase() %>-delete a {
+        width: fit-content;
+        margin: auto;
+    }
+
+    span.round-user {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px 20px;
+    }
+
 </style>
 </head>
 <body>
@@ -23,9 +35,9 @@
         <%- include("../includes/dashboard-navbar.ejs"); %>
       </div>
       <div class="col-9">
-        <div class="content">
+        <div class="content text-center">
+          <%- include("../includes/errorMessage.ejs"); %>
           <main class="content-header">
-            <%- include("../includes/errorMessage.ejs"); %>
             <div class="custom-head">
               <h2><%= tableName %></h2>
               <span></span>
@@ -34,43 +46,50 @@
               Add new <%= tableName %>
             </a>
           </main>
-
-          <div class="courses-data">
-            <div class="table-head">
-              <% tableHead.forEach(column => { %>
-                <span class="<%= tableName %>-<%= column.name %>"><%- column.title %></span>
-              <% }) %>
-            </div>
-            <% tableRows.forEach(({
-                                    data,
-                                    primaryKey,
-                                    updateInputName
-                                  }, index) => { %>
-              <div class="table-row">
-
-                <% Object.entries(data.item).forEach((item, index) => { %>
-                  <span class="<%- tableName %>-<%- index %>">
-                    <%= item[1] %>
-                  </span>
+          <div class="table-responsive">
+            <table class="table align-middle ">
+              <thead>
+              <tr>
+                <% tableHead.forEach(column => { %>
+                  <th scope='col' class="<%= tableName %>-<%= column.name %>"><%- column.title %></th>
                 <% }) %>
-
-                <div class="course-update">
-                  <a
-                    href="/dashboard/<%= tableName.toLowerCase() %>/edit-<%= tableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
-                    class="btn btn-success">
-                    Update <%= tableName %>
-                  </a>
-                </div>
-                <div class="course-delete">
-                  <form action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= tableName.toLowerCase() %>"
-                        method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
-                    <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey; %>">
-                    <button type="submit" class="btn btn-danger">Delete <%= tableName %></button>
-                  </form>
-                </div>
-              </div>
-            <% }); %>
+              </tr>
+              </thead>
+              <tbody>
+              <% tableRows.forEach(({
+                                      data,
+                                      primaryKey,
+                                      updateInputName
+                                    }, index) => { %>
+                <tr>
+                  <td class="table-active">
+                    <%= index + 1 %>
+                  </td>
+                  <% Object.entries(data.item).forEach((item, index) => { %>
+                    <td class="<%- singleTableName %>-<%- item %>">
+                      <%- item[1] %>
+                    </td>
+                  <% }) %>
+                  <td class="<%= singleTableName.toLowerCase() %>-update">
+                    <a
+                      href="/dashboard/<%= singleTableName.toLowerCase() %>/edit-<%= singleTableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
+                      class="btn btn-success">
+                      Update <%= singleTableName %>
+                    </a>
+                  </td>
+                  <td class="<%= singleTableName.toLowerCase() %>-delete">
+                    <form
+                      action="/dashboard/<%= singleTableName.toLowerCase() %>/delete-<%= singleTableName.toLowerCase() %>"
+                      method="post">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+                      <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey; %>">
+                      <button type="submit" class="btn btn-danger">Delete <%= singleTableName %></button>
+                    </form>
+                  </td>
+                </tr>
+              <% }); %>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

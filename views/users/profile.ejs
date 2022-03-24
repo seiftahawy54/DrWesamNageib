@@ -79,7 +79,8 @@
             </div>
 
             <div class="info">
-              <a href="/certificates/<%- courseId %>" class="link-success"><%= courseName %></a>
+              <a href="/certificates/<%- courseId %>" class="link-success"><%= courseName.name %>
+                - <%= moment(roundDate).format("LL") %></a>
             </div>
           <% } %>
 

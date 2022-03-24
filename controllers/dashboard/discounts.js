@@ -67,6 +67,10 @@ export const getDiscountsPage = async (req, res, next) => {
       addingNewLink: "discounts",
       tableHead: [
         {
+          title: "#",
+          name: "number-of-records",
+        },
+        {
           title: "Discount Course",
           name: "discount-course",
         },
@@ -96,6 +100,7 @@ export const getDiscountsPage = async (req, res, next) => {
         },
       ],
       tableRows: finalData,
+      singleTableName: "discount",
     });
   } catch (e) {
     await errorRaiser(e, next);
@@ -223,9 +228,7 @@ export const postUpdateDiscount = async (req, res, next) => {
       });
     }
 
-    if (status === "on") {
-      status = true;
-    }
+    status = status === "on";
 
     const updatingResult = await Discounts.update(
       {
@@ -238,7 +241,7 @@ export const postUpdateDiscount = async (req, res, next) => {
 
     if (updatingResult[0] >= 1) {
       req.flash("success", "Discount data updated successfully");
-      res.redirect("/");
+      res.redirect("/dashboard/discounts/");
     }
   } catch (e) {
     await errorRaiser(e, next);
@@ -248,18 +251,17 @@ export const postUpdateDiscount = async (req, res, next) => {
 export const postDeleteDiscount = async (req, res, next) => {
   try {
     const discountId = req.body.discountId;
-    console.log(`Discount ID ==========> `, discountId);
+    const deletingResult = await (
+      await Discounts.findByPk(discountId)
+    ).destroy();
 
-    // const deletingResult = await (
-    //   await Discounts.findByPk(discountId)
-    // ).destroy();
-
-    const deletingResult = await Discounts.findByPk(discountId);
-
-    console.log(deletingResult);
-
-    req.flash("success", "Discount deleted successfully");
-    return res.redirect("/dashboard/discounts");
+    if (deletingResult.length === 0) {
+      req.flash("success", "Discount deleted successfully");
+      return res.redirect("/dashboard/discounts");
+    } else {
+      req.flash("error", "Some error from server, Please contact the team!");
+      return res.redirect("/dashboard/discounts");
+    }
   } catch (e) {
     req.flash("error", "Discount deleting failed");
     await errorRaiser(e, next);

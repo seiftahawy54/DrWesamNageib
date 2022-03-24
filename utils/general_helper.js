@@ -78,8 +78,9 @@ export const createCertificate = (
     "certificate"
   );
 
-  const startDate = moment(roundStartingDate.round_date).format("LL");
-  const endDate = moment(roundStartingDate.round_date)
+  const startDate = moment(roundStartingDate).locale("en-CA").format("LL");
+  const endDate = moment(roundStartingDate)
+    .locale("en-CA")
     .add(3, "months")
     .format("LL");
 

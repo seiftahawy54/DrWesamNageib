@@ -52,7 +52,7 @@ import {
 const router = express.Router();
 
 router
-  .get("/", (req, res) => res.redirect("/dashboard/overview"))
+  .get("/", (req, res) => res.status(301).redirect("/dashboard/overview"))
   .get("/overview", getOverview)
   .get("/courses", getCourses)
   .get("/users", getUsers)
@@ -98,9 +98,9 @@ router
   .get("/payments", getPaymentsPage)
   .post("/delete-certificate", postDeleteCertificate)
   .get("/rounds", getRounds)
-  .get("/start-new-round", getStartNewRound)
+  .get("/rounds/add-new-round", getStartNewRound)
   .post(
-    "/start-new-round",
+    "/rounds/add-new-round",
     [
       body("round_course").notEmpty(),
       body("round_date").notEmpty(),
@@ -108,13 +108,13 @@ router
     ],
     postAddNewRound
   )
-  .get("/edit-round/:roundId", getUpdateRound)
+  .get("/round/edit-round/:roundId", getUpdateRound)
   .post(
-    "/edit-round/:roundId",
+    "/rounds/edit-round/:roundId",
     [body("round_date").notEmpty()],
     postUpdateRound
   )
-  .post("/delete-round", postDeleteRound)
+  .post("/rounds/delete-round", postDeleteRound)
   .get("/discounts", getDiscountsPage)
   .get("/discounts/add-new-discounts", addNewDiscount)
   .post(
@@ -126,7 +126,7 @@ router
     ],
     postAddNewDiscount
   )
-  .get("/discounts/edit-discounts/:discountId", getUpdateDiscount)
+  .get("/discount/edit-discount/:discountId", getUpdateDiscount)
   .post(
     "/discounts/edit-discount",
     [
@@ -135,6 +135,6 @@ router
     ],
     postUpdateDiscount
   )
-  .post("/discounts/delete-discounts", postDeleteDiscount);
+  .post("/discount/delete-discount", postDeleteDiscount);
 
 export { router as dashboardRoutes };
