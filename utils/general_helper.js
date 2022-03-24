@@ -78,8 +78,9 @@ export const createCertificate = (
     "certificate"
   );
 
-  const startDate = moment(roundStartingDate.round_date).format("LL");
-  const endDate = moment(roundStartingDate.round_date)
+  const startDate = moment(roundStartingDate).locale("en-CA").format("LL");
+  const endDate = moment(roundStartingDate)
+    .locale("en-CA")
     .add(3, "months")
     .format("LL");
 
@@ -90,10 +91,26 @@ export const createCertificate = (
 
   const fonts = {
     Roboto: {
-      normal: path.resolve(fontsPath, `${fontName}-Regular.ttf`),
-      bold: path.resolve(fontsPath, `${fontName}-Bold.ttf`),
-      italics: path.resolve(fontsPath, `${fontName}-Italic.ttf`),
-      bolditalics: path.resolve(fontsPath, `${fontName}-BoldItalic.ttf`),
+      normal: path.resolve(
+        fontsPath,
+        fontName.toLowerCase(),
+        `${fontName}-Regular.ttf`
+      ),
+      bold: path.resolve(
+        fontsPath,
+        fontName.toLowerCase(),
+        `${fontName}-Bold.ttf`
+      ),
+      italics: path.resolve(
+        fontsPath,
+        fontName.toLowerCase(),
+        `${fontName}-Italic.ttf`
+      ),
+      bolditalics: path.resolve(
+        fontsPath,
+        fontName.toLowerCase(),
+        `${fontName}-BoldItalic.ttf`
+      ),
     },
     Pacifico: {
       normal: path.resolve(fontsPath, `Pacifico-Regular.ttf`),

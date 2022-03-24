@@ -1,11 +1,11 @@
 import { Payment } from "../../models/payment.js";
 import { Courses } from "../../models/courses.js";
 import { Users } from "../../models/users.js";
-import { extractCart, findCartCourses } from "../../utits/cart_helpers.js";
-import { errorRaiser } from "../../utits/error_raiser.js";
+import { extractCart, findCartCourses } from "../../utils/cart_helpers.js";
+import { errorRaiser } from "../../utils/error_raiser.js";
 import { Rounds } from "../../models/rounds.js";
 import moment from "moment";
-import { sequelize } from "../../utits/db.js";
+import { sequelize } from "../../utils/db.js";
 
 export const getPaymentsPage = async (req, res, next) => {
   try {

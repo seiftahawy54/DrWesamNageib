@@ -18,16 +18,16 @@ import { Sequelize } from "sequelize";
 import crypto from "crypto";
 
 // MY MODULES IMPORTS
-import { sequelize } from "./utits/db.js";
+import { sequelize } from "./utils/db.js";
 import { coursesRoutes } from "./routes/courses.js";
 import { shoppingRoutes } from "./routes/shopping.js";
 import { authRoutes } from "./routes/auth.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
 import { isAuthenticated } from "./middlewares/dashboard-auth.js";
-import { errorRaiser } from "./utits/error_raiser.js";
+import { errorRaiser } from "./utils/error_raiser.js";
 import { userRoutes } from "./routes/user.js";
 import { Users } from "./models/users.js";
-import { getSingleFile } from "./utits/aws.js";
+import { getSingleFile } from "./utils/aws.js";
 import { Rounds } from "./models/rounds.js";
 import { Payment } from "./models/payment.js";
 import { Courses } from "./models/courses.js";

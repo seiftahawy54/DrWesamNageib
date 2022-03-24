@@ -1,6 +1,6 @@
 import Sequelize, { UUIDV4 } from "sequelize";
-import { sequelize } from "../utits/db.js";
-import { hashCreator } from "../utits/general_helper.js";
+import { sequelize } from "../utils/db.js";
+import { hashCreator } from "../utils/general_helper.js";
 
 const Certificates = sequelize.define("about", {
   certificate_id: {

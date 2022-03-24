@@ -22,13 +22,10 @@
             </h2>
             <span></span>
           </div>
-          <% if (errorMessage) { %>
-            <div class="error-container">
-              <%- errorMessage; %>
-            </div>
-          <% } %>
+
+          <%- include("../includes/errorMessage.ejs"); %>
           <form
-            action="/dashboard/edit-opinion/<% opinion.opinion_id %>"
+            action="/dashboard/edit-opinion/<%- opinion.opinion_id %>"
             method="POST" enctype="multipart/form-data">
             <div class="form-floating my-3">
               <input type="text" name="sender_name" placeholder="Opinion Name"

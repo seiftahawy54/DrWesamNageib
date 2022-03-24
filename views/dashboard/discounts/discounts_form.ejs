@@ -1,0 +1,95 @@
+<%- include("../../includes/top_part.ejs"); %>
+<!-- Dashboard Globals -->
+<%- include("../../includes/dashboard_includes.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css"/>
+</head>
+<body>
+
+<section class="courses opinions">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <div class="custom-head">
+            <h2>
+              <%- editMode ? "Update Discount" : "Add new discount" %>
+            </h2>
+            <span></span>
+          </div>
+          <%- include("../../includes/errorMessage.ejs"); %>
+          <form
+            action="/dashboard/discounts/<%- editMode ? `edit-discount` : `add-new-discount` %>"
+            method="POST">
+            <select name="discount_course" class="form-select form-control my-3"
+                    aria-label="Default select example"
+                    id="enrolled-course" <%- editMode ? 'disabled' : "" %>>
+              <% if (editMode === true) { %>
+                <option selected
+                        value="<%- discountCourses.course_id %>">
+                  <%= discountCourses.name %>
+                </option>
+              <% } else { %>
+                <option selected="<%- Object.keys(discount).length === 0 ? 'selected' : "" %>" value="">
+                  Please Select A Course
+                </option>
+                <% discountCourses.forEach(course => { %>
+                  <option <%- discount.discount_course === course.name ? 'selected=""' : "" %>
+                    value="<%- course.course_id %>">
+                    <%= course.name %>
+                  </option>
+                <% }) %>
+
+                <% if (validationErrors.find(e => e.param === 'discount_course')) { %>
+                  <div class="alert alert-danger" role="alert">
+                    Please Select a course!
+                  </div>
+                <% } %>
+              <% } %>
+            </select>
+
+            <div class="input-group my-3">
+              <label for="discount_percentage" class="input-group-text">&percnt;</label>
+              <input type="number" name="discount_percentage" placeholder="Discount Percentage"
+                     class="form-control <%= validationErrors.find(e => e.param === 'discount_percentage') ? "is-invalid" : "" %>"
+                     value="<%= editMode ? discount.discount_percentage : "" %>" id="discount_percentage"/>
+            </div>
+
+            <div class="form-floating my-3">
+              <input type="text" name="coupon_name" placeholder="Coupon Name"
+                     class="form-control <%= validationErrors.find(e => e.param === 'coupon_name') ? "is-invalid" : "" %>"
+                     value="<%= editMode ? discount.coupon_name : "" %>" id="coupon_name"/>
+              <label for="coupon_name">Coupon Name</label>
+            </div>
+
+            <div class="form-check my-3">
+              <!--<input type="text" name="status" placeholder="Coupon Status"
+                     class="form-control <%= validationErrors.find(e => e.param === 'status') ? "is-invalid" : "" %>"
+                     value="<%= editMode ? discount.status : "" %>" id="coupon_status"/>-->
+              <input type="checkbox" name="status" id="coupon_status" class="form-check-input"
+              <% if (editMode) { %>
+                <% if (discount.status) { %>
+                     checked
+                  <% } %>
+                <% } %>
+              >
+              <label for="coupon_status" class="form-check-label">Coupon Status (On | Off)</label>
+            </div>
+
+            <input type="hidden" name="discountId" value="<%= discount.discount_id %>"/>
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+            <button type="submit" class="btn submitBtn">
+              <%- editMode ? `Update Discount` : `Add Discount` %>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../../includes/bottom_part.ejs"); %>

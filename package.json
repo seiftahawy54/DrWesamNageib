@@ -13,6 +13,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.51.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
+    "@types/node": "^17.0.21",
     "@types/pdfmake": "^0.1.21",
     "@types/sequelize": "^4.28.11",
     "aws-sdk": "^2.1073.0",

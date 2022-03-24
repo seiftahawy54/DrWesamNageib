@@ -1,7 +1,7 @@
 import { Users } from "../../models/users.js";
 import { Rounds } from "../../models/rounds.js";
 import { Opinions } from "../../models/opinions.js";
-import { errorRaiser } from "../../utits/error_raiser.js";
+import { errorRaiser } from "../../utils/error_raiser.js";
 
 const getUsers = async (req, res, next) => {
   // const allUsers = await Users.findAll();

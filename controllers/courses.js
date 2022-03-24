@@ -1,16 +1,16 @@
 // import { getAllCourses, getSingleCourse } from "../models/courses.js";
-import { errorRaiser } from "../utits/error_raiser.js";
+import { errorRaiser } from "../utils/error_raiser.js";
 import {
   downloadingCoursesImages,
   extractError,
   sortCourses,
-} from "../utits/general_helper.js";
+} from "../utils/general_helper.js";
 import { Courses } from "../models/courses.js";
 import { Users } from "../models/users.js";
 import { Rounds } from "../models/rounds.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
-import { cartIsEmpty, courseExistsInCart } from "../utits/cart_helpers.js";
+import { cartIsEmpty, courseExistsInCart } from "../utils/cart_helpers.js";
 
 const getIndex = async (req, res, next) => {
   try {

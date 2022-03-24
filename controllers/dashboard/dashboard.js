@@ -3,12 +3,12 @@ import { Users } from "../../models/users.js";
 import { Messages } from "../../models/messages.js";
 import { Opinions } from "../../models/opinions.js";
 import { Certificates } from "../../models/about.js";
-import { errorRaiser } from "../../utits/error_raiser.js";
+import { errorRaiser } from "../../utils/error_raiser.js";
 import { validationResult } from "express-validator";
 import moment from "moment";
 import { Sequelize } from "sequelize";
-import { uploadFile } from "../../utits/aws.js";
-import { getCertificatesImage } from "../../utits/general_helper.js";
+import { uploadFile } from "../../utils/aws.js";
+import { getCertificatesImage } from "../../utils/general_helper.js";
 import { Rounds } from "../../models/rounds.js";
 import { Payment } from "../../models/payment.js";
 
