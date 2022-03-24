@@ -7,31 +7,56 @@
 
   <section class="complete-payment">
     <div class="container">
-      <h2 class="h1">
-        Your Going to buy:
-        <%- include('../includes/errorMessage.ejs'); %>
-      </h2>
-      <div class="bought-course-data">
-        <% bought_courses.forEach(course => { %>
-          <div class="course-name">
-            course name:
-            <div class="data">
-              <%= course.name %>
-            </div>
+      <div class="row">
+        <div class="col-md-8">
+          <%- include('../includes/errorMessage.ejs'); %>
+          <h2 class="h1">
+            Your Going to buy:
+          </h2>
+          <div class="bought-course-data">
+            <% bought_courses.forEach(course => { %>
+              <div class="course-name">
+                course name:
+                <div class="data">
+                  <%= course.name %>
+                </div>
+              </div>
+            <% }) %>
+            <% bought_courses.forEach(course => { %>
+              <div class="course-price">
+                course price:
+                <% if (couponData) { %>
+                  <div class="data">
+                    &dollar;<%= course.price %>
+                    <del>&dollar;<%= course.oldPrice %></del>
+                  </div>
+                <% } else  { %>
+                  <div class="data">
+                    &dollar; <%= course.price %>
+                  </div>
+                <% } %>
+              </div>
+            <% }) %>
           </div>
-        <% }) %>
-        <% bought_courses.forEach(course => { %>
-          <div class="course-price">
-            course price:
-            <div class="data">
-              &dollar; <%= course.price %>
-            </div>
+
+          <div id="paypal-button-container">
+
           </div>
-        <% }) %>
-      </div>
 
-      <div id="paypal-button-container">
-
+        </div>
+        <div class="col-md-4">
+          <h3 class="h2">Have a coupon?</h3>
+          <form action="/apply-coupon" method="POST">
+            <div class="my-3 form-floating">
+              <input type="text" name="coupon_name" id="coupon_name" placeholder="Coupon" class="form-control"/>
+              <label for="coupon_name">Enter your coupon</label>
+            </div>
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+            <button class="btn" type="submit">
+              Apply coupon
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </section>

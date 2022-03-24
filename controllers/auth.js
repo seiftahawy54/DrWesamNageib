@@ -12,6 +12,7 @@ import {
   extractArrOfPrices,
   findCartCourses,
 } from "../utils/cart_helpers.js";
+import Discounts from "../models/discounts.js";
 
 const Environment =
   process.env.NODE_ENV === "production"
@@ -102,12 +103,39 @@ export const postLogin = async (req, res, next) => {
 };
 
 export const getRegister = (req, res, next) => {
-  res.render("auth/register", {
+  return res.render("auth/register", {
     title: "Register",
     path: "/register",
     validationErrors: [{}],
     user: {},
   });
+};
+
+export const postApplyCoupon = async (req, res, next) => {
+  const couponName = req.body.coupon_name;
+  const findingCoupon = await Discounts.findOne({
+    where: { coupon_name: couponName },
+  });
+
+  if (findingCoupon && findingCoupon.status) {
+    const updatingResult = await Users.update(
+      {
+        applied_coupon: findingCoupon.discount_id,
+      },
+      { where: { user_id: req.user.user_id } }
+    );
+
+    if (updatingResult) {
+      req.flash("success", "Coupon applied successfully!");
+      return res.redirect("/complete_payment");
+    } else {
+      req.flash("error", "Something happened!");
+      return res.redirect("/complete_payment");
+    }
+  } else {
+    req.flash("error", "Invalid Coupon!");
+    return res.redirect("/complete_payment");
+  }
 };
 
 export const postRegister = async (req, res, next) => {
@@ -183,18 +211,43 @@ export const getCompletePayment = async (req, res, next) => {
     if (Array.isArray(req.user.cart) && !cartIsEmpty(req.user.cart)) {
       const clientId = process.env.PAYPAL_CLIENT_ID;
       const coursesArr = await findCartCourses(req.user.cart);
-      const filteredCourses = coursesArr.map((course) => {
-        return {
-          name: course.name,
-          price: course.price,
-        };
-      });
+
+      let couponData = null,
+        filteredCourses = [];
+
+      if (typeof req.user.applied_coupon === "string") {
+        const findingCouponData = await Discounts.findByPk(
+          req.user.applied_coupon
+        );
+        if (findingCouponData) couponData = findingCouponData;
+        filteredCourses = coursesArr.map((course) => {
+          let price = course.price;
+
+          if (couponData) {
+            price *= 1 - 30 / 100;
+          }
+
+          return {
+            name: course.name,
+            oldPrice: course.price,
+            price,
+          };
+        });
+      } else {
+        filteredCourses = coursesArr.map((course) => {
+          return {
+            name: course.name,
+            price: course.price,
+          };
+        });
+      }
 
       res.render("auth/complete-payment", {
         title: "complete payment",
         path: "/complete-payment",
         bought_courses: filteredCourses,
         clientId,
+        couponData,
       });
     } else {
       req.flash("error", "Please select a course to buy!");
@@ -208,14 +261,41 @@ export const getCompletePayment = async (req, res, next) => {
 export const postCreateOrder = async (req, res, next) => {
   const request = new paypal.orders.OrdersCreateRequest();
   const coursesArr = await findCartCourses(req.user.cart);
-  const filteredCourses = coursesArr.map((course) => {
-    return {
-      name: course.name,
-      price: course.price,
-    };
-  });
-  const coursesPrice = extractArrOfPrices(filteredCourses);
+  let filteredCourses = null,
+    couponData;
+  //  = coursesArr.map((course) => {
+  // return {
+  //   name: course.name,
+  //   price: course.price,
+  // };
+  // });
 
+  if (typeof req.user.applied_coupon === "string") {
+    const findingCouponData = await Discounts.findByPk(req.user.applied_coupon);
+    if (findingCouponData) couponData = findingCouponData;
+    filteredCourses = coursesArr.map((course) => {
+      let price = course.price;
+
+      if (couponData) {
+        price *= 1 - 30 / 100;
+      }
+
+      return {
+        name: course.name,
+        oldPrice: course.price,
+        price,
+      };
+    });
+  } else {
+    filteredCourses = coursesArr.map((course) => {
+      return {
+        name: course.name,
+        price: course.price,
+      };
+    });
+  }
+
+  const coursesPrice = extractArrOfPrices(filteredCourses);
   const total = calcTotalPrice(coursesPrice);
 
   request.prefer("return=representation");
@@ -253,10 +333,6 @@ export const postSuccess = async (req, res, next) => {
     const rounds = req.user.cart.map(({ roundId }) => roundId);
     const courses = req.user.cart.map(({ courseId }) => courseId);
 
-    // const round = req.user.cart.find((roundId) => roundId);
-    // const course = req.user.cart.find((roundId) => roundId);
-    console.log(`post success: `, rounds, courses);
-
     Payment.create({
       user_id: req.user.user_id,
       course_id: courses[0],
@@ -273,11 +349,26 @@ export const postSuccess = async (req, res, next) => {
           { where: { round_id: rounds[0], course_id: courses[0] } }
         );
       })
-      .then((result) => {
+      .then(async (result) => {
+        if (typeof req.user.applied_coupon === "string") {
+          const findingAppliedCoupon = await Discounts.findByPk(
+            req.user.applied_coupon
+          );
+          if (findingAppliedCoupon) {
+            await Discounts.update(
+              {
+                discount_usage: findingAppliedCoupon.discount_usage + 1,
+              },
+              { where: { discount_id: req.user.applied_coupon } }
+            );
+          }
+        }
+
         return Users.update(
           {
             cart: [],
             current_round: rounds[0],
+            applied_coupon: null,
           },
           { where: { user_id: req.user.user_id } }
         );

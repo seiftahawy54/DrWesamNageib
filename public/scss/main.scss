@@ -14,15 +14,13 @@ $theme-colors: (
 }
 
 @font-face {
-  font-family: "Cookie";
-  src: url("/fonts/cookie/Cookie-Regular") format("truetype");
+  font-family: "cookie";
+  src: url("/fonts/cookie/Cookie-Regular.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Fira Sans";
-  src: url("/fonts/fira_sans/FiraSans-Thin.ttf") format("truetype"),
-    url("/fonts/fira_sans/FiraSans-Light.ttf") format("truetype"),
-    url("/fonts/fira_sans/FiraSans-Regular.ttf") format("truetype"),
+  src: url("/fonts/fira_sans/FiraSans-Regular.ttf") format("truetype"),
     url("/fonts/fira_sans/FiraSans-Bold.ttf") format("truetype");
 }
 

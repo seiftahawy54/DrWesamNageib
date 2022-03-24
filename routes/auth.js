@@ -9,6 +9,7 @@ import {
   postLogout,
   getSuccess,
   postSuccess,
+  postApplyCoupon,
 } from "../controllers/auth.js";
 import { Router } from "express";
 import { body } from "express-validator";
@@ -52,6 +53,11 @@ router
   .post("/success_payment", isUserAuthenticated, postSuccess)
   .get("/cancel_payment", isUserAuthenticated, getCancelled)
   .get("/complete_payment", isUserAuthenticated, getCompletePayment)
-  .post("/create-order", isUserAuthenticated, postCreateOrder);
+  .post("/create-order", isUserAuthenticated, postCreateOrder)
+  .post(
+    "/apply-coupon",
+    [body("coupon_name").isString().notEmpty()],
+    postApplyCoupon
+  );
 
 export { router as authRoutes };

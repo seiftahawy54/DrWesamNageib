@@ -60,6 +60,9 @@ const Users = sequelize.define("user", {
   certificate_id: {
     type: Sequelize.STRING,
   },
+  applied_coupon: {
+    type: Sequelize.STRING,
+  },
 });
 
 export { Users };
