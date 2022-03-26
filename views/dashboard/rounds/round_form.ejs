@@ -161,7 +161,7 @@
 
     unRoundedContainerDivElements.forEach(ele => {
       const regex = new RegExp(`${unRoundedSearchingInput.value}`)
-      if (ele.tagName === 'LABEL' && ele.textContent.search(regex) > 0) {
+      if (ele.tagName === 'LABEL' && ele.textContent.toLowerCase().search(regex) > 0) {
         filteredLabels.push(ele)
       }
     })
@@ -202,7 +202,7 @@
 
     roundedContainerDivElements.forEach(ele => {
       const regex = new RegExp(`${roundedSearchingInput.value}`)
-      if (ele.tagName === 'LABEL' && ele.textContent.search(regex) > 0) {
+      if (ele.tagName === 'LABEL' && ele.textContent.toLowerCase().search(regex) > 0) {
         filteredLabels.push(ele)
       }
     })
