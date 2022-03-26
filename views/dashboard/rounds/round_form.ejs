@@ -77,9 +77,16 @@
 
             <div class="users-selection-container">
               <% if (editMode === true) { %>
-                <h3>Current Round People</h3>
+                <div class="row">
+                  <div class="col-6">
+                    <h3>Current Round People</h3>
+                  </div>
+                  <div class="offset-2 col-4">
+                    <input type="text" id="searching-rounded" placeholder="Search in rounded" class="form-control">
+                  </div>
+                </div>
                 <div class="btn-group my-3 users-select-button" role="group"
-                     aria-label="Basic radio toggle button group">
+                     aria-label="Basic radio toggle button group" id="rounded-container">
                   <% roundUsers.forEach((user, index) => { %>
                     <input class="btn-check" checked="checked"
                            type="checkbox"
@@ -92,8 +99,15 @@
                   <% }) %>
                 </div>
                 <hr>
-                <h3>Un-rounded People</h3><br/>
-                <div class="btn-group my-3 users-select-button" role="group">
+                <div class="row">
+                  <div class="col-6">
+                    <h3>Un-rounded People</h3>
+                  </div>
+                  <div class="offset-2 col-4">
+                    <input type="text" id="searching-unrounded" placeholder="Search in un-rounded" class="form-control">
+                  </div>
+                </div>
+                <div class="btn-group my-3 users-select-button" role="group" id="unrounded-container">
                   <% usersArr.forEach((user, index) => { %>
                     <% if (user.current_round === null) { %>
                       <input class="btn-check" type="checkbox"
@@ -133,5 +147,89 @@
 
 
 <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+<script>
+  //=> Searching implementation part
+  //=>> UnRounded people
+  const unRoundedSearchingInput = document.getElementById("searching-unrounded")
+  const unRoundedContainerDiv = document.getElementById('unrounded-container')
+  const unRoundedContainerDivElements = document.querySelectorAll('#unrounded-container *')
+  const unRoundedElementsFirstState = unRoundedContainerDivElements;
+
+  unRoundedSearchingInput.addEventListener("keypress", (event) => {
+    let filteredLabels = [];
+    let filteredInputs = [];
+
+    unRoundedContainerDivElements.forEach(ele => {
+      const regex = new RegExp(`${unRoundedSearchingInput.value}`)
+      if (ele.tagName === 'LABEL' && ele.textContent.search(regex) > 0) {
+        filteredLabels.push(ele)
+      }
+    })
+
+    unRoundedElementsFirstState.forEach(ele => {
+      filteredLabels.forEach(label => {
+        if (ele.id === label.getAttribute('for') && ele.tagName === 'INPUT') {
+          filteredInputs.push(ele)
+        }
+      })
+    })
+
+    unRoundedContainerDiv.replaceChildren(...filteredInputs, ...filteredLabels)
+
+
+    if (filteredLabels.length === 0) {
+      unRoundedContainerDiv.insertAdjacentHTML('beforeend', `<div class="alert alert-danger">User didn't found</div>`)
+    }
+
+  });
+
+  unRoundedSearchingInput.addEventListener('keyup', () => {
+    if (unRoundedSearchingInput.value.length === 0) {
+      unRoundedContainerDiv.replaceChildren(...unRoundedElementsFirstState)
+    }
+  })
+
+
+  //=>> Rounded People
+  const roundedSearchingInput = document.getElementById("searching-rounded")
+  const roundedContainerDiv = document.getElementById('rounded-container')
+  const roundedContainerDivElements = document.querySelectorAll('#rounded-container *')
+  const roundedElementsFirstState = roundedContainerDivElements;
+
+  roundedSearchingInput.addEventListener("keypress", (event) => {
+    let filteredLabels = [];
+    let filteredInputs = [];
+
+    roundedContainerDivElements.forEach(ele => {
+      const regex = new RegExp(`${roundedSearchingInput.value}`)
+      if (ele.tagName === 'LABEL' && ele.textContent.search(regex) > 0) {
+        filteredLabels.push(ele)
+      }
+    })
+
+    roundedElementsFirstState.forEach(ele => {
+      filteredLabels.forEach(label => {
+        if (ele.id === label.getAttribute('for') && ele.tagName === 'INPUT') {
+          filteredInputs.push(ele)
+        }
+      })
+    })
+
+    roundedContainerDiv.replaceChildren(...filteredInputs, ...filteredLabels)
+
+    if (filteredLabels.length === 0) {
+      roundedContainerDiv.insertAdjacentHTML('beforeend', `<div class="alert alert-danger">User didn't found</div>`)
+    }
+
+  });
+
+  roundedSearchingInput.addEventListener('keyup', () => {
+    if (roundedSearchingInput.value.length === 0) {
+      roundedContainerDiv.replaceChildren(...roundedElementsFirstState)
+    }
+  })
+
+
+</script>
 <%- include("./rounds_scripts.ejs"); %>
 <%- include("../../includes/bottom_part.ejs"); %>

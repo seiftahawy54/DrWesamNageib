@@ -281,8 +281,6 @@ export const postCreateOrder = async (req, res, next) => {
 
       if (couponData) {
         price = price * (1 - findingCouponData.discount_percentage / 100);
-        console.log(`Coupon Data --#--`);
-        console.log(price);
       }
 
       return {

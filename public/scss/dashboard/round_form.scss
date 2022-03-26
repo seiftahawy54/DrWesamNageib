@@ -3,14 +3,11 @@ input[type="checkbox"] ~ label {
 }
 
 .users-selection-container {
-  overflow: scroll;
-
   .users-select-button {
+    overflow-y: scroll;
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-    //width: 100%;
-    //overflow: scroll;
 
     .btn-check:checked + .btn-outline-primary {
       color: #fff !important;

@@ -71,6 +71,8 @@ app.use(
 );
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use("/robots.txt", express.static(path.resolve("public", "robots.txt")));
+app.use("/sitemap.xml", express.static(path.resolve("public", "sitemap.xml")));
 app.use(express.static(path.resolve("public")));
 app.use(
   "/downloaded_images",

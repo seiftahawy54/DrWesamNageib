@@ -10,6 +10,7 @@ import path from "path";
 import { sequelize } from "../../utils/db.js";
 import { Rounds } from "../../models/rounds.js";
 import moment from "moment";
+import { validationResult } from "express-validator";
 
 export const getUserProfile = async (req, res, next) => {
   const roundLink = await sequelize.query(
@@ -181,9 +182,87 @@ export const postUpdateUserImg = async (req, res, next) => {
   }
 };
 
-export const getUpdateUserData = (req, res, next) => {
-  req.flash("error", "Not Implemented yet!");
-  res.redirect("/profile");
+export const getUpdateUserData = async (req, res, next) => {
+  try {
+    if (!"user_id" in req.user) {
+      req.flash("error", "Something happened");
+      return res.redirect("/profile");
+    }
+
+    return res.render("users/user_form", {
+      title: req.user.name,
+      path: "/profile",
+      user: req.user,
+      validationErrors: [],
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const postUpdateUserData = async (req, res, next) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const whatsappNo = req.body.whatsapp_number;
+  const specialization = req.body.specialization;
+  const errors = validationResult(req);
+  try {
+    console.log(`errors ===>`, errors.array());
+
+    if (!errors.isEmpty()) {
+      return res.render("users/user_form", {
+        title: req.user.name,
+        path: "/profile",
+        user: {
+          ...req.user,
+          name,
+          email,
+          whatsapp_no: whatsappNo,
+          specialization,
+        },
+        validationErrors: errors.array(),
+      });
+    }
+
+    const updatingUserData = await Users.update(
+      {
+        name,
+        email,
+        whatsapp_no: whatsappNo,
+        specialization,
+      },
+      { where: { user_id: req.user.user_id } }
+    );
+
+    console.log(`updating user data result ==> `, updatingUserData);
+
+    if (updatingUserData[0] === 1) {
+      req.flash("success", "Your Data is updated successfully");
+      return res.redirect("/profile");
+    } else {
+      req.flash(
+        "error",
+        "Something happened in our end, please contact the admins"
+      );
+      return res.redirect("/profile");
+    }
+  } catch (e) {
+    req.flash("error", e.message);
+    console.log(e);
+    return res.render("users/user_form", {
+      title: req.user.name,
+      path: "/profile",
+      user: {
+        ...req.user,
+        name,
+        email,
+        whatsapp_no: whatsappNo,
+        specialization,
+      },
+      validationErrors: errors.array(),
+      errorMessage: [e.errors[0].message],
+    });
+  }
 };
 
 export const getUserCertificate = async (req, res, next) => {
