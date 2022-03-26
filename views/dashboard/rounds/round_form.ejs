@@ -174,7 +174,13 @@
       })
     })
 
-    unRoundedContainerDiv.replaceChildren(...filteredInputs, ...filteredLabels)
+    const constructedStructure = [];
+    for (let i = 0; i < filteredLabels.length; i++) {
+      constructedStructure.push(filteredInputs[i])
+      constructedStructure.push(filteredLabels[i])
+    }
+
+    unRoundedContainerDiv.replaceChildren(...constructedStructure)
 
 
     if (filteredLabels.length === 0) {
@@ -215,7 +221,13 @@
       })
     })
 
-    roundedContainerDiv.replaceChildren(...filteredInputs, ...filteredLabels)
+    const constructedStructure = [];
+    for (let i = 0; i < filteredLabels.length; i++) {
+      constructedStructure.push(filteredInputs[i])
+      constructedStructure.push(filteredLabels[i])
+    }
+
+    roundedContainerDiv.replaceChildren(...constructedStructure)
 
     if (filteredLabels.length === 0) {
       roundedContainerDiv.insertAdjacentHTML('beforeend', `<div class="alert alert-danger">User didn't found</div>`)
