@@ -13,7 +13,7 @@
       <% if (editMode === true) { %>
       editor.setData(`<%- round.round_link %>`)
       <% } else { %>
-      <% if (round.round_link.length > 0) { %>
+      <% if (typeof round.round_link === 'string' && round.round_link.length > 0) { %>
       editor.setData(`<%- round.round_link %>`)
       <% } %>
       <% } %>

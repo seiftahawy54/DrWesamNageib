@@ -13,7 +13,7 @@
         grid-template-columns: repeat(<%= tableHead.length %>, 1fr) !important;
     }
 
-    td.<%= singleTableName.toLowerCase() %>-update a, td.<%= singleTableName.toLowerCase() %>-delete a {
+    td.<%= tableName.toLowerCase() %>-update a, td.<%= singleTableName.toLowerCase() %>-delete a {
         width: fit-content;
         margin: auto;
     }
@@ -38,13 +38,29 @@
         <div class="content text-center">
           <%- include("../includes/errorMessage.ejs"); %>
           <main class="content-header">
-            <div class="custom-head">
-              <h2><%= tableName %></h2>
-              <span></span>
+            <div class="container">
+              <div class="row">
+                <div class="custom-head col-2">
+                  <h2><%= tableName %></h2>
+                  <span></span>
+                </div>
+                <% if ('searching' in customStuff) { %>
+                  <form action="/dashboard/<%= tableName.toLowerCase() %>" method="get" class="offset-4 col-4">
+                    <input type="search" name="search" placeholder="Search"
+                           id="searching_users" class="form-control form-control"/>
+                  </form>
+                  <a class="btn btn-success col-2"
+                     href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
+                    Add new <%= tableName %>
+                  </a>
+                <% } else { %>
+                  <a class="btn btn-success offset-8 col-2"
+                     href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
+                    Add new <%= tableName %>
+                  </a>
+                <% } %>
+              </div>
             </div>
-            <a class="btn btn-success" href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
-              Add new <%= tableName %>
-            </a>
           </main>
           <div class="table-responsive">
             <table class="table align-middle ">
@@ -66,24 +82,24 @@
                     <%= index + 1 %>
                   </td>
                   <% Object.entries(data.item).forEach((item, index) => { %>
-                    <td class="<%- singleTableName %>-<%- item %>">
+                    <td class="<%- item[0] %>">
                       <%- item[1] %>
                     </td>
                   <% }) %>
-                  <td class="<%= singleTableName.toLowerCase() %>-update">
+                  <td class="<%= tableName.toLowerCase() %>-update">
                     <a
-                      href="/dashboard/<%= singleTableName.toLowerCase() %>/edit-<%= singleTableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
+                      href="/dashboard/<%= tableName.toLowerCase() %>/edit-<%= singleTableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
                       class="btn btn-success">
-                      Update <%= singleTableName %>
+                      Update <%= tableName %>
                     </a>
                   </td>
-                  <td class="<%= singleTableName.toLowerCase() %>-delete">
+                  <td class="<%= tableName.toLowerCase() %>-delete">
                     <form
-                      action="/dashboard/<%= singleTableName.toLowerCase() %>/delete-<%= singleTableName.toLowerCase() %>"
+                      action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= tableName.toLowerCase() %>"
                       method="post">
                       <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
                       <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey; %>">
-                      <button type="submit" class="btn btn-danger">Delete <%= singleTableName %></button>
+                      <button type="submit" class="btn btn-danger">Delete <%= tableName %></button>
                     </form>
                   </td>
                 </tr>
@@ -91,10 +107,16 @@
               </tbody>
             </table>
           </div>
+          <% if ('pagination' in customStuff) { %>
+            <%- include('../includes/pagination.ejs', { numberOfLinks: customStuff.pagination.numberOfLinks, activePage: customStuff.pagination.activePage }); %>
+          <% } %>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<script>
+</script>
 
 <%- include("../includes/bottom_part.ejs"); %>

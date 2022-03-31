@@ -86,7 +86,7 @@ app.use(
   expressSession({
     store: new SequelizeStore({
       db: sequelize,
-      // table: "sessions",
+      // table: "Sessions",
     }),
     secret: "app_secret",
     resave: false,
@@ -99,12 +99,12 @@ app.use(csrfProtection);
 app.use(flash());
 
 const accessLogStream = fs.createWriteStream(path.resolve("access.log"), {
-  flags: "a",
+  flags: "a+",
 });
 
 // app.use(helmet());
 app.use(compression());
-app.use(morgan("combined", { steam: accessLogStream }));
+app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticatedAdmin;

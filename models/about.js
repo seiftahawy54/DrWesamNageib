@@ -13,6 +13,16 @@ const Certificates = sequelize.define("about", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
 });
 
 export { Certificates };

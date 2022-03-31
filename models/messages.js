@@ -19,6 +19,16 @@ const Messages = sequelize.define("message", {
     allowNull: false,
   },
   message: Sequelize.STRING,
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
 });
 
 export { Messages };

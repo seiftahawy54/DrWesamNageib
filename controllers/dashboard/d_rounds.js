@@ -43,7 +43,15 @@ export const getRounds = async (req, res, next) => {
             usersForEachRound = "No users for this round.";
           }
 
+          if (
+            Array.isArray(usersForEachRound) &&
+            usersForEachRound.length > 10
+          ) {
+            usersForEachRound = usersForEachRound.slice(0, 10);
+          }
+
           return {
+            noOfUsers: users_ids.length,
             course_id: name,
             users_ids: usersForEachRound,
             round_date: moment(round_date).format("DD-MM-YYYY"),
@@ -81,6 +89,10 @@ export const getRounds = async (req, res, next) => {
           name: "rounds-numbers",
         },
         {
+          title: "No. Users",
+          name: "number-of-subscribers",
+        },
+        {
           title: "Round Course Name",
           name: "round-course-name",
         },
@@ -102,46 +114,8 @@ export const getRounds = async (req, res, next) => {
         },
       ],
       tableRows: finalData,
+      customStuff: {},
     });
-
-    /*const findingRounds = await Rounds.findAll();
-
-    const roundsCourses = await Promise.all(
-      findingRounds.map(async (round) => {
-        return await Courses.findByPk(round.course_id);
-      })
-    );
-
-    let usersForEachRound = await Promise.all(
-      findingRounds.map(({ users_ids }) => {
-        return Promise.all(
-          users_ids.map(async (user_id) => {
-            return await Users.findByPk(user_id);
-          })
-        );
-      })
-    );
-
-
-    usersForEachRound = usersForEachRound.map((usersPerRound) =>
-      usersPerRound.map((user) => {
-        if (user?.name) {
-          return user.name;
-        } else {
-          return "DELETED USER";
-        }
-      })
-    );
-
-    res.render("dashboard/rounds/rounds", {
-      title: "Rounds",
-      path: "/dashboard/rounds",
-      rounds: findingRounds,
-      courses: roundsCourses,
-      users: usersForEachRound,
-      numberOfLinks: 0,
-      moment: moment,
-    });*/
   } catch (e) {
     console.log(e);
     await errorRaiser(e, next);
@@ -227,12 +201,21 @@ export const getUpdateRound = async (req, res, next) => {
     const roundId = req.params.roundId;
     const findingRound = await Rounds.findByPk(roundId);
     const findingRoundCourse = await Courses.findByPk(findingRound.course_id);
-    const allUsers = await Users.findAll();
+    const allUsers = await Users.findAll({
+      where: { current_round: null, finished_course: null },
+    });
     const roundCourse = (
       await sequelize.query(`SELECT * FROM courses WHERE course_id=?`, {
         replacements: [findingRound.course_id],
+        type: "SELECT",
       })
-    )[0][0];
+    )[0];
+    const usersHavePreviousCourses = await sequelize.query(
+      `SELECT * FROM users WHERE char_length('finished_course') > 0`,
+      {
+        type: "SELECT",
+      }
+    );
 
     let findingRoundUsersArr = [];
 
@@ -256,6 +239,7 @@ export const getUpdateRound = async (req, res, next) => {
       validationErrors: [],
       roundUsers: findingRoundUsersArr,
       usersArr: allUsers,
+      usersWithPrevCourse: usersHavePreviousCourses,
       round: findingRound,
       moment,
     });
@@ -401,10 +385,10 @@ export const postDeleteRound = async (req, res, next) => {
 
     if (deletingResult.length === 0) {
       req.flash("success", "Round deleted successfully");
-      res.redirect("rounds");
+      res.redirect("/dashboard/rounds");
     } else {
       req.flash("error", "There's An error");
-      res.redirect("rounds");
+      res.redirect("/dashboard/rounds");
     }
   } catch (e) {
     await errorRaiser(e, next);

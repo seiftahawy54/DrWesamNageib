@@ -17,7 +17,7 @@ import {
   postDeleteUser,
   getUpdateUser,
   postUpdateUser,
-} from "../controllers/dashboard/d_users.js";
+} from "../controllers/dashboard/users/d_users.js";
 
 import {
   getCourses,
@@ -28,9 +28,9 @@ import {
   postUpdateCourse,
 } from "../controllers/dashboard/d_courses.js";
 
-import { getPaymentsPage } from "../controllers/dashboard/payments.js";
+import {getPaymentsPage} from "../controllers/dashboard/payments.js";
 import express from "express";
-import { body } from "express-validator";
+import {body} from "express-validator";
 import {
   getRounds,
   getStartNewRound,
@@ -39,7 +39,7 @@ import {
   postDeleteRound,
   postUpdateRound,
 } from "../controllers/dashboard/d_rounds.js";
-import { isAuthenticated } from "../middlewares/dashboard-auth.js";
+import {isAuthenticated} from "../middlewares/dashboard-auth.js";
 import {
   addNewDiscount,
   getDiscountsPage,
@@ -49,13 +49,17 @@ import {
   getUpdateDiscount,
 } from "../controllers/dashboard/discounts.js";
 
+import DashboardUsersRoutes from "./dashboard/users.js";
+import DashboardRoundsRoutes from "./dashboard/rounds.js";
+
 const router = express.Router();
 
 router
   .get("/", (req, res) => res.status(301).redirect("/dashboard/overview"))
   .get("/overview", getOverview)
+  .use("/users", DashboardUsersRoutes)
+  .use("/rounds", DashboardRoundsRoutes)
   .get("/courses", getCourses)
-  .get("/users", getUsers)
   .get("/messages", getMessages)
   .get("/add-new-course", getAddNewCourse)
   .post(
@@ -75,9 +79,6 @@ router
   .get("/edit-course/:courseId", getEditCourse)
   .post("/delete-course", postDeleteCourse)
   .post("/edit-course/:courseId", postUpdateCourse)
-  .post("/delete-user", postDeleteUser)
-  .get("/edit-user/:userId", getUpdateUser)
-  .post("/edit-user/:userId", postUpdateUser)
   .post("/delete-message", postDeleteMessage)
   .get("/opinions", getOpinionsPage)
   .get("/edit-opinion/:opinionId", getUpdateOpinion)
@@ -97,24 +98,7 @@ router
   .post("/add-new-about", postAddNewAbout)
   .get("/payments", getPaymentsPage)
   .post("/delete-certificate", postDeleteCertificate)
-  .get("/rounds", getRounds)
-  .get("/rounds/add-new-round", getStartNewRound)
-  .post(
-    "/rounds/add-new-round",
-    [
-      body("round_course").notEmpty(),
-      body("round_date").notEmpty(),
-      body("round_link").notEmpty(),
-    ],
-    postAddNewRound
-  )
-  .get("/round/edit-round/:roundId", getUpdateRound)
-  .post(
-    "/rounds/edit-round/:roundId",
-    [body("round_date").notEmpty()],
-    postUpdateRound
-  )
-  .post("/rounds/delete-round", postDeleteRound)
+
   .get("/discounts", getDiscountsPage)
   .get("/discounts/add-new-discounts", addNewDiscount)
   .post(
@@ -137,4 +121,4 @@ router
   )
   .post("/discount/delete-discount", postDeleteDiscount);
 
-export { router as dashboardRoutes };
+export {router as dashboardRoutes};

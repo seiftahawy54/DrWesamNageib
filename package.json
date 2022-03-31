@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.mjs $PORT",
+    "start": "nodemon app.mjs -e js,ejs $PORT",
     "web": "node app.mjs",
     "sass": "sass --watch ./public/scss/:./public/css/",
     "test": "jest"

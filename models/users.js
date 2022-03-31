@@ -63,6 +63,16 @@ const Users = sequelize.define("user", {
   applied_coupon: {
     type: Sequelize.STRING,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
 });
 
 export { Users };

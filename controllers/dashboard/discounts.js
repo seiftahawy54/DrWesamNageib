@@ -101,6 +101,7 @@ export const getDiscountsPage = async (req, res, next) => {
       ],
       tableRows: finalData,
       singleTableName: "discount",
+      customStuff: {},
     });
   } catch (e) {
     await errorRaiser(e, next);

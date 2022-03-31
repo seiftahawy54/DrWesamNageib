@@ -79,7 +79,9 @@
               <% if (editMode === true) { %>
                 <div class="row">
                   <div class="col-6">
-                    <h3>Current Round People</h3>
+                    <h3>Current Round People -
+                      <%- roundUsers.length %>
+                    </h3>
                   </div>
                   <div class="offset-2 col-4">
                     <input type="text" id="searching-rounded" placeholder="Search in rounded" class="form-control">
@@ -93,7 +95,7 @@
                            id="user-<%- index %>"
                            name="user-<%- index %>" value="<%= user.user_id %>">
                     <label class="btn-outlined btn-outline-primary" for="user-<%- index %>">
-                      <%- user.name %> <br/>
+                      <%- user.name %>
                       <%- user.email %>
                     </label>
                   <% }) %>
@@ -101,7 +103,7 @@
                 <hr>
                 <div class="row">
                   <div class="col-6">
-                    <h3>Un-rounded People</h3>
+                    <h3>Un-rounded People - <%- usersArr.length %></h3>
                   </div>
                   <div class="offset-2 col-4">
                     <input type="text" id="searching-unrounded" placeholder="Search in un-rounded" class="form-control">
@@ -114,7 +116,31 @@
                              id="user-<%- roundUsers.length + index %>"
                              name="user-<%- roundUsers.length + index %>" value="<%= user.user_id %>">
                       <label class="btn-outlined btn-outline-primary" for="user-<%- roundUsers.length + index %>">
-                        <%- user.name %> <br/>
+                        <%- user.name %>
+                        <%- user.email %>
+                      </label>
+                    <% } %>
+                  <% }) %>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-6">
+                    <h3>People with previous round - <%- usersWithPrevCourse.length %></h3>
+                  </div>
+                  <div class="offset-2 col-4">
+                    <input type="text" id="searching-old-users" placeholder="Search in previous users"
+                           class="form-control">
+                  </div>
+                </div>
+                <div class="btn-group my-3 users-select-button" role="group" id="prev-users-container">
+                  <% usersWithPrevCourse.forEach((user, index) => { %>
+                    <% if (user.current_round === null) { %>
+                      <input class="btn-check" type="checkbox"
+                             id="user-<%- usersArr.length + roundUsers.length + index %>"
+                             name="user-<%- usersArr.length + roundUsers.length + index %>" value="<%= user.user_id %>">
+                      <label class="btn-outlined btn-outline-primary"
+                             for="user-<%- usersArr.length + roundUsers.length + index %>">
+                        <%- user.name %>
                         <%- user.email %>
                       </label>
                     <% } %>
@@ -149,97 +175,61 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
 <script>
   //=> Searching implementation part
-  //=>> UnRounded people
-  const unRoundedSearchingInput = document.getElementById("searching-unrounded")
-  const unRoundedContainerDiv = document.getElementById('unrounded-container')
-  const unRoundedContainerDivElements = document.querySelectorAll('#unrounded-container *')
-  const unRoundedElementsFirstState = unRoundedContainerDivElements;
+  /*
 
-  unRoundedSearchingInput.addEventListener("keypress", (event) => {
-    let filteredLabels = [];
-    let filteredInputs = [];
+  */
 
-    unRoundedContainerDivElements.forEach(ele => {
-      const regex = new RegExp(`${unRoundedSearchingInput.value}`)
-      if (ele.tagName === 'LABEL' && ele.textContent.toLowerCase().search(regex) > 0) {
-        filteredLabels.push(ele)
-      }
-    })
+  const searchingInUsers = (searchingInputId, searchingContainer) => {
+    //=>> UnRounded people
+    const unRoundedSearchingInput = document.getElementById(searchingInputId)
+    const unRoundedContainerDiv = document.getElementById(searchingContainer)
+    const unRoundedContainerDivElements = document.querySelectorAll(`#${searchingContainer} *`)
+    const unRoundedElementsFirstState = unRoundedContainerDivElements;
 
-    unRoundedElementsFirstState.forEach(ele => {
-      filteredLabels.forEach(label => {
-        if (ele.id === label.getAttribute('for') && ele.tagName === 'INPUT') {
-          filteredInputs.push(ele)
+    unRoundedSearchingInput.addEventListener("keypress", (event) => {
+      let filteredLabels = [];
+      let filteredInputs = [];
+
+      unRoundedContainerDivElements.forEach(ele => {
+        const regex = new RegExp(`${unRoundedSearchingInput.value}`)
+        if (ele.tagName === 'LABEL' && ele.textContent.toLowerCase().search(regex) > 0) {
+          filteredLabels.push(ele)
         }
       })
-    })
 
-    const constructedStructure = [];
-    for (let i = 0; i < filteredLabels.length; i++) {
-      constructedStructure.push(filteredInputs[i])
-      constructedStructure.push(filteredLabels[i])
-    }
+      unRoundedElementsFirstState.forEach(ele => {
+        filteredLabels.forEach(label => {
+          if (ele.id === label.getAttribute('for') && ele.tagName === 'INPUT') {
+            filteredInputs.push(ele)
+          }
+        })
+      })
 
-    unRoundedContainerDiv.replaceChildren(...constructedStructure)
+      const constructedStructure = [];
+      for (let i = 0; i < filteredLabels.length; i++) {
+        constructedStructure.push(filteredInputs[i])
+        constructedStructure.push(filteredLabels[i])
+      }
 
-
-    if (filteredLabels.length === 0) {
-      unRoundedContainerDiv.insertAdjacentHTML('beforeend', `<div class="alert alert-danger">User didn't found</div>`)
-    }
-
-  });
-
-  unRoundedSearchingInput.addEventListener('keyup', () => {
-    if (unRoundedSearchingInput.value.length === 0) {
-      unRoundedContainerDiv.replaceChildren(...unRoundedElementsFirstState)
-    }
-  })
+      unRoundedContainerDiv.replaceChildren(...constructedStructure)
 
 
-  //=>> Rounded People
-  const roundedSearchingInput = document.getElementById("searching-rounded")
-  const roundedContainerDiv = document.getElementById('rounded-container')
-  const roundedContainerDivElements = document.querySelectorAll('#rounded-container *')
-  const roundedElementsFirstState = roundedContainerDivElements;
+      if (filteredLabels.length === 0) {
+        unRoundedContainerDiv.insertAdjacentHTML('beforeend', `<div class="alert alert-danger">User didn't found</div>`)
+      }
 
-  roundedSearchingInput.addEventListener("keypress", (event) => {
-    let filteredLabels = [];
-    let filteredInputs = [];
+    });
 
-    roundedContainerDivElements.forEach(ele => {
-      const regex = new RegExp(`${roundedSearchingInput.value}`)
-      if (ele.tagName === 'LABEL' && ele.textContent.toLowerCase().search(regex) > 0) {
-        filteredLabels.push(ele)
+    unRoundedSearchingInput.addEventListener('keyup', () => {
+      if (unRoundedSearchingInput.value.length === 0) {
+        unRoundedContainerDiv.replaceChildren(...unRoundedElementsFirstState)
       }
     })
+  };
 
-    roundedElementsFirstState.forEach(ele => {
-      filteredLabels.forEach(label => {
-        if (ele.id === label.getAttribute('for') && ele.tagName === 'INPUT') {
-          filteredInputs.push(ele)
-        }
-      })
-    })
-
-    const constructedStructure = [];
-    for (let i = 0; i < filteredLabels.length; i++) {
-      constructedStructure.push(filteredInputs[i])
-      constructedStructure.push(filteredLabels[i])
-    }
-
-    roundedContainerDiv.replaceChildren(...constructedStructure)
-
-    if (filteredLabels.length === 0) {
-      roundedContainerDiv.insertAdjacentHTML('beforeend', `<div class="alert alert-danger">User didn't found</div>`)
-    }
-
-  });
-
-  roundedSearchingInput.addEventListener('keyup', () => {
-    if (roundedSearchingInput.value.length === 0) {
-      roundedContainerDiv.replaceChildren(...roundedElementsFirstState)
-    }
-  })
+  searchingInUsers('searching-unrounded', 'unrounded-container')
+  searchingInUsers('searching-rounded', 'rounded-container')
+  searchingInUsers('searching-old-users', 'prev-users-container')
 
 
 </script>

@@ -36,6 +36,16 @@ const Rounds = sequelize.define("rounds", {
   finished: {
     type: Sequelize.BOOLEAN,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
 });
 
 export { Rounds };

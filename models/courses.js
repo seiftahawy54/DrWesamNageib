@@ -45,6 +45,16 @@ const Courses = sequelize.define("course", {
     allowNull: false,
     unique: true,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
 });
 
 export { Courses };

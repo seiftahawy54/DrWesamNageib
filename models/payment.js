@@ -27,6 +27,16 @@ const Payment = sequelize.define("payments", {
     type: Sequelize.JSON,
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
 });
 
 export { Payment };

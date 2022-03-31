@@ -14,6 +14,16 @@ const Errors = sequelize.define("error", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
 });
 
 export { Errors };

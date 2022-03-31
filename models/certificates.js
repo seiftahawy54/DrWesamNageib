@@ -23,6 +23,16 @@ const Certificates = sequelize.define("certificates", {
     defaultValue: sequelize.literal("current_timestamp"),
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: true,
+  },
 });
 
 export default Certificates;

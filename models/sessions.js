@@ -2,18 +2,28 @@ import Sequelize from "sequelize";
 import { sequelize } from "../utils/db.js";
 import { hashCreator } from "../utils/general_helper.js";
 
-const Courses = sequelize.define(
-  "sessions",
+const Sessions = sequelize.define(
+  "Sessions",
   {
     sid: {
-      type: DataTypes.STRING,
+      type: Sequelize.STRING,
       primaryKey: true,
     },
     expires: {
-      type: DataTypes.DATE,
+      type: String.DATE,
     },
     data: {
-      type: DataTypes.TEXT,
+      type: String.TEXT,
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: new Date(),
+      allowNull: true,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: new Date(),
+      allowNull: true,
     },
   },
   {
@@ -37,4 +47,4 @@ const Courses = sequelize.define(
   }
 );
 
-export { Courses };
+export { Sessions };
