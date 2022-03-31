@@ -19,7 +19,7 @@ const getUsers = async (req, res, next) => {
       pageNumber = 1;
     }
 
-    const MAX_NUMBER = 2;
+    const MAX_NUMBER = 10;
     const numberOfResults = await Users.findAndCountAll();
     let fetchingResults;
 
