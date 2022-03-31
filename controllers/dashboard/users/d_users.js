@@ -23,13 +23,12 @@ const getUsers = async (req, res, next) => {
     const numberOfResults = await Users.findAndCountAll();
     let fetchingResults;
 
-    if (typeof search === "string") {
+    if (typeof search === "string" && search.length > 0) {
       fetchingResults = await Users.findAll();
       const regex = new RegExp(`${search.toLowerCase()}`);
       fetchingResults = fetchingResults.filter(
         (user) => user.name.toLowerCase().search(regex) >= 0
       );
-      console.log(fetchingResults);
     } else {
       fetchingResults = await Users.findAll({
         limit: MAX_NUMBER,
@@ -210,8 +209,6 @@ const postUpdateUser = async (req, res, next) => {
       },
       { where: { round_id: currentUserRound.round_id } }
     );
-
-    console.log(`updating round users: `, updatingRoundsUsers);
   } else {
     updatingSingleUser = await Users.update(
       {
