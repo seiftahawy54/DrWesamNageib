@@ -19,7 +19,7 @@ const getUsers = async (req, res, next) => {
       pageNumber = 1;
     }
 
-    const MAX_NUMBER = 10;
+    const MAX_NUMBER = 2;
     const numberOfResults = await Users.findAndCountAll();
     let fetchingResults;
 
@@ -49,9 +49,7 @@ const getUsers = async (req, res, next) => {
           );
 
           if (roundResult.length > 0) {
-            user.current_round = moment(roundResult[0].round_date).format(
-              "DD-MM-YYYY"
-            );
+            user.current_round = moment(roundResult[0].round_date).format("ll");
           } else {
             user.current_round = "deleted round".toUpperCase();
           }
@@ -69,10 +67,11 @@ const getUsers = async (req, res, next) => {
 
     let data = await Promise.all(
       fetchingResults.map(
-        async ({ user_id, name, email, current_round, whatsapp_no }) => {
+        async ({ user_id, name, email, current_round, whatsapp_no }, index) => {
           allPrimaryKeys.push(user_id);
 
           return {
+            index: index + 1 + (pageNumber - 1) * MAX_NUMBER,
             email,
             name,
             current_round,
@@ -93,7 +92,9 @@ const getUsers = async (req, res, next) => {
 
     data.forEach((value, key) => {
       finalData.push({
-        data: data[key],
+        data: {
+          ...data[key],
+        },
         primaryKey: allPrimaryKeys[key],
         updateInputName: "userId",
       });
@@ -108,7 +109,7 @@ const getUsers = async (req, res, next) => {
       tableHead: [
         {
           title: "#",
-          name: "user-number",
+          name: "record-number",
         },
         {
           title: "User Email",
