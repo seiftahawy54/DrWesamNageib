@@ -39,4 +39,4 @@ const Payment = sequelize.define("payments", {
   },
 });
 
-export { Payment };
+export default Payment;

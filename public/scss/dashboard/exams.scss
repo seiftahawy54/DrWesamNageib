@@ -1,0 +1,30 @@
+.modal-footer {
+  justify-content: space-between;
+}
+
+.question {
+  position: relative;
+
+  .delete-exam {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+
+  .edit-exam {
+    position: absolute;
+    top: 0;
+    right: 45px;
+    cursor: pointer;
+
+    &:hover {
+      path {
+        color: var(--bs-success);
+      }
+    }
+  }
+
+}

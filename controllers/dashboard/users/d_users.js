@@ -1,5 +1,5 @@
-import { Users } from "../../../models/users.js";
-import { Rounds } from "../../../models/rounds.js";
+import { Users } from "../../../models/index.js";
+import { Rounds } from "../../../models/index.js";
 import { errorRaiser } from "../../../utils/error_raiser.js";
 import { sequelize } from "../../../utils/db.js";
 import moment from "moment";

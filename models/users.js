@@ -75,4 +75,4 @@ const Users = sequelize.define("user", {
   },
 });
 
-export { Users };
+export default Users;

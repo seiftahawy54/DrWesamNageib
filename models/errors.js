@@ -26,4 +26,4 @@ const Errors = sequelize.define("error", {
   },
 });
 
-export { Errors };
+export default Errors;

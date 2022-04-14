@@ -1,10 +1,10 @@
-import { Rounds } from "../../models/rounds.js";
-import { Courses } from "../../models/courses.js";
+import { Rounds } from "../../models/index.js";
+import { Courses } from "../../models/index.js";
+import { Users } from "../../models/index.js";
 import { errorRaiser } from "../../utils/error_raiser.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
 import { getCoursesFormCart } from "../../utils/cart_helpers.js";
-import { Users } from "../../models/users.js";
 import { QueryTypes, Sequelize } from "sequelize";
 import { sequelize } from "../../utils/db.js";
 import Discounts from "../../models/discounts.js";

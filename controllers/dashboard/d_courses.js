@@ -1,4 +1,4 @@
-import { Courses } from "../../models/courses.js";
+import { Courses } from "../../models/index.js";
 import { validationResult } from "express-validator";
 import {
   deleteFile,

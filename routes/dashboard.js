@@ -28,9 +28,9 @@ import {
   postUpdateCourse,
 } from "../controllers/dashboard/d_courses.js";
 
-import {getPaymentsPage} from "../controllers/dashboard/payments.js";
+import { getPaymentsPage } from "../controllers/dashboard/payments.js";
 import express from "express";
-import {body} from "express-validator";
+import { body } from "express-validator";
 import {
   getRounds,
   getStartNewRound,
@@ -39,7 +39,7 @@ import {
   postDeleteRound,
   postUpdateRound,
 } from "../controllers/dashboard/d_rounds.js";
-import {isAuthenticated} from "../middlewares/dashboard-auth.js";
+import { isAuthenticated } from "../middlewares/dashboard-auth.js";
 import {
   addNewDiscount,
   getDiscountsPage,
@@ -51,6 +51,7 @@ import {
 
 import DashboardUsersRoutes from "./dashboard/users.js";
 import DashboardRoundsRoutes from "./dashboard/rounds.js";
+import DashboardExamsRoutes from "./dashboard/exams.js";
 
 const router = express.Router();
 
@@ -59,6 +60,7 @@ router
   .get("/overview", getOverview)
   .use("/users", DashboardUsersRoutes)
   .use("/rounds", DashboardRoundsRoutes)
+  .use("/exams", DashboardExamsRoutes)
   .get("/courses", getCourses)
   .get("/messages", getMessages)
   .get("/add-new-course", getAddNewCourse)
@@ -121,4 +123,4 @@ router
   )
   .post("/discount/delete-discount", postDeleteDiscount);
 
-export {router as dashboardRoutes};
+export { router as dashboardRoutes };

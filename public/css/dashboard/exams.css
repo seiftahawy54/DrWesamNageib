@@ -1,0 +1,25 @@
+.modal-footer {
+  justify-content: space-between;
+}
+
+.question {
+  position: relative;
+}
+.question .delete-exam {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  z-index: 9999;
+}
+.question .edit-exam {
+  position: absolute;
+  top: 0;
+  right: 45px;
+  cursor: pointer;
+}
+.question .edit-exam:hover path {
+  color: var(--bs-success);
+}
+
+/*# sourceMappingURL=exams.css.map */

@@ -1,21 +1,22 @@
 import path from "path";
 import { validationResult } from "express-validator";
 // import { addMessage } from "../models/messages.js";
-import { Courses } from "../models/courses.js";
-import { Opinions } from "../models/opinions.js";
+import { Courses } from "../models/index.js";
+import { Opinions } from "../models/index.js";
+import { Messages } from "../models/index.js";
+import { Certificates } from "../models/index.js";
+import { Users } from "../models/index.js";
+
 import { errorRaiser } from "../utils/error_raiser.js";
 import {
   downloadingCoursesImages,
   getCertificatesImage,
   sortCourses,
 } from "../utils/general_helper.js";
-import { Messages } from "../models/messages.js";
-import { Certificates } from "../models/about.js";
 import fs from "fs";
-import { Users } from "../models/users.js";
 import moment from "moment";
 import { getSingleFile } from "../utils/aws.js";
-import { Rounds } from "../models/rounds.js";
+// import { Rounds } from "../models";
 import {
   calcTotalPrice,
   extractArrOfPrices,

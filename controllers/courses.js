@@ -5,9 +5,9 @@ import {
   extractError,
   sortCourses,
 } from "../utils/general_helper.js";
-import { Courses } from "../models/courses.js";
-import { Users } from "../models/users.js";
-import { Rounds } from "../models/rounds.js";
+import { Courses } from "../models/index.js";
+import { Users } from "../models/index.js";
+import { Rounds } from "../models/index.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
 import { cartIsEmpty, courseExistsInCart } from "../utils/cart_helpers.js";

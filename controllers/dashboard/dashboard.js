@@ -1,16 +1,17 @@
-import { Courses } from "../../models/courses.js";
-import { Users } from "../../models/users.js";
-import { Messages } from "../../models/messages.js";
-import { Opinions } from "../../models/opinions.js";
-import { Certificates } from "../../models/about.js";
 import { errorRaiser } from "../../utils/error_raiser.js";
 import { validationResult } from "express-validator";
 import moment from "moment";
 import { Sequelize } from "sequelize";
 import { uploadFile } from "../../utils/aws.js";
 import { getCertificatesImage } from "../../utils/general_helper.js";
-import { Rounds } from "../../models/rounds.js";
-import { Payment } from "../../models/payment.js";
+
+import { Rounds } from "../../models/index.js";
+import { Payment } from "../../models/index.js";
+import { Courses } from "../../models/index.js";
+import { Users } from "../../models/index.js";
+import { Messages } from "../../models/index.js";
+import { Opinions } from "../../models/index.js";
+import { Certificates } from "../../models/index.js";
 
 export const getOverview = async (req, res, next) => {
   const numberOfUsers = await Users.findAndCountAll();
@@ -236,7 +237,7 @@ export const postAddNewAbout = async (req, res, next) => {
         certificate_img: certificateImage.path,
       });
 
-      await uploadFile(
+      const uploadingResult = await uploadFile(
         certificateImage.path,
         certificateImage.filename,
         certificateImage.mimetype,
@@ -244,9 +245,11 @@ export const postAddNewAbout = async (req, res, next) => {
         next
       );
 
+      console.log(uploadingResult);
+
       if (addingResult) {
         console.log(`adding_result`, await addingResult);
-        res.redirect("about");
+        res.redirect("/dashboard/about");
       }
     } else {
       return res.render("dashboard/about_forms", {

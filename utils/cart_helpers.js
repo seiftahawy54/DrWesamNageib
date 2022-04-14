@@ -1,6 +1,6 @@
-import { Users } from "../models/users.js";
 import { errorRaiser } from "./error_raiser.js";
-import { Courses } from "../models/courses.js";
+import { Users } from "../models/index.js";
+import { Courses } from "../models/index.js";
 
 export const createEmptyCart = () => {};
 

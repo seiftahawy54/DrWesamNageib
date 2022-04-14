@@ -23,42 +23,16 @@
     </div>
     <div class="nav-links">
       <ul class="list-unstyled">
-        <li class="nav-item">
-          <a class="nav-link reset-link <%- path === "/dashboard/overview" ? "active" : ""; %>" aria-current="page"
-             href="/dashboard/overview">Overview</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link  reset-link <%- path === "/dashboard/users" ? "active" : ""; %>"
-             href="/dashboard/users">Users</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link  reset-link <%- path === "/dashboard/rounds" ? "active" : ""; %>"
-             href="/dashboard/rounds">Rounds</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link reset-link <%- path === "/dashboard/courses" ? "active" : ""; %>"
-             href="/dashboard/courses">Courses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link reset-link <%- path === "/dashboard/messages" ? "active" : ""; %>"
-             href="/dashboard/messages">Messages</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link reset-link <%- path === "/dashboard/opinions" ? "active" : ""; %>"
-             href="/dashboard/opinions">Opinions</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link reset-link <%- path === "/dashboard/payments" ? "active" : ""; %>"
-             href="/dashboard/payments">Payments</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link reset-link <%- path === "/dashboard/about" ? "active" : ""; %>"
-             href="/dashboard/about">About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link reset-link <%- path === "/dashboard/discounts" ? "active" : ""; %>"
-             href="/dashboard/discounts">Discounts</a>
-        </li>
+        <%- include('./navlinks', {routeName: "overview", linkText: "Overview" }); %>
+        <%- include('./navlinks', {routeName: "users", linkText: "Users" }); %>
+        <%- include('./navlinks', {routeName: "rounds", linkText: "Rounds" }); %>
+        <%- include('./navlinks', {routeName: "courses", linkText: "Courses" }); %>
+        <%- include('./navlinks', {routeName: "messages", linkText: "Messages" }); %>
+        <%- include('./navlinks', {routeName: "opinions", linkText: "Opinions" }); %>
+        <%- include('./navlinks', {routeName: "payments", linkText: "Payments" }); %>
+        <%- include('./navlinks', {routeName: "about", linkText: "About" }); %>
+        <%- include('./navlinks', {routeName: "discounts", linkText: "Discounts" }); %>
+        <%- include('./navlinks', {routeName: "exams", linkText: "Exams" }); %>
       </ul>
     </div>
   </section>

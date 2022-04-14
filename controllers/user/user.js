@@ -1,16 +1,17 @@
-import { Payment } from "../../models/payment.js";
-import { errorRaiser } from "../../utils/error_raiser.js";
-import { Courses } from "../../models/courses.js";
 // import { extractCart, getCoursesFormCart } from "../../utils/cart_helpers.js";
-import { Users } from "../../models/users.js";
 import { createCertificate, deleteFile } from "../../utils/general_helper.js";
 import { getSingleFile, uploadFile } from "../../utils/aws.js";
 import fs from "fs";
 import path from "path";
 import { sequelize } from "../../utils/db.js";
-import { Rounds } from "../../models/rounds.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
+
+import { Payment } from "../../models/index.js";
+import { Courses } from "../../models/index.js";
+import { Rounds } from "../../models/index.js";
+import { Users } from "../../models/index.js";
+import { errorRaiser } from "../../utils/error_raiser.js";
 
 export const getUserProfile = async (req, res, next) => {
   const roundLink = await sequelize.query(
