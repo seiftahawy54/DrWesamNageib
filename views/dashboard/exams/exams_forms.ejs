@@ -28,16 +28,37 @@
           <%- include('../../includes/errorMessage.ejs'); %>
           <form
             action="/dashboard/<% if (editMode === true) { %><%= "edit-exams/" + exam.exam_id %><% } else { %>add-new-exams<% } %>"
-            method="POST">
-
+            method="POST" id="exams-form"
+          <% if (editMode === true) { %> <%= `data-edit-mode=true` %>
+          <% } else { %> <%= `data-edit-mode=false ` %>
+            <% } %>
+          >
             <!-- Exam Status -->
-            <%- include('../../includes/check-input.ejs', {id: "exam-status", checked: editMode && exam.status ? exam.status : "", label: "Exam Status", name: "exam-status" } ); %>
 
-            <!-- Add New Exam Btn -->
+            <% if (editMode) { %>
+              <%- include('../../includes/check-input.ejs', {id: "exam-status", checked: exam.status, label: "Exam Status", name: "exam-status" } ); %>
+            <% } else { %>
+              <%- include('../../includes/check-input.ejs', {id: "exam-status", checked: false, label: "Exam Status", name: "exam-status" } ); %>
+            <% } %>
+
+            <!-- Exam Title -->
+
+            <%- include('../../includes/main-input.ejs', {
+            type: "text",
+            name: "exam-title",
+            placeholder: "exam title",
+            id: "exam-title",
+            label: "Exam Title",
+            value: 'title' in exam ? exam.title : "" ,
+            custom: ["required"] }); %>
+
+
+            <!-- (New | Updated) Questions Container -->
             <div class="questions-container" id="questions-container">
 
             </div>
 
+            <!-- Add New Exam Btn -->
             <div class="my-3">
               <button class="btn" id="add-new-exam" type="button">
                 Add new question
@@ -46,12 +67,16 @@
 
             <hr>
 
+            <% if (editMode) { %>
+              <input type="hidden" name="examId" value="<%= exam.exam_id %>" id="examId" />
+            <% } %>
+
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" id="csrfToken" />
             <button type="submit" class="btn submitBtn" id="submitBtn">
               <% if (editMode === true) { %>
-                <%= "Update exam"; %>
+                <%= "Update exam" %>
               <% } else { %>
-                <%= "Add new exam"; %>
+                <%= "Add new exam" %>
               <% } %>
             </button>
           </form>
@@ -61,6 +86,11 @@
   </div>
 </section>
 
+<% if (editMode) { %>
+  <span class="d-none" id="editingInputExams">
+  <%- exam.questions %>
+</span>
+<% } %>
 
 <button type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
   Launch demo modal
@@ -72,7 +102,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">
-          Add new exam
+          Add new question
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -132,7 +162,7 @@
 </div>
 
 
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/js/axios.min.js" async></script>
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/dashboard/exams_forms.js"></script>
 

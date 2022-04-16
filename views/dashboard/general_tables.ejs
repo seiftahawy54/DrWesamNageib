@@ -1,8 +1,17 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
-<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
 <link rel="stylesheet" href="/css/dashboard/courses.css">
-<link rel="stylesheet" href="/css/dashboard/about.css"/>
+<link rel="stylesheet" href="/css/dashboard/about.css" />
+
+<% if ("copyLink" in customStuff) { %>
+  <script>
+    function copyExamLink(link) {
+      navigator.clipboard.writeText(`${window.origin}${link.textContent}`)
+      alert("Exam Link Copied")
+    }
+  </script>
+<% } %>
 
 <style>
     .table-head {
@@ -44,10 +53,10 @@
                   <h2><%= tableName %></h2>
                   <span></span>
                 </div>
-                <% if ('searching' in customStuff) { %>
+                <% if ("searching" in customStuff) { %>
                   <form action="/dashboard/<%= tableName.toLowerCase() %>" method="get" class="offset-4 col-4">
                     <input type="search" name="search" placeholder="Search"
-                           id="searching_users" class="form-control form-control"/>
+                           id="searching_users" class="form-control form-control" />
                   </form>
                   <a class="btn btn-success col-2"
                      href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
@@ -75,16 +84,16 @@
               <% tableRows.forEach(({
                                       data,
                                       primaryKey,
-                                      updateInputName
+                                      updateInputName,
                                     }, index) => { %>
                 <tr>
-                  <% if (!('pagination' in customStuff)) { %>
+                  <% if (!("pagination" in customStuff)) { %>
                     <td class="table-active">
                       <%= index + 1 %>
                     </td>
                   <% } %>
                   <% Object.entries(data.item).forEach((item, index) => { %>
-                    <td class="<%- item[0].toLowerCase() %> <%- item[0] === 'index' ? "table-active" : "" %>">
+                    <td class="<%- item[0].toLowerCase() %> <%- item[0] === "index" ? "table-active" : "" %>">
                       <%- item[1] %>
                     </td>
                   <% }) %>
@@ -99,17 +108,17 @@
                     <form
                       action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= tableName.toLowerCase() %>"
                       method="post">
-                      <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
-                      <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey; %>">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                      <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey %>">
                       <button type="submit" class="btn btn-danger">Delete <%= tableName %></button>
                     </form>
                   </td>
                 </tr>
-              <% }); %>
+              <% }) %>
               </tbody>
             </table>
           </div>
-          <% if ('pagination' in customStuff) { %>
+          <% if ("pagination" in customStuff) { %>
             <%- include('../includes/pagination.ejs', { numberOfLinks: customStuff.pagination.numberOfLinks, activePage: customStuff.pagination.activePage }); %>
           <% } %>
         </div>

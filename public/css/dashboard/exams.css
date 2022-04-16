@@ -4,18 +4,39 @@
 
 .question {
   position: relative;
+  border: 1px solid #545ee3;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.25s ease-in-out;
+}
+.question:hover {
+  box-shadow: 0 0 10px rgba(84, 94, 227, 0.5);
+}
+.question.invalid {
+  border-color: var(--bs-danger);
+}
+.question.invalid:hover {
+  box-shadow: 0 0 10px rgba(var(--bs-danger), 0.5);
+}
+.question .question-number {
+  display: flex;
+  width: 55px;
+  border-radius: 50%;
+  font-size: 18px;
 }
 .question .delete-exam {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 10px;
+  right: 10px;
   cursor: pointer;
   z-index: 9999;
 }
 .question .edit-exam {
   position: absolute;
-  top: 0;
-  right: 45px;
+  top: 10px;
+  right: 55px;
   cursor: pointer;
 }
 .question .edit-exam:hover path {

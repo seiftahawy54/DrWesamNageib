@@ -1,35 +1,45 @@
-import { Exams } from "../../../models/index.js"
-import { errorRaiser } from "../../../utils/error_raiser.js"
-import { validationResult } from "express-validator"
+import { Exams } from "../../../models/index.js";
+import { errorRaiser } from "../../../utils/error_raiser.js";
+import { validationResult } from "express-validator";
 
 export const getAllExams = async (req, res, next) => {
   try {
-    const allExams = await Exams.findAll()
+    const allExams = await Exams.findAll();
 
-    const allPrimaryKeys = []
+    const allPrimaryKeys = [];
 
     let data = await Promise.all(
       allExams.map(
-        async ({ exam_id, status, users_ids, questions, replies }, index) => {
-          allPrimaryKeys.push(exam_id)
+        async (
+          { exam_id, status, users_ids, questions, replies, title },
+          index
+        ) => {
+          allPrimaryKeys.push(exam_id);
+
+          // exam_id = `<a href="/exams/${exam_id}" onclick="copyExamLink(this)">/exams/${exam_id}</a>`
+          exam_id = `<span class="link-primary " onclick="copyExamLink(this)" style="cursor: pointer;">/exam/${exam_id}</span>`;
+          status = status ? "WORKING" : "CLOSED";
+          replies =
+            replies === 0 || !replies ? "Currently no replies." : replies;
 
           return {
-            exam_id,
+            title,
             status,
+            exam_id,
             replies,
-          }
-        },
-      ),
-    )
+          };
+        }
+      )
+    );
 
     data = Object.entries(data).map(([key, value], index) => {
       return {
         item: value,
         entry: key,
-      }
-    })
+      };
+    });
 
-    let finalData = []
+    let finalData = [];
 
     data.forEach((value, key) => {
       finalData.push({
@@ -38,8 +48,8 @@ export const getAllExams = async (req, res, next) => {
         },
         primaryKey: allPrimaryKeys[key],
         updateInputName: "examsId",
-      })
-    })
+      });
+    });
 
     return res.render("dashboard/exams/exams", {
       title: "Exams",
@@ -51,6 +61,10 @@ export const getAllExams = async (req, res, next) => {
         {
           title: "#",
           name: "exam-number",
+        },
+        {
+          title: "Exam Title",
+          name: "exam-title",
         },
         {
           title: "Exam Status",
@@ -74,12 +88,14 @@ export const getAllExams = async (req, res, next) => {
         },
       ],
       tableRows: finalData,
-      customStuff: {},
-    })
+      customStuff: {
+        copyLink: true,
+      },
+    });
   } catch (e) {
-    await errorRaiser(e, next)
+    await errorRaiser(e, next);
   }
-}
+};
 
 export const getAddNewExam = async (req, res, next) => {
   try {
@@ -88,29 +104,103 @@ export const getAddNewExam = async (req, res, next) => {
       path: "/dashboard/exams",
       exam: {},
       editMode: false,
-    })
+    });
   } catch (e) {
-    await errorRaiser(e, next)
+    await errorRaiser(e, next);
   }
-}
+};
 
 export const startNewExam = async (req, res, next) => {
   try {
-    const body = req.body
-    const errors = validationResult(req)
+    const questions = req.body.questions;
+    const examTitle = req.body.examTitle;
+    const examStatus = req.body.examStatus;
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({
-        body,
         errors,
-      })
+      });
     }
 
-    return res.status(201).json({
-      body,
-      errors,
-    })
+    const addingExam = await Exams.create({
+      status: examStatus,
+      questions,
+      title: examTitle,
+    });
 
+    return res.status(201).json({
+      questions,
+    });
   } catch (e) {
-    await errorRaiser(e, next)
+    await errorRaiser(e, next);
   }
-}
+};
+
+export const postDeleteExam = async (req, res, next) => {
+  try {
+    const examId = req.body.examsId;
+
+    const deletionResult = await (await Exams.findByPk(examId)).destroy();
+
+    if (deletionResult.length === 0) {
+      req.flash("success", "Exam Deleted successfully");
+      res.redirect("/dashboard/exams");
+    } else {
+      req.flash("error", "Something happened!");
+      res.redirect("/dashboard/exams");
+    }
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getUpdateExam = async (req, res, next) => {
+  try {
+    const examId = req.params.examId;
+    const exam = await Exams.findByPk(examId);
+
+    exam.questions = JSON.stringify(exam.questions);
+
+    res.render("dashboard/exams/exams_forms", {
+      title: "Exams",
+      path: "/dashboard/exams",
+      exam,
+      editMode: true,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const postUpdateExam = async (req, res, next) => {
+  try {
+    const examId = req.body.examId;
+    const questions = req.body.questions;
+    const examTitle = req.body.examTitle;
+    const examStatus = req.body.examStatus;
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        errors,
+      });
+    }
+
+    const updatingExam = await Exams.update(
+      {
+        status: examStatus,
+        questions,
+        title: examTitle,
+      },
+      { where: { exam_id: examId } }
+    );
+
+    console.log(updatingExam);
+
+    res.status(201).json({
+      questions,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};

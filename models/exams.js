@@ -9,6 +9,9 @@ const Exams = sequelize.define("exam", {
     primaryKey: true,
     defaultValue: UUIDV4,
   },
+  title: {
+    type: Sequelize.STRING,
+  },
   status: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
