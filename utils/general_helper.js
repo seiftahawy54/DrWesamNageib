@@ -260,3 +260,19 @@ export const downloadingCoursesImages = (courses) => {
     resolve(true);
   });
 };
+
+export const calculateExamsGrades = (reply, exam) => {
+  let totalGrades = 0;
+
+  reply.forEach((question, index) => {
+    const questionNumber = Object.keys(question)[0];
+    const userAnswer = question[`${questionNumber}`];
+
+    if (
+      exam.questions[index].correctAnswer.toString() === userAnswer.toString()
+    )
+      totalGrades += 1;
+  });
+
+  return totalGrades;
+};

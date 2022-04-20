@@ -1,4 +1,4 @@
-import { Exams } from "../../../models/index.js";
+import { Exams, Users } from "../../../models/index.js";
 import { errorRaiser } from "../../../utils/error_raiser.js";
 import { validationResult } from "express-validator";
 
@@ -16,11 +16,25 @@ export const getAllExams = async (req, res, next) => {
         ) => {
           allPrimaryKeys.push(exam_id);
 
-          // exam_id = `<a href="/exams/${exam_id}" onclick="copyExamLink(this)">/exams/${exam_id}</a>`
           exam_id = `<span class="link-primary " onclick="copyExamLink(this)" style="cursor: pointer;">/exam/${exam_id}</span>`;
           status = status ? "WORKING" : "CLOSED";
-          replies =
-            replies === 0 || !replies ? "Currently no replies." : replies;
+          if (replies === 0 || !replies) {
+            replies = "No replies.";
+          } else {
+            replies = await Promise.all(
+              replies.map(async ({ user_id, grade }) => {
+                const user_name = await Users.findByPk(user_id, {
+                  attributes: ["name"],
+                });
+                console.log(user_name);
+                return `<span>${user_name.name}: ${grade} </span>`;
+                // return `<span class="chip">${user_id.slice(
+                //   0,
+                //   10
+                // )}, ${grade}</span>`;
+              })
+            );
+          }
 
           return {
             title,

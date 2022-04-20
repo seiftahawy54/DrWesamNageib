@@ -40,6 +40,7 @@
   width: 50px;
   height: 2px;
   background-color: #545ee3;
+  margin-inline: auto;
 }
 .login-form .content-container form,
 .register-form .content-container form,

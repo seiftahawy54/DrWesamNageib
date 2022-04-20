@@ -4,6 +4,9 @@ import {
   getUpdateUserData,
   getUserCertificate,
   postUpdateUserData,
+  getPerformExam,
+  postPerformExam,
+  getSubmittedExam,
 } from "../controllers/user/user.js";
 import { Router } from "express";
 import { body } from "express-validator";
@@ -23,6 +26,18 @@ router
     ],
     postUpdateUserData
   )
-  .get("/certificates/:courseId", getUserCertificate);
+  .get("/certificates/:courseId", getUserCertificate)
+  .get("/exam/submitted-exam", getSubmittedExam)
+  .get("/exam/:examId", getPerformExam)
+  .post(
+    "/exam",
+    [
+      body("userAnswers").isArray().isLength({ min: 1 }),
+      body("userAnswers.*").isObject(),
+      body("userAnswers.*.*").isNumeric({ no_symbols: true }),
+      body("examId").isString().isLength({ min: 36, max: 36 }),
+    ],
+    postPerformExam
+  );
 
 export { router as userRoutes };

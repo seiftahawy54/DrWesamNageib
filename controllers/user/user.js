@@ -1,5 +1,9 @@
 // import { extractCart, getCoursesFormCart } from "../../utils/cart_helpers.js";
-import { createCertificate, deleteFile } from "../../utils/general_helper.js";
+import {
+  calculateExamsGrades,
+  createCertificate,
+  deleteFile,
+} from "../../utils/general_helper.js";
 import { getSingleFile, uploadFile } from "../../utils/aws.js";
 import fs from "fs";
 import path from "path";
@@ -7,10 +11,7 @@ import { sequelize } from "../../utils/db.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
 
-import { Payment } from "../../models/index.js";
-import { Courses } from "../../models/index.js";
-import { Rounds } from "../../models/index.js";
-import { Users } from "../../models/index.js";
+import { Exams, Payment, Courses, Rounds, Users } from "../../models/index.js";
 import { errorRaiser } from "../../utils/error_raiser.js";
 
 export const getUserProfile = async (req, res, next) => {
@@ -19,10 +20,44 @@ export const getUserProfile = async (req, res, next) => {
     { replacements: [req.user.user_id], type: "SELECT" }
   );
 
+  /*
+  ({ user_id, grade }) => {
+    if (req.user.user_id === user_id) {
+      return grade;
+    }
+  }
+  */
+  const allExams = await Exams.findAll({
+    attributes: ["title", "replies", "questions"],
+  });
+
+  let findingUsersExams = allExams.map(({ replies, title, questions }) => {
+    if (Array.isArray(replies)) {
+      return {
+        title,
+        questions: questions.length,
+        replies: replies.map(({ user_id, grade }) => {
+          if (req.user.user_id === user_id) {
+            return grade;
+          }
+        }),
+      };
+    }
+  });
+
+  findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
+
+  console.log(findingUsersExams);
+
+  // let currentUserGrades = findingUsersExams.map(({ title, replies }) => {
+  //
+  // });
+
   let round = "",
     finishedCourseName = "",
     courseId = "",
-    roundDate = "";
+    roundDate = "",
+    userGrades = findingUsersExams;
 
   if (
     Array.isArray(roundLink) &&
@@ -30,19 +65,6 @@ export const getUserProfile = async (req, res, next) => {
     "round_link" in roundLink[0]
   ) {
     round = roundLink[0].round_link;
-
-    // if (typeof req.user.finished_course === "string") {
-    //   let courseResult = await sequelize.query(
-    //     `select course.name, course.course_id from rounds inner join courses course on rounds.round_id = ? and course.course_id = ?`,
-    //     {
-    //       replacements: [req.user.finished_course, roundLink[0].course_id],
-    //       type: "SELECT",
-    //     }
-    //   );
-    //
-    //   finishedCourseName = courseResult[0].name;
-    //   courseId = roundLink[0].course_id;
-    // }
   }
 
   if (typeof req.user.finished_course === "string") {
@@ -79,6 +101,7 @@ export const getUserProfile = async (req, res, next) => {
             user: req.user,
             roundLink: "",
             courseName: "",
+            userGrades,
             bought_courses: [],
             validationError: {},
             moment,
@@ -110,6 +133,7 @@ export const getUserProfile = async (req, res, next) => {
         roundLink: round,
         courseName: finishedCourseName,
         courseId: courseId,
+        userGrades,
         bought_courses: findingBoughtCourses,
         validationError: {},
         moment,
@@ -125,6 +149,7 @@ export const getUserProfile = async (req, res, next) => {
         courseName: finishedCourseName,
         courseId: courseId,
         roundLink: round,
+        userGrades,
         validationError: {},
         moment,
         roundDate,
@@ -143,6 +168,7 @@ export const getUserProfile = async (req, res, next) => {
       courseName: finishedCourseName,
       courseId: courseId,
       bought_courses: [],
+      userGrades,
       validationError: {},
       moment,
       roundDate,
@@ -299,4 +325,91 @@ export const getUserCertificate = async (req, res, next) => {
 
   certificateDoc.certificateObject.pipe(res);
   certificateDoc.certificateObject.end();
+};
+
+export const getPerformExam = async (req, res, next) => {
+  try {
+    const examId = req.params.examId;
+    const findingExam = await Exams.findByPk(examId);
+    let performedBefore = false;
+
+    if (findingExam) {
+      for (let reply in findingExam.replies) {
+        console.log(findingExam.replies[reply]);
+        if (findingExam.replies[reply].user_id === req.user.user_id) {
+          performedBefore = true;
+          req.flash("error", "Exam is already performed!");
+          return res.redirect("/profile");
+        }
+      }
+
+      return res.status(200).render("users/exam", {
+        title: findingExam.title,
+        path: "/profile",
+        exam: findingExam,
+      });
+    }
+
+    req.flash("error", "Please check the link!");
+    return res.redirect("/profile");
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const postPerformExam = async (req, res, next) => {
+  try {
+    const userAnswers = req.body.userAnswers;
+    const examId = req.body.examId;
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      console.log(errors.array());
+      return res.status(422).json({
+        userAnswers,
+        errors,
+      });
+    }
+
+    const exam = await Exams.findByPk(examId);
+
+    if (exam) {
+      const grade = calculateExamsGrades(userAnswers, exam);
+      const examData = await Exams.findByPk(examId);
+
+      let newReplies,
+        userData = { user_id: req.user.user_id, grade };
+
+      if (!exam.replies && !Array.isArray(exam.replies)) {
+        newReplies = [userData];
+      } else {
+        newReplies = [...examData?.replies, userData];
+      }
+
+      const updatingReplies = await Exams.update(
+        {
+          replies: newReplies,
+        },
+        { where: { exam_id: examId } }
+      );
+
+      return res.status(201).json({
+        grade,
+      });
+    } else {
+      return res.status(404).json({
+        userAnswers,
+        examId,
+      });
+    }
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getSubmittedExam = async (req, res, next) => {
+  res.render("users/exam-result", {
+    title: "Your exam has submitted successfully",
+    path: "/profile",
+  });
 };

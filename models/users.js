@@ -63,6 +63,9 @@ const Users = sequelize.define("user", {
   applied_coupon: {
     type: Sequelize.STRING,
   },
+  performed_exams: {
+    type: Sequelize.ARRAY(Sequelize.STRING),
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),

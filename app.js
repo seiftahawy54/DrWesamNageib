@@ -147,7 +147,6 @@ app.use(isUserAuthenticated, userRoutes);
 Payment.hasOne(Courses, { foreignKey: "course_id", through: "course_id" });
 Payment.hasOne(Users, { foreignKey: "user_id", through: "user_id" });
 Payment.hasOne(Rounds, { foreignKey: "round_id", through: "round_id" });
-
 Users.hasOne(Rounds, { through: "current_round" });
 Rounds.belongsToMany(Users, { through: "users_ids" });
 

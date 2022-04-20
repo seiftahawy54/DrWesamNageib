@@ -4,15 +4,6 @@
 <link rel="stylesheet" href="/css/dashboard/courses.css">
 <link rel="stylesheet" href="/css/dashboard/about.css" />
 
-<% if ("copyLink" in customStuff) { %>
-  <script>
-    function copyExamLink(link) {
-      navigator.clipboard.writeText(`${window.origin}${link.textContent}`)
-      alert("Exam Link Copied")
-    }
-  </script>
-<% } %>
-
 <style>
     .table-head {
         grid-template-columns: repeat(<%= tableHead.length %>, 1fr) !important;
@@ -31,6 +22,19 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         padding: 10px 20px;
+    }
+
+    span.chip {
+        border-radius: 30px;
+        background-color: var(--bs-primary);
+        color: #fff;
+        padding: 0 0.6em;
+        display: block;
+    }
+
+    td.replies {
+        /*display: grid;*/
+        /*grid-template-columns: auto auto auto;*/
     }
 
 </style>
@@ -127,7 +131,41 @@
   </div>
 </section>
 
+<% if ("copyLink" in customStuff) { %>
+  <button type="button" class="btn btn-primary d-none" id='copyAlert' data-bs-toggle="modal"
+          data-bs-target="#exampleModal">
+    Copy Modal
+  </button>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Link Copied</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Exam Link has been copied!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
 <script>
+  <% if ("copyLink" in customStuff) { %>
+  const showCopyModal = document.getElementById("copyAlert")
+  console.log(showCopyModal)
+
+  function copyExamLink(link) {
+    navigator.clipboard.writeText(`${window.origin}${link.textContent}`)
+    console.log(showCopyModal)
+    showCopyModal.click()
+  }
+  <% } %>
 </script>
 
 <%- include("../includes/bottom_part.ejs"); %>
