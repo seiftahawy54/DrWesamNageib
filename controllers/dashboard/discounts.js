@@ -1,6 +1,6 @@
 import { errorRaiser } from "../../utils/error_raiser.js";
 import Discounts from "../../models/discounts.js";
-import { Courses } from "../../models/courses.js";
+import { Courses } from "../../models/index.js";
 import { validationResult } from "express-validator";
 
 export const getDiscountsPage = async (req, res, next) => {

@@ -48,4 +48,4 @@ const Rounds = sequelize.define("rounds", {
   },
 });
 
-export { Rounds };
+export default Rounds;

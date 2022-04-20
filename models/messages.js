@@ -31,7 +31,7 @@ const Messages = sequelize.define("message", {
   },
 });
 
-export { Messages };
+export default Messages;
 
 /*
 import db from "../utils/db.js";

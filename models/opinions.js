@@ -44,4 +44,4 @@ const Opinions = sequelize.define("opinions", {
   },
 });
 
-export { Opinions };
+export default Opinions;

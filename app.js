@@ -26,11 +26,11 @@ import { dashboardRoutes } from "./routes/dashboard.js";
 import { isAuthenticated } from "./middlewares/dashboard-auth.js";
 import { errorRaiser } from "./utils/error_raiser.js";
 import { userRoutes } from "./routes/user.js";
-import { Users } from "./models/users.js";
 import { getSingleFile } from "./utils/aws.js";
-import { Rounds } from "./models/rounds.js";
-import { Payment } from "./models/payment.js";
-import { Courses } from "./models/courses.js";
+import { Users } from "./models/index.js";
+import { Rounds } from "./models/index.js";
+import { Payment } from "./models/index.js";
+import { Courses } from "./models/index.js";
 import { isUserAuthenticated } from "./middlewares/user-auth.js";
 
 dotenv.config();
@@ -59,6 +59,7 @@ const fileFilter = (req, file, cb) => {
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -146,7 +147,6 @@ app.use(isUserAuthenticated, userRoutes);
 Payment.hasOne(Courses, { foreignKey: "course_id", through: "course_id" });
 Payment.hasOne(Users, { foreignKey: "user_id", through: "user_id" });
 Payment.hasOne(Rounds, { foreignKey: "round_id", through: "round_id" });
-
 Users.hasOne(Rounds, { through: "current_round" });
 Rounds.belongsToMany(Users, { through: "users_ids" });
 

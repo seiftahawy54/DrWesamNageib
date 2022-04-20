@@ -27,7 +27,6 @@
     }
   }
 
-
   form {
     display: flex;
     width: 100%;
@@ -51,6 +50,12 @@
     .bought_courses {
       display: grid;
       grid-template-columns: 1fr 1fr;
+
+      .grades {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        text-align: center;
+      }
 
       span {
         border: 1px solid vars.$main_color;

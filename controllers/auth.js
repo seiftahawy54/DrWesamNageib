@@ -1,18 +1,19 @@
 import paypal from "@paypal/checkout-server-sdk";
 import { validationResult } from "express-validator";
-import { Courses } from "../models/courses.js";
+// import { Courses } from "../models";
 import { errorRaiser } from "../utils/error_raiser.js";
-import { Users } from "../models/users.js";
-import { Payment } from "../models/payment.js";
+import { Users } from "../models/index.js";
+import { Payment } from "../models/index.js";
+import { Rounds } from "../models/index.js";
+import { Discounts } from "../models/index.js";
+
 import bcrypt from "bcrypt";
-import { Rounds } from "../models/rounds.js";
 import {
   calcTotalPrice,
   cartIsEmpty,
   extractArrOfPrices,
   findCartCourses,
 } from "../utils/cart_helpers.js";
-import Discounts from "../models/discounts.js";
 
 const Environment =
   process.env.NODE_ENV === "production"
@@ -34,7 +35,6 @@ export const getLogin = (req, res, next) => {
     path: "/login",
     validationErrors: {},
     user: {},
-    errorMessage: "",
   });
 };
 
@@ -149,7 +149,7 @@ export const postRegister = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      req.flash("", errors.array()[0].msg);
+      req.flash("error", errors.array()[0].msg);
       return res.status(422).render("auth/register", {
         title: "Register",
         path: "/register",
@@ -226,7 +226,7 @@ export const getCompletePayment = async (req, res, next) => {
           if (couponData) {
             price = price * (1 - findingCouponData.discount_percentage / 100);
 
-            console.log(`Coupon Data --#--`);
+            console.log(`Coupon Data |----#----|`);
             console.log(price);
           }
 

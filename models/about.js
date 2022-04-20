@@ -25,4 +25,4 @@ const Certificates = sequelize.define("about", {
   },
 });
 
-export { Certificates };
+export default Certificates;

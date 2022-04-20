@@ -48,13 +48,21 @@
 
       ul {
         li {
-          margin-block: 30px;
+          cursor: pointer;
+          margin-block-end: 25px;
 
           a {
-            font-size: vars.$lg_font_size !important;
+            border-radius: 10px;
+            width: fit-content;
+            transition: all 0.25s ease-in-out;
+            font-size: vars.$md_font_size !important;
+          }
 
-            &.active {
-              color: vars.$main_color !important;
+          &.active,
+          &:hover {
+            a {
+              background-color: var(--bs-primary) !important;
+              color: #fff;
             }
           }
         }

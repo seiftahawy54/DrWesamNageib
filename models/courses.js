@@ -57,4 +57,4 @@ const Courses = sequelize.define("course", {
   },
 });
 
-export { Courses };
+export default Courses;

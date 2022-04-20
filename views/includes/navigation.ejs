@@ -23,6 +23,17 @@
           <a class="nav-link <%- path === "/contact" ? "active" : ""; %>" href="/contact">Contact</a>
         </li>
         <% if (isUserAuthenticated) { %>
+          <!--          <div class="dropdown">-->
+          <!--            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"-->
+          <!--                    data-bs-toggle="dropdown" aria-expanded="false">-->
+          <!--              Profile-->
+          <!--            </button>-->
+          <!--            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">-->
+          <!--              <li><a class="dropdown-item" href="/exams">Exams</a></li>-->
+          <!--              &lt;!&ndash;              <li><a class="dropdown-item" href="#">Another action</a></li>&ndash;&gt;-->
+          <!--              &lt;!&ndash;              <li><a class="dropdown-item" href="#">Something else here</a></li>&ndash;&gt;-->
+          <!--            </ul>-->
+          <!--          </div>-->
           <li class="nav-item">
             <a class="nav-link <%- path === "/profile" ? "active" : ""; %>" href="/profile">
               Profile
@@ -38,7 +49,7 @@
         <% } else { %>
           <li class="nav-item">
             <form action="/logout" method="POST">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
               <button class="nav-link login-button btn">Logout</button>
             </form>
           </li>

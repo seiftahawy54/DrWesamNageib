@@ -43,13 +43,18 @@
   margin-block-start: 30px;
 }
 .dashboard-nav .navbar-links-container .nav-links ul li {
-  margin-block: 30px;
+  cursor: pointer;
+  margin-block-end: 25px;
 }
 .dashboard-nav .navbar-links-container .nav-links ul li a {
-  font-size: 20px !important;
+  border-radius: 10px;
+  width: fit-content;
+  transition: all 0.25s ease-in-out;
+  font-size: 18px !important;
 }
-.dashboard-nav .navbar-links-container .nav-links ul li a.active {
-  color: #545ee3 !important;
+.dashboard-nav .navbar-links-container .nav-links ul li.active a, .dashboard-nav .navbar-links-container .nav-links ul li:hover a {
+  background-color: var(--bs-primary) !important;
+  color: #fff;
 }
 .dashboard-nav .navbar-links-container .logged-in-user {
   display: flex;
