@@ -162,6 +162,30 @@
 </div>
 
 
+<button type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#submittingForm"
+        id="new-modal-btn">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="submittingForm" tabindex="-1" aria-labelledby="submittingForm" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Exam Data Saved</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Exam data saved successfully!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script src="/js/axios.min.js" async></script>
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/dashboard/exams_forms.js"></script>

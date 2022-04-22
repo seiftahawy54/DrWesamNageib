@@ -21,6 +21,8 @@ const examsFormEditMode =
   document.getElementById("exams-form").dataset.editMode === "true";
 const examStatusLabel = examStatusInput.nextElementSibling;
 const examTitleInput = document.getElementById("exam-title");
+const submittingExamModal = document.getElementById("new-modal-btn");
+const submittingModal = document.getElementById("submittingForm");
 
 const LOCAL_STORAGE_EXAMS_MODE = examsFormEditMode ? "modify_exams" : "exams";
 
@@ -330,7 +332,6 @@ submitExamBtn.addEventListener("click", (e) => {
         ...data,
         examId,
       };
-      console.log(data);
       message = "Questions and Exam are Updated!";
     } else {
       url = "/dashboard/exams/start-new-exam";
@@ -339,13 +340,16 @@ submitExamBtn.addEventListener("click", (e) => {
 
     axios
       .post(url, data)
-      .then((result) => {
+      .then(async (result) => {
         if (result.status === 201) {
-          alert(message);
-          window.location = "/dashboard/exams";
-          localStorage.setItem(LOCAL_STORAGE_EXAMS_MODE, null);
+          submittingExamModal.click();
+          submittingModal.addEventListener("hidden.bs.modal", () => {
+            window.location = "/dashboard/exams";
+            localStorage.setItem(LOCAL_STORAGE_EXAMS_MODE, null);
+          });
+        } else {
+          throw new Error("Error from server!");
         }
-        throw new Error("Error from server!");
       })
       .catch((err) => {
         console.error(err);
