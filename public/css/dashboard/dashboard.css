@@ -3,13 +3,27 @@
 }
 
 @media (max-width: 575px) {
+  .navbar-links-container {
+    overflow-y: scroll;
+  }
+
   .content {
-    width: 500%;
+    width: fit-content;
+  }
+  .content .nav-links {
+    overflow: scroll;
   }
 }
 @media (min-width: 576px) and (max-width: 991px) {
+  .navbar-links-container {
+    overflow-y: scroll;
+  }
+
   .content {
-    width: 500%;
+    width: fit-content;
+  }
+  .content .nav-links {
+    overflow: scroll;
   }
 }
 

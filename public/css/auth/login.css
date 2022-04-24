@@ -15,9 +15,15 @@
   display: flex;
   justify-content: center;
 }
+.login-form .login-options .reset-link,
+.register-form .login-options .reset-link,
+.opinions-form .login-options .reset-link {
+  font-size: 12px;
+}
 .login-form .login-options .register-link,
 .register-form .login-options .register-link,
 .opinions-form .login-options .register-link {
+  font-size: 12px;
   text-decoration: underline;
 }
 .login-form .content-container,

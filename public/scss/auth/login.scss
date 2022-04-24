@@ -18,7 +18,12 @@
   }
 
   .login-options {
+    .reset-link {
+      font-size: vars.$xs_font_size - 2;
+    }
+
     .register-link {
+      font-size: vars.$xs_font_size - 2;
       text-decoration: underline;
     }
   }

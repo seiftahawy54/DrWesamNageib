@@ -117,7 +117,8 @@
   display: flex;
   align-items: center;
   border: 1px solid vars.$main_color;
-  padding-inline-start: 20px;
+  background-color: #fff;
+  z-index: 9999;
   border-radius: 0 4px 4px 0;
   font-size: vars.$lg_font_size;
   color: vars.$main_color;
@@ -144,6 +145,14 @@
 }
 
 @include mediaQ.allSmScreens {
+  .show-nav {
+    display: none;
+
+    &.active {
+      display: flex;
+    }
+  }
+
   .dashboard-nav {
     width: 80vw;
     z-index: 10;

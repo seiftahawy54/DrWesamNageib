@@ -5,7 +5,15 @@
 }
 
 @include mediaQ.allSmScreens {
+  .navbar-links-container {
+    overflow-y: scroll;
+  }
+
   .content {
-    width: 500%;
+    width: fit-content;
+
+    .nav-links {
+      overflow: scroll;
+    }
   }
 }
