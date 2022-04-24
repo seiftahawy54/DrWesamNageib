@@ -8,7 +8,6 @@
   }
 
   .pagination {
-    
   }
 
   .content {
@@ -59,5 +58,12 @@
         }
       }
     }
+  }
+}
+
+@include mediaQ.allSmScreens() {
+  .content {
+    padding-inline: 0 !important;
+    padding-block: 120px;
   }
 }
