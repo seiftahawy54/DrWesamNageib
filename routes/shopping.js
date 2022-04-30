@@ -37,7 +37,14 @@ router
   .post(
     "/opinions_form",
     [
-      body("name").isString().notEmpty(),
+      body("name")
+        .isString()
+        .notEmpty()
+        .custom((value) => {
+          if (value === "Henryimmob") {
+            return false;
+          }
+        }),
       body("email").isEmail().notEmpty(),
       body("sender_course").isString().notEmpty(),
       // body("date").isDate().notEmpty(),
