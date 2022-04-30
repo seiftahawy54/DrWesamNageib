@@ -8,6 +8,7 @@ import Opinions from "./opinions.js";
 import Payment from "./payment.js";
 import Rounds from "./rounds.js";
 import Users from "./users.js";
+import ExamImages from "./exam-images.js";
 
 export {
   Certificates,
@@ -20,4 +21,5 @@ export {
   Payment,
   Rounds,
   Users,
+  ExamImages,
 };

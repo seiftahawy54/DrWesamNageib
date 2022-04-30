@@ -1,6 +1,7 @@
-import { Exams, Users } from "../../../models/index.js";
+import { ExamImages, Exams, Users } from "../../../models/index.js";
 import { errorRaiser } from "../../../utils/error_raiser.js";
 import { validationResult } from "express-validator";
+import { getSingleFile, uploadFile } from "../../../utils/aws.js";
 
 export const getAllExams = async (req, res, next) => {
   try {
@@ -130,6 +131,7 @@ export const startNewExam = async (req, res, next) => {
     const examTitle = req.body.examTitle;
     const examStatus = req.body.examStatus;
     const errors = validationResult(req);
+    console.log(errors);
     if (!errors.isEmpty()) {
       return res.status(422).json({
         errors,
@@ -213,6 +215,59 @@ export const postUpdateExam = async (req, res, next) => {
 
     res.status(201).json({
       questions,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const postAddingExamImage = async (req, res, next) => {
+  try {
+    const questionImage = req.files[0];
+    // const questionNumber = req.body.number;
+
+    const uploadingQuestionImg = await uploadFile(
+      questionImage.path,
+      questionImage.filename,
+      questionImage.mimetype,
+      res,
+      next
+    );
+
+    // console.log(questionImage);
+
+    const addingNewImage = await ExamImages.create({
+      image_path: questionImage.path,
+    });
+
+    if (uploadingQuestionImg) {
+      await getSingleFile(addingNewImage.image_path);
+    }
+
+    res.status(201).json({
+      image_path: addingNewImage.image_path,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const deleteExamImage = async (req, res, next) => {
+  try {
+    const imageId = req.body.imageId;
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      console.log(`Image Id ===> `, imageId);
+      res.status(404).json({ message: errors.array()[0].msg });
+    }
+
+    const imageDeleting = await (await ExamImages.findByPk(imageId)).destory();
+
+    console.log(`deleting image ===> `, imageDeleting);
+
+    res.status(201).json({
+      message: "Image Deleted",
     });
   } catch (e) {
     await errorRaiser(e, next);

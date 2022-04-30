@@ -5,6 +5,8 @@ import path from "path";
 import moment from "moment";
 import PDFMake from "pdfmake";
 import fs from "fs";
+import { errorRaiser } from "./error_raiser.js";
+import { ExamImages } from "../models/index.js";
 
 export const sortCourses = (courses) => {
   let coursesRanks = [];
@@ -264,15 +266,55 @@ export const downloadingCoursesImages = (courses) => {
 export const calculateExamsGrades = (reply, exam) => {
   let totalGrades = 0;
 
+  // console.log(reply);
+  //
+  // for (let answer = 0; answer < reply.length; answer++) {
+  //   // reply.forEach((question, index) => {
+  //   //   if ("questionHeader" in question) {
+  //   // console.log(reply[answer]);
+  //   const questionNumber = Object.keys(reply[answer])[0];
+  //   // console.log(questionNumber);
+  //   const userAnswer = reply[`${questionNumber - 1}`];
+  //   //
+  //   console.log(`user answer ==> `, userAnswer);
+  //   //
+  //   // if (
+  //   //   exam.questions[answer].correctAnswer.toString() === userAnswer.toString()
+  //   // ) {
+  //   //   totalGrades += 1;
+  //   // }
+  // }
+
   reply.forEach((question, index) => {
     const questionNumber = Object.keys(question)[0];
     const userAnswer = question[`${questionNumber}`];
 
-    if (
-      exam.questions[index].correctAnswer.toString() === userAnswer.toString()
-    )
+    // console.log(userAnswer);
+
+    console.log(`Exam Correct Answer`, exam[index].correctAnswer);
+    console.log(`User answer`, userAnswer);
+    if (exam[index].correctAnswer.toString() === userAnswer.toString())
       totalGrades += 1;
   });
 
   return totalGrades;
+};
+
+export const imageDownloader = async (req, res, next) => {
+  try {
+    const wantedImg = req.body.img_id;
+    console.log(`Wanted Image ====> `, JSON.stringify(req.body, null, 2));
+    const image = await ExamImages.findByPk(wantedImg);
+    console.log(`image ===> ${image}`);
+    const result = await getSingleFile(wantedImg);
+    console.log(`searching result ===> ${result}`);
+    return res.status(200).json({
+      result,
+    });
+  } catch (e) {
+    // await errorRaiser(e, next);
+    res.status(500).json({
+      message: e.message,
+    });
+  }
 };

@@ -35,7 +35,8 @@ export const getUserProfile = async (req, res, next) => {
     if (Array.isArray(replies)) {
       return {
         title,
-        questions: questions.length,
+        questions: questions.filter((examObj) => "questionHeader" in examObj)
+          .length,
         replies: replies.map(({ user_id, grade }) => {
           if (req.user.user_id === user_id) {
             return grade;
@@ -374,7 +375,15 @@ export const postPerformExam = async (req, res, next) => {
     const exam = await Exams.findByPk(examId);
 
     if (exam) {
-      const grade = calculateExamsGrades(userAnswers, exam);
+      let filteredQuestions = exam.questions.filter(
+        (examObj) => "questionHeader" in examObj
+      );
+
+      // console.log(
+      //   `user grade is ==> `,
+      //   calculateExamsGrades(userAnswers, filteredQuestions)
+      // );
+      const grade = calculateExamsGrades(userAnswers, filteredQuestions);
       const examData = await Exams.findByPk(examId);
 
       let newReplies,

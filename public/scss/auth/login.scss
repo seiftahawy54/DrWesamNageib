@@ -19,11 +19,9 @@
 
   .login-options {
     .reset-link {
-      font-size: vars.$xs_font_size - 2;
     }
 
     .register-link {
-      font-size: vars.$xs_font_size - 2;
       text-decoration: underline;
     }
   }
@@ -125,6 +123,16 @@
   .login-form,
   .register-form,
   .opinions-form {
+    .login-options {
+      .reset-link {
+        font-size: vars.$xs_font_size - 2;
+      }
+
+      .register-link {
+        font-size: vars.$xs_font_size - 2;
+      }
+    }
+
     .content-container {
       width: 90vw !important;
       padding: 30px;
@@ -136,6 +144,18 @@
       form {
         width: 100%;
       }
+    }
+  }
+}
+
+@include mediaQ.tabletIpad {
+  .login-options {
+    .reset-link {
+      font-size: vars.$sm_font_size;
+    }
+
+    .register-link {
+      font-size: vars.$sm_font_size;
     }
   }
 }

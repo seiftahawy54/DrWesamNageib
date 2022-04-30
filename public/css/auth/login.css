@@ -15,15 +15,9 @@
   display: flex;
   justify-content: center;
 }
-.login-form .login-options .reset-link,
-.register-form .login-options .reset-link,
-.opinions-form .login-options .reset-link {
-  font-size: 12px;
-}
 .login-form .login-options .register-link,
 .register-form .login-options .register-link,
 .opinions-form .login-options .register-link {
-  font-size: 12px;
   text-decoration: underline;
 }
 .login-form .content-container,
@@ -124,6 +118,16 @@
 }
 
 @media (max-width: 575px) {
+  .login-form .login-options .reset-link,
+.register-form .login-options .reset-link,
+.opinions-form .login-options .reset-link {
+    font-size: 12px;
+  }
+  .login-form .login-options .register-link,
+.register-form .login-options .register-link,
+.opinions-form .login-options .register-link {
+    font-size: 12px;
+  }
   .login-form .content-container,
 .register-form .content-container,
 .opinions-form .content-container {
@@ -142,6 +146,16 @@
   }
 }
 @media (min-width: 576px) and (max-width: 991px) {
+  .login-form .login-options .reset-link,
+.register-form .login-options .reset-link,
+.opinions-form .login-options .reset-link {
+    font-size: 12px;
+  }
+  .login-form .login-options .register-link,
+.register-form .login-options .register-link,
+.opinions-form .login-options .register-link {
+    font-size: 12px;
+  }
   .login-form .content-container,
 .register-form .content-container,
 .opinions-form .content-container {
@@ -157,6 +171,14 @@
 .register-form .content-container form,
 .opinions-form .content-container form {
     width: 100%;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .login-options .reset-link {
+    font-size: 16px;
+  }
+  .login-options .register-link {
+    font-size: 16px;
   }
 }
 

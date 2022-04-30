@@ -58,10 +58,16 @@
 
             </div>
 
-            <!-- Add New Exam Btn -->
-            <div class="my-3">
+            <div class="my-3 d-flex justify-content-between">
+              <!-- Add New Exam Btn -->
               <button class="btn" id="add-new-exam" type="button">
                 Add new question
+              </button>
+
+
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#images-modal">
+                Add new image
               </button>
             </div>
 
@@ -106,7 +112,7 @@
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form method="post" id='question-form'>
+      <form id='question-form'>
         <div class="modal-body">
           <%- include('../../includes/main-input.ejs', {
           type: "text",
@@ -115,29 +121,14 @@
           id: "question-header",
           label: "Question Title",
           value: "",
-          custom: ["required"] }); %>
+          custom: []}); %>
           <hr />
           <h5>Answers</h5>
+          <button class="btn" id="new-question-btn">
+            Add new answer
+          </button>
+
           <div id="answers-container">
-            <div class="input-group mb-3">
-              <span class="input-group-text" id="answer-1">Answer 1</span>
-              <input type="text" class="form-control" name="answer-1" placeholder="Answer 1" required />
-            </div>
-
-            <div class="input-group mb-3">
-              <span class="input-group-text" id="answer-2">Answer 2</span>
-              <input type="text" class="form-control" name="answer-2" placeholder="Answer 2" required />
-            </div>
-
-            <div class="input-group mb-3">
-              <span class="input-group-text" id="answer-3">Answer 3</span>
-              <input type="text" class="form-control" name="answer-3" placeholder="Answer 3" required />
-            </div>
-
-            <div class="input-group mb-3">
-              <span class="input-group-text" id="answer-4">Answer 4</span>
-              <input type="text" class="form-control" name="answer-4" placeholder="Answer 4" required />
-            </div>
           </div>
           <hr>
           <%- include('../../includes/main-input.ejs', {
@@ -147,7 +138,7 @@
           id: "correct-answer",
           label: "Correct Answer",
           value: "",
-          custom: [`max="4" min="1" required`] }); %>
+          custom: [`max="4" min="1"`] }); %>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -180,6 +171,38 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="d-none" data-bs-toggle="images-modal" data-bs-target="images-modal" id="dismiss-image-modal">
+
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="images-modal" tabindex="-1" aria-labelledby="images-modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="image-title">
+          Add image
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%- include('../../includes/main-input.ejs', {
+        type: "file",
+        name: "question-image",
+        placeholder: "Question Image",
+        label: "",
+        id: "question-image",
+        value: "",
+        custom: [] }); %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-danger" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="new-image-btn">Add image</button>
       </div>
     </div>
   </div>

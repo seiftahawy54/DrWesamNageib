@@ -8,9 +8,10 @@ const myModal = new bootstrap.Modal(document.getElementById("exampleModal"));
 const myInput = document.getElementById("myInput");
 const saveQuestionBtn = document.getElementById("save-question");
 const questionHeader = document.getElementById("question-header");
-let questionAnswers = document.querySelectorAll(
-  "#answers-container .input-group input"
-);
+const questionsFormAnswersContainer =
+  document.getElementById("answers-container");
+const newAnswerBtn = document.getElementById("new-question-btn");
+let questionAnswers = "";
 const correctAnswer = document.getElementById("correct-answer");
 const questionForm = document.getElementById("question-form");
 const submitExamBtn = document.getElementById("submitBtn");
@@ -24,11 +25,109 @@ const examTitleInput = document.getElementById("exam-title");
 const submittingExamModal = document.getElementById("new-modal-btn");
 const submittingModal = document.getElementById("submittingForm");
 
+// Adding image modal
+const newImageBtn = document.getElementById("new-image-btn");
+const imageInput = document.getElementById("question-image");
+const dismissImageModalBtn = document.getElementById("dismiss-image-modal");
+
 const LOCAL_STORAGE_EXAMS_MODE = examsFormEditMode ? "modify_exams" : "exams";
 
+newImageBtn.addEventListener("click", async (e) => {
+  let data = new FormData();
+  data.append("exam_q_image", imageInput.files[0]);
+  /*  const localStorageExamsLength = localStorage.getItem(
+      LOCAL_STORAGE_EXAMS_MODE
+    )?.length;*/
+  axios
+    .post("/dashboard/exams/exam-image/", data, {
+      headers: {
+        "X-XSRF-TOKEN": csrfTokenInput.value,
+      },
+    })
+    .then(async (res) => {
+      if (res.status === 201) {
+        console.log(res.data);
+        let localExams = JSON.parse(
+          localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE)
+        );
+
+        if (!localExams) localExams = [];
+
+        localExams = [
+          ...localExams,
+          {
+            examImage: res.data.image_path,
+          },
+        ];
+        localStorage.setItem(
+          LOCAL_STORAGE_EXAMS_MODE,
+          JSON.stringify(localExams)
+        );
+
+        console.log(localExams);
+
+        setTimeout(() => {
+          console.log(dismissImageModalBtn);
+          dismissImageModalBtn.click();
+          renderExams();
+        });
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+});
+
+const removingBeforeData = () => {
+  questionsFormAnswersContainer.replaceChildren();
+};
+
+const getQuestionAnswers = () => {
+  return document.querySelectorAll("#answers-container .input-group input");
+};
+
 addNewExamBtn.addEventListener("click", () => {
+  removingBeforeData();
   modalButton.click();
 });
+
+newAnswerBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  questionAnswers = getQuestionAnswers();
+  questionsFormAnswersContainer.append(
+    addNewAnswer(
+      questionsFormAnswersContainer.children.length === 0
+        ? 1
+        : questionsFormAnswersContainer.children.length
+    )
+  );
+});
+
+const addNewAnswer = (answerNumber, value = "") => {
+  const inputGroup = document.createElement("div");
+  const answerText = document.createElement("span");
+  const answerInput = document.createElement("input");
+
+  /* Answer Text */
+  answerText.classList.add("input-group-text");
+  answerText.setAttribute(`id`, `answer-${answerNumber}`);
+  answerText.textContent = `Answer ${answerNumber}`;
+
+  /* Answer Input */
+  answerInput.classList.add("form-control");
+  answerInput.setAttribute("type", "text");
+  answerInput.setAttribute("name", `answer-${answerNumber}`);
+  answerInput.setAttribute("placeholder", `Answer ${answerNumber}`);
+
+  if (value.length !== 0) {
+    answerInput.value = value;
+  }
+
+  /* Input Group Container Div properties */
+  inputGroup.classList.add("input-group", "my-3");
+  inputGroup.append(answerText, answerInput);
+  return inputGroup;
+};
 
 const createQuestionHeaderInput = (headerText = "") => {
   const headerQuestionInput = document.createElement("input");
@@ -77,24 +176,49 @@ const createQuestionAnswerInput = (
   return [headerQuestionInput, headerQuestionLabel];
 };
 
-const deleteExam = (questionNumber) => {
+const deleteExam = (questionNumber, imgPath = "") => {
   const exams = localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE);
   const jsonExams = JSON.parse(exams);
   const filteredExams = jsonExams.filter(
     (item, index) => index !== questionNumber - 1
   );
+
+  // if (imgPath.length > 0) {
+  // axios
+  //   .post(
+  //     "/dashboard/exams/delete-exam-image",
+  //     {
+  //       imageId: imgPath.split("-")[0],
+  //     },
+  //     {
+  //       headers: {
+  //         "X-XSRF-TOKEN": csrfTokenInput.value,
+  //       },
+  //     }
+  //   )
+  //   .then((res) => {
+  //     console.log(res);
+  //   })
+  //   .catch((err) => {
+  //     console.error(err);
+  //   });
+  // }
+
   localStorage.setItem(LOCAL_STORAGE_EXAMS_MODE, JSON.stringify(filteredExams));
   renderExams();
 };
 
 const editExam = (questionNumber) => {
+  removingBeforeData();
   const localExams = JSON.parse(localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE));
   const findToUpdateExam = localExams.at(questionNumber - 1);
   modalButton.click();
   questionHeader.value = findToUpdateExam.questionHeader;
-  questionAnswers.forEach((answer, index) => {
-    answer.value = findToUpdateExam.answers[index];
+
+  findToUpdateExam.answers.forEach((answer, index) => {
+    questionsFormAnswersContainer.append(addNewAnswer(index + 1, answer));
   });
+
   correctAnswer.value = findToUpdateExam.correctAnswer;
   saveQuestionBtn.dataset.editing = "on";
   saveQuestionBtn.dataset.questionNumber = (questionNumber - 1).toString();
@@ -160,14 +284,73 @@ const creatingQuestion = (
   return containerOfQuestion;
 };
 
+const createImgForExam = (imgPath = "", questionNumber) => {
+  const containerElement = document.createElement("div");
+  const questionImg = document.createElement("img");
+
+  // Adding custom data set property
+  // containerElement.dataset.
+  containerElement.dataset.questionNumber = questionNumber;
+
+  // Question Number
+  const questionNumberDiv = document.createElement("div");
+  questionNumberDiv.textContent = questionNumber.toString() + " . ";
+  questionNumberDiv.classList.add("question-number");
+  // Deleting exam span
+  const deleteBtn = document.createElement("span");
+  deleteBtn.classList.add("delete-exam", "btn-close");
+
+  /* Container Div For image */
+  containerElement.classList.add("question", "my-3");
+
+  /* Main Item */
+  questionImg.src = `${window.origin}/downloaded_images/${imgPath}`;
+  questionImg.alt = imgPath.split("-")[1];
+  questionImg.classList.add("img-fluid");
+
+  deleteBtn.addEventListener("click", () =>
+    deleteExam(questionNumber, imgPath)
+  );
+
+  containerElement.append(questionNumberDiv, deleteBtn, questionImg);
+  return containerElement;
+};
+
 const renderExams = () => {
+  removingBeforeData();
   let containerDiv;
   const exams = JSON.parse(localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE));
   if (exams) {
-    containerDiv = exams.map(
-      ({ questionHeader, answers, correctAnswer }, index) =>
-        creatingQuestion(questionHeader, answers, correctAnswer, index + 1)
-    );
+    containerDiv = exams.map((examQuestion, index) => {
+      if ("examImage" in examQuestion) {
+        axios
+          .post(
+            "/download_image",
+            {
+              img_id: examQuestion.examImage,
+            },
+            {
+              headers: {
+                "X-XSRF-TOKEN": csrfTokenInput.value,
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+        return createImgForExam(examQuestion.examImage, index + 1);
+      } else {
+        return creatingQuestion(
+          examQuestion.questionHeader,
+          examQuestion.answers,
+          examQuestion.correctAnswer,
+          index + 1
+        );
+      }
+    });
   } else {
     containerDiv = "No Exams added yet";
   }
@@ -194,7 +377,9 @@ const validateForm = (questionHeader, questionAnswers, correctAnswer) => {
     }
   });
 
-  if (!(correctAnswer.value >= 1 && correctAnswer.value <= 4)) {
+  if (
+    !(correctAnswer.value >= 1 && correctAnswer.value <= questionAnswers.length)
+  ) {
     correctAnswer.classList.add("is-invalid");
     isValidForm = false;
   } else {
@@ -205,7 +390,8 @@ const validateForm = (questionHeader, questionAnswers, correctAnswer) => {
 };
 
 const removeModal = () => {
-  document.getElementById("hiddenDismissBtn")?.click();
+  removingBeforeData();
+  document.getElementById("hiddenDismissBtn").click();
 };
 
 const resetValidationAndValues = (
@@ -228,6 +414,8 @@ saveQuestionBtn.addEventListener("click", (e) => {
 
   const savedExams = JSON.parse(localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE));
   let answersValues = [];
+
+  questionAnswers = getQuestionAnswers();
 
   for (let answer = 0; answer < questionAnswers.length; answer++) {
     answersValues[answer] = questionAnswers[answer].value;
@@ -358,6 +546,8 @@ submitExamBtn.addEventListener("click", (e) => {
 });
 
 window.onload = () => {
+  axios.defaults.headers.common["X-CSRF-TOKEN"] = csrfTokenInput.value;
+
   if (examsFormEditMode) {
     // console.log(editingExamsInput.textContent)
     localStorage.setItem(

@@ -32,6 +32,8 @@ import { Rounds } from "./models/index.js";
 import { Payment } from "./models/index.js";
 import { Courses } from "./models/index.js";
 import { isUserAuthenticated } from "./middlewares/user-auth.js";
+import { imageDownloader } from "./utils/general_helper.js";
+import { body } from "express-validator";
 
 dotenv.config();
 const app = express();
@@ -67,7 +69,8 @@ app.use(
     "course_img",
     "detailed_img",
     "certificate_img",
-    "user_img"
+    "user_img",
+    "exam_q_image"
   )
 );
 
@@ -138,6 +141,11 @@ app.use(async (req, res, next) => {
   }
 });
 
+app.post(
+  "/download_image",
+  body("img_id").isString().isLength({ min: 15 }),
+  imageDownloader
+);
 app.use("/courses", coursesRoutes);
 app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);

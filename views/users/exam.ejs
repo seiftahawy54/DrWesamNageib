@@ -27,27 +27,34 @@
         <div class="offset-lg-3 col-lg-6 col-xs-12">
           <div class="question-container" id="questionsContainer">
             <form id="exam-form">
-              <% exam.questions.forEach(({ questionHeader, answers }, questionIndex) => { %>
+              <% /* exam.questions.forEach((examItem, questionIndex) => { */ %>
+              <% for (let i = 0, j = 0; i < exam.questions.length; i++)  { %>
                 <div class="question">
-                  <div class="custom-head">
-                    <h4>Q<sub><%= questionIndex + 1 %></sub> - <%= questionHeader %></h4>
-                    <span></span>
-                  </div>
-                  <div class="answers-container">
-                    <% answers.forEach((answer, answerIndex)=> { %>
-                      <div class="form-check my-3 answer">
-                        <input class="form-check-input" type="radio"
-                               id="q-<%- questionIndex + 1 %>-answer-<%- answerIndex + 1 %>"
-                               name="answer-<%- questionIndex %>">
-                        <label class="form-check-label w-100"
-                               for="q-<%- questionIndex + 1 %>-answer-<%- answerIndex + 1 %>">
-                          <%- answer %>
-                        </label>
-                      </div>
-                    <% }) %>
-                  </div>
+                  <% if ("answers" in exam.questions[i] && "questionHeader" in exam.questions[i]) { %>
+                    <div class="custom-head">
+                      <h4>Q<sub><%= j + 1 %></sub> - <%= exam.questions[i].questionHeader %></h4>
+                      <span></span>
+                    </div>
+                    <div class="answers-container">
+                      <% exam.questions[i].answers.forEach((answer, answerIndex)=> { %>
+                        <div class="form-check my-3 answer">
+                          <input class="form-check-input" type="radio"
+                                 id="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>"
+                                 name="answer-<%- j %>">
+                          <label class="form-check-label w-100"
+                                 for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
+                            <%- answer %>
+                          </label>
+                        </div>
+                      <% }) %>
+                      <% j += 1 %>
+                    </div>
+                  <% } else { %>
+                    <img src="/downloaded_images/<%- exam.questions[i].examImage %>"
+                         alt="<%= exam.questions[i].examImage.split("-")[1] %>" class="img-fluid rounded-3" />
+                  <% } %>
                 </div>
-              <% }) %>
+              <% } %>
             </form>
           </div>
         </div>
