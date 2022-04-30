@@ -303,9 +303,9 @@ export const calculateExamsGrades = (reply, exam) => {
 export const imageDownloader = async (req, res, next) => {
   try {
     const wantedImg = req.body.img_id;
-    console.log(`Wanted Image ====> `, JSON.stringify(req.body, null, 2));
+    console.log(`Received id ====> `, JSON.stringify(req.body, null, 2));
     const image = await ExamImages.findByPk(wantedImg);
-    console.log(`image ===> ${image}`);
+    console.log(`image_id ===> ${image}`);
     const result = await getSingleFile(wantedImg);
     console.log(`searching result ===> ${result}`);
     return res.status(200).json({

@@ -13,6 +13,7 @@ import { validationResult } from "express-validator";
 
 import { Exams, Payment, Courses, Rounds, Users } from "../../models/index.js";
 import { errorRaiser } from "../../utils/error_raiser.js";
+import axios from "axios";
 
 export const getUserProfile = async (req, res, next) => {
   const roundLink = await sequelize.query(
@@ -341,6 +342,23 @@ export const getPerformExam = async (req, res, next) => {
           performedBefore = true;
           req.flash("error", "Exam is already performed!");
           return res.redirect("/profile");
+        }
+      }
+
+      for (const questionObj of findingExam.questions) {
+        if ("examImage" in questionObj) {
+          const fetchingResult = await getSingleFile(questionObj.examImage);
+          console.log("Image searching result => ", fetchingResult);
+          // axios
+          //   .post("/download_image", {
+          //     img_id: questionObj.examImage,
+          //   })
+          //   .then((res) => {
+          //     console.log(res);
+          //   })
+          //   .catch((err) => {
+          //     console.error(err.message);
+          //   });
         }
       }
 
