@@ -2,6 +2,7 @@ import { ExamImages, Exams, Users } from "../../../models/index.js";
 import { errorRaiser } from "../../../utils/error_raiser.js";
 import { validationResult } from "express-validator";
 import { getSingleFile, uploadFile } from "../../../utils/aws.js";
+import joi from "joi";
 
 export const getAllExams = async (req, res, next) => {
   try {
@@ -131,8 +132,11 @@ export const startNewExam = async (req, res, next) => {
     const examTitle = req.body.examTitle;
     const examStatus = req.body.examStatus;
     const errors = validationResult(req);
-    console.log(errors);
-    if (!errors.isEmpty()) {
+    const schemaValidation = await questionsSchema.validate(questions);
+
+    console.log(`Validation of schema ===> `, schemaValidation);
+
+    if ("error" in schemaValidation || !errors.isEmpty()) {
       return res.status(422).json({
         errors,
       });
@@ -188,15 +192,28 @@ export const getUpdateExam = async (req, res, next) => {
   }
 };
 
+const questionsSchema = joi.array().items(
+  joi.object({
+    questionHeader: joi.string().min(5),
+    answers: joi.array().min(1).items(joi.string()),
+    correctAnswer: joi.string().min(1).max(1),
+  }),
+  joi.object({
+    examImage: joi.string().min(13),
+  })
+);
+
 export const postUpdateExam = async (req, res, next) => {
   try {
     const examId = req.body.examId;
     const questions = req.body.questions;
     const examTitle = req.body.examTitle;
     const examStatus = req.body.examStatus;
-    const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
+    const errors = validationResult(req);
+    const schemaValidation = await questionsSchema.validate(questions);
+
+    if ("error" in schemaValidation || !errors.isEmpty()) {
       return res.status(422).json({
         errors,
       });
