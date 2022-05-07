@@ -12,6 +12,11 @@
     grid-template-rows: 1fr 1fr;
   }
 
+  .exams-previews {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
   .user-img {
     position: relative;
     //display: flex;

@@ -44,9 +44,9 @@ export const getUserProfile = async (req, res, next) => {
               return grade;
             }
           }),
-          preview_link: replies.map(({ user_id, grade }) => {
+          preview_link: replies.map(({ user_id, grade }, index) => {
             if (req.user.user_id === user_id) {
-              return `/exam/preview/${exam_id}/${user_id}/`;
+              return `/exam/preview/${exam_id}/${user_id}/${index}`;
             }
           }),
         };
@@ -412,7 +412,7 @@ export const postPerformExam = async (req, res, next) => {
       const examData = await Exams.findByPk(examId);
 
       let newReplies,
-        userData = { user_id: req.user.user_id, grade };
+        userData = { user_id: req.user.user_id, grade, userAnswers };
 
       if (!exam.replies && !Array.isArray(exam.replies)) {
         newReplies = [userData];
@@ -441,7 +441,45 @@ export const postPerformExam = async (req, res, next) => {
   }
 };
 
-export const previewExam = async (req, res, next) => {};
+export const getExamPreview = async (req, res, next) => {
+  try {
+    const examId = req.params.examId;
+    const userId = req.params.userId;
+    const replyIndex = req.params.replyIndex;
+
+    const examData = await Exams.findByPk(examId);
+
+    if (examData && req.user.user_id === userId) {
+      const examReplies = examData.replies;
+      const userPreviewAnswers = examReplies.filter(
+        ({ user_id }) => user_id === userId
+      );
+
+      const performingData = {
+        ...userPreviewAnswers[replyIndex],
+        ...examData,
+        questions: examData.questions.filter(
+          (examObject) => "questionHeader" in examObject
+        ),
+      };
+
+      const userData = await Users.findByPk(req.user.user_id, {
+        attributes: ["name"],
+      });
+
+      return res.render("users/exam_preview", {
+        title: `Trying Exam ${examData.title} for User ${userData.name}`,
+        path: "/profile",
+        performingData,
+      });
+    }
+
+    req.flash("error", "You've not entered this exam before");
+    return res.redirect("user/profile");
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
 
 export const getSubmittedExam = async (req, res, next) => {
   res.render("users/exam-result", {

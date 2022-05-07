@@ -12,6 +12,10 @@
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
 }
+.profile .exams-previews {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
 .profile .user-img {
   position: relative;
 }

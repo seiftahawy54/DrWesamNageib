@@ -7,6 +7,7 @@ import {
   getPerformExam,
   postPerformExam,
   getSubmittedExam,
+  getExamPreview,
 } from "../controllers/user/user.js";
 import { Router } from "express";
 import { body } from "express-validator";
@@ -38,6 +39,7 @@ router
       body("examId").isString().isLength({ min: 36, max: 36 }),
     ],
     postPerformExam
-  );
+  )
+  .get("/exam/preview/:examId/:userId/:replyIndex", getExamPreview);
 
 export { router as userRoutes };

@@ -76,14 +76,18 @@
 
           <% if (userGrades && userGrades.length > 0) { %>
             <div class="info">
-              Your Performed exam grades
+              Your Performed exam grades <br />
 
-              <% userGrades.forEach(({ preview_link, title }, idx) => { %>
-                <div class="preview-<% idx + 1 %>">
-                  <span><%= idx + 1 %>: </span>
-                  <a href="<%- preview_link %>"><%= title %></a>
-                </div>
-              <% }) %>
+              <div class="exams-previews">
+                <% userGrades.forEach(({ replies, preview_link, title }) => { %>
+                  <% preview_link.forEach((reply, index) => { %>
+                    <div class="preview-<% index + 1 %>">
+                      <span><%= index + 1 %>: </span>
+                      <a href="<%- reply %>"><%= title %></a>
+                    </div>
+                  <% }) %>
+                <% }) %>
+              </div>
             </div>
 
             <div class="info payments-details">
