@@ -29,23 +29,30 @@ export const getUserProfile = async (req, res, next) => {
   }
   */
   const allExams = await Exams.findAll({
-    attributes: ["title", "replies", "questions"],
+    attributes: ["exam_id", "title", "replies", "questions"],
   });
 
-  let findingUsersExams = allExams.map(({ replies, title, questions }) => {
-    if (Array.isArray(replies)) {
-      return {
-        title,
-        questions: questions.filter((examObj) => "questionHeader" in examObj)
-          .length,
-        replies: replies.map(({ user_id, grade }) => {
-          if (req.user.user_id === user_id) {
-            return grade;
-          }
-        }),
-      };
+  let findingUsersExams = allExams.map(
+    ({ exam_id, replies, title, questions }) => {
+      if (Array.isArray(replies)) {
+        return {
+          title,
+          questions: questions.filter((examObj) => "questionHeader" in examObj)
+            .length,
+          replies: replies.map(({ user_id, grade }) => {
+            if (req.user.user_id === user_id) {
+              return grade;
+            }
+          }),
+          preview_link: replies.map(({ user_id, grade }) => {
+            if (req.user.user_id === user_id) {
+              return `/exam/preview/${exam_id}/${user_id}/`;
+            }
+          }),
+        };
+      }
     }
-  });
+  );
 
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
 
@@ -433,6 +440,8 @@ export const postPerformExam = async (req, res, next) => {
     await errorRaiser(e, next);
   }
 };
+
+export const previewExam = async (req, res, next) => {};
 
 export const getSubmittedExam = async (req, res, next) => {
   res.render("users/exam-result", {

@@ -5,7 +5,7 @@ import { Sequelize } from "sequelize";
 import { uploadFile } from "../../utils/aws.js";
 import { getCertificatesImage } from "../../utils/general_helper.js";
 
-import { Rounds } from "../../models/index.js";
+import { Exams, Rounds } from "../../models/index.js";
 import { Payment } from "../../models/index.js";
 import { Courses } from "../../models/index.js";
 import { Users } from "../../models/index.js";
@@ -37,7 +37,80 @@ export const getOverview = async (req, res, next) => {
 
 export const getMessages = async (req, res, next) => {
   try {
-    let pageNumber = req.query.page;
+    const allMessages = await Messages.findAll();
+
+    const allPrimaryKeys = [];
+
+    let data = await Promise.all(
+      allMessages.map(async ({ sendername, senderemail, message }, index) => {
+        // allPrimaryKeys.push(message_id);
+        //
+        // console.log(message_id);
+        //
+
+        // console.log(data);
+
+        return {
+          sendername,
+          senderemail,
+          message,
+        };
+      })
+    );
+
+    console.log(data);
+
+    data = Object.entries(data).map(([key, value], index) => {
+      return {
+        item: value,
+        entry: key,
+      };
+    });
+
+    let finalData = [];
+
+    data.forEach((value, key) => {
+      finalData.push({
+        data: {
+          ...data[key],
+        },
+        primaryKey: allPrimaryKeys[key],
+        updateInputName: "messageId",
+      });
+    });
+
+    return res.render("dashboard/messages", {
+      title: "Messages",
+      path: "/dashboard/messages",
+      tableName: "Messages",
+      addingNewLink: "messages",
+      singleTableName: "message",
+      tableHead: [
+        {
+          title: "#",
+          name: "message-number",
+        },
+        {
+          title: "Sender Name",
+          name: "sender-name",
+        },
+        {
+          title: " Sender Email",
+          name: "sender-email",
+        },
+        {
+          title: "Sender Message",
+          name: "sender-message",
+        },
+      ],
+      tableRows: finalData,
+      customStuff: {
+        // pagination:
+        notHaveUpdate: true,
+      },
+    });
+
+    /*let pageNumber = req.query.page;
     if (!pageNumber) {
       pageNumber = 1;
     }
@@ -53,7 +126,7 @@ export const getMessages = async (req, res, next) => {
       path: "/dashboard/messages",
       messages: allMessages,
       numberOfLinks: numberOfResults,
-    });
+    });*/
   } catch (e) {
     await errorRaiser(e, next);
   }

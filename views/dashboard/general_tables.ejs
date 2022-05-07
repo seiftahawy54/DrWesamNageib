@@ -37,6 +37,11 @@
         /*grid-template-columns: auto auto auto;*/
     }
 
+    .message {
+        word-break: break-all;
+        overflow: scroll;
+    }
+
 </style>
 </head>
 <body>
@@ -101,13 +106,16 @@
                       <%- item[1] %>
                     </td>
                   <% }) %>
-                  <td class="<%= tableName.toLowerCase() %>-update">
-                    <a
-                      href="/dashboard/<%= tableName.toLowerCase() %>/edit-<%= singleTableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
-                      class="btn btn-success">
-                      Update <%= tableName %>
-                    </a>
-                  </td>
+                  <% if ("notHaveUpdate" in customStuff) { %>
+                  <% } else { %>
+                    <td class="<%= tableName.toLowerCase() %>-update">
+                      <a
+                        href="/dashboard/<%= tableName.toLowerCase() %>/edit-<%= singleTableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
+                        class="btn btn-success">
+                        Update <%= tableName %>
+                      </a>
+                    </td>
+                  <% } %>
                   <td class="<%= tableName.toLowerCase() %>-delete">
                     <form
                       action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= tableName.toLowerCase() %>"
@@ -160,7 +168,7 @@
   const showCopyModal = document.getElementById("copyAlert")
   console.log(showCopyModal)
 
-  function copyExamLink(link) {
+  const copyExamLink = (link) => {
     navigator.clipboard.writeText(`${window.origin}${link.textContent}`)
     console.log(showCopyModal)
     showCopyModal.click()

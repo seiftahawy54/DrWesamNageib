@@ -56,7 +56,7 @@
                 <% bought_courses.forEach(course => { %>
                   <span><%= course.name %></span>
                   <span><%= course.price %></span>
-                <% }); %>
+                <% }) %>
               </div>
             <% } else { %>
               You've bought not courses yet! <a href="/courses">Buy now</a>
@@ -77,6 +77,13 @@
           <% if (userGrades && userGrades.length > 0) { %>
             <div class="info">
               Your Performed exam grades
+
+              <% userGrades.forEach(({ preview_link, title }, idx) => { %>
+                <div class="preview-<% idx + 1 %>">
+                  <span><%= idx + 1 %>: </span>
+                  <a href="<%- preview_link %>"><%= title %></a>
+                </div>
+              <% }) %>
             </div>
 
             <div class="info payments-details">
@@ -90,7 +97,7 @@
                       <span><sup><%= grade %></sup>&frasl;<sub><%= questions %></sub></span>
                     <% }) %>
                   </span>
-                <% }); %>
+                <% }) %>
               </div>
             </div>
           <% } %>
@@ -138,7 +145,7 @@
             <form action="/update-user-img" method="POST" enctype="multipart/form-data">
               <div class="custom-input">
                 <input type="file" name="user_img" id="user_img" placeholder="Update your image"
-                       class="form-control <%= validationError.error === 'img' ? 'is-invalid' : "" %>">
+                       class="form-control <%= validationError.error === "img" ? "is-invalid" : "" %>">
               </div>
               <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
               <button type="submit" class="btn btn-outlined">

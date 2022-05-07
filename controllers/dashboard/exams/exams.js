@@ -213,6 +213,8 @@ export const postUpdateExam = async (req, res, next) => {
     const errors = validationResult(req);
     const schemaValidation = await questionsSchema.validate(questions);
 
+    console.log(`Testing schema`, schemaValidation);
+
     if ("error" in schemaValidation || !errors.isEmpty()) {
       return res.status(422).json({
         errors,

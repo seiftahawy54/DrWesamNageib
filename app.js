@@ -141,6 +141,13 @@ app.use(async (req, res, next) => {
   }
 });
 
+app.get("/testing", (req, res, next) => {
+  res.render("testing.ejs", {
+    title: "Testing",
+    path: "/testing",
+  });
+});
+
 app.post(
   "/download_image",
   body("img_id").isString().isLength({ min: 15 }),
