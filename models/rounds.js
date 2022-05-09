@@ -39,12 +39,12 @@ const Rounds = sequelize.define("rounds", {
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),
-    allowNull: true,
+    allowNull: false,
   },
   updatedAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),
-    allowNull: true,
+    allowNull: false,
   },
 });
 

@@ -69,12 +69,29 @@
                   </form>
                   <a class="btn btn-success col-2"
                      href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
-                    Add new <%= tableName %>
+                    Add new <%= singleTableName.toLowerCase() %>
                   </a>
+                <% } else if ('deletingAllMessages' in customStuff) { %>
+                  <div class="offset-lg-6 col-md-4">
+                    <div class="row">
+                      <form class="col-md-5" action="/dashboard/messages/delete-all-messages" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <button class="btn btn-danger">
+                          Delete all messages
+                        </button>
+                      </form>
+                      <div class="col-md-5 offset-md-2">
+                        <a class="btn btn-success "
+                           href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
+                          Add new <%= singleTableName.toLowerCase() %>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 <% } else { %>
                   <a class="btn btn-success offset-8 col-2"
                      href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
-                    Add new <%= tableName %>
+                    Add new <%= singleTableName.toLowerCase() %>
                   </a>
                 <% } %>
               </div>

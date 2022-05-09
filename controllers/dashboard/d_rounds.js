@@ -11,7 +11,13 @@ import Discounts from "../../models/discounts.js";
 
 export const getRounds = async (req, res, next) => {
   try {
-    const findingDiscounts = await Rounds.findAll();
+    const findingDiscounts = await Rounds.findAll({
+      order: [
+        ["round_date", "ASC"],
+        ["updatedAt", "DESC"],
+        ["createdAt", "DESC"],
+      ],
+    });
     const allPrimaryKeys = [];
 
     let data = await Promise.all(
@@ -52,6 +58,7 @@ export const getRounds = async (req, res, next) => {
 
           return {
             noOfUsers: users_ids.length,
+            finished: !finished ? "Working" : "Closed",
             course_id: name,
             users_ids: usersForEachRound,
             round_date: moment(round_date).format("DD-MM-YYYY"),
@@ -87,6 +94,10 @@ export const getRounds = async (req, res, next) => {
         {
           title: "#",
           name: "rounds-numbers",
+        },
+        {
+          title: "Round Status",
+          name: "rounds-status",
         },
         {
           title: "No. Users",
@@ -201,17 +212,21 @@ export const getUpdateRound = async (req, res, next) => {
     const roundId = req.params.roundId;
     const findingRound = await Rounds.findByPk(roundId);
     const findingRoundCourse = await Courses.findByPk(findingRound.course_id);
-    const allUsers = await Users.findAll({
-      where: { current_round: null, finished_course: null },
-    });
+    const allUsers = await sequelize.query(
+      `SELECT * FROM users WHERE finished_course is null and current_round is null`,
+      {
+        type: "SELECT",
+      }
+    );
+
     const roundCourse = (
       await sequelize.query(`SELECT * FROM courses WHERE course_id=?`, {
         replacements: [findingRound.course_id],
         type: "SELECT",
       })
     )[0];
-    const usersHavePreviousCourses = await sequelize.query(
-      `SELECT * FROM users WHERE char_length('finished_course') > 0`,
+    let usersHavePreviousCourses = await sequelize.query(
+      `SELECT * FROM users WHERE char_length(finished_course) > 0 and current_round is null`,
       {
         type: "SELECT",
       }
@@ -231,6 +246,9 @@ export const getUpdateRound = async (req, res, next) => {
       );
     }
 
+    console.log(usersHavePreviousCourses);
+    // usersHavePreviousCourses = usersHavePreviousCourses.filter();
+
     res.render("dashboard/rounds/round_form", {
       title: "Update Single Round",
       path: "/dashboard/rounds",
@@ -238,7 +256,7 @@ export const getUpdateRound = async (req, res, next) => {
       editMode: true,
       validationErrors: [],
       roundUsers: findingRoundUsersArr,
-      usersArr: allUsers,
+      unRoundedUsers: allUsers,
       usersWithPrevCourse: usersHavePreviousCourses,
       round: findingRound,
       moment,

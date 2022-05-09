@@ -1,9 +1,9 @@
 <%- include("../../includes/top_part.ejs"); %>
 <!-- Dashboard Globals -->
 <%- include("../../includes/dashboard_includes.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
-<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
-<link rel="stylesheet" href="/css/dashboard/courses.css"/>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css" />
 <link rel="stylesheet" href="/css/dashboard/round_form.css">
 </head>
 <body>
@@ -60,7 +60,7 @@
               <input type="date" name="round_date" placeholder="Round Date"
                      class="form-control <%= validationErrors.find(e => e.param === 'round_date') ? "is-invalid" : "" %>"
                      value="<% if (editMode === true) { %><%= moment(round.round_date).format("YYYY-MM-DD") %><% } %>"
-                     id="round_date"/>
+                     id="round_date" />
               <label for="round_date">Round Date</label>
             </div>
 
@@ -103,14 +103,14 @@
                 <hr>
                 <div class="row">
                   <div class="col-6">
-                    <h3>Un-rounded People - <%- usersArr.length %></h3>
+                    <h3>Un-rounded People - <%- unRoundedUsers.length %></h3>
                   </div>
                   <div class="offset-2 col-4">
                     <input type="text" id="searching-unrounded" placeholder="Search in un-rounded" class="form-control">
                   </div>
                 </div>
                 <div class="btn-group my-3 users-select-button" role="group" id="unrounded-container">
-                  <% usersArr.forEach((user, index) => { %>
+                  <% unRoundedUsers.forEach((user, index) => { %>
                     <% if (user.current_round === null) { %>
                       <input class="btn-check" type="checkbox"
                              id="user-<%- roundUsers.length + index %>"
@@ -136,10 +136,11 @@
                   <% usersWithPrevCourse.forEach((user, index) => { %>
                     <% if (user.current_round === null) { %>
                       <input class="btn-check" type="checkbox"
-                             id="user-<%- usersArr.length + roundUsers.length + index %>"
-                             name="user-<%- usersArr.length + roundUsers.length + index %>" value="<%= user.user_id %>">
+                             id="user-<%- unRoundedUsers.length + roundUsers.length + index %>"
+                             name="user-<%- unRoundedUsers.length + roundUsers.length + index %>"
+                             value="<%= user.user_id %>">
                       <label class="btn-outlined btn-outline-primary"
-                             for="user-<%- usersArr.length + roundUsers.length + index %>">
+                             for="user-<%- unRoundedUsers.length + roundUsers.length + index %>">
                         <%- user.name %>
                         <%- user.email %>
                       </label>
@@ -156,7 +157,7 @@
               <label for="finish_round" class="form-check-label">Finish Round?</label>
             </div>
 
-            <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
             <button type="submit" class="btn submitBtn">
               <% if (editMode === true) { %>
                 <%= "Update Round"; %>
@@ -184,28 +185,28 @@
     const unRoundedSearchingInput = document.getElementById(searchingInputId)
     const unRoundedContainerDiv = document.getElementById(searchingContainer)
     const unRoundedContainerDivElements = document.querySelectorAll(`#${searchingContainer} *`)
-    const unRoundedElementsFirstState = unRoundedContainerDivElements;
+    const unRoundedElementsFirstState = unRoundedContainerDivElements
 
     unRoundedSearchingInput.addEventListener("keypress", (event) => {
-      let filteredLabels = [];
-      let filteredInputs = [];
+      let filteredLabels = []
+      let filteredInputs = []
 
       unRoundedContainerDivElements.forEach(ele => {
         const regex = new RegExp(`${unRoundedSearchingInput.value}`)
-        if (ele.tagName === 'LABEL' && ele.textContent.toLowerCase().search(regex) > 0) {
+        if (ele.tagName === "LABEL" && ele.textContent.toLowerCase().search(regex) > 0) {
           filteredLabels.push(ele)
         }
       })
 
       unRoundedElementsFirstState.forEach(ele => {
         filteredLabels.forEach(label => {
-          if (ele.id === label.getAttribute('for') && ele.tagName === 'INPUT') {
+          if (ele.id === label.getAttribute("for") && ele.tagName === "INPUT") {
             filteredInputs.push(ele)
           }
         })
       })
 
-      const constructedStructure = [];
+      const constructedStructure = []
       for (let i = 0; i < filteredLabels.length; i++) {
         constructedStructure.push(filteredInputs[i])
         constructedStructure.push(filteredLabels[i])
@@ -215,21 +216,21 @@
 
 
       if (filteredLabels.length === 0) {
-        unRoundedContainerDiv.insertAdjacentHTML('beforeend', `<div class="alert alert-danger">User didn't found</div>`)
+        unRoundedContainerDiv.insertAdjacentHTML("beforeend", `<div class="alert alert-danger">User didn't found</div>`)
       }
 
-    });
+    })
 
-    unRoundedSearchingInput.addEventListener('keyup', () => {
+    unRoundedSearchingInput.addEventListener("keyup", () => {
       if (unRoundedSearchingInput.value.length === 0) {
         unRoundedContainerDiv.replaceChildren(...unRoundedElementsFirstState)
       }
     })
-  };
+  }
 
-  searchingInUsers('searching-unrounded', 'unrounded-container')
-  searchingInUsers('searching-rounded', 'rounded-container')
-  searchingInUsers('searching-old-users', 'prev-users-container')
+  searchingInUsers("searching-unrounded", "unrounded-container")
+  searchingInUsers("searching-rounded", "rounded-container")
+  searchingInUsers("searching-old-users", "prev-users-container")
 
 
 </script>

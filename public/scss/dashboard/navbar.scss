@@ -3,8 +3,8 @@
 @use "../utils/mediaFns" as mediaQ;
 
 .dashboard-nav {
-  padding: 50px;
-  height: 100vh;
+  padding: 50px 50px 0 50px;
+  min-height: 100vh;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;

@@ -219,7 +219,7 @@ export const postContactPage = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     req.session.sentMessage = false;
-    res.render("contactus/index", {
+    return res.render("contactus/index", {
       title: "Contact Us",
       path: "/contact",
       errorMessage: "Please enter valid data!",
@@ -234,9 +234,10 @@ export const postContactPage = async (req, res, next) => {
     });
     console.log(sendingResult);
     if (sendingResult._options.isNewRecord) {
-      res.redirect("/contact");
+      req.flash("success", "Your message have been sent successfully");
+      return res.redirect("/contact");
     } else {
-      res.render("contactus/index", {
+      return res.render("contactus/index", {
         title: "Contact Us",
         path: "/contact",
         errorMessage:

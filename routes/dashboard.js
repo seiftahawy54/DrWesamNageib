@@ -10,6 +10,7 @@ import {
   postDeleteCertificate,
   getUpdateOpinion,
   postUpdateOpinion,
+  postDeleteAllMessages,
 } from "../controllers/dashboard/dashboard.js";
 
 import {
@@ -63,6 +64,8 @@ router
   .use("/exams", DashboardExamsRoutes)
   .get("/courses", getCourses)
   .get("/messages", getMessages)
+  .post("/messages/delete-messages", postDeleteMessage)
+  .post("/messages/delete-all-messages", postDeleteAllMessages)
   .get("/add-new-course", getAddNewCourse)
   .post(
     "/add-new-course",
@@ -81,7 +84,6 @@ router
   .get("/edit-course/:courseId", getEditCourse)
   .post("/delete-course", postDeleteCourse)
   .post("/edit-course/:courseId", postUpdateCourse)
-  .post("/delete-message", postDeleteMessage)
   .get("/opinions", getOpinionsPage)
   .get("/edit-opinion/:opinionId", getUpdateOpinion)
   .post(

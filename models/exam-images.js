@@ -14,6 +14,16 @@ const ExamImages = sequelize.define("exam_images", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: false,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: false,
+  },
 });
 
 export default ExamImages;

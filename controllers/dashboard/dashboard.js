@@ -42,20 +42,16 @@ export const getMessages = async (req, res, next) => {
     const allPrimaryKeys = [];
 
     let data = await Promise.all(
-      allMessages.map(async ({ sendername, senderemail, message }, index) => {
-        // allPrimaryKeys.push(message_id);
-        //
-        // console.log(message_id);
-        //
-
-        // console.log(data);
-
-        return {
-          sendername,
-          senderemail,
-          message,
-        };
-      })
+      allMessages.map(
+        async ({ messageid, sendername, senderemail, message }, index) => {
+          allPrimaryKeys.push(messageid);
+          return {
+            sendername,
+            senderemail,
+            message,
+          };
+        }
+      )
     );
 
     console.log(data);
@@ -107,6 +103,7 @@ export const getMessages = async (req, res, next) => {
       customStuff: {
         // pagination:
         notHaveUpdate: true,
+        deletingAllMessages: true,
       },
     });
 
@@ -132,11 +129,26 @@ export const getMessages = async (req, res, next) => {
   }
 };
 
+export const postDeleteAllMessages = async (req, res, next) => {
+  try {
+    const deletingAllMessages = await Messages.destroy({
+      truncate: true,
+    });
+
+    console.log("Deleting all messages result ===> ", deletingAllMessages);
+
+    req.flash("success", "All messages are deleted successfully");
+    return res.redirect("/dashboard/messages");
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
 export const postDeleteMessage = async (req, res, next) => {
   try {
     const messageId = req.body.messageId;
     const deletingResult = await (await Messages.findByPk(messageId)).destroy();
-    console.log(deletingResult);
+    req.flash("success", "Message Deleted Successfully");
     res.redirect("/dashboard/messages");
   } catch (e) {
     await errorRaiser(e, next);

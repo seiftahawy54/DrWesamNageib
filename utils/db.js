@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === "production") {
       dialect: "postgres",
       protocol: "postgres",
       define: {
-        timestamps: false,
+        // timestamps: false,
       },
       dialectOptions: {
         ssl: {
@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === "production") {
       dialect: "postgres",
       protocol: "postgres",
       define: {
-        timestamps: false,
+        // timestamps: false,
       },
       dialectOptions: {},
     }

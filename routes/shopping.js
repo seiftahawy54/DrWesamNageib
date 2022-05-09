@@ -40,6 +40,7 @@ router
       body("name")
         .isString()
         .notEmpty()
+        .trim()
         .custom((value) => {
           if (value === "Henryimmob") {
             return false;

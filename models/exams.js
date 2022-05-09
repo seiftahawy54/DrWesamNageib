@@ -23,6 +23,16 @@ const Exams = sequelize.define("exam", {
   replies: {
     type: Sequelize.ARRAY(Sequelize.JSON),
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: false,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+    allowNull: false,
+  },
 });
 
 export default Exams;
