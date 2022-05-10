@@ -55,6 +55,7 @@ export const getUserProfile = async (req, res, next) => {
   );
 
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
+  console.log(`Exams Replies ===> `, findingUsersExams);
   let unfoundRepliesFlag = false;
 
   for (let i of findingUsersExams) {
