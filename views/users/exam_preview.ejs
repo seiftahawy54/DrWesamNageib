@@ -9,7 +9,7 @@
 <section class="exam">
   <div class="container">
     <div class="custom-head">
-      <h2 class="h1 text-center"><%- performingData.dataValues.title %></h2>
+      <h2 class="h1 text-center"><%- examData.title %></h2>
       <span class="mx-auto"></span>
     </div>
     <div class="row">
@@ -17,37 +17,35 @@
         <div class="question-container" id="questionsContainer">
           <form id="exam-form">
             <% /* exam.questions.forEach((examItem, questionIndex) => { */ %>
-            <% for (let i = 0, j = 0; i < performingData.questions.length; i++)  { %>
+            <% for (let i = 0, j = 0; i < performingData.length; i++)  { %>
               <div class="question">
-                <% if ("answers" in performingData.questions[i] && "questionHeader" in performingData.questions[i]) { %>
-                  <div class="custom-head">
-                    <h4>Q<sub><%= j + 1 %></sub> - <%= performingData.questions[i].questionHeader %></h4>
-                    <span></span>
-                  </div>
-                  <div class="answers-container">
-                    <% /*JSON.stringify(performingData.userAnswers[i], null, 5)*/ %>
-                    <% let userAnswer = parseInt(performingData.userAnswers[i][`${Object.keys(performingData.userAnswers[i])}`]) %>
-                    <% let correctAnswer = parseInt(performingData.questions[i].correctAnswer) %>
-                    <% performingData.questions[i].answers.forEach((answer, answerIndex)=> { %>
-                      <div class="form-check my-3">
-                        <input
-                          class="form-check-input <%- correctAnswer - 1 === answerIndex ? 'is-valid' : '' %> <%- correctAnswer !== userAnswer && userAnswer - 1 === answerIndex ? 'is-invalid' : "" %> <%- correctAnswer === userAnswer && correctAnswer - 1 === answerIndex ? 'is-valid ' : "" %>"
-                          type="radio" readonly
-                          id="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>"
-                          name="answer-<%- j %>">
-                        <label class="form-check-label w-100"
-                               for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
-                          <%- answer %>
-                        </label>
-                      </div>
-                    <% }) %>
-                    <% j += 1 %>
-                  </div>
-                <% } else { %>
-                  <img src="/downloaded_images/<%- performingData.questions[i].examImage %>"
-                       alt="<%= performingData.questions[i].examImage.split("-")[1] %>"
-                       class="img-fluid rounded-3" />
-                <% } %>
+                <div class="custom-head">
+                  <h4>Q<sub><%= j + 1 %></sub> - <%= questions[i].questionHeader %></h4>
+                  <span></span>
+                </div>
+                <div class="answers-container">
+                  <% /*JSON.stringify(performingData.userAnswers[i], null, 5)*/ %>
+                  <% /* let userAnswer = parseInt(performingData.userAnswers[i][`${Object.keys(performingData.userAnswers[i])}`]) */ %>
+                  <% /*let correctAnswer = parseInt(performingData.questions[i].correctAnswer) */ %>
+                  <%
+                    /*class="form-check-input performingData.correctAnswer - 1 === answerIndex ? 'is-valid' : ''
+                  correctAnswer !== userAnswer && userAnswer - 1 === answerIndex ? 'is-invalid' : "" correctAnswer === userAnswer && correctAnswer - 1 === answerIndex ? 'is-valid ' : "" */
+                  %>
+                  <% questions[i].answers.forEach((answer, answerIndex)=> { %>
+                    <div class="form-check my-3">
+                      <input
+                        class="form-check-input <%- answerIndex === performingData[i].correctAnswer - 1 ? "is-valid" : "" %> <%- performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ? "is-invalid" : "" %>"
+                        type="radio" readonly
+                        id="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>"
+                        name="answer-<%- j %>">
+                      <label class="form-check-label w-100"
+                             for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
+                        <%- answer %>
+                      </label>
+                    </div>
+                  <% }) %>
+                  <% j += 1 %>
+                </div>
               </div>
             <% } %>
           </form>

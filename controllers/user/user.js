@@ -472,13 +472,31 @@ export const getExamPreview = async (req, res, next) => {
         ({ user_id }) => user_id === userId
       );
 
-      const performingData = {
-        ...userPreviewAnswers[replyIndex],
-        ...examData,
-        questions: examData.questions.filter(
-          (examObject) => "questionHeader" in examObject
-        ),
-      };
+      let questionsWithoutImages = examData.questions
+        .map((question) => {
+          if ("questionHeader" in question) {
+            return question;
+          }
+        })
+        .filter((question) => question !== undefined);
+
+      let questionsWithUserAnswers = [];
+
+      for (
+        let question = 0;
+        question < questionsWithoutImages.length;
+        question++
+      ) {
+        questionsWithUserAnswers.push({
+          userAnswer:
+            userPreviewAnswers[replyIndex].userAnswers[question][
+              `${question + 1}`
+            ],
+          correctAnswer: parseInt(
+            questionsWithoutImages[question].correctAnswer
+          ),
+        });
+      }
 
       const userData = await Users.findByPk(req.user.user_id, {
         attributes: ["name"],
@@ -487,7 +505,9 @@ export const getExamPreview = async (req, res, next) => {
       return res.render("users/exam_preview", {
         title: `Trying Exam ${examData.title} for User ${userData.name}`,
         path: "/profile",
-        performingData,
+        performingData: questionsWithUserAnswers,
+        questions: questionsWithoutImages,
+        examData,
       });
     }
 
