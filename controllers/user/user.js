@@ -55,8 +55,24 @@ export const getUserProfile = async (req, res, next) => {
   );
 
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
+  let unfoundRepliesFlag = false;
 
-  console.log(findingUsersExams);
+  for (let i of findingUsersExams) {
+    if (i.replies.some((reply) => reply === undefined)) {
+      unfoundRepliesFlag = true;
+      break;
+    }
+  }
+
+  if (unfoundRepliesFlag) {
+    findingUsersExams = [];
+  }
+
+  // console.log(findingUsersExams.replies.some((ele) => ele === undefined));
+
+  // console.log(findingUsersExams.some((ele) => ele === undefined));
+
+  // findingUsersExams = [];
 
   // let currentUserGrades = findingUsersExams.map(({ title, replies }) => {
   //
