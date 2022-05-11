@@ -480,6 +480,8 @@ export const getExamPreview = async (req, res, next) => {
         })
         .filter((question) => question !== undefined);
 
+      console.log(questionsWithoutImages);
+
       let questionsWithUserAnswers = [];
 
       for (
@@ -497,6 +499,8 @@ export const getExamPreview = async (req, res, next) => {
           ),
         });
       }
+
+      // console.log(questionsWithUserAnswers);
 
       const userData = await Users.findByPk(req.user.user_id, {
         attributes: ["name"],

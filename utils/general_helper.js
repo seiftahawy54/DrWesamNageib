@@ -293,7 +293,10 @@ export const calculateExamsGrades = (reply, exam) => {
 
     console.log(`Exam Correct Answer`, exam[index].correctAnswer);
     console.log(`User answer`, userAnswer);
-    if (exam[index].correctAnswer.toString() === userAnswer.toString())
+    if (
+      userAnswer &&
+      exam[index].correctAnswer.toString() === userAnswer.toString()
+    )
       totalGrades += 1;
   });
 

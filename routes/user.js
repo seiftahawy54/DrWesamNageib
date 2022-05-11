@@ -35,7 +35,9 @@ router
     [
       body("userAnswers").isArray().isLength({ min: 1 }),
       body("userAnswers.*").isObject(),
-      body("userAnswers.*.*").isNumeric({ no_symbols: true }),
+      body("userAnswers.*.*")
+        .isNumeric({ no_symbols: true })
+        .optional({ nullable: true }),
       body("examId").isString().isLength({ min: 36, max: 36 }),
     ],
     postPerformExam

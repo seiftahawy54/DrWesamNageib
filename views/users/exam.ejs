@@ -51,7 +51,8 @@
                     </div>
                   <% } else { %>
                     <img src="/downloaded_images/<%- exam.questions[i].examImage %>"
-                         alt="<%= exam.questions[i].examImage.split("-")[1] %>" class="img-fluid rounded-3" />
+                         alt="<%= exam.questions[i].examImage.split("-")[1] %>" class="img-fluid rounded-3"
+                         loading="lazy" />
                   <% } %>
                 </div>
               <% } %>

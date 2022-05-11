@@ -18,11 +18,13 @@ const extractAnswers = (questionsContainer) => {
       }
     });
 
+    let checkedFlag = false;
     answersDivsContainer.forEach((answer, answerIndex) => {
       // console.log(answers);
       answer.childNodes.forEach((answerInput) => {
         if (answerInput.tagName === "INPUT") {
           if (answerInput.checked) {
+            checkedFlag = true;
             let answerObj = {};
             answerObj[questionIndex + 1] = answerIndex + 1;
             usersSubmittedAnswers.push(answerObj);
@@ -30,6 +32,12 @@ const extractAnswers = (questionsContainer) => {
         }
       });
     });
+
+    if (!checkedFlag) {
+      let answerObj = {};
+      answerObj[questionIndex + 1] = null;
+      usersSubmittedAnswers.push(answerObj);
+    }
   });
 
   return usersSubmittedAnswers;
