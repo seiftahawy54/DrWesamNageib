@@ -58,7 +58,7 @@ submitBtn.addEventListener("click", async (e) => {
 
   console.log(answeredQuestions, questionsContainerDiv.length);
 
-  if (answeredQuestions === questionsContainerDiv.length - allImages.length) {
+  if (answeredQuestions !== questionsContainerDiv.length - allImages.length) {
     errorModal.classList.remove("d-none");
     errorModal.textContent = "Answer all questions, please!";
     scrollTo(0, 0);
