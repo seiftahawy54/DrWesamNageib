@@ -51,6 +51,8 @@ export const getUserProfile = async (req, res, next) => {
   console.log(findingUsersExams);
 
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
+  // [ undefined, 32 ]
+  findingUsersExams = findingUsersExams.replies.filter((reply) => reply);
 
   console.log(findingUsersExams);
 
