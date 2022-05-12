@@ -54,12 +54,13 @@ export const getUserProfile = async (req, res, next) => {
 
   for (let examData of findingUsersExams) {
     examData.replies = examData.replies.filter((i) => i);
+    examData.preview_link = examData.preview_link.filter((i) => i);
   }
 
   console.log(`after ===> `, findingUsersExams);
 
   /*  let unfoundRepliesFlag = false;
-  
+
     for (let i of findingUsersExams) {
       if (i.replies.some((reply) => reply === undefined)) {
         unfoundRepliesFlag = true;
