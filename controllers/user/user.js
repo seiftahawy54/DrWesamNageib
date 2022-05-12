@@ -52,7 +52,9 @@ export const getUserProfile = async (req, res, next) => {
 
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
   // [ undefined, 32 ]
-  findingUsersExams = findingUsersExams.replies.filter((reply) => reply);
+  findingUsersExams.replies = findingUsersExams.replies.filter(
+    (reply) => reply
+  );
 
   console.log(findingUsersExams);
 
