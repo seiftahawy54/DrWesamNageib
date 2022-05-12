@@ -4,6 +4,9 @@ const submitBtn = document.getElementById("submit-exam");
 const questionsContainerDiv = document.querySelectorAll(
   "#questionsContainer div.answers-container"
 );
+
+const allImages = document.querySelectorAll("#exam-form .question img");
+
 let answeredQuestions = 0;
 const examForm = document.getElementById("exam-form");
 
@@ -55,7 +58,7 @@ submitBtn.addEventListener("click", async (e) => {
 
   console.log(answeredQuestions, questionsContainerDiv.length);
 
-  if (answeredQuestions <= questionsContainerDiv.length) {
+  if (answeredQuestions === questionsContainerDiv.length - allImages.length) {
     errorModal.classList.remove("d-none");
     errorModal.textContent = "Answer all questions, please!";
     scrollTo(0, 0);
