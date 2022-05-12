@@ -48,7 +48,12 @@ export const getUserProfile = async (req, res, next) => {
     }
   );
 
+  console.log(findingUsersExams);
+
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
+
+  console.log(findingUsersExams);
+
   /*  let unfoundRepliesFlag = false;
   
     for (let i of findingUsersExams) {
