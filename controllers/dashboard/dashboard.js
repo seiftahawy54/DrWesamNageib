@@ -1,7 +1,6 @@
 import { errorRaiser } from "../../utils/error_raiser.js";
 import { validationResult } from "express-validator";
 import moment from "moment";
-import { Sequelize } from "sequelize";
 import { uploadFile } from "../../utils/aws.js";
 import { getCertificatesImage } from "../../utils/general_helper.js";
 
@@ -12,6 +11,7 @@ import { Users } from "../../models/index.js";
 import { Messages } from "../../models/index.js";
 import { Opinions } from "../../models/index.js";
 import { Certificates } from "../../models/index.js";
+import { sequelize } from "../../utils/db.js";
 
 export const getOverview = async (req, res, next) => {
   const numberOfUsers = await Users.findAndCountAll();
@@ -20,6 +20,33 @@ export const getOverview = async (req, res, next) => {
   const numberOfMessages = await Messages.findAndCountAll();
   const numberOfPayments = await Payment.findAndCountAll();
   const numberOfCertificates = await Certificates.findAndCountAll();
+  const numberOfExamReplies = (await Exams.findAll())
+    .map(({ replies }) => {
+      return replies;
+    })
+    .reduce((previousValue, currentValue) => {
+      let returningVal = null;
+      if (
+        typeof previousValue === "number" &&
+        typeof currentValue === "number"
+      ) {
+        returningVal = previousValue + currentValue;
+      } else if (
+        typeof previousValue === "number" &&
+        typeof currentValue !== "number"
+      ) {
+        returningVal = previousValue;
+      } else if (
+        typeof previousValue !== "number" &&
+        typeof currentValue === "number"
+      ) {
+        returningVal = previousValue;
+      } else {
+        returningVal = 0;
+      }
+
+      return returningVal;
+    });
 
   res.render("dashboard/overview", {
     title: "Over View Page",
@@ -31,6 +58,7 @@ export const getOverview = async (req, res, next) => {
       messages: numberOfMessages.count,
       payments: numberOfPayments.count,
       certificates: numberOfCertificates.count,
+      "exam replies": numberOfExamReplies,
     },
   });
 };
@@ -53,8 +81,6 @@ export const getMessages = async (req, res, next) => {
         }
       )
     );
-
-    console.log(data);
 
     data = Object.entries(data).map(([key, value], index) => {
       return {
@@ -106,24 +132,6 @@ export const getMessages = async (req, res, next) => {
         deletingAllMessages: true,
       },
     });
-
-    /*let pageNumber = req.query.page;
-    if (!pageNumber) {
-      pageNumber = 1;
-    }
-    const MAX_NUMBER = 5;
-    const numberOfResults = await Messages.findAndCountAll();
-    const allMessages = await Messages.findAll({
-      limit: MAX_NUMBER,
-      offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
-    });
-
-    res.render("dashboard/messages", {
-      title: "Messages page",
-      path: "/dashboard/messages",
-      messages: allMessages,
-      numberOfLinks: numberOfResults,
-    });*/
   } catch (e) {
     await errorRaiser(e, next);
   }

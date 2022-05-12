@@ -33,7 +33,7 @@
   border-radius: 10px;
   width: fit-content;
   transition: all 0.25s ease-in-out;
-  font-size: 18px !important;
+  font-size: 16px !important;
 }
 .navbar-links-container .nav-links ul li.active a, .navbar-links-container .nav-links ul li:hover a {
   background-color: var(--bs-primary) !important;
