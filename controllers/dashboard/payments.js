@@ -101,13 +101,6 @@ export const getPaymentsPage = async (req, res, next) => {
         notDeleteRow: true,
       },
     });
-
-    // res.render("dashboard/payments", {
-    //   title: "Payments",
-    //   path: "/dashboard/payments",
-    //   payments: allPayments,
-    //   moment,
-    // });
   } catch (e) {
     await errorRaiser(e, next);
   }

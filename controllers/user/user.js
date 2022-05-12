@@ -538,3 +538,11 @@ export const getSubmittedExam = async (req, res, next) => {
     path: "/profile",
   });
 };
+
+export const getAllUserData = async (req, res, next) => {
+  try {
+    return res.json({ user: req.user });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};

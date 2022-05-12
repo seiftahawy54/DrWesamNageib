@@ -4,7 +4,7 @@ const submitBtn = document.getElementById("submit-exam");
 const questionsContainerDiv = document.querySelectorAll(
   "#questionsContainer div.answers-container"
 );
-
+let answeredQuestions = 0;
 const examForm = document.getElementById("exam-form");
 
 const extractAnswers = (questionsContainer) => {
@@ -28,6 +28,7 @@ const extractAnswers = (questionsContainer) => {
             let answerObj = {};
             answerObj[questionIndex + 1] = answerIndex + 1;
             usersSubmittedAnswers.push(answerObj);
+            answeredQuestions += 1;
           }
         }
       });
@@ -73,7 +74,7 @@ submitBtn.addEventListener("click", async (e) => {
 
   if (
     userAnswers.length === 0 &&
-    userAnswers.length < questionsContainerDiv.length
+    answeredQuestions < questionsContainerDiv.length
   ) {
     errorModal.classList.remove("d-none");
     errorModal.textContent = "Please start answering questions";
