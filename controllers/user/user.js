@@ -399,12 +399,19 @@ export const getPerformExam = async (req, res, next) => {
         }
       }
 
-      for (const questionObj of findingExam.questions) {
-        if ("examImage" in questionObj) {
-          const fetchingResult = await getSingleFile(questionObj.examImage);
-          console.log("Image searching result => ", fetchingResult);
+      const testing = async () => {
+        for (const questionObj of findingExam.questions) {
+          if ("examImage" in questionObj) {
+            const fetchingResult = await getSingleFile(questionObj.examImage);
+            console.log("Image searching result => ", fetchingResult);
+          }
         }
-      }
+      };
+
+      testing();
+      /*findingExam.questions = findingExam.questions.filter(
+        (quesObj) => "questionHeader" in quesObj
+      );*/
 
       return res.status(200).render("users/exam", {
         title: findingExam.title,
