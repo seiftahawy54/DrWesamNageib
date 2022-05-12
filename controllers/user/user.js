@@ -48,15 +48,15 @@ export const getUserProfile = async (req, res, next) => {
     }
   );
 
-  console.log(findingUsersExams);
+  console.log(`before ====> `, findingUsersExams);
 
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
-  // [ undefined, 32 ]
-  findingUsersExams.replies = findingUsersExams.replies.filter(
-    (reply) => reply
-  );
 
-  console.log(findingUsersExams);
+  for (let examData of findingUsersExams) {
+    examData.replies = examData.replies.filter((i) => i);
+  }
+
+  console.log(`after ===> `, findingUsersExams);
 
   /*  let unfoundRepliesFlag = false;
   
