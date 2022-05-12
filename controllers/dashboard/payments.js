@@ -6,7 +6,7 @@ export const getPaymentsPage = async (req, res, next) => {
   try {
     const allPayments = await sequelize.query(
       `
-      select payments.*, users.name as user_name, course.name as course_name, round.round_date as round_date from payments
+      select payments.status as payment_status, "payments"."createdAt" as payment_date, users.name as user_name, course.name as course_name, round.round_date as round_date from payments
         Inner JOIN users on users.user_id = payments.user_id
         Inner Join courses course on course.course_id = payments.course_id
         Inner Join rounds round on round.round_id = payments.round_id;
@@ -20,10 +20,21 @@ export const getPaymentsPage = async (req, res, next) => {
 
     let data = await Promise.all(
       allPayments.map(
-        async ({ payment_id, user_name, course_name, round_date }, index) => {
+        async (
+          {
+            payment_id,
+            payment_status,
+            payment_date,
+            user_name,
+            course_name,
+            round_date,
+          },
+          index
+        ) => {
           allPrimaryKeys.push(payment_id);
           return {
-            payment_id,
+            payment_status,
+            payment_date: moment(payment_date).format("DD-MM-YYYY h:mm a"),
             user_name,
             course_name,
             round_date: moment(round_date).format("DD-MM-YYYY"),
@@ -62,12 +73,32 @@ export const getPaymentsPage = async (req, res, next) => {
           title: "#",
           name: "payments-number",
         },
+        {
+          title: "Payment Status",
+          name: "payment-status",
+        },
+        {
+          title: "Payment Date",
+          name: "payment-date",
+        },
+        {
+          title: "Payee Name",
+          name: "payee-name",
+        },
+        {
+          title: "Bought Course",
+          name: "bought-course",
+        },
+        {
+          title: "Bought Round",
+          name: "bought-round",
+        },
       ],
       tableRows: finalData,
       customStuff: {
-        pagination: true,
         notHaveUpdate: true,
         notHaveNewInsert: true,
+        notDeleteRow: true,
       },
     });
 

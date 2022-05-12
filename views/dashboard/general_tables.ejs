@@ -139,15 +139,18 @@
                       </a>
                     </td>
                   <% } %>
-                  <td class="<%= tableName.toLowerCase() %>-delete">
-                    <form
-                      action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= tableName.toLowerCase() %>"
-                      method="post">
-                      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                      <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey %>">
-                      <button type="submit" class="btn btn-danger">Delete <%= tableName %></button>
-                    </form>
-                  </td>
+                  <% if ("notDeleteRow" in customStuff) { %>
+                  <% } else { %>
+                    <td class="<%= tableName.toLowerCase() %>-delete">
+                      <form
+                        action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= tableName.toLowerCase() %>"
+                        method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey %>">
+                        <button type="submit" class="btn btn-danger">Delete <%= tableName %></button>
+                      </form>
+                    </td>
+                  <% } %>
                 </tr>
               <% }) %>
               </tbody>
