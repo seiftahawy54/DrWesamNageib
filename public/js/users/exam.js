@@ -46,25 +46,6 @@ const extractAnswers = (questionsContainer) => {
 
 const clearAnswers = () => {
   examForm.reset();
-  // questionContainer.forEach((answers, questionIndex) => {
-  //   let answersDivsContainer = [];
-  //   answers.childNodes.forEach((answer, answerIndex) => {
-  //     if (answer.tagName === "DIV") {
-  //       answersDivsContainer.push(answer);
-  //     }
-  //   });
-  //
-  //   answersDivsContainer.forEach((answer, answerIndex) => {
-  //     // console.log(answers);
-  //     answer.childNodes.forEach((answerInput) => {
-  //       if (answerInput.tagName === "INPUT") {
-  //         if (answerInput.checked) {
-  //           answerInput.reset();
-  //         }
-  //       }
-  //     });
-  //   });
-  // });
 };
 
 submitBtn.addEventListener("click", async (e) => {
@@ -72,16 +53,16 @@ submitBtn.addEventListener("click", async (e) => {
   const userAnswers = extractAnswers(questionsContainerDiv);
   const errorModal = document.getElementById("alert-message");
 
+  console.log(answeredQuestions, questionsContainerDiv.length);
+
   if (
-    userAnswers.length === 0 &&
+    userAnswers.length === 0 ||
     answeredQuestions < questionsContainerDiv.length
   ) {
     errorModal.classList.remove("d-none");
-    errorModal.textContent = "Please start answering questions";
+    errorModal.textContent = "Answer all questions, please!";
+    scrollTo(0, 0);
   } else {
-    if (!errorModal.classList.contains("d-none"))
-      errorModal.classList.add("d-none");
-
     axios
       .post("/exam", {
         xsrfCookieName: csrfTokenInput,
