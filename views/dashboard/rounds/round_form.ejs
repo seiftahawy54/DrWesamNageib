@@ -156,11 +156,11 @@
             </div>
 
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-            <button type="submit" class="btn submitBtn">
+            <button type="submit" class="btn submitBtn" id="submit-form-btn">
               <% if (editMode === true) { %>
-                <%= "Update Round"; %>
+                <%= "Update Round" %>
               <% } else { %>
-                <%= "Start new round"; %>
+                <%= "Start new round" %>
               <% } %>
             </button>
           </form>
@@ -177,13 +177,27 @@
   /*
 
   */
+  const submitFormBtn = document.getElementById("submit-form-btn")
+
+  submitFormBtn.addEventListener('click', (e) => {
+    e.preventDefault()
+    const roundUsersLength = parseInt(`<%= roundUsers.length %>`)
+    const selectedRoundUsers = document.querySelectorAll("#rounded-container *").length / 2
+
+    console.log(selectedRoundUsers)
+
+    if (selectedRoundUsers <= 2) {
+      e.preventDefault()
+      alert("Please check that you have cancelled some people")
+    }
+  })
 
   const searchingInUsers = (searchingInputId, searchingContainer) => {
     //=>> UnRounded people
     const unRoundedSearchingInput = document.getElementById(searchingInputId)
     const unRoundedContainerDiv = document.getElementById(searchingContainer)
     const unRoundedContainerDivElements = document.querySelectorAll(`#${searchingContainer} *`)
-    const unRoundedElementsFirstState = unRoundedContainerDivElements
+    const unRoundedElementsFirstState = unRoundedContainerDivElements;
 
     unRoundedSearchingInput.addEventListener("keypress", (event) => {
       let filteredLabels = []
@@ -229,7 +243,6 @@
   searchingInUsers("searching-unrounded", "unrounded-container")
   searchingInUsers("searching-rounded", "rounded-container")
   searchingInUsers("searching-old-users", "prev-users-container")
-
 
 </script>
 <%- include("./rounds_scripts.ejs"); %>

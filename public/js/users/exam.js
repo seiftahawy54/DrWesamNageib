@@ -55,10 +55,7 @@ submitBtn.addEventListener("click", async (e) => {
 
   console.log(answeredQuestions, questionsContainerDiv.length);
 
-  if (
-    userAnswers.length === 0 ||
-    answeredQuestions < questionsContainerDiv.length
-  ) {
+  if (answeredQuestions <= questionsContainerDiv.length) {
     errorModal.classList.remove("d-none");
     errorModal.textContent = "Answer all questions, please!";
     scrollTo(0, 0);

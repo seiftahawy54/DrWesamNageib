@@ -49,18 +49,18 @@ export const getUserProfile = async (req, res, next) => {
   );
 
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
-  let unfoundRepliesFlag = false;
-
-  for (let i of findingUsersExams) {
-    if (i.replies.some((reply) => reply === undefined)) {
-      unfoundRepliesFlag = true;
-      break;
+  /*  let unfoundRepliesFlag = false;
+  
+    for (let i of findingUsersExams) {
+      if (i.replies.some((reply) => reply === undefined)) {
+        unfoundRepliesFlag = true;
+        break;
+      }
     }
-  }
-
-  if (unfoundRepliesFlag) {
-    findingUsersExams = [];
-  }
+  
+    if (unfoundRepliesFlag) {
+      findingUsersExams = [];
+    }*/
 
   // console.log(findingUsersExams.replies.some((ele) => ele === undefined));
 
@@ -431,10 +431,6 @@ export const postPerformExam = async (req, res, next) => {
         (examObj) => "questionHeader" in examObj
       );
 
-      // console.log(
-      //   `user grade is ==> `,
-      //   calculateExamsGrades(userAnswers, filteredQuestions)
-      // );
       const grade = calculateExamsGrades(userAnswers, filteredQuestions);
       const examData = await Exams.findByPk(examId);
 
