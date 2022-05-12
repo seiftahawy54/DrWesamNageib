@@ -1,28 +1,28 @@
 <%- include("../includes/top_part.ejs"); %>
 <!-- Dashboard Globals -->
 <%- include("../includes/dashboard_includes.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
-<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
-<link rel="stylesheet" href="/css/dashboard/overview.css"/>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/overview.css" />
 <link rel="stylesheet" href="/css/dashboard/courses.css">
 </head>
 <body>
 
 <section class="overview">
-  <div class="container-fluid g-0">
+  <%- include("../includes/dashboard-navbar.ejs"); %>
+  <div class="container">
     <div class="row g-0">
-      <div class="col-lg-3">
-        <%- include("../includes/dashboard-navbar.ejs"); %>
+      <div class="col-lg-12">
       </div>
       <div class="col-lg-9">
-        <div class="content p-5">
+        <div class="content">
           <main class="content-header">
             <% Object.keys(statsNumbers).forEach(key => { %>
               <div class="custom-head">
                 <h2>Number of <%- key %></h2>
                 <span></span>
               </div>
-              <div class="fs-3"><%= statsNumbers[key]; %></div>
+              <div class="fs-3"><%= statsNumbers[key] %></div>
             <% }) %>
           </main>
         </div>

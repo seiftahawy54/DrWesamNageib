@@ -21,13 +21,6 @@ export const getUserProfile = async (req, res, next) => {
     { replacements: [req.user.user_id], type: "SELECT" }
   );
 
-  /*
-  ({ user_id, grade }) => {
-    if (req.user.user_id === user_id) {
-      return grade;
-    }
-  }
-  */
   const allExams = await Exams.findAll({
     attributes: ["exam_id", "title", "replies", "questions"],
   });
@@ -36,6 +29,7 @@ export const getUserProfile = async (req, res, next) => {
     ({ exam_id, replies, title, questions }) => {
       if (Array.isArray(replies)) {
         return {
+          examId: exam_id,
           title,
           questions: questions.filter((examObj) => "questionHeader" in examObj)
             .length,
@@ -55,7 +49,6 @@ export const getUserProfile = async (req, res, next) => {
   );
 
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
-  console.log(`Exams Replies ===> `, findingUsersExams);
   let unfoundRepliesFlag = false;
 
   for (let i of findingUsersExams) {
@@ -87,13 +80,17 @@ export const getUserProfile = async (req, res, next) => {
 
   if (
     Array.isArray(roundLink) &&
+    !roundLink[0]?.finished &&
     roundLink.length > 0 &&
     "round_link" in roundLink[0]
   ) {
     round = roundLink[0].round_link;
   }
 
-  if (typeof req.user.finished_course === "string") {
+  if (
+    typeof req.user.finished_course === "string" &&
+    findingUsersExams.length > 0
+  ) {
     const findingFinishedRoundResult = await Rounds.findByPk(
       req.user.finished_course
     );
@@ -360,8 +357,31 @@ export const getPerformExam = async (req, res, next) => {
     let performedBefore = false;
 
     if (findingExam) {
+      let allRoundsUsersIds = await Rounds.findAll({
+        attributes: ["users_ids"],
+      });
+
+      allRoundsUsersIds = allRoundsUsersIds.map(({ users_ids }) => {
+        return users_ids;
+      });
+
+      let searchingResult = false;
+
+      for (let round of allRoundsUsersIds) {
+        for (let userId of round) {
+          if (req.user.user_id === userId) {
+            searchingResult = true;
+            break;
+          }
+        }
+      }
+
+      if (!searchingResult) {
+        req.flash("error", "You are not enrolled on any round!");
+        return res.redirect("/profile");
+      }
+
       for (let reply in findingExam.replies) {
-        console.log(findingExam.replies[reply]);
         if (findingExam.replies[reply].user_id === req.user.user_id) {
           performedBefore = true;
           req.flash("error", "Exam is already performed!");
@@ -373,16 +393,6 @@ export const getPerformExam = async (req, res, next) => {
         if ("examImage" in questionObj) {
           const fetchingResult = await getSingleFile(questionObj.examImage);
           console.log("Image searching result => ", fetchingResult);
-          // axios
-          //   .post("/download_image", {
-          //     img_id: questionObj.examImage,
-          //   })
-          //   .then((res) => {
-          //     console.log(res);
-          //   })
-          //   .catch((err) => {
-          //     console.error(err.message);
-          //   });
         }
       }
 
@@ -393,8 +403,8 @@ export const getPerformExam = async (req, res, next) => {
       });
     }
 
-    req.flash("error", "Please check the link!");
-    return res.redirect("/profile");
+    // req.flash("error", "Please check the link!");
+    // return res.redirect("/profile");
   } catch (e) {
     await errorRaiser(e, next);
   }

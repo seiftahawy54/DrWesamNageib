@@ -1,82 +1,64 @@
-<nav class="dashboard-nav" id="dashboard-navbar">
-  <section class="navbar-links-container">
+<nav class="navbar fixed-top">
+  <div class="container">
     <div class="navbar-brand">
-      <a class="reset-link active" href="/">Dr. Wasam Nageib</a>
-      <button class="navbar-toggler d-sm-block d-lg-none" type="button" id="nav-button">
-        <span class="navbar-toggler-icon">
-          <%- include('../../public/imgs/svgs/navbar_icon.svg') %>
-        </span>
-      </button>
-    </div>
-    <div class="logged-in-user">
-      <div class="user-img">
-        <img src="/imgs/imgs/userthumbnail.png" alt="user-thumbnail" />
-      </div>
-      <div class="user-info">
-      <span class="user-type">
-      Owner
-    </span>
-        <span class="user-name">
-      Dr. Wesam
-    </span>
+      <div class="logged-in-user">
+        <div class="user-img">
+          <img class='img-fluid' src="/imgs/imgs/user_img.png" alt="user-thumbnail" />
+        </div>
+        <a href="/dashboard/overview" class="reset-link">
+          <div class="user-info">
+          <span class="user-type">
+            Owner
+          </span>
+            <span class="user-name">
+            Dr. Wesam
+          </span>
+          </div>
+        </a>
       </div>
     </div>
-    <div class="nav-links">
-      <ul class="list-unstyled">
-        <%- include('./navlinks', {routeName: "overview", linkText: "Overview" }); %>
-        <%- include('./navlinks', {routeName: "users", linkText: "Users" }); %>
-        <%- include('./navlinks', {routeName: "rounds", linkText: "Rounds" }); %>
-        <%- include('./navlinks', {routeName: "courses", linkText: "Courses" }); %>
-        <%- include('./navlinks', {routeName: "messages", linkText: "Messages" }); %>
-        <%- include('./navlinks', {routeName: "opinions", linkText: "Opinions" }); %>
-        <%- include('./navlinks', {routeName: "payments", linkText: "Payments" }); %>
-        <%- include('./navlinks', {routeName: "about", linkText: "About" }); %>
-        <%- include('./navlinks', {routeName: "discounts", linkText: "Discounts" }); %>
-        <%- include('./navlinks', {routeName: "exams", linkText: "Exams" }); %>
-      </ul>
-    </div>
-  </section>
 
-  <div class="navbar-footer">
-    <div class="info">
-      <a href="/"><%- include('../../public/imgs/svgs/info.svg') %></a>
-    </div>
-    <div class="logout">
-      <form action="/logout" method="post">
-        <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
-        <button type="submit" class="reset-btn">
-          <%- include('../../public/imgs/svgs/logout.svg') %>
-        </button>
-      </form>
+    <!-- End NavbarHeader -->
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+            aria-controls="offcanvasNavbar">
+      <span class="navbar-toggler-icon">
+        <%- include('../../public/imgs/svgs/navbar_icon.svg') %>
+      </span>
+    </button>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel"></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body navbar-links-container">
+        <div class="nav-links">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <%- include('./navlinks', {routeName: "overview", linkText: "Overview" }); %>
+            <%- include('./navlinks', {routeName: "users", linkText: "Users" }); %>
+            <%- include('./navlinks', {routeName: "rounds", linkText: "Rounds" }); %>
+            <%- include('./navlinks', {routeName: "courses", linkText: "Courses" }); %>
+            <%- include('./navlinks', {routeName: "messages", linkText: "Messages" }); %>
+            <%- include('./navlinks', {routeName: "opinions", linkText: "Opinions" }); %>
+            <%- include('./navlinks', {routeName: "payments", linkText: "Payments" }); %>
+            <%- include('./navlinks', {routeName: "about", linkText: "About" }); %>
+            <%- include('./navlinks', {routeName: "discounts", linkText: "Discounts" }); %>
+            <%- include('./navlinks', {routeName: "exams", linkText: "Exams" }); %>
+            <li>
+              <div class="navbar-footer">
+                <div class="logout">
+                  <form action="/logout" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <button type="submit" class="reset-btn">
+                      <%- include('../../public/imgs/svgs/logout.svg') %>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
-
-<div class="show-nav remove-show-button" id="show-nav-button">
-  <button class="navbar-toggler d-sm-block d-lg-none" type="button">
-    <span class="navbar-toggler-icon">
-    <%- include('../../public/imgs/svgs/navbar_icon.svg') %>
-  </span>
-  </button>
-</div>
-
-<script>
-  const navigationButton = document.querySelector("#nav-button")
-  const dashboardNavigation = document.querySelector("#dashboard-navbar")
-  const showNavButton = document.querySelector("#show-nav-button")
-
-  navigationButton.addEventListener("click", (btn) => {
-    dashboardNavigation.classList.toggle("remove-nav")
-    showNavButton.classList.remove("remove-show-button")
-    showNavButton.classList.toggle("active")
-  })
-
-  showNavButton.addEventListener("click", () => {
-    showNavButton.classList.toggle("active")
-    dashboardNavigation.classList.remove("remove-nav")
-    showNavButton.classList.remove("remove-show-button")
-  })
-
-  // navigationButton.click()
-
-</script>

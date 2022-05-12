@@ -1,4 +1,4 @@
-import { Courses } from "../../models/index.js";
+import { Courses, Rounds, Users } from "../../models/index.js";
 import { validationResult } from "express-validator";
 import {
   deleteFile,
@@ -8,10 +8,92 @@ import {
 import { resolve } from "path";
 import { errorRaiser } from "../../utils/error_raiser.js";
 import { uploadFile } from "../../utils/aws.js";
+import moment from "moment";
 
 const getCourses = async (req, res, next) => {
   try {
-    const allCourses = await Courses.findAll();
+    const findingAllCourses = await Courses.findAll({
+      order: [
+        ["course_rank", "ASC"],
+        ["updatedAt", "DESC"],
+        ["createdAt", "DESC"],
+      ],
+    });
+    const allPrimaryKeys = [];
+
+    let data = await Promise.all(
+      await findingAllCourses.map(
+        async ({ course_id, course_rank, name, price, description }) => {
+          allPrimaryKeys.push(course_id);
+
+          return {
+            course_rank,
+            name,
+            price,
+            description,
+          };
+        }
+      )
+    );
+
+    data = Object.entries(data).map(([key, value], index) => {
+      return {
+        item: value,
+        entry: key,
+      };
+    });
+
+    let finalData = [];
+
+    data.forEach((value, key) => {
+      finalData.push({
+        data: data[key],
+        primaryKey: allPrimaryKeys[key],
+        updateInputName: "courseId",
+      });
+    });
+
+    return res.render("dashboard/rounds/rounds_modified", {
+      title: "Course",
+      path: "/dashboard/rounds",
+      tableName: "courses",
+      addingNewLink: "course",
+      singleTableName: "course",
+      tableHead: [
+        {
+          title: "#",
+          name: "course-numbers",
+        },
+        {
+          title: "Course Rank",
+          name: "course-rank",
+        },
+        {
+          title: "Course Name",
+          name: "course-name",
+        },
+        {
+          title: "Price",
+          name: "price",
+        },
+        {
+          title: "Description",
+          name: "course-description",
+        },
+        {
+          title: "Update Course",
+          name: "update-course",
+        },
+        {
+          title: "Delete Course",
+          name: "delete-course",
+        },
+      ],
+      tableRows: finalData,
+      customStuff: {},
+    });
+
+    /*const allCourses = await Courses.findAll();
 
     const sortedCourses = sortCourses(allCourses);
 
@@ -19,7 +101,7 @@ const getCourses = async (req, res, next) => {
       title: "Courses page",
       path: "/dashboard/courses",
       courses: sortedCourses,
-    });
+    });*/
   } catch (e) {
     await errorRaiser(e, next);
   }
@@ -42,6 +124,7 @@ const postAddNewCourse = async (req, res, next) => {
     const courseDescription = req.body.description;
     const courseThumbnail = req.body.thumbnail;
     const courseRank = req.body.course_rank;
+    const specialCourse = req.body.special_course;
     const courseImg = req.files[0];
     const detailedImg = req.files[1];
     const courseImage = req.files[0].path;
@@ -70,6 +153,7 @@ const postAddNewCourse = async (req, res, next) => {
           ar_course_name: courseArName,
           course_thumbnail: courseThumbnail,
           course_rank: courseRank,
+          special_course: specialCourse,
         },
         validationErrors: errors.array(),
       });
@@ -83,6 +167,7 @@ const postAddNewCourse = async (req, res, next) => {
         ar_course_name: courseArName,
         course_thumbnail: courseThumbnail,
         course_rank: courseRank,
+        special_course: specialCourse,
       });
 
       const uploadingFirstImg = await uploadFile(
@@ -156,6 +241,7 @@ const postUpdateCourse = async (req, res, next) => {
   const courseArName = req.body.arabic_name;
   const courseThumbnail = req.body.thumbnail;
   const courseRank = req.body.course_rank;
+  const specialCourse = req.body.special_course;
 
   try {
     const errors = validationResult(req);
@@ -182,6 +268,7 @@ const postUpdateCourse = async (req, res, next) => {
             ar_course_name: courseArName,
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
+            special_course: specialCourse,
           },
           { where: { course_id: courseId } }
         );
@@ -223,6 +310,7 @@ const postUpdateCourse = async (req, res, next) => {
             ar_course_name: courseArName,
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
+            special_course: specialCourse,
           },
           { where: { course_id: courseId } }
         );
@@ -269,6 +357,7 @@ const postUpdateCourse = async (req, res, next) => {
             ar_course_name: courseArName,
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
+            special_course: specialCourse,
           },
           { where: { course_id: courseId } }
         );
@@ -323,6 +412,7 @@ const postUpdateCourse = async (req, res, next) => {
             ar_course_name: courseArName,
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
+            special_course: specialCourse,
           },
           { where: { course_id: courseId } }
         );
@@ -361,6 +451,7 @@ const postUpdateCourse = async (req, res, next) => {
         ar_course_name: courseArName,
         thumbnail: courseThumbnail,
         course_rank: courseRank,
+        special_course: specialCourse,
       },
       validationErrors: errorsArray,
     });

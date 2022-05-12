@@ -16,7 +16,6 @@
       <div class="offset-lg-3 col-lg-6 col-xs-12">
         <div class="question-container" id="questionsContainer">
           <form id="exam-form">
-            <% /* exam.questions.forEach((examItem, questionIndex) => { */ %>
             <% for (let i = 0, j = 0; i < performingData.length; i++)  { %>
               <div class="question">
                 <div class="custom-head">
@@ -24,13 +23,6 @@
                   <span></span>
                 </div>
                 <div class="answers-container">
-                  <% /*JSON.stringify(performingData.userAnswers[i], null, 5)*/ %>
-                  <% /* let userAnswer = parseInt(performingData.userAnswers[i][`${Object.keys(performingData.userAnswers[i])}`]) */ %>
-                  <% /*let correctAnswer = parseInt(performingData.questions[i].correctAnswer) */ %>
-                  <%
-                    /*class="form-check-input performingData.correctAnswer - 1 === answerIndex ? 'is-valid' : ''
-                  correctAnswer !== userAnswer && userAnswer - 1 === answerIndex ? 'is-invalid' : "" correctAnswer === userAnswer && correctAnswer - 1 === answerIndex ? 'is-valid ' : "" */
-                  %>
                   <% questions[i].answers.forEach((answer, answerIndex)=> { %>
                     <div class="form-check my-3">
                       <input

@@ -2,6 +2,68 @@
 @use "../utils/common" as common;
 @use "../utils/mediaFns" as mediaQ;
 
+.logged-in-user {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  .user-img {
+    img {
+      @include common.similarHW(60px);
+      object-fit: contain;
+    }
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+
+    .user-name {
+      font-size: vars.$xl_font_size;
+    }
+
+    .user-type {
+      opacity: 0.5;
+    }
+  }
+}
+
+.navbar-links-container {
+  .nav-links {
+    ul {
+      li {
+        cursor: pointer;
+
+        a {
+          padding: 10px 20px;
+          border-radius: 10px;
+          width: fit-content;
+          transition: all 0.25s ease-in-out;
+          font-size: vars.$md_font_size !important;
+        }
+
+        &.active,
+        &:hover {
+          a {
+            background-color: var(--bs-primary) !important;
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+}
+
+.navbar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  svg {
+    @include common.similarHW(40px);
+  }
+}
+
 .dashboard-nav {
   padding: 50px 50px 0 50px;
   min-height: 100vh;
@@ -32,76 +94,28 @@
     }
   }
 
-  .navbar-links-container {
-    .navbar-brand {
-      font-size: vars.$lg_header_size !important;
-      display: block;
-      margin-block-end: 10px !important;
-
-      &.active {
-        color: vars.$main_color !important;
-      }
-    }
-
-    .nav-links {
-      margin-block-start: 30px;
-
-      ul {
-        li {
-          cursor: pointer;
-          margin-block-end: 25px;
-
-          a {
-            border-radius: 10px;
-            width: fit-content;
-            transition: all 0.25s ease-in-out;
-            font-size: vars.$md_font_size !important;
-          }
-
-          &.active,
-          &:hover {
-            a {
-              background-color: var(--bs-primary) !important;
-              color: #fff;
-            }
-          }
-        }
-      }
-    }
-
-    .logged-in-user {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-
-      .user-img {
-        img {
-          @include common.similarHW(90px);
-        }
-      }
-
-      .user-info {
-        display: flex;
-        flex-direction: column;
-
-        .user-name {
-          font-size: vars.$xl_font_size;
-        }
-
-        .user-type {
-          opacity: 0.5;
-        }
-      }
-    }
-  }
-
-  .navbar-footer {
+  .logged-in-user {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 20px;
 
-    svg {
-      @include common.similarHW(40px);
+    .user-img {
+      img {
+        @include common.similarHW(90px);
+      }
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+
+      .user-name {
+        font-size: vars.$xl_font_size;
+      }
+
+      .user-type {
+        opacity: 0.5;
+      }
     }
   }
 }

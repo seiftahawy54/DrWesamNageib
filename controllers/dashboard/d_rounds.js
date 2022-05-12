@@ -96,12 +96,12 @@ export const getRounds = async (req, res, next) => {
           name: "rounds-numbers",
         },
         {
-          title: "Round Status",
-          name: "rounds-status",
-        },
-        {
           title: "No. Users",
           name: "number-of-subscribers",
+        },
+        {
+          title: "Round Status",
+          name: "rounds-status",
         },
         {
           title: "Round Course Name",
@@ -315,9 +315,9 @@ export const postUpdateRound = async (req, res, next) => {
       for (const user of allUsers) {
         if (user.current_round === roundId) {
           const updateUserRound = await sequelize.query(
-            "UPDATE users SET current_round=null WHERE user_id=?",
+            "UPDATE users SET current_round=null, finished_course=? WHERE user_id=?",
             {
-              replacements: [user.user_id],
+              replacements: [roundId, user.user_id],
               type: QueryTypes.UPDATE,
             }
           );

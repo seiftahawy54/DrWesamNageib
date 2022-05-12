@@ -45,6 +45,10 @@ const Courses = sequelize.define("course", {
     allowNull: false,
     unique: true,
   },
+  special_course: {
+    type: Sequelize.BOOLEAN,
+    allowNull: true,
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),

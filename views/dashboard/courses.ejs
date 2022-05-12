@@ -1,3 +1,7 @@
+<%- include("../includes/general_tables.ejs"); %>
+
+
+<!--
 <%- include("../includes/top_part.ejs"); %>
 <link rel="stylesheet" href="/css/dashboard/navbar.css"/>
 <link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
@@ -34,7 +38,7 @@
             </div>
             <% courses.forEach(course => { %>
               <div class="table-row">
-                <span class="course-rank">#<%= course.course_rank; %></span>
+                <span class="course-rank">#<%= course.course_rank %></span>
                 <span class="course-name"><%= course.name; %></span>
                 <span class="course-price">&dollar;<%= course.price; %></span>
                 <span class="course-description">
@@ -61,3 +65,4 @@
 </section>
 
 <%- include("../includes/bottom_part.ejs"); %>
+-->

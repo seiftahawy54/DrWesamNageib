@@ -76,14 +76,15 @@ router
       body("course_rank").isNumeric().notEmpty(),
       body("thumbnail").isString().notEmpty(),
       body("description").isString().notEmpty(),
+      body("special_course").isString().notEmpty(),
       // body("course_img").notEmpty(),
       // body("detailed_img").notEmpty(),
     ],
     postAddNewCourse
   )
-  .get("/edit-course/:courseId", getEditCourse)
-  .post("/delete-course", postDeleteCourse)
-  .post("/edit-course/:courseId", postUpdateCourse)
+  .get("/courses/edit-course/:courseId", getEditCourse)
+  .post("/courses/delete-course", postDeleteCourse)
+  .post("/courses/edit-course/:courseId", postUpdateCourse)
   .get("/opinions", getOpinionsPage)
   .get("/edit-opinion/:opinionId", getUpdateOpinion)
   .post(

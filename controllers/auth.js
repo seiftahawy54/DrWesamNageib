@@ -420,9 +420,9 @@ export const postLogout = (req, res, next) => {
   req.session.destroy((err) => {
     if (err) {
       console.log(`A Destroy `, err);
-      res.redirect("/");
+      return res.redirect("/");
     } else {
-      res.redirect("/");
+      return res.redirect("/");
     }
   });
 };
