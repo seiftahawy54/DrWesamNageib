@@ -48,16 +48,12 @@ export const getUserProfile = async (req, res, next) => {
     }
   );
 
-  console.log(`before ====> `, findingUsersExams);
-
   findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
 
   for (let examData of findingUsersExams) {
     examData.replies = examData.replies.filter((i) => i);
     examData.preview_link = examData.preview_link.filter((i) => i);
   }
-
-  console.log(`after ===> `, findingUsersExams);
 
   /*  let unfoundRepliesFlag = false;
 
@@ -408,7 +404,7 @@ export const getPerformExam = async (req, res, next) => {
         }
       };
 
-      testing();
+      await testing();
       /*findingExam.questions = findingExam.questions.filter(
         (quesObj) => "questionHeader" in quesObj
       );*/
@@ -502,8 +498,6 @@ export const getExamPreview = async (req, res, next) => {
           }
         })
         .filter((question) => question !== undefined);
-
-      console.log(questionsWithoutImages);
 
       let questionsWithUserAnswers = [];
 

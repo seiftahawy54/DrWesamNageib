@@ -373,6 +373,7 @@ export const postUpdateRound = async (req, res, next) => {
     );
 
     if (updatingRoundsResult[0] === 1) {
+      req.flash("success", "Round Updated successfully");
       return res.status(201).redirect("/dashboard/rounds");
     } else {
       const allCourses = await Courses.findAll();

@@ -103,7 +103,7 @@ app.use(csrfProtection);
 app.use(flash());
 
 const accessLogStream = fs.createWriteStream(path.resolve("access.log"), {
-  flags: "a+",
+  flags: "a",
 });
 
 // app.use(helmet());

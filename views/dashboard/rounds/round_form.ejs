@@ -179,18 +179,17 @@
   */
   const submitFormBtn = document.getElementById("submit-form-btn")
 
-  /*  submitFormBtn.addEventListener('click', (e) => {
-      e.preventDefault()
-      const roundUsersLength = parseInt(`<%= roundUsers.length %>`)
-    const selectedRoundUsers = document.querySelectorAll("#rounded-container *").length / 2
+  submitFormBtn.addEventListener('click', (e) => {
 
-    console.log(selectedRoundUsers)
+    const roundedPeopleCheckedLength = document.querySelectorAll('#rounded-container input:checked').length
+    const unRoundedPeopleCheckedLength = document.querySelectorAll('#unrounded-container input:checked').length
+    const oldPeopleCheckedLength = document.querySelectorAll('#prev-users-container input:checked').length
 
-    if (selectedRoundUsers <= 2) {
+    if ((roundedPeopleCheckedLength + unRoundedPeopleCheckedLength + oldPeopleCheckedLength <= 2)) {
       e.preventDefault()
       alert("Please check that you have cancelled some people")
     }
-  })*/
+  })
 
   const searchingInUsers = (searchingInputId, searchingContainer) => {
     //=>> UnRounded people
