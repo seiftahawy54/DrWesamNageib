@@ -55,7 +55,7 @@ const getCourses = async (req, res, next) => {
 
     return res.render("dashboard/rounds/rounds_modified", {
       title: "Course",
-      path: "/dashboard/rounds",
+      path: "/dashboard/courses",
       tableName: "courses",
       addingNewLink: "course",
       singleTableName: "course",

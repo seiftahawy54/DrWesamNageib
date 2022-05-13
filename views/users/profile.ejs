@@ -1,4 +1,5 @@
 <%- include("../includes/top_part.ejs"); %>
+<script src="/js/axios.min.js"></script>
 <link rel="stylesheet" href="/css/user/profile.css" />
 </head>
 <body>
@@ -7,7 +8,13 @@
 <section class="profile">
   <div class="container">
     <div class="row">
-      <div class="col-12 mb-5">
+      <div class="col-12 mb-5" x-data="{testing: 'test', userData: {}, payments: {}, round: {}, userGrades: {}}"
+           x-init="
+           userData = (await axios.get('/user-data')).data.user;
+           payments = (await axios.get('/user-payments')).data;
+           round = (await axios.get('/user-round')).data;
+           userGrades = (await axios.get('/user-grades')).data;
+          ">
         <%- include("../includes/errorMessage.ejs"); %>
         <div class="custom-head">
           <h2>Your Data</h2>
@@ -18,30 +25,26 @@
             Name
           </div>
 
-          <div class="info">
-            <%= user.name %>
+          <div class="info" x-text="userData.name">
           </div>
           <div class="info">
             Phone Number
           </div>
 
-          <div class="info">
-            <%= user.whatsapp_no %>
+          <div class="info" x-text="userData.whatsapp_no">
           </div>
           <div class="info">
             Email
           </div>
 
-          <div class="info">
-            <%= user.email %>
+          <div class="info" x-text="userData.email">
           </div>
 
           <div class="info">
             Specialization
           </div>
 
-          <div class="info">
-            <%= user.specialization %>
+          <div class="info" x-text="userData.specialization">
           </div>
 
           <div class="info">
@@ -49,61 +52,80 @@
           </div>
 
           <div class="info payments-details">
-            <% if (bought_courses?.length !== 0) { %>
-              <div class="bought_courses">
-                <span>Course Name</span>
-                <span>Course Price</span>
-                <% bought_courses.forEach(course => { %>
-                  <span><%= course.name %></span>
-                  <span><%= course.price %></span>
-                <% }) %>
-              </div>
-            <% } else { %>
-              You've bought not courses yet! <a href="/courses">Buy now</a>
-            <% } %>
+            <div x-show="payments">
+              <template x-for="payment in payments.payments">
+                <div class="bought_courses" x-data="{payment}">
+                  <span x-text="payment.name"></span>
+                  <span x-text="payment.price"></span>
+                </div>
+              </template>
+            </div>
+            <div x-show="payments.payments == []">
+              <span x-text="payments.message"></span>
+            </div>
           </div>
 
-          <div class="info">
-            <% if (roundLink?.length !== 0) { %>
-              Your round link
-            <% } %>
+          <div class="info" x-show="round">
+            Round files
           </div>
+          <div class="info" x-show="round" x-html="round.round">
+          </div>
+
+          <!--<div class="info" x-text="JSON.stringify(userGrades.userExams)"></div>-->
+
           <div class="info">
-            <% if (roundLink?.length !== 0) { %>
-              <%- roundLink %>
-            <% } %>
+            Your performed exams: <br />
+            <div class="exams-previews" x-show="userGrades.userExams">
+              <template x-for="(grade, index) in userGrades.userExams">
+                <div x-data="grade" :class="'preview-' + index" class="fs-5">
+                  <span x-text="index + 1 + ': '"></span>
+                  <a :href="grade.preview_link" x-text="grade.title + ' report'"></a>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <div class="info payments-details">
+            <template x-for="(grade, index) in userGrades.userExams">
+              <div class="bought_courses" x-data="{grade}">
+                <span class="text-center">
+                  <sup><span x-text="grade.reply.grade"></span></sup> /
+                  <sub><span x-text="grade.reply.userAnswers.length"></span></sub>
+                </span>
+              </div>
+            </template>
           </div>
 
           <% if (userGrades && userGrades.length > 0) { %>
-            <div class="info">
-              Your Performed exam grades <br />
+            <!--<div class="info">
+            Your Performed exam grades <br />
 
-              <div class="exams-previews">
-                <% userGrades.forEach(({ replies, preview_link, title }) => { %>
-                  <% preview_link.forEach((reply, index) => { %>
-                    <div class="preview-<% index + 1 %>">
-                      <span><%= index + 1 %>: </span>
-                      <a href="<%- reply %>"><%= title %> report</a>
-                    </div>
+            <div class="exams-previews">
+              <% userGrades.forEach(({ replies, preview_link, title }) => { %>
+                <% preview_link.forEach((reply, index) => { %>
+                  <div class="preview-<% index + 1 %>">
+                    <span><%= index + 1 %>: </span>
+                    <a href="<%- reply %>"><%= title %> report</a>
+                  </div>
+                <% }) %>
+              <% }) %>
+            </div>
+          </div>
+
+          <div class="info payments-details">
+            <div class="bought_courses">
+              <span>Exam Title</span>
+              <span>Exam Grade</span>
+              <% userGrades.forEach(({ title, replies, questions }) => { %>
+                <span><%= title %></span>
+                <span class="grades">
+                  <% replies.forEach(grade => { %>
+                    <span><sup><%= grade %></sup>&frasl;<sub><%= questions %></sub></span>
                   <% }) %>
-                <% }) %>
-              </div>
+                </span>
+              <% }) %>
             </div>
-
-            <div class="info payments-details">
-              <div class="bought_courses">
-                <span>Exam Title</span>
-                <span>Exam Grade</span>
-                <% userGrades.forEach(({ title, replies, questions }) => { %>
-                  <span><%= title %></span>
-                  <span class="grades">
-                    <% replies.forEach(grade => { %>
-                      <span><sup><%= grade %></sup>&frasl;<sub><%= questions %></sub></span>
-                    <% }) %>
-                  </span>
-                <% }) %>
-              </div>
-            </div>
+          </div>-->
           <% } %>
 
           <% if (courseName) { %>
@@ -163,26 +185,29 @@
   </div>
 </section>
 
-<!--<hr />-->
-<!--
+<%
+/*<hr />
 
-<h1>Testing apline</h1>
-<div class="container" x-data="{open: false}">
+<div class="container" x-data="{open: false, userName: 'Seif Tahawy'}">
+  <h1>Testing apline</h1>
 
-  <div x-show="open">
+  <span x-show="open" x-transition>
     Testing
+  </span>
+
+  <button class="btn btn-info" @click="open = !open">Click Me</button>
+
+  <div style="transform: skew(20deg)">
+    Your name is <span x-text="userName"></span>
   </div>
 
-  <button class="btn btn-info" @click="toggleStatus()">Click Me</button>
+  <div x-text="(await axios.get('/user-data')).data.user.email"></div>
+
 </div>
--->
+*/
+%>
 
 <script src="/js/alpine.min.js"></script>
-<script type="module">
-  const toggleStatus = () => {
-
-  }
-</script>
 
 <%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>

@@ -49,6 +49,9 @@ const Courses = sequelize.define("course", {
     type: Sequelize.BOOLEAN,
     allowNull: true,
   },
+  total_hours: {
+    type: Sequelize.STRING,
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),

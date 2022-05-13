@@ -97,6 +97,15 @@
               <%- include('../includes/check-input.ejs', {id: "course-special", checked: false, label: "Special Course", name: "special_course" } ); %>
             <% } %>
 
+            <div class="form-floating my-3">
+              <input type="number" name="total_hours" placeholder="Total hours"
+
+                     class="form-control <%= validationErrors.find(e => e.param === "total_hours") ? "is-invalid" : "" %>"
+                     value="<% if (editMode === true) { %><%= course.total_hours %><% } %>"
+                     id="total_hours" min="0" />
+              <label for="total_hours">Course Total Hours</label>
+            </div>
+
             <!--<div class="form-floating my-3">
               <input type="text" name="thumbnail" placeholder="Course Thumbnail"
                      class="form-control <%= validationErrors.find(e => e.param === "thumbnail") ? "is-invalid" : "" %>"

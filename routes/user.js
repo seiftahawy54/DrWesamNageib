@@ -8,6 +8,10 @@ import {
   postPerformExam,
   getSubmittedExam,
   getExamPreview,
+  getAllUserData,
+  getBoughtCourses,
+  getUserRound,
+  getUserGrades,
 } from "../controllers/user/user.js";
 import { Router } from "express";
 import { body } from "express-validator";
@@ -42,6 +46,10 @@ router
     ],
     postPerformExam
   )
-  .get("/exam/preview/:examId/:userId/:replyIndex", getExamPreview);
+  .get("/exam/preview/:examId/:userId/:replyIndex", getExamPreview)
+  .get("/user-data", getAllUserData)
+  .get("/user-payments", getBoughtCourses)
+  .get("/user-round", getUserRound)
+  .get("/user-grades", getUserGrades);
 
 export { router as userRoutes };

@@ -16,45 +16,6 @@ import { errorRaiser } from "../../utils/error_raiser.js";
 import axios from "axios";
 
 export const getUserProfile = async (req, res, next) => {
-  const roundLink = await sequelize.query(
-    `select * from rounds where ? LIKE ANY (rounds.users_ids)`,
-    { replacements: [req.user.user_id], type: "SELECT" }
-  );
-
-  const allExams = await Exams.findAll({
-    attributes: ["exam_id", "title", "replies", "questions"],
-  });
-
-  let findingUsersExams = allExams.map(
-    ({ exam_id, replies, title, questions }) => {
-      if (Array.isArray(replies)) {
-        return {
-          examId: exam_id,
-          title,
-          questions: questions.filter((examObj) => "questionHeader" in examObj)
-            .length,
-          replies: replies.map(({ user_id, grade }) => {
-            if (req.user.user_id === user_id) {
-              return grade;
-            }
-          }),
-          preview_link: replies.map(({ user_id, grade }, index) => {
-            if (req.user.user_id === user_id) {
-              return `/exam/preview/${exam_id}/${user_id}/${index}`;
-            }
-          }),
-        };
-      }
-    }
-  );
-
-  findingUsersExams = findingUsersExams.filter((reply) => reply?.replies);
-
-  for (let examData of findingUsersExams) {
-    examData.replies = examData.replies.filter((i) => i);
-    examData.preview_link = examData.preview_link.filter((i) => i);
-  }
-
   /*  let unfoundRepliesFlag = false;
 
     for (let i of findingUsersExams) {
@@ -63,7 +24,7 @@ export const getUserProfile = async (req, res, next) => {
         break;
       }
     }
-  
+
     if (unfoundRepliesFlag) {
       findingUsersExams = [];
     }*/
@@ -78,20 +39,13 @@ export const getUserProfile = async (req, res, next) => {
   //
   // });
 
+  let findingUsersExams = "";
+
   let round = "",
     finishedCourseName = "",
     courseId = "",
     roundDate = "",
     userGrades = findingUsersExams;
-
-  if (
-    Array.isArray(roundLink) &&
-    !roundLink[0]?.finished &&
-    roundLink.length > 0 &&
-    "round_link" in roundLink[0]
-  ) {
-    round = roundLink[0].round_link;
-  }
 
   if (
     typeof req.user.finished_course === "string" &&
@@ -108,7 +62,10 @@ export const getUserProfile = async (req, res, next) => {
 
       roundDate = findingFinishedRoundResult.round_date;
 
-      if (findingFinishedCourseResult) {
+      if (
+        findingFinishedCourseResult &&
+        findingFinishedCourseResult.special_course
+      ) {
         finishedCourseName = findingFinishedCourseResult;
         courseId = findingFinishedCourseResult.course_id;
       }
@@ -128,10 +85,8 @@ export const getUserProfile = async (req, res, next) => {
             title: req.user.name,
             path: "/profile",
             user: req.user,
-            roundLink: "",
             courseName: "",
             userGrades,
-            bought_courses: [],
             validationError: {},
             moment,
             roundDate,
@@ -140,50 +95,44 @@ export const getUserProfile = async (req, res, next) => {
       }
     }
 
-    const findingUserPayments = await Payment.findAll({
-      where: { user_id: req.user.user_id },
+    /*    if (findingUserPayments.length !== 0) {
+          const coursesPayments = findingUserPayments.map((payment) => {
+            return payment.course_id;
+          });
+
+          const findingBoughtCourses = await Promise.all(
+            coursesPayments.map(async (courses) => {
+              return await Courses.findByPk(courses);
+            })
+          );
+
+          return res.render("users/profile", {
+            title: req.user.name,
+            path: "/profile",
+            user: req.user,
+            roundLink: round,
+            courseName: finishedCourseName,
+            courseId: courseId,
+            userGrades,
+            bought_courses: findingBoughtCourses,
+            validationError: {},
+            moment,
+            roundDate,
+          });
+        } else {*/
+    // req.flash("error", "There's an error from our end!");
+    return res.render("users/profile", {
+      title: req.user.name,
+      path: "/profile",
+      user: req.user,
+      courseName: finishedCourseName,
+      courseId: courseId,
+      userGrades,
+      validationError: {},
+      moment,
+      roundDate,
     });
-
-    if (findingUserPayments.length !== 0) {
-      const coursesPayments = findingUserPayments.map((payment) => {
-        return payment.course_id;
-      });
-
-      const findingBoughtCourses = await Promise.all(
-        coursesPayments.map(async (courses) => {
-          return await Courses.findByPk(courses);
-        })
-      );
-
-      return res.render("users/profile", {
-        title: req.user.name,
-        path: "/profile",
-        user: req.user,
-        roundLink: round,
-        courseName: finishedCourseName,
-        courseId: courseId,
-        userGrades,
-        bought_courses: findingBoughtCourses,
-        validationError: {},
-        moment,
-        roundDate,
-      });
-    } else {
-      // req.flash("error", "There's an error from our end!");
-      return res.render("users/profile", {
-        title: req.user.name,
-        path: "/profile",
-        user: req.user,
-        bought_courses: [],
-        courseName: finishedCourseName,
-        courseId: courseId,
-        roundLink: round,
-        userGrades,
-        validationError: {},
-        moment,
-        roundDate,
-      });
-    }
+    // }
   } catch (e) {
     console.log(`we've entered here`, e);
     req.flash("error", e.message);
@@ -547,8 +496,117 @@ export const getSubmittedExam = async (req, res, next) => {
 };
 
 export const getAllUserData = async (req, res, next) => {
+  const user = {
+    name: req.user.name,
+    whatsapp_no: req.user.whatsapp_no,
+    user_id: req.user.user_id,
+    email: req.user.email,
+    specialization: req.user.specialization,
+  };
   try {
     return res.json({ user: req.user });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getBoughtCourses = async (req, res, next) => {
+  try {
+    const findingUserPayments = await Payment.findAll({
+      where: { user_id: req.user.user_id },
+    });
+
+    if (
+      !Array.isArray(findingUserPayments) ||
+      findingUserPayments.length === 0
+    ) {
+      return res
+        .status(404)
+        .json({ message: "No payments found", payments: [] });
+    }
+
+    const coursesPayments = findingUserPayments.map((payment) => {
+      return payment.course_id;
+    });
+
+    if (!Array.isArray(coursesPayments) || coursesPayments.length === 0) {
+      return res
+        .render(404)
+        .json({ message: "No courses are payed for!", payments: [] });
+    }
+
+    const findingBoughtCourses = await Promise.all(
+      await coursesPayments.map(async (courses) => {
+        return await Courses.findByPk(courses);
+      })
+    );
+
+    return res
+      .status(200)
+      .json({ message: "Payments found!", payments: findingBoughtCourses });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getUserRound = async (req, res, next) => {
+  try {
+    const roundData = await sequelize.query(
+      `select * from rounds where ? LIKE ANY (rounds.users_ids)`,
+      { replacements: [req.user.user_id], type: "SELECT" }
+    );
+
+    console.log(roundData);
+
+    if (roundData.length === 0 || !"round_link" in roundData[0]) {
+      return res
+        .status(200)
+        .json({ message: "You are not on any rounds", round: null });
+    }
+
+    if (roundData[0].finished) {
+      return res
+        .status(200)
+        .json({ message: "Round is finished", round: null });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Round found", round: roundData[0].round_link });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getUserGrades = async (req, res, next) => {
+  try {
+    const allExams = await Exams.findAll({
+      attributes: ["exam_id", "title", "replies", "questions"],
+    });
+
+    let userReplies = [];
+
+    allExams.forEach((exam, index) => {
+      // console.log(`Exam ${index} replies ==> `, exam.replies);
+      if (exam.replies) {
+        exam.replies.forEach((reply, index) => {
+          if (reply.user_id === req.user.user_id) {
+            userReplies.push({
+              examId: exam.exam_id,
+              title: exam.title,
+              reply,
+              preview_link: `/exam/preview/${exam.exam_id}/${req.user.user_id}/${index}`,
+            });
+          }
+        });
+      }
+    });
+
+    console.log(userReplies);
+
+    res.status(200).json({
+      userExams: userReplies.length > 0 ? userReplies : null,
+    });
   } catch (e) {
     await errorRaiser(e, next);
   }

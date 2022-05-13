@@ -14,7 +14,7 @@
 }
 .profile .exams-previews {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 }
 .profile .user-img {
   position: relative;
@@ -47,7 +47,7 @@
   grid-template-columns: 1fr 1fr 1fr;
   text-align: center;
 }
-.profile .payments-details .bought_courses span {
+.profile .payments-details .bought_courses > span {
   border: 1px solid #545ee3;
   border-radius: 2px;
   display: block;

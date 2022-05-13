@@ -14,7 +14,7 @@
 
   .exams-previews {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .user-img {
@@ -62,7 +62,7 @@
         text-align: center;
       }
 
-      span {
+      & > span {
         border: 1px solid vars.$main_color;
         border-radius: 2px;
         display: block;

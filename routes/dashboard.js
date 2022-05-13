@@ -53,6 +53,7 @@ import {
 import DashboardUsersRoutes from "./dashboard/users.js";
 import DashboardRoundsRoutes from "./dashboard/rounds.js";
 import DashboardExamsRoutes from "./dashboard/exams.js";
+import DashboardCoursesRoutes from "./dashboard/courses.js";
 
 const router = express.Router();
 
@@ -62,29 +63,10 @@ router
   .use("/users", DashboardUsersRoutes)
   .use("/rounds", DashboardRoundsRoutes)
   .use("/exams", DashboardExamsRoutes)
-  .get("/courses", getCourses)
+  .use("/courses", DashboardCoursesRoutes)
   .get("/messages", getMessages)
   .post("/messages/delete-messages", postDeleteMessage)
   .post("/messages/delete-all-messages", postDeleteAllMessages)
-  .get("/add-new-course", getAddNewCourse)
-  .post(
-    "/add-new-course",
-    [
-      body("name").isString().notEmpty(),
-      body("price").isNumeric().notEmpty(),
-      body("arabic_name").isString().notEmpty(),
-      body("course_rank").isNumeric().notEmpty(),
-      body("thumbnail").isString().notEmpty(),
-      body("description").isString().notEmpty(),
-      body("special_course").isString().notEmpty(),
-      // body("course_img").notEmpty(),
-      // body("detailed_img").notEmpty(),
-    ],
-    postAddNewCourse
-  )
-  .get("/courses/edit-course/:courseId", getEditCourse)
-  .post("/courses/delete-course", postDeleteCourse)
-  .post("/courses/edit-course/:courseId", postUpdateCourse)
   .get("/opinions", getOpinionsPage)
   .get("/edit-opinion/:opinionId", getUpdateOpinion)
   .post(

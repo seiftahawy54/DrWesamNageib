@@ -213,7 +213,7 @@ export const getUpdateRound = async (req, res, next) => {
     const findingRound = await Rounds.findByPk(roundId);
     const findingRoundCourse = await Courses.findByPk(findingRound.course_id);
     const allUsers = await sequelize.query(
-      `SELECT * FROM users WHERE finished_course is null and current_round is null`,
+      `SELECT * FROM users WHERE finished_course is null or current_round is null`,
       {
         type: "SELECT",
       }
