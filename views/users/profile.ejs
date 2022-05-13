@@ -73,9 +73,9 @@
 
           <!--<div class="info" x-text="JSON.stringify(userGrades.userExams)"></div>-->
 
-          <div class="info">
+          <div class="info" x-show="userGrades.userExams">
             Your performed exams: <br />
-            <div class="exams-previews" x-show="userGrades.userExams">
+            <div class="exams-previews">
               <template x-for="(grade, index) in userGrades.userExams">
                 <div x-data="grade" :class="'preview-' + index" class="fs-5">
                   <span x-text="index + 1 + ': '"></span>
@@ -85,7 +85,7 @@
             </div>
           </div>
 
-          <div class="info payments-details">
+          <div class="info payments-details" x-show="userGrades.userGrades">
             <template x-for="(grade, index) in userGrades.userExams">
               <div class="bought_courses" x-data="{grade}">
                 <span class="text-center">
@@ -95,38 +95,6 @@
               </div>
             </template>
           </div>
-
-          <% if (userGrades && userGrades.length > 0) { %>
-            <!--<div class="info">
-            Your Performed exam grades <br />
-
-            <div class="exams-previews">
-              <% userGrades.forEach(({ replies, preview_link, title }) => { %>
-                <% preview_link.forEach((reply, index) => { %>
-                  <div class="preview-<% index + 1 %>">
-                    <span><%= index + 1 %>: </span>
-                    <a href="<%- reply %>"><%= title %> report</a>
-                  </div>
-                <% }) %>
-              <% }) %>
-            </div>
-          </div>
-
-          <div class="info payments-details">
-            <div class="bought_courses">
-              <span>Exam Title</span>
-              <span>Exam Grade</span>
-              <% userGrades.forEach(({ title, replies, questions }) => { %>
-                <span><%= title %></span>
-                <span class="grades">
-                  <% replies.forEach(grade => { %>
-                    <span><sup><%= grade %></sup>&frasl;<sub><%= questions %></sub></span>
-                  <% }) %>
-                </span>
-              <% }) %>
-            </div>
-          </div>-->
-          <% } %>
 
           <% if (courseName) { %>
             <div class="info">
