@@ -504,7 +504,7 @@ export const getAllUserData = async (req, res, next) => {
     specialization: req.user.specialization,
   };
   try {
-    return res.json({ user: req.user });
+    return res.json({ user });
   } catch (e) {
     await errorRaiser(e, next);
   }
@@ -521,7 +521,7 @@ export const getBoughtCourses = async (req, res, next) => {
       findingUserPayments.length === 0
     ) {
       return res
-        .status(404)
+        .status(200)
         .json({ message: "No payments found", payments: [] });
     }
 
@@ -531,7 +531,7 @@ export const getBoughtCourses = async (req, res, next) => {
 
     if (!Array.isArray(coursesPayments) || coursesPayments.length === 0) {
       return res
-        .render(404)
+        .render(200)
         .json({ message: "No courses are payed for!", payments: [] });
     }
 
