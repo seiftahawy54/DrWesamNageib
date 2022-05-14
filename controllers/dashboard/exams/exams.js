@@ -131,6 +131,7 @@ export const startNewExam = async (req, res, next) => {
     const questions = req.body.questions;
     const examTitle = req.body.examTitle;
     const examStatus = req.body.examStatus;
+    const specialExam = req.body.specialExam;
     const errors = validationResult(req);
     const schemaValidation = await questionsSchema.validate(questions);
 
@@ -146,6 +147,7 @@ export const startNewExam = async (req, res, next) => {
       status: examStatus,
       questions,
       title: examTitle,
+      special_exam: specialExam,
     });
 
     return res.status(201).json({
@@ -209,6 +211,7 @@ export const postUpdateExam = async (req, res, next) => {
     const questions = req.body.questions;
     const examTitle = req.body.examTitle;
     const examStatus = req.body.examStatus;
+    const specialExam = req.body.specialExam;
 
     const errors = validationResult(req);
     const schemaValidation = await questionsSchema.validate(questions);
@@ -226,6 +229,7 @@ export const postUpdateExam = async (req, res, next) => {
         status: examStatus,
         questions,
         title: examTitle,
+        special_exam: specialExam,
       },
       { where: { exam_id: examId } }
     );

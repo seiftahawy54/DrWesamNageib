@@ -25,6 +25,7 @@ router
     body("examStatus").isBoolean(),
     body("examId").isString().isLength({ min: 36 }),
     body("questions").isArray().isLength({ min: 1 }),
+    body("specialExam").isBoolean(),
     postUpdateExam
   )
   .post(
@@ -33,6 +34,7 @@ router
       body("examTitle").isString().isLength({ min: 5 }),
       body("examStatus").isBoolean(),
       body("questions").isArray(),
+      body("specialExam").isBoolean(),
     ],
     startNewExam
   )

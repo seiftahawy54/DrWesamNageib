@@ -39,6 +39,14 @@
               <%- include('../../includes/check-input.ejs', {id: "exam-status", checked: false, label: "Exam Status", name: "exam-status" } ); %>
             <% } %>
 
+            <!-- Exam Type -->
+
+            <% if (editMode) { %>
+              <%- include('../../includes/check-input.ejs', {id: "special-exam", checked: exam.special_exam, label: "Special Exam", name: "special-exam" } ); %>
+            <% } else { %>
+              <%- include('../../includes/check-input.ejs', {id: "special-exam", checked: false, label: "Special Exam", name: "special-exam" } ); %>
+            <% } %>
+
             <!-- Exam Title -->
 
             <%- include('../../includes/main-input.ejs', {

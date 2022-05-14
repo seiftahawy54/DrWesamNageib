@@ -12,6 +12,7 @@ import {
   getBoughtCourses,
   getUserRound,
   getUserGrades,
+  getUserProfileCertificate,
 } from "../controllers/user/user.js";
 import { Router } from "express";
 import { body } from "express-validator";
@@ -50,6 +51,7 @@ router
   .get("/user-data", getAllUserData)
   .get("/user-payments", getBoughtCourses)
   .get("/user-round", getUserRound)
-  .get("/user-grades", getUserGrades);
+  .get("/user-grades", getUserGrades)
+  .get("/user-certificates", getUserProfileCertificate);
 
 export { router as userRoutes };

@@ -62,6 +62,7 @@ export const createCertificate = (
   userName = "",
   userId = "",
   courseName = "",
+  courseHours = "",
   roundStartingDate = ""
 ) => {
   const certificateName = `${userName}-${userId}.pdf`;
@@ -142,7 +143,7 @@ export const createCertificate = (
           lineHeight: 1.2,
         },
         {
-          text: `has attended a structured 3-months, 50 contact hours of training in preparation of healthcare Quality certificate and is therefore awarded the`,
+          text: `has attended a structured 3-months, ${courseHours} contact hours of training in preparation of healthcare Quality certificate and is therefore awarded the`,
           fontSize: "18",
           italics: true,
           alignment: "center",

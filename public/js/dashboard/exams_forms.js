@@ -17,6 +17,7 @@ const questionForm = document.getElementById("question-form");
 const submitExamBtn = document.getElementById("submitBtn");
 const csrfTokenInput = document.getElementById("csrfToken");
 const examStatusInput = document.getElementById("exam-status");
+const specialExamInput = document.getElementById("special-exam");
 const editingExamsInput = document.getElementById("editingInputExams");
 const examsFormEditMode =
   document.getElementById("exams-form").dataset.editMode === "true";
@@ -497,6 +498,7 @@ submitExamBtn.addEventListener("click", (e) => {
   e.preventDefault();
   const exams = JSON.parse(localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE));
   const examStatus = examStatusInput.checked;
+  const specialExam = specialExamInput.checked;
 
   console.log(examTitleInput);
 
@@ -510,6 +512,7 @@ submitExamBtn.addEventListener("click", (e) => {
         questions: exams,
         examStatus,
         examTitle: examTitleInput.value,
+        specialExam,
       },
       message;
 

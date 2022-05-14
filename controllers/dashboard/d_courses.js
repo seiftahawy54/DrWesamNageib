@@ -242,6 +242,7 @@ const postUpdateCourse = async (req, res, next) => {
   const courseThumbnail = req.body.thumbnail;
   const courseRank = req.body.course_rank;
   const specialCourse = req.body.special_course;
+  const totalHours = req.body.total_hours;
 
   try {
     const errors = validationResult(req);
@@ -269,6 +270,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
             special_course: specialCourse,
+            total_hours: totalHours,
           },
           { where: { course_id: courseId } }
         );
@@ -311,6 +313,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
             special_course: specialCourse,
+            total_hours: totalHours,
           },
           { where: { course_id: courseId } }
         );
@@ -358,6 +361,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
             special_course: specialCourse,
+            total_hours: totalHours,
           },
           { where: { course_id: courseId } }
         );
@@ -413,6 +417,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_thumbnail: courseThumbnail,
             course_rank: courseRank,
             special_course: specialCourse,
+            total_hours: totalHours,
           },
           { where: { course_id: courseId } }
         );
@@ -452,6 +457,7 @@ const postUpdateCourse = async (req, res, next) => {
         thumbnail: courseThumbnail,
         course_rank: courseRank,
         special_course: specialCourse,
+        total_hours: totalHours,
       },
       validationErrors: errorsArray,
     });

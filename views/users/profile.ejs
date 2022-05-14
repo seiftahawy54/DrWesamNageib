@@ -8,13 +8,14 @@
 <section class="profile">
   <div class="container">
     <div class="row">
-      <div class="col-12 mb-5" x-data="{testing: 'test', userData: {}, payments: {}, round: {}, userGrades: {}}"
+      <div class="col-12 mb-5" x-data="{userData: {}, payments: {}, round: {}, userGrades: {}, certificate: {}}"
            x-init="
-           userData = (await axios.get('/user-data')).data.user;
-           payments = (await axios.get('/user-payments')).data;
-           round = (await axios.get('/user-round')).data;
-           userGrades = (await axios.get('/user-grades')).data;
-          ">
+            userData = (await axios.get('/user-data')).data.user;
+            payments = (await axios.get('/user-payments')).data;
+            round = (await axios.get('/user-round')).data;
+            userGrades = (await axios.get('/user-grades')).data;
+            certificate = (await axios.get('/user-certificates')).data;
+      ">
         <%- include("../includes/errorMessage.ejs"); %>
         <div class="custom-head">
           <h2>Your Data</h2>
@@ -52,7 +53,7 @@
           </div>
 
           <div class="info payments-details">
-            <div x-show="payments">
+            <div x-show="payments" x-transition>
               <template x-for="payment in payments.payments">
                 <div class="bought_courses" x-data="{payment}">
                   <span x-text="payment.name"></span>
@@ -60,20 +61,18 @@
                 </div>
               </template>
             </div>
-            <div x-show="payments.payments == []">
-              <span x-text="payments.message"></span>
+            <div x-show="payments.payments == []" x-transition>
+              <span x-text="payments.message">You haven't bought any courses yet!</span>
             </div>
           </div>
 
-          <div class="info" x-show="round.round">
+          <div class="info" x-show="round.round" x-transition>
             Round files
           </div>
-          <div class="info" x-show="round" x-html="round.round">
+          <div class="info" x-show="round" x-transition x-html="round.round">
           </div>
 
-          <!--<div class="info" x-text="JSON.stringify(userGrades.userExams)"></div>-->
-
-          <div class="info" x-show="userGrades.userExams">
+          <div class="info" x-show="userGrades.userExams != []" x-transition>
             Your performed exams: <br />
             <div class="exams-previews">
               <template x-for="(grade, index) in userGrades.userExams">
@@ -85,7 +84,7 @@
             </div>
           </div>
 
-          <div class="info payments-details" x-show="userGrades.userGrades">
+          <div class="info payments-details" x-show="userGrades.userGrades != []" x-transition>
             <template x-for="(grade, index) in userGrades.userExams">
               <div class="bought_courses" x-data="{grade}">
                 <span class="text-center">
@@ -96,16 +95,14 @@
             </template>
           </div>
 
-          <% if (courseName) { %>
-            <div class="info">
-              Your Certificate
-            </div>
+          <div class="info" x-show="certificate.certificateData != {}" x-transition>
+            Your certificate
+          </div>
 
-            <div class="info">
-              <a href="/certificates/<%- courseId %>" class="link-success"><%= courseName.name %>
-                - <%= moment(roundDate).format("LL") %></a>
-            </div>
-          <% } %>
+          <div class="info" x-show="certificate.certificateData != {}">
+            <a :href="`/certificates/${certificate.certificateData.courseId}`" class="link-success"
+               x-text="`${certificate.certificateData.courseName} - ${certificate.certificateData.roundDate}`"></a>
+          </div>
 
           <div class="info">
             <a href="/update-data/<%= user.user_id %>" class="btn">
@@ -125,9 +122,6 @@
                   alt="<%= user.name %>"
                 />
               <% } else { %>
-                <div class="alert alert-primary" role="alert">
-                  Do you want to add an image ?
-                </div>
                 <img
                   src="/imgs/imgs/user_img.png"
                   alt="<%= user.name %>"
@@ -175,7 +169,6 @@
 */
 %>
 
-<script src="/js/alpine.min.js"></script>
-
 <%- include("../includes/footer.ejs"); %>
+<script src="/js/alpine.min.js"></script>
 <%- include("../includes/bottom_part.ejs"); %>

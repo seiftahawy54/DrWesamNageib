@@ -39,38 +39,40 @@ export const getUserProfile = async (req, res, next) => {
   //
   // });
 
-  let findingUsersExams = "";
-
-  let round = "",
-    finishedCourseName = "",
-    courseId = "",
-    roundDate = "",
-    userGrades = findingUsersExams;
-
-  if (
-    typeof req.user.finished_course === "string" &&
-    findingUsersExams.length > 0
-  ) {
-    const findingFinishedRoundResult = await Rounds.findByPk(
-      req.user.finished_course
-    );
-
-    if (findingFinishedRoundResult) {
-      const findingFinishedCourseResult = await Courses.findByPk(
-        findingFinishedRoundResult.course_id
+  /*
+    let findingUsersExams = "";
+  
+    let round = "",
+      finishedCourseName = "",
+      courseId = "",
+      roundDate = "",
+      userGrades = findingUsersExams;
+  
+    if (
+      typeof req.user.finished_course === "string" &&
+      findingUsersExams.length > 0
+    ) {
+      const findingFinishedRoundResult = await Rounds.findByPk(
+        req.user.finished_course
       );
-
-      roundDate = findingFinishedRoundResult.round_date;
-
-      if (
-        findingFinishedCourseResult &&
-        findingFinishedCourseResult.special_course
-      ) {
-        finishedCourseName = findingFinishedCourseResult;
-        courseId = findingFinishedCourseResult.course_id;
+  
+      if (findingFinishedRoundResult) {
+        const findingFinishedCourseResult = await Courses.findByPk(
+          findingFinishedRoundResult.course_id
+        );
+  
+        roundDate = findingFinishedRoundResult.round_date;
+  
+        if (
+          findingFinishedCourseResult &&
+          findingFinishedCourseResult.special_course
+        ) {
+          finishedCourseName = findingFinishedCourseResult;
+          courseId = findingFinishedCourseResult.course_id;
+        }
       }
     }
-  }
+  */
 
   try {
     if (req.user.user_img) {
@@ -85,11 +87,8 @@ export const getUserProfile = async (req, res, next) => {
             title: req.user.name,
             path: "/profile",
             user: req.user,
-            courseName: "",
-            userGrades,
             validationError: {},
             moment,
-            roundDate,
           });
         }
       }
@@ -125,12 +124,8 @@ export const getUserProfile = async (req, res, next) => {
       title: req.user.name,
       path: "/profile",
       user: req.user,
-      courseName: finishedCourseName,
-      courseId: courseId,
-      userGrades,
       validationError: {},
       moment,
-      roundDate,
     });
     // }
   } catch (e) {
@@ -142,14 +137,9 @@ export const getUserProfile = async (req, res, next) => {
       title: req.user.name,
       path: "/profile",
       user: req.user,
-      roundLink: round,
-      courseName: finishedCourseName,
-      courseId: courseId,
       bought_courses: [],
-      userGrades,
       validationError: {},
       moment,
-      roundDate,
     });
   }
 };
@@ -288,6 +278,7 @@ export const getUserCertificate = async (req, res, next) => {
     req.user.name,
     req.user.user_id,
     roundAndCourse[0].name,
+    roundAndCourse[0].total_hours,
     roundAndCourse[0].round_date
   );
 
@@ -602,10 +593,89 @@ export const getUserGrades = async (req, res, next) => {
       }
     });
 
-    console.log(userReplies);
-
     res.status(200).json({
       userExams: userReplies.length > 0 ? userReplies : null,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getUserProfileCertificate = async (req, res, next) => {
+  try {
+    const allExams = await Exams.findAll({
+      attributes: ["replies", "special_exam", "questions"],
+    });
+
+    let havePassedSpecial = false;
+
+    allExams.forEach((exam, index) => {
+      // console.log(`Exam ${index} replies ==> `, exam.replies);
+      if (exam.replies) {
+        exam.replies.forEach((reply, index) => {
+          let questionsWithoutImages = exam.questions
+            .map((question) => {
+              if ("questionHeader" in question) {
+                return question;
+              }
+            })
+            .filter((question) => question !== undefined);
+          if (reply.user_id === req.user.user_id) {
+            if (
+              exam.special_exam &&
+              reply.grade > questionsWithoutImages.length / 2
+            ) {
+              havePassedSpecial = true;
+            }
+          }
+        });
+      }
+    });
+
+    let roundDate = "",
+      finishedCourseName = "",
+      courseId;
+
+    if (typeof req.user.finished_course === "string" && havePassedSpecial) {
+      const findingFinishedRoundResult = await Rounds.findByPk(
+        req.user.finished_course
+      );
+
+      if (findingFinishedRoundResult) {
+        const findingFinishedCourseResult = await Courses.findByPk(
+          findingFinishedRoundResult.course_id
+        );
+
+        roundDate = findingFinishedRoundResult.round_date;
+
+        if (
+          findingFinishedCourseResult &&
+          findingFinishedCourseResult.special_course
+        ) {
+          finishedCourseName = findingFinishedCourseResult.name;
+          courseId = findingFinishedCourseResult.course_id;
+        }
+      }
+    }
+
+    let certificateData = {};
+
+    if (
+      !(
+        roundDate.length === 0 ||
+        courseId.length === 0 ||
+        finishedCourseName.length === 0
+      )
+    ) {
+      certificateData = {
+        roundDate: moment(roundDate).format("LL"),
+        courseName: finishedCourseName,
+        courseId,
+      };
+    }
+
+    res.status(200).json({
+      certificateData,
     });
   } catch (e) {
     await errorRaiser(e, next);
