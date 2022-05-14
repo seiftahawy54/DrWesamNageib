@@ -16,64 +16,6 @@ import { errorRaiser } from "../../utils/error_raiser.js";
 import axios from "axios";
 
 export const getUserProfile = async (req, res, next) => {
-  /*  let unfoundRepliesFlag = false;
-
-    for (let i of findingUsersExams) {
-      if (i.replies.some((reply) => reply === undefined)) {
-        unfoundRepliesFlag = true;
-        break;
-      }
-    }
-
-    if (unfoundRepliesFlag) {
-      findingUsersExams = [];
-    }*/
-
-  // console.log(findingUsersExams.replies.some((ele) => ele === undefined));
-
-  // console.log(findingUsersExams.some((ele) => ele === undefined));
-
-  // findingUsersExams = [];
-
-  // let currentUserGrades = findingUsersExams.map(({ title, replies }) => {
-  //
-  // });
-
-  /*
-    let findingUsersExams = "";
-  
-    let round = "",
-      finishedCourseName = "",
-      courseId = "",
-      roundDate = "",
-      userGrades = findingUsersExams;
-  
-    if (
-      typeof req.user.finished_course === "string" &&
-      findingUsersExams.length > 0
-    ) {
-      const findingFinishedRoundResult = await Rounds.findByPk(
-        req.user.finished_course
-      );
-  
-      if (findingFinishedRoundResult) {
-        const findingFinishedCourseResult = await Courses.findByPk(
-          findingFinishedRoundResult.course_id
-        );
-  
-        roundDate = findingFinishedRoundResult.round_date;
-  
-        if (
-          findingFinishedCourseResult &&
-          findingFinishedCourseResult.special_course
-        ) {
-          finishedCourseName = findingFinishedCourseResult;
-          courseId = findingFinishedCourseResult.course_id;
-        }
-      }
-    }
-  */
-
   try {
     if (req.user.user_img) {
       if (
@@ -86,7 +28,9 @@ export const getUserProfile = async (req, res, next) => {
           return res.render("users/profile", {
             title: req.user.name,
             path: "/profile",
-            user: req.user,
+            user: {
+              user_img: req.user.user_img,
+            },
             validationError: {},
             moment,
           });
@@ -94,50 +38,25 @@ export const getUserProfile = async (req, res, next) => {
       }
     }
 
-    /*    if (findingUserPayments.length !== 0) {
-          const coursesPayments = findingUserPayments.map((payment) => {
-            return payment.course_id;
-          });
-
-          const findingBoughtCourses = await Promise.all(
-            coursesPayments.map(async (courses) => {
-              return await Courses.findByPk(courses);
-            })
-          );
-
-          return res.render("users/profile", {
-            title: req.user.name,
-            path: "/profile",
-            user: req.user,
-            roundLink: round,
-            courseName: finishedCourseName,
-            courseId: courseId,
-            userGrades,
-            bought_courses: findingBoughtCourses,
-            validationError: {},
-            moment,
-            roundDate,
-          });
-        } else {*/
-    // req.flash("error", "There's an error from our end!");
     return res.render("users/profile", {
       title: req.user.name,
       path: "/profile",
-      user: req.user,
+      user: {
+        user_img: req.user.user_img,
+      },
       validationError: {},
       moment,
     });
-    // }
   } catch (e) {
     console.log(`we've entered here`, e);
     req.flash("error", e.message);
 
-    // res.redirect("/profile");
     return res.render("users/profile", {
       title: req.user.name,
       path: "/profile",
-      user: req.user,
-      bought_courses: [],
+      user: {
+        user_img: req.user.user_img,
+      },
       validationError: {},
       moment,
     });
@@ -674,9 +593,13 @@ export const getUserProfileCertificate = async (req, res, next) => {
       };
     }
 
-    res.status(200).json({
-      certificateData,
-    });
+    if ("courseId" in certificateData) {
+      return res.status(200).json({
+        certificateData,
+      });
+    }
+
+    return res.status(200).json({ certificateData: null });
   } catch (e) {
     await errorRaiser(e, next);
   }

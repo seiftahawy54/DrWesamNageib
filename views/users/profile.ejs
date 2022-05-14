@@ -22,38 +22,39 @@
           <span></span>
         </div>
         <div class="user-content">
-          <div class="info">
-            Name
+          <div class="info-container">
+            <div class="info">
+              Name
+            </div>
+
+            <div class="info" x-text="userData.name">
+            </div>
+            <div class="info">
+              Phone Number
+            </div>
+
+            <div class="info" x-text="userData.whatsapp_no">
+            </div>
+            <div class="info">
+              Email
+            </div>
+
+            <div class="info" x-text="userData.email">
+            </div>
+
+            <div class="info">
+              Specialization
+            </div>
+
+            <div class="info" x-text="userData.specialization">
+            </div>
           </div>
 
-          <div class="info" x-text="userData.name">
-          </div>
-          <div class="info">
-            Phone Number
-          </div>
-
-          <div class="info" x-text="userData.whatsapp_no">
-          </div>
-          <div class="info">
-            Email
-          </div>
-
-          <div class="info" x-text="userData.email">
-          </div>
-
-          <div class="info">
-            Specialization
-          </div>
-
-          <div class="info" x-text="userData.specialization">
-          </div>
-
-          <div class="info">
-            Your Courses
-          </div>
-
-          <div class="info payments-details">
-            <div x-show="payments" x-transition>
+          <div class="info-container payments-details">
+            <div class="info">
+              Your Bought Courses
+            </div>
+            <div class="info">
               <template x-for="payment in payments.payments">
                 <div class="bought_courses" x-data="{payment}">
                   <span x-text="payment.name"></span>
@@ -61,51 +62,57 @@
                 </div>
               </template>
             </div>
-            <div x-show="payments.payments == []" x-transition>
+            <div class="info" x-show="!payments">
               <span x-text="payments.message">You haven't bought any courses yet!</span>
             </div>
           </div>
 
-          <div class="info" x-show="round.round" x-transition>
-            Round files
-          </div>
-          <div class="info" x-show="round" x-transition x-html="round.round">
+          <div class='info-container' x-show="round">
+            <div class="info">
+              Round files
+            </div>
+            <div class="info" x-transition x-html="round.round">
+            </div>
           </div>
 
-          <div class="info" x-show="userGrades.userExams != []" x-transition>
-            Your performed exams: <br />
-            <div class="exams-previews">
+          Your Performed Exams:
+          <div class='info-container' x-show="userGrades">
+            <div class="info">
+              <div class="exams-previews">
+                <template x-for="(grade, index) in userGrades.userExams">
+                  <div x-data="grade" :class="'preview-' + index" class="fs-5">
+                    <span x-text="index + 1 + ': '"></span>
+                    <a :href="grade.preview_link" x-text="grade.title + ' report'"></a>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <div class="info payments-details">
               <template x-for="(grade, index) in userGrades.userExams">
-                <div x-data="grade" :class="'preview-' + index" class="fs-5">
-                  <span x-text="index + 1 + ': '"></span>
-                  <a :href="grade.preview_link" x-text="grade.title + ' report'"></a>
+                <div class="bought_courses" x-data="{grade}">
+                <span class="text-center">
+                  <sup><span x-text="grade.reply.grade"></span></sup> /
+                  <sub><span x-text="grade.reply.userAnswers.length"></span></sub>
+                </span>
                 </div>
               </template>
             </div>
           </div>
 
-          <div class="info payments-details" x-show="userGrades.userGrades != []" x-transition>
-            <template x-for="(grade, index) in userGrades.userExams">
-              <div class="bought_courses" x-data="{grade}">
-                <span class="text-center">
-                  <sup><span x-text="grade.reply.grade"></span></sup> /
-                  <sub><span x-text="grade.reply.userAnswers.length"></span></sub>
-                </span>
-              </div>
-            </template>
+          <div class='info-container' x-show="certificate.certificateData">
+            <div class="info">
+              Your certificate
+            </div>
+
+            <div class="info">
+              <a :href="`/certificates/${certificate.certificateData.courseId}`" class="link-success"
+                 x-text="`${certificate.certificateData.courseName} - ${certificate.certificateData.roundDate}`"></a>
+            </div>
           </div>
 
-          <div class="info" x-show="certificate.certificateData != {}" x-transition>
-            Your certificate
-          </div>
-
-          <div class="info" x-show="certificate.certificateData != {}">
-            <a :href="`/certificates/${certificate.certificateData.courseId}`" class="link-success"
-               x-text="`${certificate.certificateData.courseName} - ${certificate.certificateData.roundDate}`"></a>
-          </div>
-
-          <div class="info">
-            <a href="/update-data/<%= user.user_id %>" class="btn">
+          <div class="info-container">
+            <a :href="`/update-data/${userData.user_id}`" class="btn">
               Update your data?
             </a>
           </div>
@@ -147,6 +154,8 @@
   </div>
 </section>
 
+<script src="/js/alpine.min.js"></script>
+
 <%
 /*<hr />
 
@@ -170,5 +179,4 @@
 %>
 
 <%- include("../includes/footer.ejs"); %>
-<script src="/js/alpine.min.js"></script>
 <%- include("../includes/bottom_part.ejs"); %>
