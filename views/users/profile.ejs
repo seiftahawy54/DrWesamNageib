@@ -54,7 +54,7 @@
             <div class="info">
               Your Bought Courses
             </div>
-            <div class="info">
+            <div class="info" x-show="payments.payments">
               <template x-for="payment in payments.payments">
                 <div class="bought_courses" x-data="{payment}">
                   <span x-text="payment.name"></span>
@@ -62,8 +62,8 @@
                 </div>
               </template>
             </div>
-            <div class="info" x-show="!payments">
-              <span x-text="payments.message">You haven't bought any courses yet!</span>
+            <div class="info" x-show="!payments.payments">
+              <span>You haven't bought any courses yet!</span>
             </div>
           </div>
 
@@ -75,8 +75,10 @@
             </div>
           </div>
 
-          Your Performed Exams:
-          <div class='info-container' x-show="userGrades">
+          <span x-show="userGrades.userExams">
+            Your Performed Exams:
+          </span>
+          <div class='info-container' x-show="userGrades.userExams">
             <div class="info">
               <div class="exams-previews">
                 <template x-for="(grade, index) in userGrades.userExams">
@@ -88,7 +90,7 @@
               </div>
             </div>
 
-            <div class="info payments-details">
+            <div class="info payments-details" x-show="userGrades.userExams">
               <template x-for="(grade, index) in userGrades.userExams">
                 <div class="bought_courses" x-data="{grade}">
                 <span class="text-center">
