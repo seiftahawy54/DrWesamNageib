@@ -432,7 +432,7 @@ export const getBoughtCourses = async (req, res, next) => {
     ) {
       return res
         .status(200)
-        .json({ message: "No payments found", payments: [] });
+        .json({ message: "No payments found", payments: null });
     }
 
     const coursesPayments = findingUserPayments.map((payment) => {
@@ -442,7 +442,7 @@ export const getBoughtCourses = async (req, res, next) => {
     if (!Array.isArray(coursesPayments) || coursesPayments.length === 0) {
       return res
         .render(200)
-        .json({ message: "No courses are payed for!", payments: [] });
+        .json({ message: "No courses are payed for!", payments: null });
     }
 
     const findingBoughtCourses = await Promise.all(
