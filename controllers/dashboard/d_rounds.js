@@ -342,8 +342,6 @@ export const postUpdateRound = async (req, res, next) => {
     );
     const updateUsersValues = updatedUsersArr.map((userId) => req.body[userId]);
 
-    console.log(`USERS UPDATED ARRAY ====> `, updateUsersValues);
-
     for (const userId of updateUsersValues) {
       await Users.update(
         {
@@ -355,12 +353,19 @@ export const postUpdateRound = async (req, res, next) => {
 
     for (const user of allUsers) {
       if (updateUsersValues.indexOf(user.user_id) === -1) {
-        await Users.update(
+        await sequelize.query(
+          "UPDATE users SET current_round=null WHERE user_id=? and current_round LIKE ?",
+          {
+            replacements: [user.user_id, roundId],
+            type: QueryTypes.UPDATE,
+          }
+        );
+        /*await Users.update(
           {
             current_round: null,
           },
           { where: { user_id: user.user_id } }
-        );
+        );*/
       }
     }
 
