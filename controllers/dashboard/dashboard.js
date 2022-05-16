@@ -14,13 +14,14 @@ import { Certificates } from "../../models/index.js";
 import { sequelize } from "../../utils/db.js";
 
 export const getOverview = async (req, res, next) => {
-  const numberOfUsers = await Users.findAll();
+  const numberOfUsers = await Users.findAll({
+    attributes: [""],
+  });
   const numberOfCourses = await Courses.findAll();
   const numberOfRounds = await Rounds.findAll();
   const numberOfMessages = await Messages.findAll();
   const numberOfPayments = await Payment.findAll();
   const numberOfCertificates = await Certificates.findAll();
-
 
   res.render("dashboard/overview", {
     title: "Over View Page",
