@@ -352,7 +352,7 @@ export const postUpdateRound = async (req, res, next) => {
     }
 
     for (const user of allUsers) {
-      if (!(user.user_id in updateUsersValues)) {
+      if (updateUsersValues.indexOf(user.user_id) === -1) {
         await Users.update(
           {
             current_round: null,
