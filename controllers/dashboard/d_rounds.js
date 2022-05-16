@@ -342,6 +342,8 @@ export const postUpdateRound = async (req, res, next) => {
     );
     const updateUsersValues = updatedUsersArr.map((userId) => req.body[userId]);
 
+    console.log(`USERS UPDATED ARRAY ====> `, updateUsersValues);
+
     for (const userId of updateUsersValues) {
       await Users.update(
         {
