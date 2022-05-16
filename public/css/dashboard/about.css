@@ -1,6 +1,3 @@
-.certificates .content {
-  padding-inline-start: 80px !important;
-}
 .certificates .content .table-head {
   font-size: 18px !important;
   grid-template-columns: repeat(3, 1fr) !important;

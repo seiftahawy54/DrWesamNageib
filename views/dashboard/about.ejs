@@ -1,18 +1,16 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
-<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
 <link rel="stylesheet" href="/css/dashboard/courses.css">
-<link rel="stylesheet" href="/css/dashboard/about.css"/>
+<link rel="stylesheet" href="/css/dashboard/about.css" />
 </head>
 <body>
 
 <section class="courses certificates">
-  <div class="container-fluid g-0">
-    <div class="row g-0">
-      <div class="col-3">
-        <%- include("../includes/dashboard-navbar.ejs"); %>
-      </div>
-      <div class="col-9">
+  <%- include("../includes/dashboard-navbar.ejs"); %>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
         <div class="content">
           <main class="content-header">
             <div class="custom-head">
@@ -32,8 +30,8 @@
             </div>
             <% certificates.forEach(certificate => { %>
               <div class="table-row">
-                <span class="course-rank"><img src="/downloaded_images/<%= certificate.certificate_img; %>"
-                                               alt="<%- certificate.certificate_id %>" class="img-fluid"/></span>
+                <span class="course-rank"><img src="/downloaded_images/<%= certificate.certificate_img %>"
+                                               alt="<%- certificate.certificate_id %>" class="img-fluid" /></span>
                 <div class="course-update">
                   <a href="/dashboard/edit-certificate/<%= certificate.certificate_id %>?edit=true"
                      class="btn btn-success">Update
@@ -41,7 +39,7 @@
                 </div>
                 <div class="course-delete">
                   <form action="/dashboard/delete-certificate" method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
                     <input type="hidden" name="certificateId" value="<%= certificate.certificate_id; %>">
                     <button type="submit" class="btn btn-danger">Delete Certificate</button>
                   </form>

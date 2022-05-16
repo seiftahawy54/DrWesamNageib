@@ -2,10 +2,11 @@
 publicenv/videos
 public/imgs/non_imgs
 
-downloaded_images
+downloaded_images*
 uploaded_images
 backup.js
 testing.js
+google-validation.json
 
 # Logs
 logs

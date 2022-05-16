@@ -14,52 +14,25 @@ import { Certificates } from "../../models/index.js";
 import { sequelize } from "../../utils/db.js";
 
 export const getOverview = async (req, res, next) => {
-  const numberOfUsers = await Users.findAndCountAll();
-  const numberOfCourses = await Courses.findAndCountAll();
-  const numberOfRounds = await Rounds.findAndCountAll();
-  const numberOfMessages = await Messages.findAndCountAll();
-  const numberOfPayments = await Payment.findAndCountAll();
-  const numberOfCertificates = await Certificates.findAndCountAll();
-  const numberOfExamReplies = (await Exams.findAll())
-    .map(({ replies }) => {
-      return replies;
-    })
-    .reduce((previousValue, currentValue) => {
-      let returningVal = null;
-      if (
-        typeof previousValue === "number" &&
-        typeof currentValue === "number"
-      ) {
-        returningVal = previousValue + currentValue;
-      } else if (
-        typeof previousValue === "number" &&
-        typeof currentValue !== "number"
-      ) {
-        returningVal = previousValue;
-      } else if (
-        typeof previousValue !== "number" &&
-        typeof currentValue === "number"
-      ) {
-        returningVal = previousValue;
-      } else {
-        returningVal = 0;
-      }
+  const numberOfUsers = await Users.findAll();
+  const numberOfCourses = await Courses.findAll();
+  const numberOfRounds = await Rounds.findAll();
+  const numberOfMessages = await Messages.findAll();
+  const numberOfPayments = await Payment.findAll();
+  const numberOfCertificates = await Certificates.findAll();
 
-      return returningVal;
-    });
 
   res.render("dashboard/overview", {
     title: "Over View Page",
     path: "/dashboard/overview",
     statsNumbers: {
-      users: numberOfUsers.count,
-      courses: numberOfCourses.count,
-      rounds: numberOfRounds.count,
-      messages: numberOfMessages.count,
-      payments: numberOfPayments.count,
-      certificates: numberOfCertificates.count,
-      "exam replies": numberOfExamReplies,
+      users: numberOfUsers,
+      courses: numberOfCourses,
+      rounds: numberOfRounds,
+      messages: numberOfMessages,
+      payments: numberOfPayments,
     },
+    moment,
   });
 };
 

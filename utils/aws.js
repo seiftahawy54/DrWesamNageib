@@ -49,34 +49,29 @@ export const getSingleFile = async (filename) => {
     const filePath = path.resolve("downloaded_images", filename);
 
     try {
-      axios({
+      const response = await axios({
         method: "GET",
         url: downloadingUrl,
         responseType: "blob",
-      })
-        .then(async (response) => {
-          const buffer = Buffer.from(response.data.data).toString("base64");
+      });
+      const buffer = Buffer.from(response.data.data).toString("base64");
 
-          const writingStream = await fs2.createWriteStream(filePath);
+      const writingStream = await fs2.createWriteStream(filePath);
 
-          writingStream.write(buffer, "base64");
+      writingStream.write(buffer, "base64");
 
-          writingStream.on("finish", () => {
-            return true;
-          });
+      writingStream.on("finish", () => {
+        return true;
+      });
 
-          writingStream.on("error", (err) => {
-            console.log(err);
-            return false;
-          });
+      writingStream.on("error", (err) => {
+        console.log(err);
+        return false;
+      });
 
-          writingStream.end();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      writingStream.end();
     } catch (e) {
-      console.log(e);
+      console.log(e.message);
     }
   }
 };

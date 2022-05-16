@@ -4,8 +4,6 @@ $tables_rows: 3;
 
 .certificates {
   .content {
-    padding-inline-start: 80px !important;
-
     .table-head {
       font-size: vars.$lg_font_size - 2 !important;
       grid-template-columns: repeat($tables_rows, 1fr) !important;
