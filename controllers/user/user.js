@@ -18,23 +18,19 @@ import axios from "axios";
 export const getUserProfile = async (req, res, next) => {
   try {
     if (req.user.user_img) {
-      if (
-        !fs.existsSync(path.resolve("downloaded_images", req.user.user_img))
-      ) {
-        try {
-          const fetchingResult = await getSingleFile(req.user.user_img);
-        } catch (e) {
-          req.flash("error", e.message);
-          return res.render("users/profile", {
-            title: req.user.name,
-            path: "/profile",
-            user: {
-              user_img: req.user.user_img,
-            },
-            validationError: {},
-            moment,
-          });
-        }
+      try {
+        const fetchingResult = await getSingleFile(req.user.user_img);
+      } catch (e) {
+        req.flash("error", e.message);
+        return res.render("users/profile", {
+          title: req.user.name,
+          path: "/profile",
+          user: {
+            user_img: req.user.user_img,
+          },
+          validationError: {},
+          moment,
+        });
       }
     }
 
@@ -50,16 +46,7 @@ export const getUserProfile = async (req, res, next) => {
   } catch (e) {
     console.log(`we've entered here`, e);
     req.flash("error", e.message);
-
-    return res.render("users/profile", {
-      title: req.user.name,
-      path: "/profile",
-      user: {
-        user_img: req.user.user_img,
-      },
-      validationError: {},
-      moment,
-    });
+    res.redirect("/profile");
   }
 };
 

@@ -109,7 +109,7 @@
                 </div>
                 <div class="btn-group my-3 users-select-button" role="group" id="unrounded-container">
                   <% unRoundedUsers.forEach((user, index) => { %>
-                    <% if (user.current_round === null) { %>
+                    <% if (user.current_round === null && user.finished_round === null) { %>
                       <input class="btn-check" type="checkbox"
                              id="user-<%- roundUsers.length + index %>"
                              name="user-<%- roundUsers.length + index %>" value="<%= user.user_id %>">

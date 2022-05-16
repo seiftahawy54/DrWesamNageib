@@ -246,14 +246,14 @@ export const createCertificate = (
 };
 
 export const downloadingCoursesImages = (courses) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     for (const course of courses) {
-      getSingleFile(course.course_img)
+      await getSingleFile(course.course_img)
         .then((result) => {})
         .catch((err) => {
           console.error(err);
         });
-      getSingleFile(course.detailed_img)
+      await getSingleFile(course.detailed_img)
         .then((result) => {})
         .catch((err) => {
           console.error(err);

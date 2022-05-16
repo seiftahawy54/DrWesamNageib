@@ -201,6 +201,7 @@ const postDeleteCourse = async (req, res, next) => {
   const deletingResult = await (await Courses.findByPk(courseId)).destroy();
   console.log(deletingResult);
   if (deletingResult) {
+    req.flash("success", "Course Delete Successfully");
     res.redirect("/dashboard/courses");
   } else {
     res.status(422).redirect("/dashboard/courses");
@@ -216,8 +217,10 @@ const getEditCourse = async (req, res, next) => {
 
     const findingCourse = await Courses.findByPk(courseId);
 
+    console.log(findingCourse.total_hours);
+
     res.render("dashboard/courses_forms", {
-      title: "New Course",
+      title: findingCourse.name,
       path: "/dashboard/courses",
       editMode: true,
       course: findingCourse,
@@ -283,6 +286,7 @@ const postUpdateCourse = async (req, res, next) => {
             path: "/dashboard/courses",
             editMode: true,
             course: findingCourse,
+            validationErrors: errors.array(),
           });
         }
       } else if (
@@ -322,7 +326,7 @@ const postUpdateCourse = async (req, res, next) => {
 
         console.log(`course id `, findingCourse.course_id);
 
-        if (addingResult[0] === 1 && deleteUnWantedImage && uploadingFirstImg) {
+        if (addingResult[0] === 1) {
           return res.redirect("/dashboard/courses");
         } else {
           return res.render("dashboard/courses_forms", {
@@ -330,6 +334,7 @@ const postUpdateCourse = async (req, res, next) => {
             path: "/dashboard/courses",
             editMode: true,
             course: findingCourse,
+            validationErrors: errors.array(),
           });
         }
       } else if (
@@ -367,9 +372,7 @@ const postUpdateCourse = async (req, res, next) => {
         );
 
         if (
-          addingResult[0] === 1 &&
-          deleteUnWantedImage &&
-          uploadingSecondImg
+          addingResult[0] === 1
         ) {
           return res.redirect("/dashboard/courses");
         } else {
@@ -378,6 +381,7 @@ const postUpdateCourse = async (req, res, next) => {
             path: "/dashboard/courses",
             editMode: true,
             course: findingCourse,
+            validationErrors: errors.array(),
           });
         }
       } else if (
@@ -422,7 +426,7 @@ const postUpdateCourse = async (req, res, next) => {
           { where: { course_id: courseId } }
         );
 
-        if (addingResult[0] === 1 && uploadingFirstImg && uploadingSecondImg) {
+        if (addingResult[0] === 1) {
           return res.redirect("/dashboard/courses");
         } else {
           res.render("dashboard/courses_forms", {
@@ -431,7 +435,7 @@ const postUpdateCourse = async (req, res, next) => {
             editMode: true,
             course: findingCourse,
             errorMessage: "There is some error",
-            validationError: [],
+            validationErrors: errors.array(),
           });
         }
       }
@@ -443,6 +447,8 @@ const postUpdateCourse = async (req, res, next) => {
         value: e.fields[key],
       };
     });
+
+    console.log(`Error Message ===>  `, e);
 
     req.flash("error", e.errors[0].message);
     return res.render("dashboard/courses_forms", {

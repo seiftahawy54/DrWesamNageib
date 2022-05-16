@@ -31,7 +31,7 @@ router
     postAddNewCourse
   )
   .get("/edit-course/:courseId", getEditCourse)
-  .post("/delete-course", postDeleteCourse)
+  .post("/delete-courses", postDeleteCourse)
   .post("/edit-course/:courseId", postUpdateCourse);
 
 export default router;
