@@ -23,8 +23,9 @@ export const getOverview = async (req, res, next) => {
   const numberOfPayments = await Payment.findAll();
   const numberOfCertificates = await Certificates.findAll();
 
-  numberOfUsers = numberOfUsers.map(({ name }) => {
-    return 1;
+  numberOfUsers = numberOfUsers.map((user) => {
+    user.name = 1;
+    return user;
   });
 
   console.log(numberOfUsers);
