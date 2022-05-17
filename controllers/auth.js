@@ -170,6 +170,9 @@ export const postRegister = async (req, res, next) => {
     }
     const encryptionResult = await bcrypt.hash(password, 12);
     if (await encryptionResult) {
+      firstName[0] = firstName[0].toUpperCase();
+      middleName[0] = middleName[0].toUpperCase();
+      lastName[0] = lastName[0].toUpperCase();
       Users.create({
         name: firstName + " " + middleName + " " + lastName,
         email: email,

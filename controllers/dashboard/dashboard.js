@@ -17,7 +17,9 @@ export const getOverview = async (req, res, next) => {
   let numberOfUsers = await Users.findAll({
     attributes: ["createdAt", "name"],
   });
-  const numberOfCourses = await Courses.findAll();
+  const numberOfCourses = await Courses.findAll({
+    attributes: ["createdAt", "name"],
+  });
   const numberOfRounds = await Rounds.findAll();
   const numberOfMessages = await Messages.findAll();
   const numberOfPayments = await Payment.findAll();
@@ -27,8 +29,6 @@ export const getOverview = async (req, res, next) => {
     user.name = 1;
     return user;
   });
-
-  console.log(numberOfUsers);
 
   res.render("dashboard/overview", {
     title: "Overview Page",
