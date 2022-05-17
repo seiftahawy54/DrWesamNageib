@@ -32,10 +32,12 @@ router
   .get("/register", notRepeatedForUser, getRegister)
   .post(
     "/register",
-    body("name").isString().notEmpty(),
-    body("email").isEmail().notEmpty(),
-    body("whatsapp_number").isMobilePhone("any").notEmpty(),
-    body("specialization").isString().notEmpty(),
+    body("first_name").isString().isLength({ min: 3 }).trim(),
+    body("middle_name").isString().isLength({ min: 3 }).trim(),
+    body("last_name").isString().isLength({ min: 3 }).trim(),
+    body("email").isEmail().notEmpty().trim(),
+    body("whatsapp_number").isMobilePhone("any").notEmpty().trim(),
+    body("specialization").isString().notEmpty().trim(),
     body("password").isString().isLength({ min: 8 }).notEmpty(),
     body("confirmPassword")
       .isString()

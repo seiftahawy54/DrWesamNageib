@@ -14,8 +14,8 @@ import { Certificates } from "../../models/index.js";
 import { sequelize } from "../../utils/db.js";
 
 export const getOverview = async (req, res, next) => {
-  const numberOfUsers = await Users.findAll({
-    attributes: [""],
+  let numberOfUsers = await Users.findAll({
+    attributes: ["createdAt", "name"],
   });
   const numberOfCourses = await Courses.findAll();
   const numberOfRounds = await Rounds.findAll();
@@ -23,8 +23,14 @@ export const getOverview = async (req, res, next) => {
   const numberOfPayments = await Payment.findAll();
   const numberOfCertificates = await Certificates.findAll();
 
+  numberOfUsers = numberOfUsers.map(({ name }) => {
+    return 1;
+  });
+
+  console.log(numberOfUsers);
+
   res.render("dashboard/overview", {
-    title: "Over View Page",
+    title: "Overview Page",
     path: "/dashboard/overview",
     statsNumbers: {
       users: numberOfUsers,

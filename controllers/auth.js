@@ -140,7 +140,9 @@ export const postApplyCoupon = async (req, res, next) => {
 
 export const postRegister = async (req, res, next) => {
   try {
-    const name = req.body.name;
+    const firstName = req.body.first_name;
+    const middleName = req.body.middle_name;
+    const lastName = req.body.last_name;
     const email = req.body.email;
     const whatsapp_no = req.body.whatsapp_number;
     const specialization = req.body.specialization;
@@ -155,7 +157,9 @@ export const postRegister = async (req, res, next) => {
         path: "/register",
         validationErrors: errors.array(),
         user: {
-          name,
+          first_name: firstName,
+          middle_name: middleName,
+          last_name: lastName,
           email,
           whatsapp_no,
           specialization,
@@ -163,43 +167,45 @@ export const postRegister = async (req, res, next) => {
           confirmPassword,
         },
       });
-    } else {
-      const encryptionResult = await bcrypt.hash(password, 12);
-      if (await encryptionResult) {
-        Users.create({
-          name: name,
-          email: email,
-          whatsapp_no: whatsapp_no,
-          specialization: specialization,
-          password: await encryptionResult,
-          cart: [],
-          type: 2,
+    }
+    const encryptionResult = await bcrypt.hash(password, 12);
+    if (await encryptionResult) {
+      Users.create({
+        name: firstName + " " + middleName + " " + lastName,
+        email: email,
+        whatsapp_no: whatsapp_no,
+        specialization: specialization,
+        password: await encryptionResult,
+        cart: [],
+        type: 2,
+      })
+        .then((result) => {
+          req.flash(
+            "success",
+            "You have registered to the website successfully, please login to continue"
+          );
+          res.redirect("/login");
         })
-          .then((result) => {
-            req.flash(
-              "success",
-              "You have registered to the website successfully, please login to continue"
-            );
-            res.redirect("/login");
-          })
-          .catch((err) => {
-            // errorRaiser(err, next);
-            req.flash("error", err.message);
-            res.render("auth/register", {
-              title: "Register",
-              path: "/register",
-              validationErrors: errors.array(),
-              user: {
-                name,
-                email,
-                whatsapp_no,
-                specialization,
-                password,
-                confirmPassword,
-              },
-            });
+        .catch((err) => {
+          // errorRaiser(err, next);
+          console.log(err);
+          req.flash("error", err.message);
+          res.render("auth/register", {
+            title: "Register",
+            path: "/register",
+            validationErrors: errors.array(),
+            user: {
+              first_name: firstName,
+              middle_name: middleName,
+              last_name: lastName,
+              email,
+              whatsapp_no,
+              specialization,
+              password,
+              confirmPassword,
+            },
           });
-      }
+        });
     }
   } catch (e) {
     await errorRaiser(e, next);
