@@ -36,8 +36,6 @@ export const getOverview = async (req, res, next) => {
     statsNumbers: {
       users: numberOfUsers,
       courses: numberOfCourses,
-      rounds: numberOfRounds,
-      messages: numberOfMessages,
       payments: numberOfPayments,
     },
     moment,
