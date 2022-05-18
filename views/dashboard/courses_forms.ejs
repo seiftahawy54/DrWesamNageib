@@ -34,6 +34,17 @@
                      value="<% if (editMode === true) { %><%= course.name %><% } %>" id="course_name" />
               <label for="course_name">Course Name</label>
             </div>
+
+
+            <div class="form-floating my-3">
+              <input type="text" name="arabic_name" placeholder="Arabic Name"
+
+                     class="form-control <%= validationErrors.find(e => e.param === "arabic_name") ? "is-invalid" : "" %>"
+                     value="<% if (editMode === true) { %><%= course.ar_course_name %><% } %>"
+                     id="arabic_name" />
+              <label for="arabic_name">Arabic Course Name</label>
+            </div>
+
             <div class="form-floating my-3">
               <input type="number" name="price" placeholder="Course Price"
                      class="form-control <%= validationErrors.find(e => e.param === "price") ? "is-invalid" : "" %>"
@@ -46,15 +57,6 @@
                      value="<% if (editMode === true) { %><%= course.course_thumbnail %><% } %>"
                      id="course_thumbnail" />
               <label for="course_thumbnail">Course Thumbnail</label>
-            </div>
-
-            <div class="form-floating my-3">
-              <input type="text" name="arabic_name" placeholder="Arabic Name"
-
-                     class="form-control <%= validationErrors.find(e => e.param === "arabic_name") ? "is-invalid" : "" %>"
-                     value="<% if (editMode === true) { %><%= course.ar_course_name %><% } %>"
-                     id="arabic_name" />
-              <label for="arabic_name">Arabic Course Name</label>
             </div>
 
             <div class="form-floating my-3">
@@ -97,13 +99,25 @@
               <%- include('../includes/check-input.ejs', {id: "course-special", checked: false, label: "Special Course", name: "special_course" } ); %>
             <% } %>
 
-            <div class="form-floating my-3">
-              <input type="number" name="total_hours" placeholder="Total hours"
-
-                     class="form-control <%= validationErrors.find(e => e.param === "total_hours") ? "is-invalid" : "" %>"
-                     value="<% if (editMode) { %><%= course.total_hours %><% } %>"
-                     id="total_hours" min="0" />
-              <label for="total_hours">Course Total Hours</label>
+            <div class="row">
+              <div class="col-6">
+                <div class="form-floating my-3">
+                  <input type="number" name="total_hours" placeholder="Total hours"
+                         class="form-control <%= validationErrors.find(e => e.param === "total_hours") ? "is-invalid" : "" %>"
+                         value="<% if (editMode) { %><%= course.total_hours %><% } %>"
+                         id="total_hours" min="0" />
+                  <label for="total_hours">Course Total Hours</label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-floating my-3">
+                  <input type="text" name="course_category" placeholder="Course Category"
+                         class="form-control <%= validationErrors.find(e => e.param === "course_category") ? "is-invalid" : "" %>"
+                         value="<% if (editMode) { %><%= course.course_category %><% } %>"
+                         id="total_hours" min="0" />
+                  <label for="total_hours">Course Category</label>
+                </div>
+              </div>
             </div>
 
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />

@@ -39,6 +39,9 @@ dotenv.config();
 const app = express();
 
 const fileStorage = Multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "");
+  },
   filename: (req, file, cb) => {
     cb(null, crypto.randomBytes(10).toString("hex") + "-" + file.originalname);
   },

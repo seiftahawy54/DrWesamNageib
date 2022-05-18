@@ -63,7 +63,8 @@ export const createCertificate = (
   userId = "",
   courseName = "",
   courseHours = "",
-  roundStartingDate = ""
+  roundStartingDate = "",
+  courseCertificateImg = ""
 ) => {
   const certificateName = `${userName}-${userId}.pdf`;
   const certificatePath = path.resolve(
@@ -73,13 +74,7 @@ export const createCertificate = (
   );
   const fontsPath = path.resolve("public", "fonts");
   const fontName = "Lato";
-  const imagesPath = path.resolve(
-    "public",
-    "imgs",
-    "imgs",
-    "user",
-    "certificate"
-  );
+  const imagesPath = path.resolve("downloaded_images");
 
   const startDate = moment(roundStartingDate).locale("en-CA").format("LL");
   const endDate = moment(roundStartingDate)
@@ -131,7 +126,7 @@ export const createCertificate = (
       pageMargins: 15,
       content: [
         {
-          image: path.resolve(imagesPath, "full.jpg"),
+          image: path.resolve(imagesPath, courseCertificateImg),
           fit: [150, 150],
         },
         {

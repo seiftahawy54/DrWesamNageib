@@ -218,6 +218,8 @@ export const postUpdateExam = async (req, res, next) => {
 
     console.log(`Testing schema`, schemaValidation);
 
+    console.log(errors.array());
+
     if ("error" in schemaValidation || !errors.isEmpty()) {
       return res.status(422).json({
         errors,

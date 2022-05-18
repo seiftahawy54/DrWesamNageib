@@ -185,7 +185,8 @@ export const getUserCertificate = async (req, res, next) => {
     req.user.user_id,
     roundAndCourse[0].name,
     roundAndCourse[0].total_hours,
-    roundAndCourse[0].round_date
+    roundAndCourse[0].round_date,
+    roundAndCourse[0].course_thumbnail
   );
 
   certificateDoc.certificateObject.pipe(
