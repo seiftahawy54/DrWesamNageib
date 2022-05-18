@@ -140,9 +140,9 @@ export const postApplyCoupon = async (req, res, next) => {
 
 export const postRegister = async (req, res, next) => {
   try {
-    const firstName = req.body.first_name;
-    const middleName = req.body.middle_name;
-    const lastName = req.body.last_name;
+    let firstName = req.body.first_name;
+    let middleName = req.body.middle_name;
+    let lastName = req.body.last_name;
     const email = req.body.email;
     const whatsapp_no = req.body.whatsapp_number;
     const specialization = req.body.specialization;
