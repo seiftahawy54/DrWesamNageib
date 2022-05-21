@@ -54,6 +54,7 @@ import DashboardUsersRoutes from "./dashboard/users.js";
 import DashboardRoundsRoutes from "./dashboard/rounds.js";
 import DashboardExamsRoutes from "./dashboard/exams.js";
 import DashboardCoursesRoutes from "./dashboard/courses.js";
+import DashboardExamsRepliesRoutes from "./dashboard/exams-replies.js";
 
 const router = express.Router();
 
@@ -64,6 +65,7 @@ router
   .use("/rounds", DashboardRoundsRoutes)
   .use("/exams", DashboardExamsRoutes)
   .use("/courses", DashboardCoursesRoutes)
+  .use("/exams-replies", DashboardExamsRepliesRoutes)
   .get("/messages", getMessages)
   .post("/messages/delete-messages", postDeleteMessage)
   .post("/messages/delete-all-messages", postDeleteAllMessages)

@@ -7,6 +7,11 @@ uploaded_images
 backup.js
 testing.js
 google-validation.json
+testing.ejs
+
+./*.png
+./*.jpg
+./*.jpeg
 
 # Logs
 logs

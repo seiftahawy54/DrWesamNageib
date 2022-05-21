@@ -23,7 +23,7 @@ import { coursesRoutes } from "./routes/courses.js";
 import { shoppingRoutes } from "./routes/shopping.js";
 import { authRoutes } from "./routes/auth.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
-import { isAuthenticated } from "./middlewares/dashboard-auth.js";
+import { globalAccess, isAuthenticated } from "./middlewares/dashboard-auth.js";
 import { errorRaiser } from "./utils/error_raiser.js";
 import { userRoutes } from "./routes/user.js";
 import { getSingleFile } from "./utils/aws.js";
@@ -34,6 +34,7 @@ import { Courses } from "./models/index.js";
 import { isUserAuthenticated } from "./middlewares/user-auth.js";
 import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
+import { getExamPreview } from "./controllers/user/user.js";
 
 dotenv.config();
 const app = express();
@@ -161,6 +162,7 @@ app.use("/courses", coursesRoutes);
 app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
+app.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
 app.use(isUserAuthenticated, userRoutes);
 
 Payment.hasOne(Courses, { foreignKey: "course_id", through: "course_id" });

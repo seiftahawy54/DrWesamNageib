@@ -41,37 +41,41 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
 export const getSingleFile = async (filename) => {
   const downloadedImagesPath = path.resolve("downloaded_images");
 
-  if (!fs2.existsSync(downloadedImagesPath)) {
-    fs2.mkdirSync(path.resolve("downloaded_images"));
-    return getSingleFile(filename);
-  } else {
-    const downloadingUrl = `https://seiftahawy.s3.amazonaws.com/${filename}`;
-    const filePath = path.resolve("downloaded_images", filename);
+  return new Promise(async (resolve, reject) => {
+    if (!fs2.existsSync(downloadedImagesPath)) {
+      fs2.mkdirSync(path.resolve("downloaded_images"));
+      return getSingleFile(filename);
+    } else {
+      const downloadingUrl = `https://seiftahawy.s3.amazonaws.com/${filename}`;
+      const filePath = path.resolve("downloaded_images", filename);
 
-    try {
-      const response = await axios({
-        method: "GET",
-        url: downloadingUrl,
-        responseType: "blob",
-      });
-      const buffer = Buffer.from(response.data.data).toString("base64");
+      try {
+        const response = await axios({
+          method: "GET",
+          url: downloadingUrl,
+          responseType: "blob",
+        });
+        const buffer = Buffer.from(response.data.data).toString("base64");
 
-      const writingStream = await fs2.createWriteStream(filePath);
+        const writingStream = await fs2.createWriteStream(filePath);
 
-      writingStream.write(buffer, "base64");
+        writingStream.write(buffer, "base64");
 
-      writingStream.on("finish", () => {
-        return true;
-      });
+        writingStream.on("finish", () => {
+          resolve(true);
+          return true;
+        });
 
-      writingStream.on("error", (err) => {
-        console.log(err);
-        return false;
-      });
+        writingStream.on("error", (err) => {
+          console.log(err);
+          reject(false);
+          return false;
+        });
 
-      writingStream.end();
-    } catch (e) {
-      console.log(e.message);
+        writingStream.end();
+      } catch (e) {
+        console.log(e.message);
+      }
     }
-  }
+  });
 };

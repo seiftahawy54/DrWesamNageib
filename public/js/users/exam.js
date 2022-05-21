@@ -71,6 +71,10 @@ submitBtn.addEventListener("click", async (e) => {
       .then((res) => {
         localStorage.setItem("grade", res.data.grade);
         localStorage.setItem("total", `${questionsContainerDiv.length}`);
+        localStorage.setItem(
+          "preview-link",
+          `/exams/preview/${res.data.previewLink}`
+        );
         clearAnswers();
         window.location = "/exam/submitted-exam";
       })

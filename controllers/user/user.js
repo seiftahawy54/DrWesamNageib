@@ -11,7 +11,14 @@ import { sequelize } from "../../utils/db.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
 
-import { Exams, Payment, Courses, Rounds, Users } from "../../models/index.js";
+import {
+  Exams,
+  Payment,
+  Courses,
+  Rounds,
+  Users,
+  ExamsReplies,
+} from "../../models/index.js";
 import { errorRaiser } from "../../utils/error_raiser.js";
 import axios from "axios";
 
@@ -167,40 +174,50 @@ export const postUpdateUserData = async (req, res, next) => {
 };
 
 export const getUserCertificate = async (req, res, next) => {
-  const courseId = req.params.courseId;
+  try {
+    const courseId = req.params.courseId;
 
-  const roundAndCourse = await sequelize.query(
-    `select * from rounds inner join courses course on rounds.round_id = ? and course.course_id = ?`,
-    {
-      replacements: [req.user.finished_course, courseId],
-      type: "SELECT",
-    }
-  );
+    const roundAndCourse = await sequelize.query(
+      `select * from rounds inner join courses course on rounds.round_id = ? and course.course_id = ?`,
+      {
+        replacements: [req.user.finished_course, courseId],
+        type: "SELECT",
+      }
+    );
 
-  console.log(`selected rounds: `, roundAndCourse[0].round_date);
-  // console.log(`new certificate: `, roundAndCourse[0].round_date);
+    console.log(`selected rounds: `, roundAndCourse[0].round_date);
+    // console.log(`new certificate: `, roundAndCourse[0].round_date);
 
-  const certificateDoc = createCertificate(
-    req.user.name,
-    req.user.user_id,
-    roundAndCourse[0].name,
-    roundAndCourse[0].total_hours,
-    roundAndCourse[0].round_date,
-    roundAndCourse[0].course_thumbnail
-  );
+    getSingleFile(roundAndCourse[0].course_img)
+      .then((response) => {
+        const certificateDoc = createCertificate(
+          req.user.name,
+          req.user.user_id,
+          roundAndCourse[0].name,
+          roundAndCourse[0].total_hours,
+          roundAndCourse[0].round_date,
+          roundAndCourse[0].course_img
+        );
 
-  certificateDoc.certificateObject.pipe(
-    fs.createWriteStream(certificateDoc.certificatePath)
-  );
+        certificateDoc.certificateObject.pipe(
+          fs.createWriteStream(certificateDoc.certificatePath)
+        );
 
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader(
-    "Content-Disposition",
-    `inline; filename="${certificateDoc.certificateName}"`
-  );
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          `inline; filename="${certificateDoc.certificateName}"`
+        );
 
-  certificateDoc.certificateObject.pipe(res);
-  certificateDoc.certificateObject.end();
+        certificateDoc.certificateObject.pipe(res);
+        certificateDoc.certificateObject.end();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
 };
 
 export const getPerformExam = async (req, res, next) => {
@@ -292,26 +309,17 @@ export const postPerformExam = async (req, res, next) => {
       );
 
       const grade = calculateExamsGrades(userAnswers, filteredQuestions);
-      const examData = await Exams.findByPk(examId);
 
-      let newReplies,
-        userData = { user_id: req.user.user_id, grade, userAnswers };
-
-      if (!exam.replies && !Array.isArray(exam.replies)) {
-        newReplies = [userData];
-      } else {
-        newReplies = [...examData?.replies, userData];
-      }
-
-      const updatingReplies = await Exams.update(
-        {
-          replies: newReplies,
-        },
-        { where: { exam_id: examId } }
-      );
+      const creatingNewReplyResult = await ExamsReplies.create({
+        exam_id: examId,
+        user_id: req.user.user_id,
+        grade,
+        user_answers: userAnswers,
+      });
 
       return res.status(201).json({
         grade,
+        previewLink: creatingNewReplyResult.reply_id,
       });
     } else {
       return res.status(404).json({
@@ -326,56 +334,59 @@ export const postPerformExam = async (req, res, next) => {
 
 export const getExamPreview = async (req, res, next) => {
   try {
-    const examId = req.params.examId;
-    const userId = req.params.userId;
-    const replyIndex = req.params.replyIndex;
+    const replyId = req.params.replyId;
 
-    const examData = await Exams.findByPk(examId);
+    let replyData = await sequelize.query(
+      `
+      SELECT e.title, e.questions, reply.reply_id, u.name as user_name, reply.grade, reply.user_answers FROM exams_replies reply
+        INNER Join exams e on reply.exam_id = e.exam_id
+        INNER JOIN users u on reply.user_id = u.user_id where reply.reply_id = ?;
+    `,
+      {
+        replacements: [replyId],
+        type: "SELECT",
+      }
+    );
 
-    if (examData && req.user.user_id === userId) {
-      const examReplies = examData.replies;
-      const userPreviewAnswers = examReplies.filter(
-        ({ user_id }) => user_id === userId
+    replyData = replyData.at(0);
+
+    if (replyData) {
+      // Filter questions from images
+      replyData.questions = replyData.questions.filter(
+        (q) => "questionHeader" in q
       );
 
-      let questionsWithoutImages = examData.questions
-        .map((question) => {
-          if ("questionHeader" in question) {
-            return question;
-          }
-        })
-        .filter((question) => question !== undefined);
+      // let questionsWithoutImages = examData.questions
+      //   .map((question) => {
+      //     if ("questionHeader" in question) {
+      //       return question;
+      //     }
+      //   })
+      //   .filter((question) => question !== undefined);
 
       let questionsWithUserAnswers = [];
 
       for (
         let question = 0;
-        question < questionsWithoutImages.length;
+        question < replyData.questions.length;
         question++
       ) {
         questionsWithUserAnswers.push({
-          userAnswer:
-            userPreviewAnswers[replyIndex].userAnswers[question][
-              `${question + 1}`
-            ],
-          correctAnswer: parseInt(
-            questionsWithoutImages[question].correctAnswer
-          ),
+          userAnswer: replyData.user_answers[question][`${question + 1}`],
+          correctAnswer: parseInt(replyData.questions[question].correctAnswer),
         });
       }
 
-      // console.log(questionsWithUserAnswers);
-
-      const userData = await Users.findByPk(req.user.user_id, {
-        attributes: ["name"],
-      });
+      console.log(questionsWithUserAnswers);
 
       return res.render("users/exam_preview", {
-        title: `Trying Exam ${examData.title} for User ${userData.name}`,
+        title: `Trying Exam ${replyData.title} for User ${replyData.name}`,
         path: "/profile",
         performingData: questionsWithUserAnswers,
-        questions: questionsWithoutImages,
-        examData,
+        questions: replyData.questions,
+        examData: {
+          title: replyData.title,
+        },
       });
     }
 
@@ -478,30 +489,28 @@ export const getUserRound = async (req, res, next) => {
 
 export const getUserGrades = async (req, res, next) => {
   try {
-    const allExams = await Exams.findAll({
-      attributes: ["exam_id", "title", "replies", "questions"],
-    });
-
-    let userReplies = [];
-
-    allExams.forEach((exam, index) => {
-      // console.log(`Exam ${index} replies ==> `, exam.replies);
-      if (exam.replies) {
-        exam.replies.forEach((reply, index) => {
-          if (reply.user_id === req.user.user_id) {
-            userReplies.push({
-              examId: exam.exam_id,
-              title: exam.title,
-              reply,
-              preview_link: `/exam/preview/${exam.exam_id}/${req.user.user_id}/${index}`,
-            });
-          }
-        });
+    const usersExamsData = await sequelize.query(
+      `
+    SELECT e.title, e.questions, reply.reply_id, reply.grade FROM exams_replies reply
+        INNER Join exams e on reply.exam_id = e.exam_id
+        INNER JOIN users u on reply.user_id = u.user_id where reply.user_id = ?;
+    `,
+      {
+        replacements: [req.user.user_id],
+        type: "SELECT",
       }
-    });
+    );
+
+    for (let i of usersExamsData) {
+      i.questions = i.questions
+        .map((question) => {
+          if ("questionHeader" in question) return question;
+        })
+        .filter((q) => q);
+    }
 
     res.status(200).json({
-      userExams: userReplies.length > 0 ? userReplies : null,
+      userExams: usersExamsData.length > 0 ? usersExamsData : null,
     });
   } catch (e) {
     await errorRaiser(e, next);

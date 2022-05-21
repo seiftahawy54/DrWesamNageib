@@ -9,14 +9,19 @@
   <h2 class="h1">Your Exam Has submitted successfully!</h2>
   <h2 class="">Your Grade is</h2>
   <p class="fs-1" id="grade-paragraph"></p>
+  <p class="fs-3">Want to see how you performed?</p>
+  <p class="fs-4" id="preview-link"><a class="link-info"></a></p>
 </main>
 
 <script>
   const examGrade = localStorage.getItem("grade")
   const total = localStorage.getItem("total")
+  const previewLink = localStorage.getItem("preview-link")
   const gradeParagraph = document.getElementById("grade-paragraph")
+  const previewLinkAnchor = document.querySelector("#preview-link a")
   gradeParagraph.textContent = `${examGrade}/${total}`
-
+  previewLinkAnchor.setAttribute("href", previewLink)
+  previewLinkAnchor.textContent = "Click here to see your answer"
 </script>
 
 <%- include("../includes/footer.ejs"); %>

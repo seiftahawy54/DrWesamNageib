@@ -1,6 +1,7 @@
 <%- include("../includes/top_part.ejs"); %>
 <script src="/js/axios.min.js"></script>
 <link rel="stylesheet" href="/css/user/profile.css" />
+<script src="https://unpkg.com/vue@3"></script>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -22,69 +23,100 @@
           <span></span>
         </div>
         <div class="user-content">
-          <div class="info-container">
-            <div class="info">
-              Name
+
+          <div id="app">
+            <div class="info-container">
+              <div class="info">
+                Name
+              </div>
+
+              <div class="info">
+                {{ userData.name }}
+              </div>
+
+              <div class="info">
+                Phone Number
+              </div>
+
+              <div class="info">
+                {{ userData.whatsapp_no }}
+              </div>
+
+              <div class="info">
+                Email
+              </div>
+
+              <div class="info">
+                {{ userData.email }}
+              </div>
+
+              <div class="info">
+                Specialization
+              </div>
+
+              <div class="info">
+                {{ userData.specialization }}
+              </div>
             </div>
 
-            <div class="info" x-text="userData.name">
-            </div>
-            <div class="info">
-              Phone Number
-            </div>
-
-            <div class="info" x-text="userData.whatsapp_no">
-            </div>
-            <div class="info">
-              Email
-            </div>
-
-            <div class="info" x-text="userData.email">
-            </div>
-
-            <div class="info">
-              Specialization
+            <div class="info-container payments-details">
+              <div class="info">
+                Your Bought Courses
+              </div>
+              <div class="info" x-show="payments.payments">
+                <template x-for="payment in payments.payments">
+                  <div class="bought_courses" x-data="{payment}">
+                    <span x-text="payment.name"></span>
+                    <span x-text="payment.price"></span>
+                  </div>
+                </template>
+              </div>
+              <div class="info" x-show="!payments.payments">
+                <span>You haven't bought any courses yet!</span>
+              </div>
             </div>
 
-            <div class="info" x-text="userData.specialization">
+            <div class='info-container' x-show="round.round">
+              <div class="info">
+                Round files
+              </div>
+              <div class="info" x-transition x-html="round.round">
+              </div>
             </div>
-          </div>
 
-          <div class="info-container payments-details">
-            <div class="info">
-              Your Bought Courses
-            </div>
-            <div class="info" x-show="payments.payments">
-              <template x-for="payment in payments.payments">
-                <div class="bought_courses" x-data="{payment}">
-                  <span x-text="payment.name"></span>
-                  <span x-text="payment.price"></span>
+
+            <span v-if="examsData.userExams">
+              Your Performed Exams:
+            </span>
+
+            <div v-if="examsData.hasOwnProperty('userExams')" class="info-container">
+              <div v-for="(item, index) in examsData.userExams" class="exams-previews info">
+                <div class="preview-{{ index }}">
+                  <span>{{ index + 1}} : </span>
+                  <a v-bind:href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
                 </div>
-              </template>
-            </div>
-            <div class="info" x-show="!payments.payments">
-              <span>You haven't bought any courses yet!</span>
+              </div>
+
+              <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
+                <div class="bought_courses">
+                  <span class="text-center">
+                    <sup><span> {{ grade.grade }} </span></sup> /
+                    <sub><span> {{ grade.questions.length }} </span></sub>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class='info-container' x-show="round.round">
-            <div class="info">
-              Round files
-            </div>
-            <div class="info" x-transition x-html="round.round">
-            </div>
-          </div>
 
-          <span x-show="userGrades.userExams">
-            Your Performed Exams:
-          </span>
-          <div class='info-container' x-show="userGrades.userExams">
+          <!--<div class='info-container' x-show="userGrades.userExams">
             <div class="info">
               <div class="exams-previews">
-                <template x-for="(grade, index) in userGrades.userExams">
+                <template x-for="grade in userGrades.userExams">
                   <div x-data="grade" :class="'preview-' + index" class="fs-5">
-                    <span x-text="index + 1 + ': '"></span>
-                    <a :href="grade.preview_link" x-text="grade.title + ' report'"></a>
+                    &lt;!&ndash;                    <span x-text="index + 1 + ': '"></span>&ndash;&gt;
+
+                    <a :href="`/exams/preview/${grade.reply_id}`" x-text="grade.title + ' report'"></a>
                   </div>
                 </template>
               </div>
@@ -94,13 +126,13 @@
               <template x-for="(grade, index) in userGrades.userExams">
                 <div class="bought_courses" x-data="{grade}">
                 <span class="text-center">
-                  <sup><span x-text="grade.reply.grade"></span></sup> /
-                  <sub><span x-text="grade.reply.userAnswers.length"></span></sub>
+                  <sup><span x-text="grade.grade"></span></sup> /
+                  <sub><span x-text="grade.questions.length"></span></sub>
                 </span>
                 </div>
               </template>
             </div>
-          </div>
+          </div-->
 
           <div class='info-container' x-show="certificate?.certificateData">
             <div class="info">
@@ -158,27 +190,32 @@
 
 <script src="/js/alpine.min.js"></script>
 
-<%
-/*<hr />
+<script async>
+  const { createApp } = Vue
 
-<div class="container" x-data="{open: false, userName: 'Seif Tahawy'}">
-  <h1>Testing apline</h1>
 
-  <span x-show="open" x-transition>
-    Testing
-  </span>
+  /*  async function setup() {
+      return (await axios.get('/user-data')).data
+    }*/
 
-  <button class="btn btn-info" @click="open = !open">Click Me</button>
 
-  <div style="transform: skew(20deg)">
-    Your name is <span x-text="userName"></span>
-  </div>
+  async function mounted() {
+    this.examsData = (await axios.get("/user-grades")).data
+    this.userData = (await axios.get("/user-data")).data.user
 
-  <div x-text="(await axios.get('/user-data')).data.user.email"></div>
+    console.log(this.examsData, this.userData)
+  }
 
-</div>
-*/
-%>
+  createApp({
+    data() {
+      return {
+        examsData: "",
+        userData: "",
+      }
+    },
+    mounted,
+  }).mount("#app")
+</script>
 
 <%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>

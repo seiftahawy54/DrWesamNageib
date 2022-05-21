@@ -9,8 +9,10 @@ import Payment from "./payment.js";
 import Rounds from "./rounds.js";
 import Users from "./users.js";
 import ExamImages from "./exam-images.js";
+import ExamsReplies from "./exams-replies.js";
 
 export {
+  ExamsReplies,
   Certificates,
   Discounts,
   Errors,
