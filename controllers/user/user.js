@@ -226,7 +226,8 @@ export const getPerformExam = async (req, res, next) => {
     const findingUserReply = await ExamsReplies.findAll({
       where: { user_id: req.user.user_id, exam_id: examId },
     });
-    let performedBefore = false;
+
+    console.log(`Finding USER REPLY ===> `, findingUserReply);
 
     if (findingExam) {
       let allRoundsUsersIds = await Rounds.findAll({
@@ -315,6 +316,8 @@ export const postPerformExam = async (req, res, next) => {
         grade,
         user_answers: userAnswers,
       });
+
+      console.log(`creating New Reply Result ====> `);
 
       return res.status(201).json({
         grade,
