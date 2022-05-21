@@ -64,7 +64,8 @@ export const createCertificate = (
   courseName = "",
   courseHours = "",
   roundStartingDate = "",
-  courseCertificateImg = ""
+  courseCertificateImg = "",
+  courseCategory = ""
 ) => {
   const certificateName = `${userName}-${userId}.pdf`;
   const certificatePath = path.resolve(
@@ -138,14 +139,14 @@ export const createCertificate = (
           lineHeight: 1.2,
         },
         {
-          text: `has attended a structured 3-months, ${courseHours} contact hours of training in preparation of healthcare Quality certificate and is therefore awarded the`,
+          text: `has attended a structured 3-months, ${courseHours} contact hours of training in preparation of ${courseCategory} certificate and is therefore awarded the`,
           fontSize: "18",
           italics: true,
           alignment: "center",
           marginTop: 10,
         },
         {
-          text: `Certificate of Attendance of Professional in Healthcare Quality "${courseName}"`,
+          text: `Certificate of Attendance of Professional in ${courseCategory} "${courseName}"`,
           alignment: "center",
           fontSize: "30",
           bold: true,

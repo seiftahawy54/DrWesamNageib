@@ -63,24 +63,24 @@
               <div class="info">
                 Your Bought Courses
               </div>
-              <div class="info" x-show="payments.payments">
-                <template x-for="payment in payments.payments">
-                  <div class="bought_courses" x-data="{payment}">
-                    <span x-text="payment.name"></span>
-                    <span x-text="payment.price"></span>
+              <div class="info" v-if="payments">
+                <template v-for="payment in payments" :key="payment.id">
+                  <div class="bought_courses">
+                    <span v-text="payment.name"></span>
+                    <span v-text="payment.price"></span>
                   </div>
                 </template>
               </div>
-              <div class="info" x-show="!payments.payments">
+              <div class="info" v-if="!payments">
                 <span>You haven't bought any courses yet!</span>
               </div>
             </div>
 
-            <div class='info-container' x-show="round.round">
+            <div class='info-container' v-if="round">
               <div class="info">
                 Round files
               </div>
-              <div class="info" x-transition x-html="round.round">
+              <div class="info" v-html="round">
               </div>
             </div>
 
@@ -93,7 +93,7 @@
               <div v-for="(item, index) in examsData.userExams" class="exams-previews info">
                 <div class="preview-{{ index }}">
                   <span>{{ index + 1}} : </span>
-                  <a v-bind:href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
+                  <a :href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
                 </div>
               </div>
 
@@ -106,49 +106,25 @@
                 </div>
               </div>
             </div>
-          </div>
 
 
-          <!--<div class='info-container' x-show="userGrades.userExams">
-            <div class="info">
-              <div class="exams-previews">
-                <template x-for="grade in userGrades.userExams">
-                  <div x-data="grade" :class="'preview-' + index" class="fs-5">
-                    &lt;!&ndash;                    <span x-text="index + 1 + ': '"></span>&ndash;&gt;
+            <div class='info-container' v-if="certificate">
+              <div class="info">
+                Your certificate
+              </div>
 
-                    <a :href="`/exams/preview/${grade.reply_id}`" x-text="grade.title + ' report'"></a>
-                  </div>
-                </template>
+              <div class="info">
+                <a :href="`/certificates/${certificate.courseId}`" class="link-success"
+                   v-text="`${certificate.courseName} - ${certificate.roundDate}`"></a>
               </div>
             </div>
 
-            <div class="info payments-details" x-show="userGrades.userExams">
-              <template x-for="(grade, index) in userGrades.userExams">
-                <div class="bought_courses" x-data="{grade}">
-                <span class="text-center">
-                  <sup><span x-text="grade.grade"></span></sup> /
-                  <sub><span x-text="grade.questions.length"></span></sub>
-                </span>
-                </div>
-              </template>
-            </div>
-          </div-->
 
-          <div class='info-container' x-show="certificate?.certificateData">
-            <div class="info">
-              Your certificate
+            <div class="info-container">
+              <a :href="`/update-data/${userData.user_id}`" class="btn">
+                Update your data?
+              </a>
             </div>
-
-            <div class="info">
-              <a :href="`/certificates/${certificate.certificateData.courseId}`" class="link-success"
-                 x-text="`${certificate.certificateData.courseName} - ${certificate.certificateData.roundDate}`"></a>
-            </div>
-          </div>
-
-          <div class="info-container">
-            <a :href="`/update-data/${userData.user_id}`" class="btn">
-              Update your data?
-            </a>
           </div>
 
         </div>
@@ -200,10 +176,13 @@
 
 
   async function mounted() {
-    this.examsData = (await axios.get("/user-grades")).data
     this.userData = (await axios.get("/user-data")).data.user
+    this.examsData = (await axios.get("/user-grades")).data
+    this.payments = (await axios.get("/user-payments")).data.payments
+    this.round = (await axios.get("/user-round")).data.round
+    this.certificate = (await axios.get("/user-certificates")).data.certificateData
 
-    console.log(this.examsData, this.userData)
+    console.log(this.certificate)
   }
 
   createApp({
@@ -211,6 +190,9 @@
       return {
         examsData: "",
         userData: "",
+        payments: "",
+        round: "",
+        certificate: "",
       }
     },
     mounted,

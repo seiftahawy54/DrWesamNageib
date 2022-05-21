@@ -177,43 +177,51 @@ export const getUserCertificate = async (req, res, next) => {
     const courseId = req.params.courseId;
 
     const roundAndCourse = await sequelize.query(
-      `select * from rounds inner join courses course on rounds.round_id = ? and course.course_id = ?`,
+      `select *, course.* from rounds inner join courses course on rounds.round_id = ? and course.course_id = ?`,
       {
         replacements: [req.user.finished_course, courseId],
         type: "SELECT",
       }
     );
 
-    console.log(`selected rounds: `, roundAndCourse[0].round_date);
+    // console.log(`selected rounds: `, roundAndCourse[0].round_date);
     // console.log(`new certificate: `, roundAndCourse[0].round_date);
 
-    getSingleFile(roundAndCourse[0].course_img)
-      .then((response) => {
-        const certificateDoc = createCertificate(
-          req.user.name,
-          req.user.user_id,
-          roundAndCourse[0].name,
-          roundAndCourse[0].total_hours,
-          roundAndCourse[0].round_date,
-          roundAndCourse[0].course_img
-        );
+    console.log(roundAndCourse[0].special_course);
 
-        certificateDoc.certificateObject.pipe(
-          fs.createWriteStream(certificateDoc.certificatePath)
-        );
+    if (roundAndCourse[0].special_course) {
+      getSingleFile(roundAndCourse[0].course_img)
+        .then((response) => {
+          const certificateDoc = createCertificate(
+            req.user.name,
+            req.user.user_id,
+            roundAndCourse[0].name,
+            roundAndCourse[0].total_hours,
+            roundAndCourse[0].round_date,
+            roundAndCourse[0].course_img,
+            roundAndCourse[0].course_category
+          );
 
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          `inline; filename="${certificateDoc.certificateName}"`
-        );
+          certificateDoc.certificateObject.pipe(
+            fs.createWriteStream(certificateDoc.certificatePath)
+          );
 
-        certificateDoc.certificateObject.pipe(res);
-        certificateDoc.certificateObject.end();
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+          res.setHeader("Content-Type", "application/pdf");
+          res.setHeader(
+            "Content-Disposition",
+            `inline; filename="${certificateDoc.certificateName}"`
+          );
+
+          certificateDoc.certificateObject.pipe(res);
+          certificateDoc.certificateObject.end();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    } else {
+      req.flash("error", "Please check your supervisor");
+      return res.redirect("/profile");
+    }
   } catch (e) {
     await errorRaiser(e, next);
   }
@@ -317,7 +325,7 @@ export const postPerformExam = async (req, res, next) => {
         user_answers: userAnswers,
       });
 
-      console.log(`creating New Reply Result ====> `);
+      console.log(`creating New Reply Result ====> `, creatingNewReplyResult);
 
       return res.status(201).json({
         grade,
@@ -448,7 +456,9 @@ export const getBoughtCourses = async (req, res, next) => {
 
     const findingBoughtCourses = await Promise.all(
       await coursesPayments.map(async (courses) => {
-        return await Courses.findByPk(courses);
+        return await Courses.findByPk(courses, {
+          attributes: ["name", "price"],
+        });
       })
     );
 
@@ -521,13 +531,35 @@ export const getUserGrades = async (req, res, next) => {
 
 export const getUserProfileCertificate = async (req, res, next) => {
   try {
-    const allExams = await Exams.findAll({
-      attributes: ["replies", "special_exam", "questions"],
-    });
+    const usersExamsData = await sequelize.query(
+      `
+    SELECT e.title, e.questions, reply.reply_id, reply.grade, e.special_exam FROM exams_replies reply
+        INNER JOIN exams e ON reply.exam_id = e.exam_id
+        INNER JOIN users u ON reply.user_id = u.user_id WHERE reply.user_id = ?;
+    `,
+      {
+        replacements: [req.user.user_id],
+        type: "SELECT",
+      }
+    );
 
     let havePassedSpecial = false;
 
-    allExams.forEach((exam, index) => {
+    for (let reply of usersExamsData) {
+      reply.questions = reply.questions
+        .map((question) => {
+          if ("questionHeader" in question) return question;
+        })
+        .filter((q) => q);
+    }
+
+    for (let reply of usersExamsData) {
+      if (reply.special_exam && reply.grade > reply.questions.length / 2) {
+        havePassedSpecial = true;
+      }
+    }
+
+    /*allExams.forEach((exam, index) => {
       // console.log(`Exam ${index} replies ==> `, exam.replies);
       if (exam.replies) {
         exam.replies.forEach((reply, index) => {
@@ -548,7 +580,7 @@ export const getUserProfileCertificate = async (req, res, next) => {
           }
         });
       }
-    });
+    });*/
 
     let roundDate = "",
       finishedCourseName = "",

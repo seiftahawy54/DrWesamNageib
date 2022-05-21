@@ -9,9 +9,10 @@ export const getAllReplies = async (req, res, next) => {
   try {
     const allExamsReplies = await sequelize.query(
       `
-         SELECT e.title, reply.reply_id, u.name, reply.grade, reply."createdAt" FROM exams_replies reply
-              INNER Join exams e on reply.exam_id = e.exam_id
-              INNER JOIN users u on reply.user_id = u.user_id;
+        SELECT e.title, reply.reply_id, u.name, reply.grade, reply."createdAt" FROM exams_replies reply
+        INNER Join exams e on reply.exam_id = e.exam_id
+        INNER JOIN users u on reply.user_id = u.user_id
+          order by reply."createdAt" desc;
     `,
       {
         type: "SELECT",
