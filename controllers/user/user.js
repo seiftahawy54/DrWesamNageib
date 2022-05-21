@@ -51,7 +51,6 @@ export const getUserProfile = async (req, res, next) => {
       moment,
     });
   } catch (e) {
-    console.log(`we've entered here`, e);
     req.flash("error", e.message);
     res.redirect("/profile");
   }
@@ -224,6 +223,9 @@ export const getPerformExam = async (req, res, next) => {
   try {
     const examId = req.params.examId;
     const findingExam = await Exams.findByPk(examId);
+    const findingUserReply = await ExamsReplies.findAll({
+      where: { user_id: req.user.user_id, exam_id: examId },
+    });
     let performedBefore = false;
 
     if (findingExam) {
@@ -251,12 +253,9 @@ export const getPerformExam = async (req, res, next) => {
         return res.redirect("/profile");
       }
 
-      for (let reply in findingExam.replies) {
-        if (findingExam.replies[reply].user_id === req.user.user_id) {
-          performedBefore = true;
-          req.flash("error", "Exam is already performed!");
-          return res.redirect("/profile");
-        }
+      if (findingUserReply.length > 0) {
+        req.flash("error", "Exam is already performed!");
+        return res.redirect("/profile");
       }
 
       const testing = async () => {

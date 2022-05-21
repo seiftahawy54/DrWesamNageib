@@ -34,6 +34,9 @@
                       <label class="form-check-label w-100"
                              for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
                         <%- answer %>
+                        <% if ( performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ) { %>
+                          <i>(Your answer)</i>
+                        <% } %>
                       </label>
                     </div>
                   <% }) %>
