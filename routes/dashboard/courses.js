@@ -8,14 +8,14 @@ import {
 } from "../../controllers/dashboard/d_courses.js";
 import { body } from "express-validator";
 import { Router } from "express";
+import { upload } from "../../middlewares/multer.js";
 
-const router = Router();
-
-router
+export default Router()
   .get("/", getCourses)
   .get("/add-new-course", getAddNewCourse)
   .post(
     "/add-new-course",
+    // upload.any("course_img", "detailed_img"),
     [
       body("name").isString().notEmpty(),
       body("price").isNumeric().notEmpty(),
@@ -35,6 +35,7 @@ router
   .post("/delete-courses", postDeleteCourse)
   .post(
     "/edit-course/:courseId",
+    // upload.any("course_img", "detailed_img"),
     [
       body("name").isString().notEmpty(),
       body("price").isNumeric().notEmpty(),
@@ -48,5 +49,3 @@ router
     ],
     postUpdateCourse
   );
-
-export default router;

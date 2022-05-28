@@ -11,40 +11,23 @@ import { Rounds } from "../models/index.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
 import { cartIsEmpty, courseExistsInCart } from "../utils/cart_helpers.js";
+import { sequelize } from "../utils/db.js";
 
 const getIndex = async (req, res, next) => {
   try {
-    let courseRank = parseInt(req.query.rank);
-
-    if (
-      !isNaN(courseRank) &&
-      courseRank !== 0 &&
-      typeof courseRank === "number"
-    ) {
-      const findingCourseId = await Courses.findAll({
-        attributes: ["course_id"],
-        where: { course_rank: courseRank },
-      });
-
-      console.log(findingCourseId);
-
-      if (Array.isArray(findingCourseId) && findingCourseId.length > 0) {
-        req.flash("error", "There's no course with this id!");
-        return res.redirect(`/courses/${findingCourseId[0].courseId}`);
-      } else {
-        return res.redirect("/courses");
+    const courses = await sequelize.query(
+      "SELECT * FROM courses ORDER BY course_rank ASC",
+      {
+        type: "SELECT",
       }
-      // console.log(findingCourseId[0].course_id);
-    }
+    );
 
-    let fetchingResult = await Courses.findAll();
-
-    await downloadingCoursesImages(fetchingResult);
+    // await downloadingCoursesImages(fetchingResult);
 
     return res.render("courses/index", {
       title: "Courses",
       path: "/courses",
-      courses: sortCourses(fetchingResult),
+      courses,
     });
   } catch (e) {
     await errorRaiser(e, next);
@@ -69,6 +52,31 @@ const singleCourse = async (req, res, next) => {
       numberOfCourses: numberOfCourses.count,
       rounds: filteredRounds,
       moment,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getAllCoursesData = async (req, res, next) => {
+  try {
+    const courses = await Courses.findAll();
+    res.status(200).json({
+      courses,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getCoursesCategories = async (req, res, next) => {
+  try {
+    const coursesCategories = await Courses.findAll({
+      attributes: ["course_category"],
+    });
+
+    res.status(200).json({
+      coursesCategories,
     });
   } catch (e) {
     await errorRaiser(e, next);

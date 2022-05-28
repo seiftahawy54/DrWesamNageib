@@ -32,7 +32,7 @@ export const getRounds = async (req, res, next) => {
           );
 
           usersForEachRound = usersForEachRound.map((user) => {
-            if ("name" in user) {
+            if (Object.prototype.hasOwnProperty.call(user, "name")) {
               return user.name;
             } else {
               return "DELETED USER";

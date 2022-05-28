@@ -10,7 +10,7 @@ import { Courses } from "../../models/index.js";
 import { Users } from "../../models/index.js";
 import { Messages } from "../../models/index.js";
 import { Opinions } from "../../models/index.js";
-import { Certificates } from "../../models/index.js";
+import { About } from "../../models/index.js";
 import { sequelize } from "../../utils/db.js";
 
 export const getOverview = async (req, res, next) => {
@@ -23,7 +23,7 @@ export const getOverview = async (req, res, next) => {
   const numberOfRounds = await Rounds.findAll();
   const numberOfMessages = await Messages.findAll();
   const numberOfPayments = await Payment.findAll();
-  const numberOfCertificates = await Certificates.findAll();
+  const numberOfCertificates = await About.findAll();
 
   numberOfUsers = numberOfUsers.map((user) => {
     user.name = 1;
@@ -265,91 +265,6 @@ export const postUpdateOpinion = async (req, res, next) => {
         });
       }
     }
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
-};
-
-export const getAboutPage = async (req, res, next) => {
-  try {
-    const certificates = await Certificates.findAll();
-
-    await getCertificatesImage(certificates);
-
-    res.render("dashboard/about", {
-      title: "Certificate",
-      path: "/dashboard/about",
-      editMode: false,
-      certificates: certificates,
-      errorMessage: "",
-      validationErrors: [],
-    });
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
-};
-
-export const getNewAbout = (req, res, next) => {
-  res.render("dashboard/about_forms", {
-    title: "Certificate",
-    path: "/dashboard/about",
-    editMode: false,
-    certificates: [],
-    errorMessage: "",
-    validationErrors: [],
-  });
-};
-
-export const postAddNewAbout = async (req, res, next) => {
-  try {
-    const certificateImage = req.files[0];
-
-    if (certificateImage?.path) {
-      const addingResult = await Certificates.create({
-        certificate_img: certificateImage.path,
-      });
-
-      const uploadingResult = await uploadFile(
-        certificateImage.path,
-        certificateImage.filename,
-        certificateImage.mimetype,
-        res,
-        next
-      );
-
-      console.log(uploadingResult);
-
-      if (addingResult) {
-        console.log(`adding_result`, await addingResult);
-        res.redirect("/dashboard/about");
-      }
-    } else {
-      return res.render("dashboard/about_forms", {
-        title: "Certificate",
-        path: "/dashboard/about",
-        editMode: false,
-        certificates: [],
-        errorMessage: "Please enter a correct certificate image",
-        validationErrors: [
-          {
-            param: "certificate_img",
-          },
-        ],
-      });
-    }
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
-};
-
-export const postDeleteCertificate = async (req, res, next) => {
-  try {
-    const certificateId = req.body.certificateId;
-    const deletingResult = await (
-      await Certificates.findByPk(certificateId)
-    ).destroy();
-    console.log(deletingResult);
-    res.redirect("about");
   } catch (e) {
     await errorRaiser(e, next);
   }

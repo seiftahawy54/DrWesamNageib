@@ -1,7 +1,6 @@
 <%- include("../includes/top_part.ejs"); %>
 <script src="/js/axios.min.js"></script>
 <link rel="stylesheet" href="/css/user/profile.css" />
-<script src="https://unpkg.com/vue@3"></script>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -9,14 +8,7 @@
 <section class="profile">
   <div class="container">
     <div class="row">
-      <div class="col-12 mb-5" x-data="{userData: {}, payments: {}, round: {}, userGrades: {}, certificate: {}}"
-           x-init="
-            userData = (await axios.get('/user-data')).data.user;
-            payments = (await axios.get('/user-payments')).data;
-            round = (await axios.get('/user-round')).data;
-            userGrades = (await axios.get('/user-grades')).data;
-            certificate = (await axios.get('/user-certificates')).data;
-      ">
+      <div class="col-12 mb-5">
         <%- include("../includes/errorMessage.ejs"); %>
         <div class="custom-head">
           <h2>Your Data</h2>
@@ -168,12 +160,6 @@
 
 <script async>
   const { createApp } = Vue
-
-
-  /*  async function setup() {
-      return (await axios.get('/user-data')).data
-    }*/
-
 
   async function mounted() {
     this.userData = (await axios.get("/user-data")).data.user

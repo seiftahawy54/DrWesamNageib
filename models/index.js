@@ -1,4 +1,4 @@
-import Certificates from "./about.js";
+import About from "./about.js";
 import Discounts from "./discounts.js";
 import Errors from "./errors.js";
 import Messages from "./messages.js";
@@ -13,7 +13,7 @@ import ExamsReplies from "./exams-replies.js";
 
 export {
   ExamsReplies,
-  Certificates,
+  About,
   Discounts,
   Errors,
   Messages,

@@ -109,7 +109,6 @@ export const getAllReplies = async (req, res, next) => {
 export const postDeleteReply = async (req, res, next) => {
   try {
     const replyId = req.body.replyId;
-    console.log(replyId);
     const findingReply = await ExamsReplies.findByPk(replyId);
     const deletingResult = await findingReply.destroy();
 

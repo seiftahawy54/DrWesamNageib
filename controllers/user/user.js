@@ -559,29 +559,6 @@ export const getUserProfileCertificate = async (req, res, next) => {
       }
     }
 
-    /*allExams.forEach((exam, index) => {
-      // console.log(`Exam ${index} replies ==> `, exam.replies);
-      if (exam.replies) {
-        exam.replies.forEach((reply, index) => {
-          let questionsWithoutImages = exam.questions
-            .map((question) => {
-              if ("questionHeader" in question) {
-                return question;
-              }
-            })
-            .filter((question) => question !== undefined);
-          if (reply.user_id === req.user.user_id) {
-            if (
-              exam.special_exam &&
-              reply.grade > questionsWithoutImages.length / 2
-            ) {
-              havePassedSpecial = true;
-            }
-          }
-        });
-      }
-    });*/
-
     let roundDate = "",
       finishedCourseName = "",
       courseId;

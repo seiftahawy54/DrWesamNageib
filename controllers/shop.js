@@ -4,7 +4,7 @@ import { validationResult } from "express-validator";
 import { Courses } from "../models/index.js";
 import { Opinions } from "../models/index.js";
 import { Messages } from "../models/index.js";
-import { Certificates } from "../models/index.js";
+import { About } from "../models/index.js";
 import { Users } from "../models/index.js";
 
 import { errorRaiser } from "../utils/error_raiser.js";
@@ -15,8 +15,6 @@ import {
 } from "../utils/general_helper.js";
 import fs from "fs";
 import moment from "moment";
-import { getSingleFile } from "../utils/aws.js";
-// import { Rounds } from "../models";
 import {
   calcTotalPrice,
   extractArrOfPrices,
@@ -167,7 +165,7 @@ export const postDeleteFromCart = async (req, res, next) => {
 
 export const getAboutPage = async (req, res, next) => {
   try {
-    const aboutCertificates = await Certificates.findAll();
+    const aboutCertificates = await About.findAll();
 
     await getCertificatesImage(aboutCertificates);
 

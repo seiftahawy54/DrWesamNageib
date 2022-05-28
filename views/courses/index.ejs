@@ -4,95 +4,142 @@
 <body>
 <%- include("../includes/navigation.ejs"); %>
 
-<section class="featured-courses">
-  <div class="small-brief text-center">
-    <%- include('../../public/imgs/svgs/feed.svg') %>
-    Courses By Exam
-  </div>
-  <div class="container">
-    <div class="row">
-      <% courses.forEach(course => { %>
-        <div class="featured-course-container col-lg-4 col-sm-12">
-          <div class="featured-courses-container ">
-            <div class="course-title-container">
-              <div class="course-thumbnail">
-                <img src="/downloaded_images/<%- course.course_img %>" alt="<%- course.name %>"
-                     class="w-100 " />
-              </div>
-              <div class="course-title">
-                <%= course.name %>
-              </div>
-            </div>
-            <p class="course-about">
-              <bdi>
-                <%= course.course_thumbnail %>
-              </bdi>
-            </p>
-            <a href="/courses/<%- course.course_id %>" class="reset-link btn-outlined">
-              View Course
-            </a>
-          </div>
-        </div>
-      <% }) %>
+<div id="app">
+  <section class="featured-courses">
+    <div class="small-brief text-center">
+      <%- include('../../public/imgs/svgs/feed.svg') %>
+      Courses By Exam
     </div>
-  </div>
-
-  <div class="small-brief text-center">
-    <%- include('../../public/imgs/svgs/grid-collection.svg') %>
-    All Courses
-  </div>
-</section>
-<section class="all-courses">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-2 col my-sm-3 my-xl-0">
-        <h3>Filter By</h3>
-        <hr>
-        <div>Exam</div>
-        <div class="first-category">
-          <input type="checkbox" name="category1" id="category1" /> <label for="category1">CPHQ</label>
-          <br />
-          <input type="checkbox" name="category1" id="category1" /> <label for="category1">CBIC</label>
-        </div>
-
-        <hr>
-        <div>Language</div>
-        <div class="first-category">
-          <input type="checkbox" name="category1" id="category4" /> <label for="category4">English</label>
-          <br />
-          <input type="checkbox" name="category1" id="category5" /> <label for="category5">Arabic</label>
-        </div>
+    <div class="container">
+      <div class="row">
+        <% courses.forEach(course => { %>
+          <div class="featured-course-container col-lg-4 col-sm-12">
+            <div class="featured-courses-container ">
+              <div class="course-title-container">
+                <div class="course-thumbnail">
+                  <img src="/downloaded_images/<%- course.course_img %>" alt="<%- course.name %>"
+                       class="w-100 " />
+                </div>
+                <div class="course-title">
+                  <%= course.name %>
+                </div>
+              </div>
+              <p class="course-about">
+                <bdi>
+                  <%= course.course_thumbnail %>
+                </bdi>
+              </p>
+              <a href="/courses/<%- course.course_id %>" class="reset-link btn-outlined">
+                View Course
+              </a>
+            </div>
+          </div>
+        <% }) %>
       </div>
-      <div class="col">
-        <div class="course-sort">
-          <input list="sorting" placeholder="Sorting" />
-          <datalist id="sorting">
-            <option value="Price"></option>
-            <option value="Exam"></option>
-            <option value="Most Popular"></option>
-          </datalist>
+    </div>
+
+    <div class="small-brief text-center">
+      <%- include('../../public/imgs/svgs/grid-collection.svg') %>
+      All Courses
+    </div>
+  </section>
+  <section class="all-courses">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col my-sm-3 my-xl-0">
+          <h3>Filter By</h3>
+          <hr>
+          <div v-for="(cat, index) in coursesCategories">
+            <input type="checkbox" :name="`category-${index}`" :id="`category-${index}`" @click='selectCourse'
+                   :value="cat.course_category"
+                   :key="index" />
+            <label :for="`category-${index}`">&nbsp;{{ cat.course_category }}</label>
+          </div>
+          <!--<div>Exam</div>
+          <div class="first-category">
+            <input type="checkbox" name="category1" id="category1" /> <label for="category1">CPHQ</label>
+            <br />
+            <input type="checkbox" name="category1" id="category1" /> <label for="category1">CBIC</label>
+          </div>
+
+          <hr>
+          <div>Language</div>
+          <div class="first-category">
+            <input type="checkbox" name="category1" id="category4" /> <label for="category4">English</label>
+            <br />
+            <input type="checkbox" name="category1" id="category5" /> <label for="category5">Arabic</label>
+          </div>-->
         </div>
-        <div class="row all-courses-cont">
-          <%- include('../includes/errorMessage.ejs'); %>
-          <% courses.forEach(course => { %>
-            <div class="col-lg-4 col-sm-12">
-              <a href="/courses/<%- course.course_id %>" class="reset-link">
+        <div class="col">
+          <div class="course-sort">
+            <input list="sorting" placeholder="Search in courses" />
+          </div>
+          <div class="row all-courses-cont">
+            <%- include('../includes/errorMessage.ejs'); %>
+            <div v-for="course in courses" class="col-lg-4 col-sm-12">
+              <a :href="`/courses/${course.course_id}`" class="reset-link">
                 <div class="course">
-                  <img src="/downloaded_images/<%- course.course_img %>" alt="CPHQ Preparation Course"
-                       class="course-thumbnail" />
+                  <img :src="`/downloaded_images/${course.course_img}`" :alt="course.name"
+                       class="course-thumbnail" loading="lazy" />
                   <div class="course-footer">
-                    <div class="course-title"><%- course.name %></div>
-                    <div class="course-price">&dollar; <%- course.price %></div>
+                    <div class="course-title">{{ course.name }}</div>
+                    <div class="course-price">&dollar; {{ course.price }}</div>
                   </div>
                 </div>
               </a>
             </div>
-          <% }) %>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <%- include("../includes/footer.ejs"); %>
+
+<script src="/js/axios.min.js"></script>
+
+<script async>
+  const { createApp } = Vue
+
+  async function mounted() {
+    this.coursesCategories = (await axios.get("/courses/courses-categories")).data.coursesCategories
+    this.courses = (await axios.get("/courses/all-courses")).data.courses
+    this.defaultCourses = [...this.courses]
+
+    console.log(this.defaultCourses)
+  }
+
+  createApp({
+    data() {
+      return {
+        courses: "",
+        coursesCategories: "",
+        searching: [],
+        defaultCourses: []
+      }
+    },
+    methods: {
+      selectCourse(e) {
+        if (this.searching.findIndex(cat => cat === e.target.value) === -1) {
+          this.searching = [...this.searching, e.target.value.toString()]
+        } else {
+          this.searching.splice(this.searching.findIndex(cat => cat === e.target.value), 1)
+        }
+
+        this.courses = this.defaultCourses.filter((item) => {
+          if (this.searching.findIndex(i => i === item.course_category) > -1) {
+            return item;
+          }
+        })
+
+        if (this.searching.length === 0) {
+          this.courses = this.defaultCourses
+        }
+      }
+    },
+    mounted,
+  }).mount("#app")
+</script>
+
 <%- include("../includes/bottom_part.ejs"); %>

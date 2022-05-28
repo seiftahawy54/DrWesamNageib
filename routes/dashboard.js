@@ -4,43 +4,14 @@ import {
   postDeleteMessage,
   getOpinionsPage,
   postDeleteOpinion,
-  getAboutPage,
-  getNewAbout,
-  postAddNewAbout,
-  postDeleteCertificate,
   getUpdateOpinion,
   postUpdateOpinion,
   postDeleteAllMessages,
 } from "../controllers/dashboard/dashboard.js";
 
-import {
-  getUsers,
-  postDeleteUser,
-  getUpdateUser,
-  postUpdateUser,
-} from "../controllers/dashboard/users/d_users.js";
-
-import {
-  getCourses,
-  getAddNewCourse,
-  postAddNewCourse,
-  postDeleteCourse,
-  getEditCourse,
-  postUpdateCourse,
-} from "../controllers/dashboard/d_courses.js";
-
 import { getPaymentsPage } from "../controllers/dashboard/payments.js";
 import express from "express";
 import { body } from "express-validator";
-import {
-  getRounds,
-  getStartNewRound,
-  getUpdateRound,
-  postAddNewRound,
-  postDeleteRound,
-  postUpdateRound,
-} from "../controllers/dashboard/d_rounds.js";
-import { isAuthenticated } from "../middlewares/dashboard-auth.js";
 import {
   addNewDiscount,
   getDiscountsPage,
@@ -55,6 +26,7 @@ import DashboardRoundsRoutes from "./dashboard/rounds.js";
 import DashboardExamsRoutes from "./dashboard/exams.js";
 import DashboardCoursesRoutes from "./dashboard/courses.js";
 import DashboardExamsRepliesRoutes from "./dashboard/exams-replies.js";
+import DashboardAboutRoutes from "./dashboard/about.js";
 
 const router = express.Router();
 
@@ -66,6 +38,7 @@ router
   .use("/exams", DashboardExamsRoutes)
   .use("/courses", DashboardCoursesRoutes)
   .use("/exams-replies", DashboardExamsRepliesRoutes)
+  .use("/about", DashboardAboutRoutes)
   .get("/messages", getMessages)
   .post("/messages/delete-messages", postDeleteMessage)
   .post("/messages/delete-all-messages", postDeleteAllMessages)
@@ -82,12 +55,7 @@ router
     postUpdateOpinion
   )
   .post("/delete-opinion", postDeleteOpinion)
-  .get("/about", getAboutPage)
-  .get("/add-new-about", getNewAbout)
-  .post("/add-new-about", postAddNewAbout)
   .get("/payments", getPaymentsPage)
-  .post("/delete-certificate", postDeleteCertificate)
-
   .get("/discounts", getDiscountsPage)
   .get("/discounts/add-new-discounts", addNewDiscount)
   .post(

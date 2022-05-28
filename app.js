@@ -27,7 +27,7 @@ import { globalAccess, isAuthenticated } from "./middlewares/dashboard-auth.js";
 import { errorRaiser } from "./utils/error_raiser.js";
 import { userRoutes } from "./routes/user.js";
 import { getSingleFile } from "./utils/aws.js";
-import { Users } from "./models/index.js";
+import { ExamsReplies, Users } from "./models/index.js";
 import { Rounds } from "./models/index.js";
 import { Payment } from "./models/index.js";
 import { Courses } from "./models/index.js";
@@ -75,7 +75,9 @@ app.use(
     "detailed_img",
     "certificate_img",
     "user_img",
-    "exam_q_image"
+    "exam_q_image",
+    "instructorImg",
+    "instructorCertificates"
   )
 );
 
@@ -168,15 +170,23 @@ app.use(isUserAuthenticated, userRoutes);
 Payment.hasOne(Courses, { foreignKey: "course_id", through: "course_id" });
 Payment.hasOne(Users, { foreignKey: "user_id", through: "user_id" });
 Payment.hasOne(Rounds, { foreignKey: "round_id", through: "round_id" });
-Users.hasOne(Rounds, { through: "current_round" });
+Users.hasOne(Rounds, { foreignKey: "current_round" });
+Rounds.hasOne(Courses, { foreignKey: "course_id", constraints: false });
 Rounds.belongsToMany(Users, { through: "users_ids" });
+ExamsReplies.hasOne(Users, { foreignKey: "user_id" });
+ExamsReplies.hasOne(Courses, { foreignKey: "course_id" });
 
 app.use((error, req, res, next) => {
-  res.render("500", {
-    title: "Server Error",
-    path: "",
-  });
-  console.log(error);
+  if (error.errorType === "API") {
+    res.status(error.httpStatusCode).json({ error: error.message });
+    console.log(error);
+  } else {
+    res.render("500", {
+      title: "Server Error",
+      path: "",
+    });
+    console.log(error);
+  }
 });
 
 app.use((req, res, next) => {

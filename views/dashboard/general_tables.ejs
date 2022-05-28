@@ -120,9 +120,9 @@
                                     }, index) => { %>
                 <tr>
                   <% if (!("pagination" in customStuff)) { %>
-                    <td class="table-active">
+                    <th class="table-active">
                       <%= index + 1 %>
-                    </td>
+                    </th>
                   <% } %>
                   <% Object.entries(data.item).forEach((item, index) => { %>
                     <td class="<%- item[0].toLowerCase() %> <%- item[0] === "index" ? "table-active" : "" %>">
