@@ -31,12 +31,16 @@ export const getRounds = async (req, res, next) => {
             })
           );
 
-          console.log(usersForEachRound);
-
           usersForEachRound = usersForEachRound.map((user) => {
             if (user && "name" in user) {
               return user.name;
             } else {
+              console.log(
+                `THE FUCKING ERROR ===========> `,
+                user,
+                round_id,
+                round_date
+              );
               return "DELETED USER";
             }
           });
