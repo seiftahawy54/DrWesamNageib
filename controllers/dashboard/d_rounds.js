@@ -252,7 +252,16 @@ export const getUpdateRound = async (req, res, next) => {
       );
     }
 
-    console.log(usersHavePreviousCourses);
+    findingRoundUsersArr.forEach((user) => {
+      if (!user) {
+        console.log(`The un found user!`, user);
+      }
+    });
+
+    findingRoundUsersArr = findingRoundUsersArr.filter((i) => i);
+
+    console.log(findingRoundUsersArr);
+
     // usersHavePreviousCourses = usersHavePreviousCourses.filter();
 
     res.render("dashboard/rounds/round_form", {
