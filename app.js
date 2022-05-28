@@ -172,9 +172,9 @@ Payment.hasOne(Users, { foreignKey: "user_id", through: "user_id" });
 Payment.hasOne(Rounds, { foreignKey: "round_id", through: "round_id" });
 Users.hasOne(Rounds, { foreignKey: "current_round" });
 Rounds.hasOne(Courses, { foreignKey: "course_id", constraints: false });
-Rounds.belongsToMany(Users, { through: "users_ids" });
-ExamsReplies.hasOne(Users, { foreignKey: "user_id" });
-ExamsReplies.hasOne(Courses, { foreignKey: "course_id" });
+Rounds.belongsToMany(Users, { through: "users_ids", constraints: false });
+ExamsReplies.hasOne(Users, { foreignKey: "user_id", constraints: false });
+ExamsReplies.hasOne(Courses, { foreignKey: "course_id", constraints: false });
 
 app.use((error, req, res, next) => {
   if (error.errorType === "API") {
