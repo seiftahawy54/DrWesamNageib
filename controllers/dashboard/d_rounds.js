@@ -252,15 +252,20 @@ export const getUpdateRound = async (req, res, next) => {
       );
     }
 
-    findingRoundUsersArr.forEach((user) => {
+    let nullUserIndex = 0;
+
+    findingRoundUsersArr.forEach((user, index) => {
       if (!user) {
+        nullUserIndex = index;
         console.log(`The un found user!`, user);
       }
     });
 
+    console.log(`null user index ===> `, nullUserIndex);
+
     findingRoundUsersArr = findingRoundUsersArr.filter((i) => i);
 
-    console.log(findingRoundUsersArr);
+    // console.log(findingRoundUsersArr);
 
     // usersHavePreviousCourses = usersHavePreviousCourses.filter();
 
