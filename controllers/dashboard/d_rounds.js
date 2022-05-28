@@ -31,6 +31,8 @@ export const getRounds = async (req, res, next) => {
             })
           );
 
+          console.log(usersForEachRound);
+
           usersForEachRound = usersForEachRound.map((user) => {
             if (user && "name" in user) {
               return user.name;
