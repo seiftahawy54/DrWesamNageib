@@ -9,8 +9,10 @@
 
   .user-img {
     img {
-      @include common.similarHW(60px);
-      object-fit: contain;
+      //@include common.similarHW(60px);
+      max-width: 60px;
+      max-height: 60px;
+      object-fit: cover;
     }
   }
 

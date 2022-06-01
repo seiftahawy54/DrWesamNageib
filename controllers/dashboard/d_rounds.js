@@ -35,12 +35,6 @@ export const getRounds = async (req, res, next) => {
             if (user && "name" in user) {
               return user.name;
             } else {
-              console.log(
-                `THE FUCKING ERROR ===========> `,
-                user,
-                round_id,
-                round_date
-              );
               return "DELETED USER";
             }
           });
@@ -261,13 +255,7 @@ export const getUpdateRound = async (req, res, next) => {
       }
     });
 
-    console.log(`null user index ===> `, nullUserIndex);
-
     findingRoundUsersArr = findingRoundUsersArr.filter((i) => i);
-
-    // console.log(findingRoundUsersArr);
-
-    // usersHavePreviousCourses = usersHavePreviousCourses.filter();
 
     res.render("dashboard/rounds/round_form", {
       title: "Update Single Round",

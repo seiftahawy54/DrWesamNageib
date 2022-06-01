@@ -25,6 +25,7 @@ const examStatusLabel = examStatusInput.nextElementSibling;
 const examTitleInput = document.getElementById("exam-title");
 const submittingExamModal = document.getElementById("new-modal-btn");
 const submittingModal = document.getElementById("submittingForm");
+const newImgBtn = document.getElementById("newImgBtn");
 
 // Adding image modal
 const newImageBtn = document.getElementById("new-image-btn");
@@ -33,51 +34,115 @@ const dismissImageModalBtn = document.getElementById("dismiss-image-modal");
 
 const LOCAL_STORAGE_EXAMS_MODE = examsFormEditMode ? "modify_exams" : "exams";
 
-newImageBtn.addEventListener("click", async (e) => {
-  let data = new FormData();
-  data.append("exam_q_image", imageInput.files[0]);
-  /*  const localStorageExamsLength = localStorage.getItem(
-      LOCAL_STORAGE_EXAMS_MODE
-    )?.length;*/
-  axios
-    .post("/dashboard/exams/exam-image/", data, {
-      headers: {
-        "X-XSRF-TOKEN": csrfTokenInput.value,
-      },
-    })
-    .then(async (res) => {
-      if (res.status === 201) {
-        console.log(res.data);
-        let localExams = JSON.parse(
-          localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE)
-        );
+const editImgObj = {
+  editMode: false,
+  questionNumber: null,
+};
 
-        if (!localExams) localExams = [];
+/*const editImgProxy = new Proxy(editImgObj, {
+  get(target, p, receiver) {
+    return target;
+  },
+  set(target, p, value, receiver) {
+    target[p] = value;
+  },
+});*/
 
-        localExams = [
-          ...localExams,
-          {
-            examImage: res.data.image_path,
+newImgBtn.onclick = () => {
+  if (editImgObj.editMode) {
+    newImageBtn.addEventListener("click", async (e) => {
+      let data = new FormData();
+      data.append("exam_q_image", imageInput.files[0]);
+
+      axios
+        .post("/dashboard/exams/exam-image/", data, {
+          headers: {
+            "X-XSRF-TOKEN": csrfTokenInput.value,
           },
-        ];
-        localStorage.setItem(
-          LOCAL_STORAGE_EXAMS_MODE,
-          JSON.stringify(localExams)
-        );
+        })
+        .then(async (res) => {
+          if (res.status === 201) {
+            console.log(res.data);
+            let localExams = JSON.parse(
+              localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE)
+            );
 
-        console.log(localExams);
+            if (!localExams) localExams = [];
 
-        setTimeout(() => {
-          console.log(dismissImageModalBtn);
-          dismissImageModalBtn.click();
-          renderExams();
+            // Changing image data
+            console.log(localExams[editImgObj.questionNumber - 1]);
+            localExams[editImgObj.questionNumber - 1].examImage =
+              res.data.image_path;
+
+            localStorage.setItem(
+              LOCAL_STORAGE_EXAMS_MODE,
+              JSON.stringify(localExams)
+            );
+
+            editImgObj.editMode = false;
+            editImgObj.questionNumber = null;
+
+            console.log(localExams);
+
+            setTimeout(() => {
+              console.log(dismissImageModalBtn);
+              dismissImageModalBtn.click();
+              renderExams();
+            }, 1000);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
         });
-      }
-    })
-    .catch((err) => {
-      console.error(err);
     });
-});
+  } else {
+    newImageBtn.addEventListener("click", async (e) => {
+      let data = new FormData();
+      data.append("exam_q_image", imageInput.files[0]);
+      /*  const localStorageExamsLength = localStorage.getItem(
+          LOCAL_STORAGE_EXAMS_MODE
+        )?.length;*/
+      axios
+        .post("/dashboard/exams/exam-image/", data, {
+          headers: {
+            "X-XSRF-TOKEN": csrfTokenInput.value,
+          },
+        })
+        .then(async (res) => {
+          if (res.status === 201) {
+            console.log(res.data);
+            let localExams = JSON.parse(
+              localStorage.getItem(LOCAL_STORAGE_EXAMS_MODE)
+            );
+
+            if (!localExams) localExams = [];
+
+            localExams = [
+              ...localExams,
+              {
+                examImage: res.data.image_path,
+              },
+            ];
+            localStorage.setItem(
+              LOCAL_STORAGE_EXAMS_MODE,
+              JSON.stringify(localExams)
+            );
+
+            console.log(localExams);
+
+            setTimeout(() => {
+              console.log(dismissImageModalBtn);
+              dismissImageModalBtn.click();
+              renderExams();
+            }, 1000);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+  }
+};
 
 const removingBeforeData = () => {
   questionsFormAnswersContainer.replaceChildren();
@@ -184,29 +249,17 @@ const deleteExam = (questionNumber, imgPath = "") => {
     (item, index) => index !== questionNumber - 1
   );
 
-  // if (imgPath.length > 0) {
-  // axios
-  //   .post(
-  //     "/dashboard/exams/delete-exam-image",
-  //     {
-  //       imageId: imgPath.split("-")[0],
-  //     },
-  //     {
-  //       headers: {
-  //         "X-XSRF-TOKEN": csrfTokenInput.value,
-  //       },
-  //     }
-  //   )
-  //   .then((res) => {
-  //     console.log(res);
-  //   })
-  //   .catch((err) => {
-  //     console.error(err);
-  //   });
-  // }
-
   localStorage.setItem(LOCAL_STORAGE_EXAMS_MODE, JSON.stringify(filteredExams));
   renderExams();
+};
+
+const editImg = (questionNumber) => {
+  editImgObj.editMode = true;
+  editImgObj.questionNumber = questionNumber;
+  // editImgProxy.editMode = true;
+  // editImgProxy.questionNumber = questionNumber;
+  console.log(editImgObj);
+  newImgBtn.click();
 };
 
 const editExam = (questionNumber) => {
@@ -288,6 +341,13 @@ const creatingQuestion = (
 const createImgForExam = (imgPath = "", questionNumber) => {
   const containerElement = document.createElement("div");
   const questionImg = document.createElement("img");
+  // Edit img span
+  const editBtn = document.createElement("span");
+  editBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+          <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+        </svg>`;
 
   // Adding custom data set property
   // containerElement.dataset.
@@ -301,6 +361,9 @@ const createImgForExam = (imgPath = "", questionNumber) => {
   const deleteBtn = document.createElement("span");
   deleteBtn.classList.add("delete-exam", "btn-close");
 
+  // Edit Img button
+  editBtn.classList.add("edit-exam");
+
   /* Container Div For image */
   containerElement.classList.add("question", "my-3");
 
@@ -313,7 +376,11 @@ const createImgForExam = (imgPath = "", questionNumber) => {
     deleteExam(questionNumber, imgPath)
   );
 
-  containerElement.append(questionNumberDiv, deleteBtn, questionImg);
+  editBtn.addEventListener("click", () => {
+    editImg(questionNumber);
+  });
+
+  containerElement.append(questionNumberDiv, deleteBtn, editBtn, questionImg);
   return containerElement;
 };
 

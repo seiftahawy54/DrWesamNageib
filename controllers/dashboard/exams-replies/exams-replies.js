@@ -9,10 +9,9 @@ export const getAllReplies = async (req, res, next) => {
   try {
     const allExamsReplies = await sequelize.query(
       `
-        SELECT e.title, reply.reply_id, u.name, reply.grade, reply."createdAt" FROM exams_replies reply
-        INNER Join exams e on reply.exam_id = e.exam_id
-        INNER JOIN users u on reply.user_id = u.user_id
-          order by reply."createdAt" desc;
+        SELECT distinct e.title, e.exam_id, reply.reply_id FROM exams_replies reply
+          INNER JOIN exams e on reply.exam_id = e.exam_id
+          INNER JOIN users u on reply.user_id = u.user_id;
     `,
       {
         type: "SELECT",
@@ -22,15 +21,98 @@ export const getAllReplies = async (req, res, next) => {
     const allPrimaryKeys = [];
 
     let data = await Promise.all(
+      allExamsReplies.map(async ({ reply_id, title, exam_id }, index) => {
+        allPrimaryKeys.push(reply_id);
+
+        // createdAt = moment(createdAt).format("DD/MM/YYYY-hh:mm:ss");
+        let previewLink = `<a href="/dashboard/exams-replies/${exam_id}">${title}</a>`;
+
+        return {
+          title,
+
+          previewLink,
+        };
+      })
+    );
+
+    data = Object.entries(data).map(([key, value], index) => {
+      return {
+        item: value,
+        entry: key,
+      };
+    });
+
+    let finalData = [];
+
+    data.forEach((value, key) => {
+      finalData.push({
+        data: {
+          ...data[key],
+        },
+        primaryKey: allPrimaryKeys[key],
+        updateInputName: "replyId",
+      });
+    });
+
+    return res.render("dashboard/general_tables", {
+      title: "Exams",
+      path: "/dashboard/exams-replies",
+      tableName: "Exam-Replies",
+      addingNewLink: "exams_replies",
+      singleTableName: "exam_replies",
+      tableHead: [
+        {
+          title: "#",
+          name: "reply-number",
+        },
+        {
+          title: "Exams with replies",
+          name: "exam-title",
+        },
+        {
+          title: "Delete Exam",
+          name: "delete-exam",
+        },
+      ],
+      tableRows: finalData,
+      customStuff: {
+        notHaveUpdate: true,
+        notHaveNewInsert: true,
+      },
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getRepliesForExam = async (req, res, next) => {
+  try {
+    const examId = req.params.examId;
+    const allExamsReplies = await sequelize.query(
+      `
+        SELECT * FROM exams_replies reply
+        INNER Join exams e on reply.exam_id = e.exam_id
+        INNER JOIN users u on reply.user_id = u.user_id
+          where reply.exam_id=?
+          order by reply."createdAt" desc;
+    `,
+      {
+        type: "SELECT",
+        replacements: [examId],
+      }
+    );
+
+    const allPrimaryKeys = [];
+
+    let data = await Promise.all(
       allExamsReplies.map(
-        async ({ reply_id, title, name, grade, createdAt }, index) => {
+        async ({ reply_id, name, grade, createdAt }, index) => {
           allPrimaryKeys.push(reply_id);
 
           createdAt = moment(createdAt).format("DD/MM/YYYY-hh:mm:ss");
           let previewLink = `<a href="/exams/preview/${reply_id}">${name} reply</a>`;
 
           return {
-            title,
             name,
             grade,
             createdAt,
@@ -62,7 +144,7 @@ export const getAllReplies = async (req, res, next) => {
     return res.render("dashboard/general_tables", {
       title: "Exams",
       path: "/dashboard/exams-replies",
-      tableName: "Exams-Replies",
+      tableName: "Exam-Replies",
       addingNewLink: "exams_replies",
       singleTableName: "exam_replies",
       tableHead: [
@@ -71,20 +153,16 @@ export const getAllReplies = async (req, res, next) => {
           name: "reply-number",
         },
         {
-          title: "Exam Title",
-          name: "exam-title",
-        },
-        {
-          title: "Student Name",
-          name: "student-name",
+          title: "Name",
+          name: "user-name",
         },
         {
           title: "Grade",
           name: "grade",
         },
         {
-          title: "Submit Date",
-          name: "submit-date",
+          title: "Submission Date",
+          name: "submission-date",
         },
         {
           title: "Preview Link",

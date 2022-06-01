@@ -4,11 +4,8 @@
 <link rel="stylesheet" href="/css/dashboard/courses.css">
 <link rel="stylesheet" href="/css/dashboard/about.css" />
 
-<script src="https://cdn.jsdelivr.net/npm/vue-demi"></script>
-<script src="https://cdn.jsdelivr.net/npm/@vuelidate/core"></script>
-<script src="https://cdn.jsdelivr.net/npm/@vuelidate/validators"></script>
-<script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
 
+<script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
 </head>
 <body>
 
@@ -29,8 +26,12 @@
     </div>
 
     <div class="col-12">
-      <div v-if="serverError.length > 0" class="alert alert-danger">
+      <div v-if="serverError.length > 0" class="alert alert-danger text-center fs-2">
         {{ serverError }}
+      </div>
+
+      <div v-if="serverSuccess.length > 0" class="alert alert-info text-center fs-2">
+        {{ serverSuccess }}
       </div>
 
       <form @submit.prevent="submitForm">
@@ -47,10 +48,15 @@
         </div>
 
         <div class="my-3">
-          <label>Instructor Data</label>
-          <textarea name="description"
-                    class="form-control editor">
+          <textarea name="instructor_data" class="form-control editor-<%- instructor.instructor_id %>"
+                    placeholder="Instructor Data">
               </textarea>
+          <!--          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>-->
+
+          <div v-if="errors.find(e => e.name === 'instructor_data')">
+            <span class="text-danger fs-6" v-text="errors[errors.findIndex(e => e.name === 'instructor_data')].message">
+            </span>
+          </div>
         </div>
 
         <div class="my-3">
@@ -91,7 +97,7 @@
           </div>
         </div>
 
-        <button class="btn" type="submit">
+        <button class="btn" type="submit" id="submitButton">
           <% if (editMode === true) { %>
             <%= "Update instructor data" %>
           <% } else { %>
@@ -107,55 +113,44 @@
 
 <script src="/js/axios.min.js"></script>
 
-
 <script>
-  const editorTag = document.querySelector(".editor");
-  let editor;
-  ClassicEditor
-    .create(editorTag, {
-      toolbar: ['heading', '|',
-        'fontfamily', 'fontsize', '|',
-        'alignment', '|',
-        'fontColor', 'fontBackgroundColor', '|',
-        'bold', 'italic', 'strikethrough', 'underline', 'subscript', 'superscript', '|',
-        'link', '|',
-        'outdent', 'indent', '|',
-        'bulletedList', 'numberedList', 'todoList', '|',
-        'insertTable', '|',
-        'blockQuote', '|',
-        'undo', 'redo']
-    })
-    .then(editorData => {
-      editor = editorData;
-    })
-    .catch(err => {
-      console.error(err)
-    })
 
-  ClassicEditor.replaceAll();
-</script>
+  let editor
 
-<script>
   const { createApp } = Vue
 
   async function mounted() {
-
+    let editMode = `<%- editMode %>`
+    let instructorId = `<%- instructor.instructor_id %>`
+    this.editMode = editMode
+    this.instructorId = instructorId
+    if (editMode === "true") {
+      this.editMode = true
+      axios.get(`/dashboard/about/instructor-data/${instructorId}`)
+        .then(res => {
+          this.instructor_name = res.data.instructor.instructor_name
+          editor.setData(res.data.instructor.instructor_data)
+        })
+        .catch(err => {
+          this.serverError = "Something happened on server, please call admin!"
+        })
+    }
   }
 
   createApp({
-    components: {
-      ckeditor: ClassicEditor.component
-    },
     data() {
       return {
         instructor_name: "",
+        instructor_data: "",
         instructor_img: "",
         instructor_certificates: [],
         backend_img: "",
         backend_certificates: [],
         errors: [],
-        serverError: '',
-        editor: ClassicEditor
+        serverError: "",
+        serverSuccess: "",
+        editMode: null,
+        instructorId: null,
       }
     },
     methods: {
@@ -163,26 +158,50 @@
         let validForm = true,
           instructorNameValid = true,
           instructorImgValid = true,
+          instructorDataValid = true,
           instructorCertificatesValid = true
 
-        if ((this.instructor_name.trim().length < 5)) {
+        this.instructor_data = document.querySelector("div.ck-content").innerHTML
+
+        if (this.instructor_name.trim().length < 5) {
           validForm = false
           instructorNameValid = false
 
-          if (this.errors.findIndex(e => e.name === "instructor_name") === -1) {
-            this.errors = [...this.errors, {
-              name: "instructor_name",
-              message: "Please make sure that instructor name length greater than 5!",
-            }]
+          if (this.errors.findIndex((e) => e.name === "instructor_name") === -1) {
+            this.errors = [
+              ...this.errors,
+              {
+                name: "instructor_name",
+                message:
+                  "Please make sure that instructor name length greater than 5!",
+              },
+            ]
           }
         } else {
           instructorNameValid = true
         }
 
-        if (this.instructor_img.length === 0) {
+        if (document.querySelector("div.ck-content *").textContent.length < 30) {
+          validForm = false
+          instructorDataValid = false
+
+          if (this.errors.findIndex((e) => e.name === "instructor_data") === -1) {
+            this.errors = [
+              ...this.errors,
+              {
+                name: "instructor_data",
+                message: "Please add at least 30 words of data for this instructor",
+              },
+            ]
+          }
+        } else {
+          instructorDataValid = true
+        }
+
+        if (this.instructor_img.length === 0 && !this.editMode) {
           validForm = false
           instructorImgValid = false
-          if (this.errors.findIndex(e => e.name === "instructor_img") === -1) {
+          if (this.errors.findIndex((e) => e.name === "instructor_img") === -1) {
             this.errors = [
               ...this.errors,
               {
@@ -195,10 +214,13 @@
           instructorImgValid = true
         }
 
-        if (this.instructor_certificates.length === 0) {
+        if (this.instructor_certificates.length === 0 && !this.editMode) {
           validForm = false
           instructorCertificatesValid = false
-          if (this.errors.findIndex(e => e.name === "instructor_certificates") === -1) {
+          if (
+            this.errors.findIndex((e) => e.name === "instructor_certificates") ===
+            -1
+          ) {
             this.errors = [
               ...this.errors,
               {
@@ -212,56 +234,86 @@
         }
 
         if (validForm) {
-
           const formData = new FormData()
           formData.append(`instructorImg`, this.backend_img)
 
-          this.backend_certificates.forEach(img => {
+          this.backend_certificates.forEach((img) => {
             formData.append("instructorCertificates", img)
           })
 
-          formData.append('instructorName', this.instructor_name)
+          formData.append("instructorName", this.instructor_name)
+          formData.append("instructorData", editor.getData())
 
-          axios.post("/dashboard/about/add-new-instructor",
-            formData, {
+          let url = `/dashboard/about/add-new-instructor`
+
+          if (this.editMode) {
+            url = `/dashboard/about/edit-instructor/${this.instructorId}`
+          }
+
+          axios
+            .post(url, formData, {
               headers: {
-                'accept': 'application/json',
+                accept: "application/json",
                 "X-XSRF-TOKEN": this.$refs.csrfToken.value,
+              },
+            })
+            .then((res) => {
+              if (res.status === 201) {
+                this.serverSuccess = "Data added successfully!"
+                setTimeout(() => {
+                  window.location.href = "/dashboard/about"
+                }, 1500)
+              }
+
+              if (res.status === 204) {
+                this.serverSuccess = "Data updated successfully!"
+                setTimeout(() => {
+                  window.location.href = "/dashboard/about"
+                }, 1500)
               }
             })
-            .then(res => {
-              window.location = '/dashboard/about'
-            })
-            .catch(err => {
-              this.serverError = err.message
+            .catch((err) => {
+              this.serverError = "There's some error from the server!"
             })
         }
 
         // remove errors
-        if (instructorNameValid && instructorImgValid && instructorCertificatesValid)
+        if (
+          instructorNameValid &&
+          instructorImgValid &&
+          instructorCertificatesValid
+        )
           validForm = true
 
         if (instructorNameValid) {
-          this.errors = this.errors.filter(e => e.name !== "instructor_name")
+          this.errors = this.errors.filter((e) => e.name !== "instructor_name")
         }
         if (instructorImgValid) {
-          this.errors = this.errors.filter(e => e.name !== "instructor_img")
+          this.errors = this.errors.filter((e) => e.name !== "instructor_img")
         }
         if (instructorCertificatesValid) {
-          this.errors = this.errors.filter(e => e.name !== "instructor_certificates")
+          this.errors = this.errors.filter(
+            (e) => e.name !== "instructor_certificates",
+          )
         }
-
+        if (instructorDataValid) {
+          this.errors = this.errors.filter(
+            (e) => e.name !== "instructor_data",
+          )
+        }
       },
       addInstructorImg(e) {
         let validImage = true
-        if (e.target.files[0].size >= (2 * 1024 * 1024)) {
+        if (e.target.files[0].size >= 2 * 1024 * 1024) {
           validImage = false
-          if (this.errors.findIndex(err => err.name === "instructor_img") === -1) {
+          if (
+            this.errors.findIndex((err) => err.name === "instructor_img") === -1
+          ) {
             this.errors = [
               ...this.errors,
               {
                 name: "instructor_img",
-                message: "Very large image!, please select smaller image",
+                message: "Large image!, please select smaller image",
               },
             ]
           }
@@ -272,28 +324,51 @@
         }
 
         if (validImage) {
-          this.errors = this.errors.filter(e => e.name !== "instructor_img")
+          this.errors = this.errors.filter((e) => e.name !== "instructor_img")
         }
       },
       addInstructorCertificates(e) {
         let certificatesNames = []
         for (let i of e.target.files) {
           certificatesNames.push(i.name)
-          this.backend_certificates = [
-            ...this.backend_certificates,
-            i,
-          ]
+          this.backend_certificates = [...this.backend_certificates, i]
         }
         this.instructor_certificates = certificatesNames
 
-        if (certificatesNames.length > 0 && this.errors.findIndex(err => err.name === "instructor_certificates")) {
-          this.errors = this.errors.filter(e => e.name !== "instructor_certificates")
+        if (
+          certificatesNames.length > 0 &&
+          this.errors.findIndex((err) => err.name === "instructor_certificates")
+        ) {
+          this.errors = this.errors.filter(
+            (e) => e.name !== "instructor_certificates",
+          )
         }
       },
     },
     mounted,
   })
     .mount("#app")
+
+
+  let editorElement = document.querySelector(".editor-<%- instructor.instructor_id %>")
+  ClassicEditor
+    .create(editorElement, {
+      toolbar: ["heading", "|", "bold", "italic", "link", "|", "bulletedList", "numberedList", "undo", "redo", "insertTable", "|",
+        "indent", "outdent", "|"],
+    })
+    .then(editorData => {
+      editor = editorData
+      <% if (editMode === true) { %>
+      editor.setData("<%- instructor.instructor_data %>")
+      <% } %>
+    })
+    .catch(err => {
+      console.error(err)
+    })
+
+  ClassicEditor.replaceAll()
+
 </script>
+
 
 <%- include("../../includes/bottom_part.ejs"); %>

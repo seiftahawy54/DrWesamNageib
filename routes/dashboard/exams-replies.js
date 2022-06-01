@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
   getAllReplies,
+  getRepliesForExam,
   postDeleteReply,
 } from "../../controllers/dashboard/exams-replies/exams-replies.js";
 
-const router = Router();
-
-router.get("/", getAllReplies).post("/delete-exams-replies", postDeleteReply);
-
-export default router;
+export default Router()
+  .get("/", getAllReplies)
+  .post("/delete-exams-replies", postDeleteReply)
+  .get("/:examId", getRepliesForExam);

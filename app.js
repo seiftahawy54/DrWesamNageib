@@ -167,26 +167,62 @@ app.use(shoppingRoutes);
 app.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
 app.use(isUserAuthenticated, userRoutes);
 
-Payment.hasOne(Courses, { foreignKey: "course_id", through: "course_id" });
-Payment.hasOne(Users, { foreignKey: "user_id", through: "user_id" });
-Payment.hasOne(Rounds, { foreignKey: "round_id", through: "round_id" });
-Users.hasOne(Rounds, { foreignKey: "current_round" });
-Rounds.hasOne(Courses, { foreignKey: "course_id", constraints: false });
-Rounds.belongsToMany(Users, { through: "users_ids", constraints: false });
-ExamsReplies.hasOne(Users, { foreignKey: "user_id", constraints: false });
-ExamsReplies.hasOne(Courses, { foreignKey: "course_id", constraints: false });
+Payment.hasOne(Courses, {
+  foreignKey: "course_id",
+  through: "course_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Payment.hasOne(Users, {
+  foreignKey: "user_id",
+  through: "user_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Payment.hasOne(Rounds, {
+  foreignKey: "round_id",
+  through: "round_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Users.hasOne(Rounds, {
+  foreignKey: "current_round",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Rounds.hasOne(Courses, {
+  foreignKey: "course_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Rounds.belongsToMany(Users, {
+  through: "users_ids",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+ExamsReplies.belongsTo(Users, {
+  foreignKey: "user_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
 
 app.use((error, req, res, next) => {
   if (error.errorType === "API") {
-    res.status(error.httpStatusCode).json({ error: error.message });
     console.log(error);
-  } else {
-    res.render("500", {
-      title: "Server Error",
-      path: "",
-    });
-    console.log(error);
+    return res.status(error.httpStatusCode).json({ error: error.message });
   }
+  console.log(error);
+  return res.status(500).render("500", {
+    title: "Server Error",
+    path: "",
+  });
 });
 
 app.use((req, res, next) => {

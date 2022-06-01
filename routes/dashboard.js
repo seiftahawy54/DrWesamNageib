@@ -38,7 +38,7 @@ router
   .use("/exams", DashboardExamsRoutes)
   .use("/courses", DashboardCoursesRoutes)
   .use("/exams-replies", DashboardExamsRepliesRoutes)
-  // .use("/about", DashboardAboutRoutes)
+  .use("/about", DashboardAboutRoutes)
   .get("/messages", getMessages)
   .post("/messages/delete-messages", postDeleteMessage)
   .post("/messages/delete-all-messages", postDeleteAllMessages)
