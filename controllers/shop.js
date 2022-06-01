@@ -23,6 +23,7 @@ import {
 } from "../utils/cart_helpers.js";
 import { sequelize } from "../utils/db.js";
 import { QueryTypes } from "sequelize";
+import { getSingleFile } from "../utils/aws.js";
 
 export const getHomePage = async (req, res, next) => {
   try {
@@ -175,6 +176,11 @@ export const getAboutPage = async (req, res, next) => {
       where: {
         about_us_paragraph: null,
       },
+    });
+
+    instructors.forEach(async (ins) => {
+      console.log(ins.instructor_img);
+      // await getSingleFile(ins.instructor_img);
     });
 
     return res.render("about/index", {

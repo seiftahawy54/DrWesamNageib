@@ -7,7 +7,7 @@
 <section class="aboutme">
   <div class="container">
     <div class="custom-head">
-      Who am i ?
+      Who is Dr Wesam Nageib?
       <span></span>
     </div>
     <p class="main-paragraph">
@@ -19,20 +19,29 @@
       <br />
     </p>
 
-    <section class="fs-5">
+    <section class="fs-6">
       <% paragraphs.forEach(p => { %>
         <%- p.about_us_paragraph %>
       <% }) %>
 
       <% if (instructors.length > 0 ) { %>
         <div class="custom-head">
-          Instructors
+          Our Instructors
           <span></span>
         </div>
       <% } %>
 
       <% instructors.forEach(e => { %>
-        <%= e.instructor_name %>
+        <div class="container">
+          <div class="row">
+            <div class="col-3">
+              <img class="img-fluid" src="/downloaded_images/<%- e.instructor_img %>" alt="<%- e.instructor_name %>" />
+            </div>
+            <div class="col">
+              <%= e.instructor_name %>
+            </div>
+          </div>
+        </div>
         <%- e.instructor_data %>
       <% }) %>
     </section>
