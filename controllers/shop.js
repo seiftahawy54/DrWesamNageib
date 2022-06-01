@@ -165,23 +165,26 @@ export const postDeleteFromCart = async (req, res, next) => {
 
 export const getAboutPage = async (req, res, next) => {
   try {
-    const aboutCertificates = await About.findAll();
+    const paragraphs = await About.findAll({
+      where: {
+        instructor_name: null,
+      },
+    });
 
-    await getCertificatesImage(aboutCertificates);
+    const instructors = await About.findAll({
+      where: {
+        about_us_paragraph: null,
+      },
+    });
 
-    res.render("about/index", {
-      title: "Who am i",
+    return res.render("about/index", {
+      title: "About Us",
       path: "/aboutme",
-      certificates: aboutCertificates,
-      errorMessage: "",
+      paragraphs,
+      instructors,
     });
   } catch (e) {
-    res.render("about/index", {
-      title: "Who am i",
-      path: "/aboutme",
-      certificates: [],
-      errorMessage: "There's an error while getting images",
-    });
+    await errorRaiser(e, next);
   }
 };
 

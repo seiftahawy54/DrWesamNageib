@@ -1,5 +1,5 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/about/index.css"/>
+<link rel="stylesheet" href="/css/about/index.css" />
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -11,53 +11,46 @@
       <span></span>
     </div>
     <p class="main-paragraph">
-      Hello 👋, <br/>
+      Hello 👋, <br />
       My name is Wesam Nageib, I have a <span class="custom-word">Bachelors degree in pharmacy science</span>, A
       certified <span class="custom-word">CPHQ exam trainer </span>, certified <span
         class="custom-word">CSSYB</span>, <span class="custom-word">TOT trainer</span>, <span
         class="custom-word">MSC cerified</span> and <span class="custom-word">ISQUA member.</span>
-      <br/>
+      <br />
     </p>
-    <div class="custom-head">
-      My Certificates
-      <span></span>
-    </div>
 
+    <section class="fs-5">
+      <% paragraphs.forEach(p => { %>
+        <%- p.about_us_paragraph %>
+      <% }) %>
 
-    <!-- Slider main container -->
-    <div class="about-swiper swiper">
-      <!-- Additional required wrapper -->
-      <%- include('../includes/errorMessage.ejs'); %>
-      <div class="swiper-wrapper">
-        <!-- Slides -->
-        <% certificates.forEach(certificate => { %>
-          <div class="swiper-slide">
-            <div class="img-container">
-              <img src="/downloaded_images/<%- certificate.certificate_img %>" alt="First Certificate"/>
-            </div>
-          </div>
-        <% }) %>
-      </div>
-      <!-- If we need pagination -->
-      <div class="swiper-pagination"></div>
-    </div>
-    <!-- End Slider -->
+      <% if (instructors.length > 0 ) { %>
+        <div class="custom-head">
+          Instructors
+          <span></span>
+        </div>
+      <% } %>
 
+      <% instructors.forEach(e => { %>
+        <%= e.instructor_name %>
+        <%- e.instructor_data %>
+      <% }) %>
+    </section>
   </div>
 </section>
 
 <%- include("../includes/footer.ejs"); %>
 
 <script async type="module">
-  import Swiper from 'https://unpkg.com/swiper@7/swiper-bundle.esm.browser.min.js'
+  import Swiper from "https://unpkg.com/swiper@7/swiper-bundle.esm.browser.min.js"
 
-  const aboutSwiper = new Swiper('.about-swiper', {
+  const aboutSwiper = new Swiper(".about-swiper", {
     loop: true,
     autoplay: true,
     // If we need pagination
     pagination: {
-      el: '.swiper-pagination',
-      clickable: true
+      el: ".swiper-pagination",
+      clickable: true,
     },
     breakpoints: {
       320: {
@@ -67,10 +60,10 @@
         slidesPerView: 2,
       },
       1200: {
-        slidesPerView: 3
-      }
-    }
-  });
+        slidesPerView: 3,
+      },
+    },
+  })
 </script>
 
 <%- include("../includes/bottom_part.ejs"); %>
