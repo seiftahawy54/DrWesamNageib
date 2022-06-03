@@ -56,7 +56,7 @@ submitBtn.addEventListener("click", async (e) => {
 
   console.log(answeredQuestions, questionsContainerDiv.length);
 
-  if (answeredQuestions !== questionsContainerDiv.length) {
+  if (answeredQuestions < questionsContainerDiv.length) {
     errorModal.classList.remove("d-none");
     errorModal.textContent = "Answer all questions, please!";
     scrollTo(0, 0);
@@ -71,6 +71,10 @@ submitBtn.addEventListener("click", async (e) => {
       .then((res) => {
         localStorage.setItem("grade", res.data.grade);
         localStorage.setItem("total", `${questionsContainerDiv.length}`);
+        localStorage.setItem(
+          "preview-link",
+          `/exams/preview/${res.data.previewLink}`
+        );
         clearAnswers();
         window.location = "/exam/submitted-exam";
       })

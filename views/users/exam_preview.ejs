@@ -28,11 +28,15 @@
                       <input
                         class="form-check-input <%- answerIndex === performingData[i].correctAnswer - 1 ? "is-valid" : "" %> <%- performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ? "is-invalid" : "" %>"
                         type="radio" readonly
+                        <%- answerIndex === performingData[i].correctAnswer - 1 ? `checked` : "" %>
                         id="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>"
                         name="answer-<%- j %>">
                       <label class="form-check-label w-100"
                              for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
                         <%- answer %>
+                        <% if ( performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ) { %>
+                          <i>(Your answer)</i>
+                        <% } %>
                       </label>
                     </div>
                   <% }) %>

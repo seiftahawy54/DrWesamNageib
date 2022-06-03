@@ -10,7 +10,6 @@ import {
   deleteExamImage,
 } from "../../controllers/dashboard/exams/exams.js";
 
-import joi from "joi";
 import { body } from "express-validator";
 
 const router = Router();

@@ -20,29 +20,11 @@ export const getAllExams = async (req, res, next) => {
 
           exam_id = `<span class="link-primary " onclick="copyExamLink(this)" style="cursor: pointer;">/exam/${exam_id}</span>`;
           status = status ? "WORKING" : "CLOSED";
-          if (replies === 0 || !replies) {
-            replies = "No replies.";
-          } else {
-            replies = await Promise.all(
-              replies.map(async ({ user_id, grade }) => {
-                const user_name = await Users.findByPk(user_id, {
-                  attributes: ["name"],
-                });
-                console.log(user_name);
-                return `<span>${user_name.name}: ${grade} </span>`;
-                // return `<span class="chip">${user_id.slice(
-                //   0,
-                //   10
-                // )}, ${grade}</span>`;
-              })
-            );
-          }
 
           return {
             title,
             status,
             exam_id,
-            replies,
           };
         }
       )
@@ -89,10 +71,6 @@ export const getAllExams = async (req, res, next) => {
         {
           title: "Exam Link",
           name: "exam-link",
-        },
-        {
-          title: "No. Replies",
-          name: "exams-answers",
         },
         {
           title: "Update Exam",
@@ -217,6 +195,8 @@ export const postUpdateExam = async (req, res, next) => {
     const schemaValidation = await questionsSchema.validate(questions);
 
     console.log(`Testing schema`, schemaValidation);
+
+    console.log(errors.array());
 
     if ("error" in schemaValidation || !errors.isEmpty()) {
       return res.status(422).json({

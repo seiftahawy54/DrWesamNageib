@@ -17,7 +17,7 @@ const router = express.Router();
 
 router
   .get("/", getHomePage)
-  .get("/aboutme", getAboutPage)
+  .get("/aboutus", getAboutPage)
   .get("/download_cv", downloadCV)
   .get("/contact", getContactPage)
   .get("/cart", getShoppingCart)

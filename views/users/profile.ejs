@@ -8,115 +8,115 @@
 <section class="profile">
   <div class="container">
     <div class="row">
-      <div class="col-12 mb-5" x-data="{userData: {}, payments: {}, round: {}, userGrades: {}, certificate: {}}"
-           x-init="
-            userData = (await axios.get('/user-data')).data.user;
-            payments = (await axios.get('/user-payments')).data;
-            round = (await axios.get('/user-round')).data;
-            userGrades = (await axios.get('/user-grades')).data;
-            certificate = (await axios.get('/user-certificates')).data;
-      ">
+      <div class="col-12 mb-5">
         <%- include("../includes/errorMessage.ejs"); %>
         <div class="custom-head">
           <h2>Your Data</h2>
           <span></span>
         </div>
         <div class="user-content">
-          <div class="info-container">
-            <div class="info">
-              Name
-            </div>
 
-            <div class="info" x-text="userData.name">
-            </div>
-            <div class="info">
-              Phone Number
-            </div>
+          <div id="app">
+            <div class="info-container">
+              <div class="info">
+                Name
+              </div>
 
-            <div class="info" x-text="userData.whatsapp_no">
-            </div>
-            <div class="info">
-              Email
-            </div>
+              <div class="info">
+                {{ userData.name }}
+              </div>
 
-            <div class="info" x-text="userData.email">
-            </div>
+              <div class="info">
+                Phone Number
+              </div>
 
-            <div class="info">
-              Specialization
-            </div>
+              <div class="info">
+                {{ userData.whatsapp_no }}
+              </div>
 
-            <div class="info" x-text="userData.specialization">
-            </div>
-          </div>
+              <div class="info">
+                Email
+              </div>
 
-          <div class="info-container payments-details">
-            <div class="info">
-              Your Bought Courses
-            </div>
-            <div class="info" x-show="payments.payments">
-              <template x-for="payment in payments.payments">
-                <div class="bought_courses" x-data="{payment}">
-                  <span x-text="payment.name"></span>
-                  <span x-text="payment.price"></span>
-                </div>
-              </template>
-            </div>
-            <div class="info" x-show="!payments.payments">
-              <span>You haven't bought any courses yet!</span>
-            </div>
-          </div>
+              <div class="info">
+                {{ userData.email }}
+              </div>
 
-          <div class='info-container' x-show="round.round">
-            <div class="info">
-              Round files
-            </div>
-            <div class="info" x-transition x-html="round.round">
-            </div>
-          </div>
+              <div class="info">
+                Specialization
+              </div>
 
-          <span x-show="userGrades.userExams">
-            Your Performed Exams:
-          </span>
-          <div class='info-container' x-show="userGrades.userExams">
-            <div class="info">
-              <div class="exams-previews">
-                <template x-for="(grade, index) in userGrades.userExams">
-                  <div x-data="grade" :class="'preview-' + index" class="fs-5">
-                    <span x-text="index + 1 + ': '"></span>
-                    <a :href="grade.preview_link" x-text="grade.title + ' report'"></a>
-                  </div>
-                </template>
+              <div class="info">
+                {{ userData.specialization }}
               </div>
             </div>
 
-            <div class="info payments-details" x-show="userGrades.userExams">
-              <template x-for="(grade, index) in userGrades.userExams">
-                <div class="bought_courses" x-data="{grade}">
-                <span class="text-center">
-                  <sup><span x-text="grade.reply.grade"></span></sup> /
-                  <sub><span x-text="grade.reply.userAnswers.length"></span></sub>
-                </span>
+            <div class="info-container payments-details">
+              <div class="info">
+                Your Bought Courses
+              </div>
+              <div class="info" v-if="payments">
+                <template v-for="payment in payments" :key="payment.id">
+                  <div class="bought_courses">
+                    <span v-text="payment.name"></span>
+                    <span v-text="payment.price"></span>
+                  </div>
+                </template>
+              </div>
+              <div class="info" v-if="!payments">
+                <span>You haven't bought any courses yet!</span>
+              </div>
+            </div>
+
+            <div class='info-container' v-if="round">
+              <div class="info">
+                Round files
+              </div>
+              <div class="info" v-html="round">
+              </div>
+            </div>
+
+
+            <span v-if="examsData.userExams">
+              Your Performed Exams:
+            </span>
+
+            <div v-if="examsData.hasOwnProperty('userExams')" class="info-container">
+              <div v-for="(item, index) in examsData.userExams" class="exams-previews info">
+                <div class="preview-{{ index }}">
+                  <span>{{ index + 1}} : </span>
+                  <a :href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
                 </div>
-              </template>
-            </div>
-          </div>
+              </div>
 
-          <div class='info-container' x-show="certificate?.certificateData">
-            <div class="info">
-              Your certificate
+              <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
+                <div class="bought_courses">
+                  <span class="text-center">
+                    <sup><span> {{ grade.grade }} </span></sup> /
+                    <sub><span> {{ grade.questions.length }} </span></sub>
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div class="info">
-              <a :href="`/certificates/${certificate.certificateData.courseId}`" class="link-success"
-                 x-text="`${certificate.certificateData.courseName} - ${certificate.certificateData.roundDate}`"></a>
-            </div>
-          </div>
 
-          <div class="info-container">
-            <a :href="`/update-data/${userData.user_id}`" class="btn">
-              Update your data?
-            </a>
+            <div class='info-container' v-if="certificate">
+              <div class="info">
+                Your certificate
+              </div>
+
+              <div class="info">
+                <a :href="`/certificates/${certificate.courseId}`" class="link-success"
+                   v-text="`${certificate.courseName} - ${certificate.roundDate}`"></a>
+              </div>
+            </div>
+
+
+            <div class="info-container">
+              <a :href="`/update-data/${userData.user_id}`" class="btn">
+                Update your data?
+              </a>
+            </div>
           </div>
 
         </div>
@@ -158,27 +158,32 @@
 
 <script src="/js/alpine.min.js"></script>
 
-<%
-/*<hr />
+<script async>
+  const { createApp } = Vue
 
-<div class="container" x-data="{open: false, userName: 'Seif Tahawy'}">
-  <h1>Testing apline</h1>
+  async function mounted() {
+    this.userData = (await axios.get("/user-data")).data.user
+    this.examsData = (await axios.get("/user-grades")).data
+    this.payments = (await axios.get("/user-payments")).data.payments
+    this.round = (await axios.get("/user-round")).data.round
+    this.certificate = (await axios.get("/user-certificates")).data.certificateData
 
-  <span x-show="open" x-transition>
-    Testing
-  </span>
+    console.log(this.certificate)
+  }
 
-  <button class="btn btn-info" @click="open = !open">Click Me</button>
-
-  <div style="transform: skew(20deg)">
-    Your name is <span x-text="userName"></span>
-  </div>
-
-  <div x-text="(await axios.get('/user-data')).data.user.email"></div>
-
-</div>
-*/
-%>
+  createApp({
+    data() {
+      return {
+        examsData: "",
+        userData: "",
+        payments: "",
+        round: "",
+        certificate: "",
+      }
+    },
+    mounted,
+  }).mount("#app")
+</script>
 
 <%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>

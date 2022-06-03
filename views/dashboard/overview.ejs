@@ -15,15 +15,15 @@
       <div class="col-12">
         <div class="content">
           <main class="row">
-            <% /*Object.keys(statsNumbers).forEach(key => {                                                                                                                                   %>
+            <% /*Object.keys(statsNumbers).forEach(key => {                                                                                                                                     %>
             <div class="custom-head">
               <h2>Number
-                of <%-                                                                                                                                   key                                                                                                                                   %></h2>
+                of <%-                                                                                                                                     key                                                                                                                                     %></h2>
               <span></span>
             </div>
             <div
-              class="fs-3"><%=                                                                                                                                   statsNumbers[key]                                                                                                                                   %></div>
-            <%                                                                                                                                   })*/ %>
+              class="fs-3"><%=                                                                                                                                     statsNumbers[key]                                                                                                                                     %></div>
+            <%                                                                                                                                     })*/ %>
             <canvas id="number-of-users"></canvas>
             <canvas id="number-of-courses"></canvas>
             <canvas id="number-of-payments"></canvas>
@@ -38,21 +38,21 @@
 <script src="/js/chart.min.js"></script>
 <script>
 
-  const createChart = (data, canvasName, xKey, yKey, min = 0, max = 12, chartType = 'line') => {
-    let usersCreatedAt;
-    if (typeof xKey === 'string') {
-      usersCreatedAt = data.map((user) => parseInt(moment(user[xKey]).format('MM')))
+  const createChart = (data, canvasName, xKey, yKey, min = 0, max = 12, chartType = "line") => {
+    let usersCreatedAt
+    if (typeof xKey === "string") {
+      usersCreatedAt = data.map((user) => parseInt(moment(user[xKey]).format("MM")))
     } else usersCreatedAt = xKey
 
     let usersNames
 
-    if (typeof yKey === 'string') {
+    if (typeof yKey === "string") {
       usersNames = data.map((user) => user[yKey])
     } else {
       usersNames = yKey
     }
 
-    const ctx = document.getElementById(`number-of-${canvasName}`).getContext('2d');
+    const ctx = document.getElementById(`number-of-${canvasName}`).getContext("2d")
     const myChart = new Chart(ctx, {
       type: chartType,
       data: {
@@ -62,23 +62,23 @@
           data: usersCreatedAt,
           backgroundColor: [
 
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
+            "rgba(54, 162, 235, 0.2)",
+            "rgba(255, 206, 86, 0.2)",
+            "rgba(75, 192, 192, 0.2)",
+            "rgba(153, 102, 255, 0.2)",
+            "rgba(255, 159, 64, 0.2)",
 
           ],
           borderColor: [
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(153, 102, 255, 1)",
+            "rgba(255, 159, 64, 1)",
           ],
           borderWidth: 1,
-          fill: false
-        }]
+          fill: false,
+        }],
       },
       options: {
         scales: {
@@ -86,21 +86,21 @@
             min,
             max,
             ticks: {
-              stepSize: 1
-            }
-          }
-        }
-      }
-    });
+              stepSize: 1,
+            },
+          },
+        },
+      },
+    })
   }
   const dataArrObj = JSON.parse(`<%- JSON.stringify(statsNumbers) %>`)
 
-  dataArrObj.payments = dataArrObj.payments.filter(({ status }) => status === 'success')
+  dataArrObj.payments = dataArrObj.payments.filter(({ status }) => status === "success")
   console.log([dataArrObj.payments.length])
 
-  createChart(dataArrObj.users, 'users', 'createdAt', 'name', 1, 12)
-  createChart(dataArrObj.courses, 'courses', 'createdAt', 'name', 1, 5)
-  createChart(dataArrObj.payments, 'payments', [dataArrObj.payments.length], [
+  createChart(dataArrObj.users, "users", "createdAt", [dataArrObj.users.length], 1, 12)
+  createChart(dataArrObj.courses, "courses", "createdAt", "name", 1, 5)
+  createChart(dataArrObj.payments, "payments", [dataArrObj.payments.length], [
     "January",
     "February",
     "March",
@@ -112,8 +112,8 @@
     "September",
     "October",
     "November",
-    "December"
-  ], 1, dataArrObj.payments.length, 'bar')
+    "December",
+  ], 1, dataArrObj.payments.length, "bar")
 
 </script>
 

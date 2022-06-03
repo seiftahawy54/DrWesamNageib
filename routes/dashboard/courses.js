@@ -8,14 +8,14 @@ import {
 } from "../../controllers/dashboard/d_courses.js";
 import { body } from "express-validator";
 import { Router } from "express";
+import { upload } from "../../middlewares/multer.js";
 
-const router = Router();
-
-router
+export default Router()
   .get("/", getCourses)
   .get("/add-new-course", getAddNewCourse)
   .post(
     "/add-new-course",
+    // upload.any("course_img", "detailed_img"),
     [
       body("name").isString().notEmpty(),
       body("price").isNumeric().notEmpty(),
@@ -25,6 +25,7 @@ router
       body("description").isString().notEmpty(),
       body("special_course").isString().notEmpty(),
       body("total_hours").isString().isLength({ min: 1 }),
+      body("course_category").isString().isLength({ min: 5 }),
       // body("course_img").notEmpty(),
       // body("detailed_img").notEmpty(),
     ],
@@ -32,6 +33,19 @@ router
   )
   .get("/edit-course/:courseId", getEditCourse)
   .post("/delete-courses", postDeleteCourse)
-  .post("/edit-course/:courseId", postUpdateCourse);
-
-export default router;
+  .post(
+    "/edit-course/:courseId",
+    // upload.any("course_img", "detailed_img"),
+    [
+      body("name").isString().notEmpty(),
+      body("price").isNumeric().notEmpty(),
+      body("arabic_name").isString().notEmpty(),
+      body("course_rank").isNumeric().notEmpty(),
+      body("thumbnail").isString().notEmpty(),
+      body("description").isString().notEmpty(),
+      body("special_course").isString().notEmpty(),
+      body("total_hours").isString().isLength({ min: 1 }),
+      body("course_category").isString().isLength({ min: 5 }),
+    ],
+    postUpdateCourse
+  );

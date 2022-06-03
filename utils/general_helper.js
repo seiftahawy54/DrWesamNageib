@@ -26,8 +26,8 @@ export const sortCourses = (courses) => {
   });
 };
 
-export const hashCreator = () => {
-  const idHash = crypto.randomBytes(10);
+export const hashCreator = (size = 10) => {
+  const idHash = crypto.randomBytes(size);
   return idHash.toString("hex");
 };
 
@@ -50,8 +50,6 @@ export const deleteFile = async (filePath) => {
   }
 };
 
-export const downloadSingleImage = (model, propertyName) => {};
-
 export const getCertificatesImage = (aboutCertificates) => {
   aboutCertificates.forEach(async ({ certificate_img }) => {
     await getSingleFile(certificate_img);
@@ -63,7 +61,9 @@ export const createCertificate = (
   userId = "",
   courseName = "",
   courseHours = "",
-  roundStartingDate = ""
+  roundStartingDate = "",
+  courseCertificateImg = "",
+  courseCategory = ""
 ) => {
   const certificateName = `${userName}-${userId}.pdf`;
   const certificatePath = path.resolve(
@@ -73,13 +73,7 @@ export const createCertificate = (
   );
   const fontsPath = path.resolve("public", "fonts");
   const fontName = "Lato";
-  const imagesPath = path.resolve(
-    "public",
-    "imgs",
-    "imgs",
-    "user",
-    "certificate"
-  );
+  const imagesPath = path.resolve("downloaded_images");
 
   const startDate = moment(roundStartingDate).locale("en-CA").format("LL");
   const endDate = moment(roundStartingDate)
@@ -131,7 +125,7 @@ export const createCertificate = (
       pageMargins: 15,
       content: [
         {
-          image: path.resolve(imagesPath, "full.jpg"),
+          image: path.resolve(imagesPath, courseCertificateImg),
           fit: [150, 150],
         },
         {
@@ -143,14 +137,14 @@ export const createCertificate = (
           lineHeight: 1.2,
         },
         {
-          text: `has attended a structured 3-months, ${courseHours} contact hours of training in preparation of healthcare Quality certificate and is therefore awarded the`,
+          text: `has attended a structured 3-months, ${courseHours} contact hours of training in preparation of ${courseCategory} certificate and is therefore awarded the`,
           fontSize: "18",
           italics: true,
           alignment: "center",
           marginTop: 10,
         },
         {
-          text: `Certificate of Attendance of Professional in Healthcare Quality "${courseName}"`,
+          text: `Certificate of Attendance of Professional in ${courseCategory} "${courseName}"`,
           alignment: "center",
           fontSize: "30",
           bold: true,

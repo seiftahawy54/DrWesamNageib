@@ -1,0 +1,195 @@
+<%- include("../../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css">
+<link rel="stylesheet" href="/css/dashboard/about.css" />
+
+
+<script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+</head>
+<body>
+
+<section id="app">
+  <%- include("../../includes/dashboard-navbar.ejs"); %>
+
+
+  <div class="container">
+    <div class="custom-head">
+      <h2>
+        <% if (editMode === true) { %>
+          <%= "Update About paragraph" %>
+        <% } else { %>
+          <%= "Add about paragraph" %>
+        <% } %>
+      </h2>
+      <span></span>
+    </div>
+
+    <div class="col-12">
+      <div v-if="serverError.length > 0" class="alert alert-danger text-center fs-2">
+        {{ serverError }}
+      </div>
+
+      <div v-if="serverSuccess.length > 0" class="alert alert-info text-center fs-2">
+        {{ serverSuccess }}
+      </div>
+
+      <form @submit.prevent="submitForm">
+
+        <div class="my-3">
+          <textarea name="instructor_data" class="form-control editor-<%- instructor.instructor_id %>"
+                    placeholder="Paragraph">
+              </textarea>
+
+          <div v-if="errors.find(e => e.name === 'aboutParagraph')">
+            <span class="text-danger fs-6" v-text="errors[errors.findIndex(e => e.name === 'aboutParagraph')].message">
+            </span>
+          </div>
+        </div>
+
+        <button class="btn" type="submit" id="submitButton">
+          <% if (editMode === true) { %>
+            <%= "Update about data" %>
+          <% } else { %>
+            <%= "Add about data" %>
+          <% } %>
+        </button>
+        <input type="hidden" value="<%= csrfToken %>" ref="csrfToken">
+      </form>
+    </div>
+
+  </div>
+
+</section>
+
+<script src="/js/axios.min.js"></script>
+
+<script>
+
+  let editor
+
+  const { createApp } = Vue
+
+  async function mounted() {
+    let editMode = `<%= editMode %>`
+    let instructorId = `<%- instructor.instructor_id %>`
+
+    window.editor = editor
+
+    if (editMode === "true") {
+      this.editMode = true
+      this.instructorId = instructorId
+      axios.get(`/dashboard/about/paragraph/${instructorId}`)
+        .then(res => {
+          this.aboutParagraph = res.data.paragraph.about_us_paragraph
+          editor.setData(this.aboutParagraph)
+        })
+        .catch(err => {
+          this.serverError = "Something happened on the server!"
+        })
+    }
+  }
+
+  createApp({
+    data() {
+      return {
+        aboutParagraph: null,
+        errors: [],
+        serverError: "",
+        serverSuccess: "",
+        editMode: null,
+        instructorId: null,
+      }
+    },
+    methods: {
+      submitForm() {
+        let validAboutParagraph = true
+        let contentElement = document.querySelector("div.ck-content")
+
+        if (contentElement.textContent.length <= 20) {
+          validAboutParagraph = false
+          if (this.errors.findIndex((e) => e.name === "aboutParagraph") === -1) {
+            this.errors = [
+              ...this.errors,
+              {
+                name: "aboutParagraph",
+                message:
+                  "Please make sure that the paragraph length greater than 20!",
+              },
+            ]
+          }
+        } else {
+          validAboutParagraph = true
+        }
+
+        if (validAboutParagraph) {
+          this.errors = this.errors.filter(err => err.name !== "aboutParagraph")
+
+
+          const data = new FormData()
+          data.append("aboutParagraph", editor.getData())
+          let url = "/dashboard/about/add-new-about"
+
+          if (this.editMode) {
+            url = `/dashboard/about/edit-paragraph`
+            data.append("paragraphId", this.instructorId)
+          }
+
+          axios
+            .post(url, data, {
+              headers: {
+                accept: "application/json",
+                "X-XSRF-TOKEN": this.$refs.csrfToken.value,
+              },
+            })
+            .then(res => {
+              console.log(res)
+              if (res.status === 201) {
+                this.serverSuccess = "Data added successfully!"
+                setTimeout(() => {
+                  window.location.href = "/dashboard/about"
+                }, 1500)
+              }
+
+              if (res.status === 204) {
+                this.serverSuccess = "Data updated successfully!"
+                setTimeout(() => {
+                  window.location.href = "/dashboard/about"
+                }, 1500)
+              }
+            })
+            .catch(err => {
+              console.log(err)
+              this.serverError = "Something happened on the server."
+            })
+        }
+
+      },
+    },
+    mounted,
+  })
+    .mount("#app")
+
+
+  let editorElement = document.querySelector(".editor-<%- instructor.instructor_id %>")
+  ClassicEditor
+    .create(editorElement, {
+      toolbar: ["heading", "|", "bold", "italic", "link", "|", "bulletedList", "numberedList", "undo", "redo", "insertTable", "|",
+        "indent", "outdent", "|"],
+    })
+    .then(editorData => {
+      editor = editorData
+      <% if (editMode === true) { %>
+      editor.setData("<%- instructor.instructor_data %>")
+      <% } %>
+    })
+    .catch(err => {
+      console.error(err)
+    })
+
+  ClassicEditor.replaceAll()
+
+</script>
+
+
+<%- include("../../includes/bottom_part.ejs"); %>

@@ -46,17 +46,14 @@
             <%- include('./navlinks', {routeName: "about", linkText: "About" }); %>
             <%- include('./navlinks', {routeName: "discounts", linkText: "Discounts" }); %>
             <%- include('./navlinks', {routeName: "exams", linkText: "Exams" }); %>
-            <li>
-              <div class="navbar-footer">
-                <div class="logout">
-                  <form action="/logout" method="post">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                    <button type="submit" class="reset-btn">
-                      <%- include('../../public/imgs/svgs/logout.svg') %>
-                    </button>
-                  </form>
-                </div>
-              </div>
+            <%- include('./navlinks', {routeName: "exams-replies", linkText: "Exams Replies" }); %>
+            <li class="nav-item">
+              <form action="/logout" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <button type="submit" class="reset-btn">
+                  <%- include('../../public/imgs/svgs/logout.svg') %>
+                </button>
+              </form>
             </li>
           </ul>
         </div>

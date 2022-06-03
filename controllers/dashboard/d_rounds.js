@@ -32,7 +32,7 @@ export const getRounds = async (req, res, next) => {
           );
 
           usersForEachRound = usersForEachRound.map((user) => {
-            if ("name" in user) {
+            if (user && "name" in user) {
               return user.name;
             } else {
               return "DELETED USER";
@@ -213,7 +213,7 @@ export const getUpdateRound = async (req, res, next) => {
     const findingRound = await Rounds.findByPk(roundId);
     const findingRoundCourse = await Courses.findByPk(findingRound.course_id);
     const allUsers = await sequelize.query(
-      `SELECT * FROM users WHERE finished_course is null or current_round is null`,
+      `SELECT * FROM users WHERE finished_course is null and current_round is null`,
       {
         type: "SELECT",
       }
@@ -246,8 +246,16 @@ export const getUpdateRound = async (req, res, next) => {
       );
     }
 
-    console.log(usersHavePreviousCourses);
-    // usersHavePreviousCourses = usersHavePreviousCourses.filter();
+    let nullUserIndex = 0;
+
+    findingRoundUsersArr.forEach((user, index) => {
+      if (!user) {
+        nullUserIndex = index;
+        console.log(`The un found user!`, user);
+      }
+    });
+
+    findingRoundUsersArr = findingRoundUsersArr.filter((i) => i);
 
     res.render("dashboard/rounds/round_form", {
       title: "Update Single Round",
@@ -353,12 +361,19 @@ export const postUpdateRound = async (req, res, next) => {
 
     for (const user of allUsers) {
       if (updateUsersValues.indexOf(user.user_id) === -1) {
-        await Users.update(
+        await sequelize.query(
+          "UPDATE users SET current_round=null WHERE user_id=? and current_round LIKE ?",
+          {
+            replacements: [user.user_id, roundId],
+            type: QueryTypes.UPDATE,
+          }
+        );
+        /*await Users.update(
           {
             current_round: null,
           },
           { where: { user_id: user.user_id } }
-        );
+        );*/
       }
     }
 

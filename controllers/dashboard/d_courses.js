@@ -125,10 +125,12 @@ const postAddNewCourse = async (req, res, next) => {
     const courseThumbnail = req.body.thumbnail;
     const courseRank = req.body.course_rank;
     const specialCourse = req.body.special_course;
+    const courseCategory = req.body.course_category;
     const courseImg = req.files[0];
     const detailedImg = req.files[1];
     const courseImage = req.files[0].path;
     const detailedImage = req.files[1].path;
+    const courseTotalHours = req.body.total_hours;
     // const imgUrl = courseImage.path;
     // const detailedImage = courseImage.path;
     const courseArName = req.body.arabic_name;
@@ -154,6 +156,8 @@ const postAddNewCourse = async (req, res, next) => {
           course_thumbnail: courseThumbnail,
           course_rank: courseRank,
           special_course: specialCourse,
+          course_category: courseCategory,
+          total_hours: courseTotalHours,
         },
         validationErrors: errors.array(),
       });
@@ -168,6 +172,8 @@ const postAddNewCourse = async (req, res, next) => {
         course_thumbnail: courseThumbnail,
         course_rank: courseRank,
         special_course: specialCourse,
+        course_category: courseCategory,
+        total_hours: courseTotalHours,
       });
 
       const uploadingFirstImg = await uploadFile(
@@ -246,6 +252,7 @@ const postUpdateCourse = async (req, res, next) => {
   const courseRank = req.body.course_rank;
   const specialCourse = req.body.special_course;
   const totalHours = req.body.total_hours;
+  const courseCategory = req.body.course_category;
 
   try {
     const errors = validationResult(req);
@@ -274,6 +281,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_rank: courseRank,
             special_course: specialCourse,
             total_hours: totalHours,
+            course_category: courseCategory,
           },
           { where: { course_id: courseId } }
         );
@@ -318,6 +326,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_rank: courseRank,
             special_course: specialCourse,
             total_hours: totalHours,
+            course_category: courseCategory,
           },
           { where: { course_id: courseId } }
         );
@@ -367,13 +376,12 @@ const postUpdateCourse = async (req, res, next) => {
             course_rank: courseRank,
             special_course: specialCourse,
             total_hours: totalHours,
+            course_category: courseCategory,
           },
           { where: { course_id: courseId } }
         );
 
-        if (
-          addingResult[0] === 1
-        ) {
+        if (addingResult[0] === 1) {
           return res.redirect("/dashboard/courses");
         } else {
           res.render("dashboard/courses_forms", {
@@ -422,6 +430,7 @@ const postUpdateCourse = async (req, res, next) => {
             course_rank: courseRank,
             special_course: specialCourse,
             total_hours: totalHours,
+            course_category: courseCategory,
           },
           { where: { course_id: courseId } }
         );
@@ -464,6 +473,7 @@ const postUpdateCourse = async (req, res, next) => {
         course_rank: courseRank,
         special_course: specialCourse,
         total_hours: totalHours,
+        course_category: courseCategory,
       },
       validationErrors: errorsArray,
     });

@@ -16,10 +16,15 @@ import {
 } from "../controllers/user/user.js";
 import { Router } from "express";
 import { body } from "express-validator";
+import { globalAccess } from "../middlewares/dashboard-auth.js";
+import { isUserAuthenticated } from "../middlewares/user-auth.js";
 
 const router = Router();
 
+// router.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
+
 router
+  .use(isUserAuthenticated)
   .get("/profile", getUserProfile)
   .post("/update-user-img", postUpdateUserImg)
   .get("/update-data/:userId", getUpdateUserData)
@@ -47,7 +52,6 @@ router
     ],
     postPerformExam
   )
-  .get("/exam/preview/:examId/:userId/:replyIndex", getExamPreview)
   .get("/user-data", getAllUserData)
   .get("/user-payments", getBoughtCourses)
   .get("/user-round", getUserRound)

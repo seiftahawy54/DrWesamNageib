@@ -23,22 +23,26 @@ import { coursesRoutes } from "./routes/courses.js";
 import { shoppingRoutes } from "./routes/shopping.js";
 import { authRoutes } from "./routes/auth.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
-import { isAuthenticated } from "./middlewares/dashboard-auth.js";
+import { globalAccess, isAuthenticated } from "./middlewares/dashboard-auth.js";
 import { errorRaiser } from "./utils/error_raiser.js";
 import { userRoutes } from "./routes/user.js";
 import { getSingleFile } from "./utils/aws.js";
-import { Users } from "./models/index.js";
+import { ExamsReplies, Users } from "./models/index.js";
 import { Rounds } from "./models/index.js";
 import { Payment } from "./models/index.js";
 import { Courses } from "./models/index.js";
 import { isUserAuthenticated } from "./middlewares/user-auth.js";
 import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
+import { getExamPreview } from "./controllers/user/user.js";
 
 dotenv.config();
 const app = express();
 
 const fileStorage = Multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "");
+  },
   filename: (req, file, cb) => {
     cb(null, crypto.randomBytes(10).toString("hex") + "-" + file.originalname);
   },
@@ -71,7 +75,9 @@ app.use(
     "detailed_img",
     "certificate_img",
     "user_img",
-    "exam_q_image"
+    "exam_q_image",
+    "instructorImg",
+    "instructorCertificates"
   )
 );
 
@@ -158,20 +164,65 @@ app.use("/courses", coursesRoutes);
 app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
+app.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
 app.use(isUserAuthenticated, userRoutes);
 
-Payment.hasOne(Courses, { foreignKey: "course_id", through: "course_id" });
-Payment.hasOne(Users, { foreignKey: "user_id", through: "user_id" });
-Payment.hasOne(Rounds, { foreignKey: "round_id", through: "round_id" });
-Users.hasOne(Rounds, { through: "current_round" });
-Rounds.belongsToMany(Users, { through: "users_ids" });
+Payment.hasOne(Courses, {
+  foreignKey: "course_id",
+  through: "course_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Payment.hasOne(Users, {
+  foreignKey: "user_id",
+  through: "user_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Payment.hasOne(Rounds, {
+  foreignKey: "round_id",
+  through: "round_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Users.hasOne(Rounds, {
+  foreignKey: "current_round",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Rounds.hasOne(Courses, {
+  foreignKey: "course_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Rounds.belongsToMany(Users, {
+  through: "users_ids",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+ExamsReplies.belongsTo(Users, {
+  foreignKey: "user_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
 
 app.use((error, req, res, next) => {
-  res.render("500", {
+  if (error.errorType === "API") {
+    console.log(error);
+    return res.status(error.httpStatusCode).json({ error: error.message });
+  }
+  console.log(error);
+  return res.status(500).render("500", {
     title: "Server Error",
     path: "",
   });
-  console.log(error);
 });
 
 app.use((req, res, next) => {

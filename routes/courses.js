@@ -2,6 +2,8 @@ import {
   getIndex,
   singleCourse,
   addCourseToCart,
+  getCoursesCategories,
+  getAllCoursesData,
 } from "../controllers/courses.js";
 import express from "express";
 import { isUserAuthenticated } from "../middlewares/user-auth.js";
@@ -11,6 +13,8 @@ const router = express.Router();
 
 router
   .get("/", getIndex)
+  .get("/courses-categories", getCoursesCategories)
+  .get("/all-courses", getAllCoursesData)
   .get("/:courseId", singleCourse)
   .post(
     "/addToCart",

@@ -4,7 +4,7 @@ import { validationResult } from "express-validator";
 import { Courses } from "../models/index.js";
 import { Opinions } from "../models/index.js";
 import { Messages } from "../models/index.js";
-import { Certificates } from "../models/index.js";
+import { About } from "../models/index.js";
 import { Users } from "../models/index.js";
 
 import { errorRaiser } from "../utils/error_raiser.js";
@@ -15,8 +15,6 @@ import {
 } from "../utils/general_helper.js";
 import fs from "fs";
 import moment from "moment";
-import { getSingleFile } from "../utils/aws.js";
-// import { Rounds } from "../models";
 import {
   calcTotalPrice,
   extractArrOfPrices,
@@ -25,6 +23,7 @@ import {
 } from "../utils/cart_helpers.js";
 import { sequelize } from "../utils/db.js";
 import { QueryTypes } from "sequelize";
+import { getSingleFile } from "../utils/aws.js";
 
 export const getHomePage = async (req, res, next) => {
   try {
@@ -167,23 +166,44 @@ export const postDeleteFromCart = async (req, res, next) => {
 
 export const getAboutPage = async (req, res, next) => {
   try {
-    const aboutCertificates = await Certificates.findAll();
+    const paragraphs = await About.findAll({
+      where: {
+        instructor_name: null,
+      },
+    });
 
-    await getCertificatesImage(aboutCertificates);
+    const instructors = await About.findAll({
+      where: {
+        about_us_paragraph: null,
+      },
+    });
 
-    res.render("about/index", {
-      title: "Who am i",
+    for (let ins of instructors) {
+      console.log(`instructor images ===> `, ins.instructor_image);
+      if (ins.instructor_image && ins.instructor_image.length > 0) {
+        // console.log(`instructor images ===> `, ins.instructor_image);
+        // try {
+        getSingleFile(ins.instructor_image)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        // } catch (e) {
+        //   console.error(e);
+        // }
+      }
+    }
+
+    return res.render("about/index", {
+      title: "About Us",
       path: "/aboutme",
-      certificates: aboutCertificates,
-      errorMessage: "",
+      paragraphs,
+      instructors,
     });
   } catch (e) {
-    res.render("about/index", {
-      title: "Who am i",
-      path: "/aboutme",
-      certificates: [],
-      errorMessage: "There's an error while getting images",
-    });
+    await errorRaiser(e, next);
   }
 };
 

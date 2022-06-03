@@ -52,6 +52,9 @@ const Courses = sequelize.define("course", {
   total_hours: {
     type: Sequelize.STRING,
   },
+  course_category: {
+    type: Sequelize.STRING,
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),

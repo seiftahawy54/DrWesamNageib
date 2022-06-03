@@ -20,9 +20,6 @@ const Exams = sequelize.define("exam", {
     type: Sequelize.ARRAY(Sequelize.JSON),
     allowNull: false,
   },
-  replies: {
-    type: Sequelize.ARRAY(Sequelize.JSON),
-  },
   special_exam: {
     type: Sequelize.BOOLEAN,
   },
