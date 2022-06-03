@@ -37,6 +37,7 @@ export const getLogin = (req, res, next) => {
     path: "/login",
     validationErrors: {},
     user: {},
+    moment: moment,
   });
 };
 
@@ -143,8 +144,8 @@ export const postForgetPassword = async (req, res, next) => {
 
     if (
       searchingForUserResult.token_date &&
-      moment().toISOString() >
-        moment(searchingForUserResult.token_date).toISOString()
+      moment().diff(moment(searchingForUserResult.token_date), "hours") * -1 >=
+        1
     ) {
       req.flash(
         "error",
@@ -234,6 +235,7 @@ export const getGenerateNewPassword = async (req, res, next) => {
     res.render("auth/new_password", {
       title: "Reset Password",
       path: "/reset-password",
+      resetToken: token,
     });
   } catch (e) {
     await errorRaiser(e, next);
@@ -243,12 +245,44 @@ export const getGenerateNewPassword = async (req, res, next) => {
 export const postGenerateNewPassword = async (req, res, next) => {
   try {
     const password = req.body.new_password;
-    const confirm_password = req.body.confirm_password;
+    const confirmPassword = req.body.confirm_password;
+    const token = req.params.token;
 
-    res.json({
-      password,
-      confirm_password,
+    if (password !== confirmPassword) {
+      req.flash("error", "Please make sure that your passwords are the same!");
+      return res.redirect(`/reset-password/${token}`);
+    }
+
+    const encryptionResult = await bcrypt.hash(password, 12);
+    if (!(await encryptionResult)) {
+      req.flash("error", "Some error in the server please contact admin!");
+      return res.redirect(`/reset-password/${token}`);
+    }
+
+    const user = await Users.findOne({
+      where: {
+        reset_token: token,
+      },
     });
+
+    const updatingUserDataResult = user.update(
+      {
+        password: await encryptionResult,
+        reset_token: null,
+        token_date: null,
+      },
+      {
+        where: {
+          reset_token: token,
+        },
+      }
+    );
+
+    req.flash(
+      "success",
+      "You've successfully updated your password, now you can login"
+    );
+    return res.redirect("/login");
   } catch (e) {
     await errorRaiser(e, next);
   }
@@ -339,13 +373,13 @@ export const postRegister = async (req, res, next) => {
             "success",
             "You have registered to the website successfully, please login to continue"
           );
-          res.redirect("/login");
+          return res.redirect("/login");
         })
         .catch((err) => {
           // errorRaiser(err, next);
           console.log(err);
           req.flash("error", err.message);
-          res.render("auth/register", {
+          return res.render("auth/register", {
             title: "Register",
             path: "/register",
             validationErrors: errors.array(),

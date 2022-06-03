@@ -70,6 +70,10 @@ export const getAllReplies = async (req, res, next) => {
           name: "exam-title",
         },
         {
+          title: "Replies Link",
+          name: "replies-link",
+        },
+        {
           title: "Delete Exam",
           name: "delete-exam",
         },
