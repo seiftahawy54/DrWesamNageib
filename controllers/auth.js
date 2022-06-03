@@ -2,10 +2,10 @@ import paypal from "@paypal/checkout-server-sdk";
 import { validationResult } from "express-validator";
 // import { Courses } from "../models";
 import { errorRaiser } from "../utils/error_raiser.js";
-import { Users } from "../models/index.js";
-import { Payment } from "../models/index.js";
-import { Rounds } from "../models/index.js";
-import { Discounts } from "../models/index.js";
+import { Users, Payment, Rounds, Discounts } from "../models/index.js";
+import sendGrid from "@sendgrid/mail";
+
+sendGrid.setApiKey(process.env.SEND_GRID_SECRET);
 
 import bcrypt from "bcrypt";
 import {
@@ -14,6 +14,8 @@ import {
   extractArrOfPrices,
   findCartCourses,
 } from "../utils/cart_helpers.js";
+import { hashCreator } from "../utils/general_helper.js";
+import moment from "moment";
 
 const Environment =
   process.env.NODE_ENV === "production"
@@ -99,6 +101,156 @@ export const postLogin = async (req, res, next) => {
           validationErrors: { email: true, password: true },
         });
       });
+  }
+};
+
+export const getForgetPassword = (req, res, next) => {
+  return res.render("auth/forget_password", {
+    title: "Forget Password",
+    path: "/forget-password",
+    enteredData: {},
+    validationErrors: [],
+  });
+};
+
+export const postForgetPassword = async (req, res, next) => {
+  try {
+    const userEmail = req.body.user_email;
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      req.flash("error", errors.array()[0].msg);
+      return res.render("auth/forget_password", {
+        title: "Forget Password",
+        path: "/forget-password",
+        enteredData: {
+          user_email: userEmail,
+        },
+        validationErrors: errors.array(),
+      });
+    }
+
+    const searchingForUserResult = await Users.findOne({
+      where: {
+        email: userEmail,
+      },
+    });
+
+    if (!searchingForUserResult) {
+      req.flash("error", "There's no users found with this email!");
+      return res.redirect("/forget-password");
+    }
+
+    if (
+      searchingForUserResult.token_date &&
+      moment().toISOString() >
+        moment(searchingForUserResult.token_date).toISOString()
+    ) {
+      req.flash(
+        "error",
+        "You've already requested to reset your password, please check your email!"
+      );
+      return res.redirect("/");
+    }
+
+    // to: 'test@example.com', // Change to your recipient
+    //   from: 'test@example.com', // Change to your verified sender
+    //   subject: 'Sending with SendGrid is Fun',
+    //   text: 'and easy to do anywhere, even with Node.js',
+    //   html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+
+    const requestedToken = hashCreator(10);
+    const oneHourAhead = moment().add(1, "hour").toISOString();
+
+    const updateUserToken = await searchingForUserResult.update({
+      reset_token: requestedToken,
+      token_date: oneHourAhead,
+    });
+    /*
+    reset_token: `${req.get("origin")}/reset-password/${
+            updateUserToken.reset_token
+          }`,
+          token_date: updateUserToken.token_date,
+    */
+    sendGrid
+      .send({
+        to: searchingForUserResult.email,
+        from: "Admin@drwesamnageib.com",
+        subject: "Reset Password Request",
+        text: "You've requested a reset to your password please processes the operation",
+        html: `
+              <h1>Password Reset Request</h1>
+              <p>You've requested a reset to your password please process the operation</p>
+              <p>You can click on this link to continue this operation <a href="${req.get(
+                "origin"
+              )}/reset-password/${updateUserToken.reset_token}">RESET</a></p>
+              <strong>THE LINK IS AVAILABLE FOR ONE HOUR ONLY!</strong>
+              If you didn't request anything please call us immediately <a href="http://localhost:3000/contactus">Contact US</a>
+            `,
+      })
+      .then((result) => {
+        return res.redirect("/confirm-forget");
+      })
+      .catch((error) => {
+        req.flash("error", error.message);
+        return res.redirect("/");
+      });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const getConfirmForget = async (req, res, next) => {
+  return res.render("auth/confirm_sending", {
+    title: "Confirm Sending",
+    path: "/confirm_sending",
+  });
+};
+
+export const getGenerateNewPassword = async (req, res, next) => {
+  try {
+    const token = req.params.token;
+    const userWithToken = await Users.findOne({
+      where: {
+        reset_token: token,
+      },
+    });
+
+    if (!userWithToken) {
+      req.flash("error", "Please check your data!");
+      return res.redirect("/login");
+    }
+
+    if (
+      moment(userWithToken.token_date).toISOString() < moment().toISOString()
+    ) {
+      req.flash(
+        "error",
+        "Your request to reset your password is invalid, please submit another request!"
+      );
+      return res.redirect("/login");
+    }
+
+    res.render("auth/new_password", {
+      title: "Reset Password",
+      path: "/reset-password",
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const postGenerateNewPassword = async (req, res, next) => {
+  try {
+    const password = req.body.new_password;
+    const confirm_password = req.body.confirm_password;
+
+    res.json({
+      password,
+      confirm_password,
+    });
+  } catch (e) {
+    await errorRaiser(e, next);
   }
 };
 

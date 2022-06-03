@@ -9,7 +9,7 @@ export const getAllReplies = async (req, res, next) => {
   try {
     const allExamsReplies = await sequelize.query(
       `
-        SELECT distinct e.title, e.exam_id, reply.reply_id FROM exams_replies reply
+        SELECT distinct e.title, e.exam_id FROM exams_replies reply
           INNER JOIN exams e on reply.exam_id = e.exam_id
           INNER JOIN users u on reply.user_id = u.user_id;
     `,
@@ -21,8 +21,8 @@ export const getAllReplies = async (req, res, next) => {
     const allPrimaryKeys = [];
 
     let data = await Promise.all(
-      allExamsReplies.map(async ({ reply_id, title, exam_id }, index) => {
-        allPrimaryKeys.push(reply_id);
+      allExamsReplies.map(async ({ title, exam_id }, index) => {
+        allPrimaryKeys.push(exam_id);
 
         // createdAt = moment(createdAt).format("DD/MM/YYYY-hh:mm:ss");
         let previewLink = `<a href="/dashboard/exams-replies/${exam_id}">${title}</a>`;

@@ -132,13 +132,13 @@ export const postUpdateInstructor = async (req, res, next) => {
     }
 
     if (newInstructorImg.length > 0 && newInstructorCertificates.length > 0) {
-      updatingObj.instructor_img = newInstructorImg;
+      updatingObj.instructor_image = newInstructorImg;
       updatingObj.instructor_certificates = newInstructorCertificates;
     } else if (
       newInstructorImg.length > 0 &&
       newInstructorCertificates.length === 0
     ) {
-      updatingObj.instructor_img = newInstructorImg;
+      updatingObj.instructor_image = newInstructorImg;
     } else if (
       newInstructorImg.length === 0 &&
       newInstructorCertificates.length > 0
@@ -305,7 +305,7 @@ export const postAddNewInstructor = async (req, res, next) => {
     const creatingNewInstructor = await About.create({
       instructor_name: instructorName,
       instructor_data: instructorData,
-      instructor_img: instructorImg,
+      instructor_image: instructorImg,
       instructor_certificates: instructorCertificates,
     });
 

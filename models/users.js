@@ -66,6 +66,12 @@ const Users = sequelize.define("user", {
   performed_exams: {
     type: Sequelize.ARRAY(Sequelize.STRING),
   },
+  reset_token: {
+    type: Sequelize.STRING,
+  },
+  token_date: {
+    type: Sequelize.DATE,
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),

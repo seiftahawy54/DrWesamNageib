@@ -178,10 +178,23 @@ export const getAboutPage = async (req, res, next) => {
       },
     });
 
-    instructors.forEach(async (ins) => {
-      console.log(ins.instructor_img);
-      // await getSingleFile(ins.instructor_img);
-    });
+    for (let ins of instructors) {
+      console.log(`instructor images ===> `, ins.instructor_image);
+      if (ins.instructor_image && ins.instructor_image.length > 0) {
+        // console.log(`instructor images ===> `, ins.instructor_image);
+        // try {
+        getSingleFile(ins.instructor_image)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        // } catch (e) {
+        //   console.error(e);
+        // }
+      }
+    }
 
     return res.render("about/index", {
       title: "About Us",

@@ -10,6 +10,11 @@ import {
   getSuccess,
   postSuccess,
   postApplyCoupon,
+  getForgetPassword,
+  postForgetPassword,
+  getConfirmForget,
+  getGenerateNewPassword,
+  postGenerateNewPassword,
 } from "../controllers/auth.js";
 import { Router } from "express";
 import { body } from "express-validator";
@@ -29,6 +34,19 @@ router
     postLogin
   )
   .post("/logout", postLogout)
+  .get("/forget-password", getForgetPassword)
+  .post(
+    "/forget-password",
+    [body("user_email").isEmail().isLength({ min: 5 })],
+    postForgetPassword
+  )
+  .get("/confirm-forget", getConfirmForget)
+  .get("/reset-password/:token", getGenerateNewPassword)
+  .post(
+    "/reset-password/:token",
+    [body("password").isString().isLength({ min: 8 }).trim()],
+    postGenerateNewPassword
+  )
   .get("/register", notRepeatedForUser, getRegister)
   .post(
     "/register",

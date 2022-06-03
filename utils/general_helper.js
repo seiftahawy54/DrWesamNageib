@@ -26,8 +26,8 @@ export const sortCourses = (courses) => {
   });
 };
 
-export const hashCreator = () => {
-  const idHash = crypto.randomBytes(10);
+export const hashCreator = (size = 10) => {
+  const idHash = crypto.randomBytes(size);
   return idHash.toString("hex");
 };
 
