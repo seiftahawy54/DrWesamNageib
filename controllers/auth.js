@@ -222,9 +222,7 @@ export const getGenerateNewPassword = async (req, res, next) => {
       return res.redirect("/login");
     }
 
-    if (
-      moment(userWithToken.token_date).toISOString() < moment().toISOString()
-    ) {
+    if (moment().diff(moment(userWithToken.token_date), "hours") * -1 >= 1) {
       req.flash(
         "error",
         "Your request to reset your password is invalid, please submit another request!"

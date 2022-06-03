@@ -256,6 +256,9 @@ const postUpdateCourse = async (req, res, next) => {
 
   try {
     const errors = validationResult(req);
+
+    console.log(errors.array());
+
     const findingCourse = await Courses.findByPk(courseId);
 
     if (!errors.isEmpty()) {
