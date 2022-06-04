@@ -43,9 +43,6 @@ export default Router()
       body("course_rank").isNumeric().notEmpty(),
       body("thumbnail").isString().notEmpty(),
       body("description").isString().notEmpty(),
-      body("special_course").isString().notEmpty(),
-      body("total_hours").isString().isLength({ min: 1 }),
-      body("course_category").isString().isLength({ min: 5 }),
     ],
     postUpdateCourse
   );
