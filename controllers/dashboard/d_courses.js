@@ -250,9 +250,13 @@ const postUpdateCourse = async (req, res, next) => {
   const courseArName = req.body.arabic_name;
   const courseThumbnail = req.body.thumbnail;
   const courseRank = req.body.course_rank;
-  const specialCourse = req.body.special_course;
+  let specialCourse = req.body.special_course;
   const totalHours = req.body.total_hours;
   const courseCategory = req.body.course_category;
+
+  if (typeof specialCourse === "undefined") {
+    specialCourse = false;
+  }
 
   try {
     const errors = validationResult(req);
