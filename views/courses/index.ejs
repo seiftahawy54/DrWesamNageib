@@ -106,7 +106,7 @@
     this.coursesCategories = (await axios.get("/courses/courses-categories")).data.coursesCategories
     this.courses = (await axios.get("/courses/all-courses")).data.courses
     this.defaultCourses = [...this.courses]
-
+    this.coursesCategories = [...new Set(this.coursesCategories)]
     console.log(this.defaultCourses)
   }
 
@@ -116,7 +116,7 @@
         courses: "",
         coursesCategories: "",
         searching: [],
-        defaultCourses: []
+        defaultCourses: [],
       }
     },
     methods: {
@@ -129,14 +129,14 @@
 
         this.courses = this.defaultCourses.filter((item) => {
           if (this.searching.findIndex(i => i === item.course_category) > -1) {
-            return item;
+            return item
           }
         })
 
         if (this.searching.length === 0) {
           this.courses = this.defaultCourses
         }
-      }
+      },
     },
     mounted,
   }).mount("#app")
