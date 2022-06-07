@@ -151,7 +151,7 @@ export const getAboutPage = async (req, res, next) => {
       where: {
         instructor_name: null,
       },
-      order: ["createdAt"],
+      order: ["updatedAt"],
     });
 
     const instructors = await About.findAll({
