@@ -243,12 +243,16 @@ export const downloadingCoursesImages = (courses) => {
   return new Promise(async (resolve, reject) => {
     for (const course of courses) {
       await getSingleFile(course.course_img)
-        .then((result) => {})
+        .then((result) => {
+          console.log(result);
+        })
         .catch((err) => {
           console.error(err);
         });
       await getSingleFile(course.detailed_img)
-        .then((result) => {})
+        .then((result) => {
+          console.log(result);
+        })
         .catch((err) => {
           console.error(err);
         });

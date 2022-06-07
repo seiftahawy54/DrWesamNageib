@@ -142,25 +142,6 @@ export const postDeleteFromCart = async (req, res, next) => {
     await errorRaiser(e, next);
   }
 
-  // const cartJSON = JSON.parse(req.user.cart);
-  //
-  // const deletingIndex = cartJSON.findIndex((e) => e.item === wantedToDelete);
-  // cartJSON.splice(deletingIndex, 1);
-  // const filteredCart = cartJSON;
-  //
-  // console.log(filteredCart);
-  //
-  // const deletingResult = await Users.update(
-  //   { cart: JSON.stringify(filteredCart) },
-  //   { where: { user_id: req.user.user_id } }
-  // );
-  //
-  // console.log(deletingResult);
-
-  // console.log(
-  //   `deleted: ${wantedToDelete}, filtered: ${filteredCart}, ${deletingResult}`
-  // );
-
   res.redirect("/cart");
 };
 
@@ -170,12 +151,14 @@ export const getAboutPage = async (req, res, next) => {
       where: {
         instructor_name: null,
       },
+      order: ["createdAt"],
     });
 
     const instructors = await About.findAll({
       where: {
         about_us_paragraph: null,
       },
+      order: ["createdAt"],
     });
 
     for (let ins of instructors) {

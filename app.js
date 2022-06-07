@@ -122,6 +122,7 @@ app.use((req, res, next) => {
   res.locals.isUserAuthenticated = req.session.userIsAuthenticated;
   res.locals.errorMessage = req.flash("error");
   res.locals.successMessage = req.flash("success");
+  res.locals.envMode = process.env.NODE_ENV;
   const token = req.csrfToken();
   res.cookie("XSRF-TOKEN", token);
   res.locals.csrfToken = token;

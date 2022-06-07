@@ -1,6 +1,36 @@
 @use "../utils/variables" as vars;
 @use "../utils/mediaFns" as mediaQ;
 
+.custom-login {
+  min-height: calc(100vh - 131px - 131px - 80px);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: 1fr;
+  width: 35vw;
+  margin: auto;
+
+  .custom-head {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+
+    .custom-head-data {
+      width: fit-content;
+    }
+  }
+
+  .login-options {
+    a {
+      color: vars.$main_color;
+      text-decoration: underline;
+    }
+  }
+}
+
 .login-form,
 .opinions-form {
   display: flex;
@@ -119,6 +149,10 @@
 }
 
 @include mediaQ.allSmScreens {
+  .custom-login {
+    width: 90vw;
+  }
+
   .login-form,
   .register-form,
   .opinions-form {
@@ -156,5 +190,9 @@
     .register-link {
       font-size: vars.$sm_font_size;
     }
+  }
+
+  .custom-login {
+    width: 50vw;
   }
 }

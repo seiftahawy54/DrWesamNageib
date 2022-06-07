@@ -1,3 +1,28 @@
+.custom-login {
+  min-height: calc(100vh - 131px - 131px - 80px);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: 1fr;
+  width: 35vw;
+  margin: auto;
+}
+.custom-login .custom-head {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+.custom-login .custom-head .custom-head-data {
+  width: fit-content;
+}
+.custom-login .login-options a {
+  color: #545ee3;
+  text-decoration: underline;
+}
+
 .login-form,
 .opinions-form {
   display: flex;
@@ -101,6 +126,10 @@
 }
 
 @media (max-width: 575px) {
+  .custom-login {
+    width: 90vw;
+  }
+
   .login-form .login-options .reset-link,
 .register-form .login-options .reset-link,
 .opinions-form .login-options .reset-link {
@@ -129,6 +158,10 @@
   }
 }
 @media (min-width: 576px) and (max-width: 991px) {
+  .custom-login {
+    width: 90vw;
+  }
+
   .login-form .login-options .reset-link,
 .register-form .login-options .reset-link,
 .opinions-form .login-options .reset-link {
@@ -162,6 +195,10 @@
   }
   .login-options .register-link {
     font-size: 16px;
+  }
+
+  .custom-login {
+    width: 50vw;
   }
 }
 

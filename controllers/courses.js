@@ -71,9 +71,15 @@ export const getAllCoursesData = async (req, res, next) => {
 
 export const getCoursesCategories = async (req, res, next) => {
   try {
-    const coursesCategories = await Courses.findAll({
+    let coursesCategories = await Courses.findAll({
       attributes: ["course_category"],
     });
+
+    coursesCategories = coursesCategories.map(
+      ({ course_category }) => course_category
+    );
+    coursesCategories = [...new Set(coursesCategories)];
+    console.log(coursesCategories);
 
     res.status(200).json({
       coursesCategories,

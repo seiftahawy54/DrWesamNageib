@@ -51,9 +51,9 @@ body {
   position: relative;
   overflow: hidden;
 
-  color: #fff;
+  color: vars.$main_color;
   text-transform: uppercase;
-  border: 1px solid currentColor;
+  border: 1px solid vars.$main_color;
 
   background: transparent;
   -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);

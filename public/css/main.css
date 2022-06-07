@@ -27,6 +27,42 @@ body {
   min-height: 100%;
 }
 
+.btn-2 {
+  display: block;
+  box-sizing: border-box;
+  padding: 20px 45px;
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  color: #545ee3;
+  text-transform: uppercase;
+  border: 1px solid #545ee3;
+  background: transparent;
+  -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+  transition: color 0.2s;
+}
+
+.btn-2:hover {
+  color: #000;
+}
+
+.btn-2:before {
+  content: "";
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: -100%;
+  background: #fff;
+  transition: transform 0.2s;
+  will-change: transform;
+}
+
+.btn-2:hover:before {
+  transform: translateX(100%);
+}
+
 textarea {
   resize: none;
 }
@@ -132,8 +168,8 @@ a.btn-outlined {
 
 .error-container {
   padding: 20px;
-  background-color: #ff0000b5;
-  border: 1px solid #ff000054;
+  background-color: rgba(255, 0, 0, 0.7098039216);
+  border: 1px solid rgba(255, 0, 0, 0.3294117647);
   color: white;
   text-align: center;
   font-size: 20px;

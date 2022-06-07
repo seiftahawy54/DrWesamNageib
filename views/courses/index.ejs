@@ -12,29 +12,29 @@
     </div>
     <div class="container">
       <div class="row">
-        <% courses.forEach(course => { %>
+        <template v-for="course in randomCourses">
           <div class="featured-course-container col-lg-4 col-sm-12">
             <div class="featured-courses-container ">
               <div class="course-title-container">
                 <div class="course-thumbnail">
-                  <img src="/downloaded_images/<%- course.course_img %>" alt="<%- course.name %>"
+                  <img :src=`/downloaded_images/${course.course_img}` :alt="course.name"
                        class="w-100 " />
                 </div>
                 <div class="course-title">
-                  <%= course.name %>
+                  {{ course.name }}
                 </div>
               </div>
               <p class="course-about">
                 <bdi>
-                  <%= course.course_thumbnail %>
+                  {{ course.course_thumbnail }}
                 </bdi>
               </p>
-              <a href="/courses/<%- course.course_id %>" class="reset-link btn-outlined">
+              <a :href=`/courses/${course.course_id}` class="reset-link btn-outlined">
                 View Course
               </a>
             </div>
           </div>
-        <% }) %>
+        </template>
       </div>
     </div>
 
@@ -49,11 +49,12 @@
         <div class="col-lg-3 col my-sm-3 my-xl-0">
           <h3>Filter By</h3>
           <hr>
-          <div v-for="(cat, index) in coursesCategories">
+          <div v-for="(cat, index) in coursesCategories" class="form-check">
             <input type="checkbox" :name="`category-${index}`" :id="`category-${index}`" @click='selectCourse'
-                   :value="cat.course_category"
+                   class="form-check-input"
+                   :value="cat"
                    :key="index" />
-            <label :for="`category-${index}`">&nbsp;{{ cat.course_category }}</label>
+            <label :for="`category-${index}`" class="form-check-label">&nbsp;{{ cat }}</label>
           </div>
           <!--<div>Exam</div>
           <div class="first-category">
@@ -93,30 +94,37 @@
       </div>
     </div>
   </section>
+
 </div>
 
 <%- include("../includes/footer.ejs"); %>
 
+<script type="text/x-template" id="course">
+  <div v-for="op in opinions">
+    {{ op }}
+  </div>
+</script>
+
+
 <script src="/js/axios.min.js"></script>
 
 <script async>
-  const { createApp } = Vue
 
   async function mounted() {
     this.coursesCategories = (await axios.get("/courses/courses-categories")).data.coursesCategories
     this.courses = (await axios.get("/courses/all-courses")).data.courses
     this.defaultCourses = [...this.courses]
-    this.coursesCategories = [...new Set(this.coursesCategories)]
-    console.log(this.defaultCourses)
+    this.randomCourses = this.defaultCourses.sort(() => Math.random() - Math.random()).slice(0, 3)
   }
 
-  createApp({
+  const app = Vue.createApp({
     data() {
       return {
         courses: "",
         coursesCategories: "",
         searching: [],
         defaultCourses: [],
+        randomCourses: [],
       }
     },
     methods: {
@@ -139,7 +147,15 @@
       },
     },
     mounted,
-  }).mount("#app")
+  })
+
+  app.component("testing-a", {
+    props: ["opinions"],
+    template: `#course`,
+  })
+
+  app.mount("#app")
+
 </script>
 
 <%- include("../includes/bottom_part.ejs"); %>
