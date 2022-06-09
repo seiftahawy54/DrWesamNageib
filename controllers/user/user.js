@@ -277,9 +277,6 @@ export const getPerformExam = async (req, res, next) => {
       };
 
       await testing();
-      /*findingExam.questions = findingExam.questions.filter(
-        (quesObj) => "questionHeader" in quesObj
-      );*/
 
       return res.status(200).render("users/exam", {
         title: findingExam.title,
@@ -386,8 +383,6 @@ export const getExamPreview = async (req, res, next) => {
           correctAnswer: parseInt(replyData.questions[question].correctAnswer),
         });
       }
-
-      console.log(questionsWithUserAnswers);
 
       return res.render("users/exam_preview", {
         title: `Trying Exam ${replyData.title} for User ${replyData.name}`,
