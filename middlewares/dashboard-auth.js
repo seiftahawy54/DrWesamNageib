@@ -8,6 +8,7 @@ export const isAuthenticated = (req, res, next) => {
 };
 
 export const globalAccess = (req, res, next) => {
+  console.log(req);
   if (req.session.userIsAuthenticated || req.session.isAuthenticatedAdmin) {
     next();
   } else {
