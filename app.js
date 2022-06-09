@@ -165,8 +165,8 @@ app.use("/courses", coursesRoutes);
 app.use("/dashboard", isAuthenticated, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
-app.use(isUserAuthenticated, userRoutes);
 app.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
+app.use(isUserAuthenticated, userRoutes);
 
 Payment.hasOne(Courses, {
   foreignKey: "course_id",
