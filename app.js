@@ -35,6 +35,7 @@ import { isUserAuthenticated } from "./middlewares/user-auth.js";
 import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
 import { getExamPreview } from "./controllers/user/user.js";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
@@ -64,6 +65,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(cors());
 app.use(cookieParser());
 app.use(
   Multer({

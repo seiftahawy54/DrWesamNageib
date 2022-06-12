@@ -8,6 +8,7 @@ import {
   postOpinions,
   getOpinionsForm,
   postDeleteFromCart,
+  getAllOpinions,
 } from "../controllers/shop.js";
 import express from "express";
 import { body } from "express-validator";
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router
   .get("/", getHomePage)
+  .get("/all-opinions", getAllOpinions)
   .get("/aboutus", getAboutPage)
   .get("/download_cv", downloadCV)
   .get("/contact", getContactPage)

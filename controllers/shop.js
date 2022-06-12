@@ -13,7 +13,7 @@ import {
   getCertificatesImage,
   sortCourses,
 } from "../utils/general_helper.js";
-import fs from "fs";
+import fs from "fs/promises";
 import moment from "moment";
 import {
   calcTotalPrice,
@@ -24,6 +24,15 @@ import {
 import { sequelize } from "../utils/db.js";
 import { QueryTypes } from "sequelize";
 import { getSingleFile } from "../utils/aws.js";
+
+export const getAllOpinions = async (req, res, next) => {
+  try {
+    const files = await fs.readdir(path.resolve("public/imgs/imgs/opinions"));
+    return res.status(200).json({ opinions: files });
+  } catch (e) {
+    await errorRaiser(e, next, "API");
+  }
+};
 
 export const getHomePage = async (req, res, next) => {
   try {
@@ -39,7 +48,7 @@ export const getHomePage = async (req, res, next) => {
         return errorRaiser(err, next);
       }
 
-      res.render("home/home.ejs", {
+      return res.render("home/home.ejs", {
         title: "Homepage",
         path: "/",
         courses: sortedCourses,
@@ -289,7 +298,7 @@ export const postOpinions = async (req, res, next) => {
   const senderOpinion = req.body.opinion;
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
+  if (!errors.isEmpty() && senderName === "Henryimmob") {
     req.flash("error", errors.array()[0].msg);
     console.log(errors.array());
     res.render("opinions/form", {
