@@ -94,7 +94,7 @@ export const getRepliesForExam = async (req, res, next) => {
     const examId = req.params.examId;
     const allExamsReplies = await sequelize.query(
       `
-        SELECT u.name as name, reply.reply_id as reply_id, reply.grade as grade, reply.createdAt as createdAt FROM exams_replies reply
+        SELECT u.name as name, reply.reply_id as reply_id, reply.grade as grade, reply."createdAt" as createdAt FROM exams_replies reply
         INNER Join exams e on reply.exam_id = e.exam_id
         INNER JOIN users u on reply.user_id = u.user_id
           where reply.exam_id=?
