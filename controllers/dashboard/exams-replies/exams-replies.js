@@ -113,7 +113,7 @@ export const getRepliesForExam = async (req, res, next) => {
         async ({ reply_id, name, grade, createdAt }, index) => {
           allPrimaryKeys.push(reply_id);
 
-          createdAt = moment(createdAt).format("DD/MM/YYYY-hh:mm:ss");
+          createdAt = moment(createdAt).format("MMM DD h:mm A");
           let previewLink = `<a href="/exams/preview/${reply_id}">${name} reply</a>`;
 
           return {
