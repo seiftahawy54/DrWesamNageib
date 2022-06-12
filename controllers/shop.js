@@ -48,7 +48,7 @@ export const getHomePage = async (req, res, next) => {
         return errorRaiser(err, next);
       }
 
-      return res.render("home/home.ejs", {
+      res.render("home/home.ejs", {
         title: "Homepage",
         path: "/",
         courses: sortedCourses,
