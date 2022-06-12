@@ -43,20 +43,23 @@ export const getHomePage = async (req, res, next) => {
 
     await downloadingCoursesImages(getCoursesResult);
 
-    fs.readdir(path.resolve("public/imgs/imgs/opinions"), (err, files) => {
-      if (err) {
-        return errorRaiser(err, next);
-      }
+    await fs.readdir(
+      path.resolve("public/imgs/imgs/opinions"),
+      (err, files) => {
+        if (err) {
+          return errorRaiser(err, next);
+        }
 
-      res.render("home/home.ejs", {
-        title: "Homepage",
-        path: "/",
-        courses: sortedCourses,
-        opinions: getAllOpinionsResult,
-        whatsapp_opinions: files,
-        moment: moment,
-      });
-    });
+        res.render("home/home.ejs", {
+          title: "Homepage",
+          path: "/",
+          courses: sortedCourses,
+          opinions: getAllOpinionsResult,
+          whatsapp_opinions: files,
+          moment: moment,
+        });
+      }
+    );
   } catch (e) {
     await errorRaiser(e, next);
   }
