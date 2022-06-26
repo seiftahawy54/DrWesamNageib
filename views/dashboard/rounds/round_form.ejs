@@ -175,19 +175,39 @@
   /*
 
   */
-  /*const submitFormBtn = document.getElementById("submit-form-btn")
+  const submitFormBtn = document.getElementById("submit-form-btn")
+  const searchingRoundedInput = document.getElementById('searching-rounded')
+  const searchingUnRoundedInput = document.getElementById('searching-unrounded')
+  const searchingOldUsers = document.getElementById('searching-old-users')
 
-  submitFormBtn.addEventListener('click', (e) => {
 
-    const roundedPeopleCheckedLength = document.querySelectorAll('#rounded-container input:checked').length
-    const unRoundedPeopleCheckedLength = document.querySelectorAll('#unrounded-container input:checked').length
-    const oldPeopleCheckedLength = document.querySelectorAll('#prev-users-container input:checked').length
-
-    if ((roundedPeopleCheckedLength + unRoundedPeopleCheckedLength + oldPeopleCheckedLength <= 2)) {
-      e.preventDefault()
-      alert("Please check that you have cancelled some people")
+  const cancelSubmit = (e, inputName) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      alert(`You still haven't finished searching in ${inputName}`)
     }
-  })*/
+  }
+
+  window.addEventListener('keydown', () => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      alert(`You still haven't finished searching in users`)
+      return false;
+    }
+  })
+
+  searchingRoundedInput.addEventListener('click', (e) => cancelSubmit(e, 'Rounded People'))
+  searchingUnRoundedInput.addEventListener('click', (e) => cancelSubmit(e, 'Un Rounded People'))
+  searchingOldUsers.addEventListener('click', (e) => cancelSubmit(e, 'Old Users'))
+
+
+  submitFormBtn
+    .addEventListener('submit', (e) => {
+      if (searchingRoundedInput.value.length > 0 || searchingUnRoundedInput.value.length > 0 || searchingOldUsers.value.length > 0) {
+        e.preventDefault()
+        alert("Please check that you have cancelled some people")
+      }
+    })
 
   const searchingInUsers = (searchingInputId, searchingContainer) => {
     //=>> UnRounded people

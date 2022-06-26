@@ -57,9 +57,9 @@ export const getAllReplies = async (req, res, next) => {
     return res.render("dashboard/general_tables", {
       title: "Exams",
       path: "/dashboard/exams-replies",
-      tableName: "Exam-Replies",
+      tableName: "Exams-Replies",
       addingNewLink: "exams_replies",
-      singleTableName: "exam_replies",
+      singleTableName: "exams_replies",
       tableHead: [
         {
           title: "#",
@@ -148,9 +148,9 @@ export const getRepliesForExam = async (req, res, next) => {
     return res.render("dashboard/general_tables", {
       title: "Exams",
       path: "/dashboard/exams-replies",
-      tableName: "Exam-Replies",
+      tableName: "Exams-Replies",
       addingNewLink: "exams_replies",
-      singleTableName: "exam_replies",
+      singleTableName: "exams_replies",
       tableHead: [
         {
           title: "#",
@@ -192,11 +192,12 @@ export const postDeleteReply = async (req, res, next) => {
   try {
     const replyId = req.body.replyId;
     const findingReply = await ExamsReplies.findByPk(replyId);
+    console.log(findingReply);
     const deletingResult = await findingReply.destroy();
 
     if (deletingResult) {
       req.flash("success", "Reply Deleted Successfully");
-      return res.redirect("/dashboard/exams-replies");
+      return res.redirect(`/dashboard/exams-replies/${replyId}`);
     }
     req.flash("error", "Something happened");
     return res.redirect("/dashboard/exams-replies");

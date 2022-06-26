@@ -231,12 +231,15 @@
 
   const deletingButton = document.querySelector("#deleteRowButton")
   const deletingForm = document.querySelector("#deleteRowForm")
-  deletingForm.addEventListener("click", (e) => {
+  const deletingModalButton = document.querySelector("#deletingModalButton")
+  const confirmDeletion = document.querySelector("#confirmDeletionButton")
+
+  deletingForm.addEventListener("submit", (e) => {
     e.preventDefault()
-    const deletingModalButton = document.querySelector("#deletingModalButton")
+
+    console.log(`confirmDeletion`, confirmDeletion)
 
     deletingModalButton.click()
-    const confirmDeletion = document.querySelector("#confirmDeletionButton")
 
     confirmDeletion.addEventListener("click", () => {
       deletingForm.submit()
