@@ -172,9 +172,7 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
 <script>
   //=> Searching implementation part
-  /*
 
-  */
   const submitFormBtn = document.getElementById("submit-form-btn")
   const searchingRoundedInput = document.getElementById('searching-rounded')
   const searchingUnRoundedInput = document.getElementById('searching-unrounded')
@@ -202,7 +200,7 @@
 
 
   submitFormBtn
-    .addEventListener('submit', (e) => {
+    .addEventListener('click', (e) => {
       if (searchingRoundedInput.value.length > 0 || searchingUnRoundedInput.value.length > 0 || searchingOldUsers.value.length > 0) {
         e.preventDefault()
         alert("Please check that you have cancelled some people")
