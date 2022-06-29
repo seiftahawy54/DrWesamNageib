@@ -3,6 +3,7 @@ import {
   calculateExamsGrades,
   createCertificate,
   deleteFile,
+  userPerformedExams,
 } from "../../utils/general_helper.js";
 import { getSingleFile, uploadFile } from "../../utils/aws.js";
 import fs from "fs";
@@ -496,25 +497,7 @@ export const getUserRound = async (req, res, next) => {
 
 export const getUserGrades = async (req, res, next) => {
   try {
-    const usersExamsData = await sequelize.query(
-      `
-    SELECT e.title, e.questions, reply.reply_id, reply.grade FROM exams_replies reply
-        INNER Join exams e on reply.exam_id = e.exam_id
-        INNER JOIN users u on reply.user_id = u.user_id where reply.user_id = ?;
-    `,
-      {
-        replacements: [req.user.user_id],
-        type: "SELECT",
-      }
-    );
-
-    for (let i of usersExamsData) {
-      i.questions = i.questions
-        .map((question) => {
-          if ("questionHeader" in question) return question;
-        })
-        .filter((q) => q);
-    }
+    let usersExamsData = await userPerformedExams(req.user.user_id);
 
     res.status(200).json({
       userExams: usersExamsData.length > 0 ? usersExamsData : null,

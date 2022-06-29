@@ -31,7 +31,7 @@ const paypalClient = new paypal.core.PayPalHttpClient(
 
 let SelectedCourseData = {};
 
-export const getLogin = (req, res, next) => {
+export const getLogin = (req, res, next) =>
   res.render("auth/login", {
     title: "Login",
     path: "/login",
@@ -39,7 +39,6 @@ export const getLogin = (req, res, next) => {
     user: {},
     moment: moment,
   });
-};
 
 export const postLogin = async (req, res, next) => {
   const email = req.body.email;
@@ -176,7 +175,7 @@ export const postForgetPassword = async (req, res, next) => {
     sendGrid
       .send({
         to: searchingForUserResult.email,
-        from: "Admin@drwesamnageib.com",
+        from: "admin@drwesamnageib.com",
         subject: "Reset Password Request",
         text: "You've requested a reset to your password please processes the operation",
         html: `
@@ -370,7 +369,23 @@ export const postRegister = async (req, res, next) => {
         cart: [],
         type: 2,
       })
-        .then((result) => {
+        .then(async (result) => {
+          await sendGrid.send({
+            to: "drwesamnageib@gmail.com",
+            from: "admin@drwesamnageib.com",
+            subject: "New User Notification",
+            text: "A New User has registered to the website",
+            html: `
+              <b>This is no REPLY email</b>
+              <p>A User with following data have been registered!</p>
+              <ul>
+                <li>Name: ${firstName + " " + middleName + " " + lastName}</li>
+                <li>Email: ${email}</li>
+                <li>Whatsapp Number: ${whatsapp_no}</li>
+                <li>Specialization: ${specialization}</li>
+              </ul>
+            `,
+          });
           req.flash(
             "success",
             "You have registered to the website successfully, please login to continue"

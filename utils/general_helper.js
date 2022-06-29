@@ -7,6 +7,7 @@ import PDFMake from "pdfmake";
 import fs from "fs";
 import { errorRaiser } from "./error_raiser.js";
 import { ExamImages } from "../models/index.js";
+import { sequelize } from "./db.js";
 
 export const sortCourses = (courses) => {
   let coursesRanks = [];
@@ -319,4 +320,28 @@ export const imageDownloader = async (req, res, next) => {
       message: e.message,
     });
   }
+};
+
+export const userPerformedExams = async (userId) => {
+  const usersExamsData = await sequelize.query(
+    `
+    SELECT e.title, e.questions, reply.reply_id, reply.grade, reply."createdAt" FROM exams_replies reply
+        INNER Join exams e on reply.exam_id = e.exam_id
+        INNER JOIN users u on reply.user_id = u.user_id where reply.user_id = ?;
+    `,
+    {
+      replacements: [userId],
+      type: "SELECT",
+    }
+  );
+
+  for (let i of usersExamsData) {
+    i.questions = i.questions
+      .map((question) => {
+        if ("questionHeader" in question) return question;
+      })
+      .filter((q) => q);
+  }
+
+  return usersExamsData;
 };

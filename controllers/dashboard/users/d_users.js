@@ -4,6 +4,7 @@ import { errorRaiser } from "../../../utils/error_raiser.js";
 import { sequelize } from "../../../utils/db.js";
 import moment from "moment";
 import { Op } from "sequelize";
+import { userPerformedExams } from "../../../utils/general_helper.js";
 
 const getUsers = async (req, res, next) => {
   // const allUsers = await Users.findAll();
@@ -170,10 +171,26 @@ const getUpdateUser = async (req, res, next) => {
 
   const findingResult = await Users.findByPk(userId);
 
-  res.render("dashboard/users_forms", {
+  const currentRound = (
+    await sequelize.query(
+      `SELECT round_date FROM rounds WHERE ? LIKE ANY (rounds.users_ids)`,
+      {
+        type: "SELECT",
+        replacements: [findingResult.user_id],
+      }
+    )
+  )[0]?.round_date;
+
+  const performedExams = await userPerformedExams(userId);
+
+  findingResult.current_round = moment(currentRound).format("DD-MM-YYYY");
+
+  return res.render("dashboard/users_forms", {
     title: "Update User",
     path: "/dashboard/users",
     user: findingResult,
+    performedExams,
+    moment,
   });
 };
 
