@@ -247,8 +247,9 @@
           let url = `/dashboard/about/add-new-instructor`
 
           console.log(url)
+          console.log(this.editMode)
 
-          if (this.editMode === "true") {
+          if (this.editMode) {
             console.log(typeof this.editMode)
             url = `/dashboard/about/edit-instructor/${this.instructorId}`
           }

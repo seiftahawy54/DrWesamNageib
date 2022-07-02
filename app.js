@@ -45,7 +45,10 @@ const fileStorage = Multer.diskStorage({
     cb(null, "");
   },
   filename: (req, file, cb) => {
-    cb(null, crypto.randomBytes(10).toString("hex") + "-" + file.originalname);
+    const newFileName =
+      crypto.randomBytes(10).toString("hex") + "-" + file.originalname;
+    console.log(`new file image ====> `, newFileName);
+    cb(null, newFileName);
   },
 });
 

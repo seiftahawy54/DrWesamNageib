@@ -146,6 +146,8 @@ export const postUpdateInstructor = async (req, res, next) => {
       updatingObj.instructor_certificates = newInstructorCertificates;
     }
 
+    console.log(`updated instructor data ===> `, updatingObj);
+
     const updatingResult = await About.update(
       {
         ...updatingObj,
@@ -294,9 +296,7 @@ export const postAddNewInstructor = async (req, res, next) => {
       instructorCertificates.push(req.files[i].path);
     }
 
-    console.log(instructorName, instructorData, instructorCertificates);
     const errors = validationResult(req);
-    console.log(errors.array());
 
     if (!errors.isEmpty()) {
       return res.status(404).json({
