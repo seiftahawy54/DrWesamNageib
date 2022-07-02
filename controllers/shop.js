@@ -173,7 +173,7 @@ export const getAboutPage = async (req, res, next) => {
         // try {
         getSingleFile(ins.instructor_image)
           .then((res) => {
-            console.log(res);
+            console.log(`Instructor Image ==> `, res);
           })
           .catch((err) => {
             console.log(err);

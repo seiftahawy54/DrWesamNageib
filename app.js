@@ -117,7 +117,7 @@ const accessLogStream = fs.createWriteStream(path.resolve("access.log"), {
 
 // app.use(helmet());
 app.use(compression());
-app.use(morgan("combined", { stream: accessLogStream }));
+app.use(morgan("dev"));
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticatedAdmin;

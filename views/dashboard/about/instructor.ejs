@@ -246,7 +246,10 @@
 
           let url = `/dashboard/about/add-new-instructor`
 
-          if (this.editMode) {
+          console.log(url)
+
+          if (this.editMode === "true") {
+            console.log(typeof this.editMode)
             url = `/dashboard/about/edit-instructor/${this.instructorId}`
           }
 
@@ -273,7 +276,8 @@
               }
             })
             .catch((err) => {
-              this.serverError = "There's some error from the server!"
+              console.log(err)
+              this.serverError = `There's some error from the server! ${err.message}`
             })
         }
 

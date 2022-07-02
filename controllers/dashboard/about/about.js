@@ -294,7 +294,9 @@ export const postAddNewInstructor = async (req, res, next) => {
       instructorCertificates.push(req.files[i].path);
     }
 
+    console.log(instructorName, instructorData, instructorCertificates);
     const errors = validationResult(req);
+    console.log(errors.array());
 
     if (!errors.isEmpty()) {
       return res.status(404).json({
@@ -314,6 +316,7 @@ export const postAddNewInstructor = async (req, res, next) => {
       newInstructor: creatingNewInstructor,
     });
   } catch (e) {
+    console.log(e);
     await errorRaiser(e, next, "API");
   }
 };
