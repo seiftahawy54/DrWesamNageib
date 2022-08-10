@@ -26,15 +26,60 @@
     </div>
 
     <div class="col-12">
-      <div v-if="serverError.length > 0" class="alert alert-danger text-center fs-2">
-        {{ serverError }}
-      </div>
+      <%- include('../../includes/errorMessage.ejs') %>
 
-      <div v-if="serverSuccess.length > 0" class="alert alert-info text-center fs-2">
-        {{ serverSuccess }}
-      </div>
+      <form action="/dashboard/about/add-new-instructor" method="post" enctype="multipart/form-data">
+        <div class="form-floating my-3">
+          <input type="text" name="instructor_name" placeholder="Instructor Name"
+                 class="form-control my-3 " id="instructor_name" />
+          <label for="instructor_name">Instructor Name</label>
+        </div>
 
-      <form @submit.prevent="submitForm">
+        <div class="form-floating my-3">
+          <textarea name="instructor_data" class="form-control editor-<%- instructor.instructor_id %>"
+                    placeholder="Instructor Data"></textarea>
+        </div>
+
+        <div class="my-3">
+          <div class="input-group">
+            <label for="instructor_img" class="input-group-text">Instructor Personal Image</label>
+            <input type="file" name="instructor_img" placeholder="Instructor Image"
+                   class="form-control"
+                   id="instructor_img" />
+          </div>
+        </div>
+
+        <div class="my-3">
+          <div class="input-group">
+            <label for="instructor_certificates" class="input-group-text">Instructor Certificates</label>
+            <input type="file" name="instructor_certificates" placeholder="Instructor Certificates"
+                   class="form-control"
+                   multiple="true"
+                   id="instructor_certificates" />
+          </div>
+        </div>
+
+
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <input type="hidden" name="instructorId" value="<%= instructor.course_id %>">
+
+        <button class="btn" type="submit" id="submitButton">
+          <% if (editMode === true) { %>
+            <%= "Update instructor data" %>
+          <% } else { %>
+            <%= "Add new instructor" %>
+          <% } %>
+        </button>
+      </form>
+      <!--      <div v-if="serverError.length > 0" class="alert alert-danger text-center fs-2">
+              {{ serverError }}
+            </div>
+
+            <div v-if="serverSuccess.length > 0" class="alert alert-info text-center fs-2">
+              {{ serverSuccess }}
+            </div>-->
+
+      <!--<form @submit.prevent="submitForm">
         <div class="form-floating my-3">
           <input type="text" name="instructor_name" placeholder="Instructor Name"
                  class="form-control" v-model="instructor_name"
@@ -51,7 +96,7 @@
           <textarea name="instructor_data" class="form-control editor-<%- instructor.instructor_id %>"
                     placeholder="Instructor Data">
               </textarea>
-          <!--          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>-->
+          &lt;!&ndash;          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>&ndash;&gt;
 
           <div v-if="errors.find(e => e.name === 'instructor_data')">
             <span class="text-danger fs-6" v-text="errors[errors.findIndex(e => e.name === 'instructor_data')].message">
@@ -105,255 +150,14 @@
           <% } %>
         </button>
         <input type="hidden" value="<%= csrfToken %>" ref="csrfToken">
-      </form>
+      </form>-->
     </div>
 
   </div>
 </section>
 
-<script src="/js/axios.min.js"></script>
 
 <script>
-
-  let editor
-
-  const { createApp } = Vue
-
-  async function mounted() {
-    let editMode = `<%- editMode %>`
-    let instructorId = `<%- instructor.instructor_id %>`
-    this.editMode = editMode
-    this.instructorId = instructorId
-    if (editMode === "true") {
-      this.editMode = true
-      axios.get(`/dashboard/about/instructor-data/${instructorId}`)
-        .then(res => {
-          this.instructor_name = res.data.instructor.instructor_name
-          editor.setData(res.data.instructor.instructor_data)
-        })
-        .catch(err => {
-          this.serverError = "Something happened on server, please call admin!"
-        })
-    }
-  }
-
-  createApp({
-    data() {
-      return {
-        instructor_name: "",
-        instructor_data: "",
-        instructor_img: "",
-        instructor_certificates: [],
-        backend_img: "",
-        backend_certificates: [],
-        errors: [],
-        serverError: "",
-        serverSuccess: "",
-        editMode: null,
-        instructorId: null,
-      }
-    },
-    methods: {
-      submitForm() {
-        let validForm = true,
-          instructorNameValid = true,
-          instructorImgValid = true,
-          instructorDataValid = true,
-          instructorCertificatesValid = true
-
-        this.instructor_data = document.querySelector("div.ck-content").innerHTML
-
-        if (this.instructor_name.trim().length < 5) {
-          validForm = false
-          instructorNameValid = false
-
-          if (this.errors.findIndex((e) => e.name === "instructor_name") === -1) {
-            this.errors = [
-              ...this.errors,
-              {
-                name: "instructor_name",
-                message:
-                  "Please make sure that instructor name length greater than 5!",
-              },
-            ]
-          }
-        } else {
-          instructorNameValid = true
-        }
-
-        if (document.querySelector("div.ck-content *").textContent.length < 30) {
-          validForm = false
-          instructorDataValid = false
-
-          if (this.errors.findIndex((e) => e.name === "instructor_data") === -1) {
-            this.errors = [
-              ...this.errors,
-              {
-                name: "instructor_data",
-                message: "Please add at least 30 words of data for this instructor",
-              },
-            ]
-          }
-        } else {
-          instructorDataValid = true
-        }
-
-        if (this.instructor_img.length === 0 && !this.editMode) {
-          validForm = false
-          instructorImgValid = false
-          if (this.errors.findIndex((e) => e.name === "instructor_img") === -1) {
-            this.errors = [
-              ...this.errors,
-              {
-                name: "instructor_img",
-                message: "You've not selected any image!",
-              },
-            ]
-          }
-        } else {
-          instructorImgValid = true
-        }
-
-        if (this.instructor_certificates.length === 0 && !this.editMode) {
-          validForm = false
-          instructorCertificatesValid = false
-          if (
-            this.errors.findIndex((e) => e.name === "instructor_certificates") ===
-            -1
-          ) {
-            this.errors = [
-              ...this.errors,
-              {
-                name: "instructor_certificates",
-                message: "You've not selected any image!",
-              },
-            ]
-          }
-        } else {
-          instructorCertificatesValid = true
-        }
-
-        if (validForm) {
-          const formData = new FormData()
-          formData.append(`instructorImg`, this.backend_img)
-
-          this.backend_certificates.forEach((img) => {
-            formData.append("instructorCertificates", img)
-          })
-
-          formData.append("instructorName", this.instructor_name)
-          formData.append("instructorData", editor.getData())
-
-          let url = `/dashboard/about/add-new-instructor`
-
-          console.log(url)
-          console.log(this.editMode)
-
-          if (this.editMode) {
-            console.log(typeof this.editMode)
-            url = `/dashboard/about/edit-instructor/${this.instructorId}`
-          }
-
-          axios
-            .post(url, formData, {
-              headers: {
-                accept: "application/json",
-                "X-XSRF-TOKEN": this.$refs.csrfToken.value,
-              },
-            })
-            .then((res) => {
-              if (res.status === 201) {
-                this.serverSuccess = "Data added successfully!"
-                setTimeout(() => {
-                  window.location.href = "/dashboard/about"
-                }, 1500)
-              }
-
-              if (res.status === 204) {
-                this.serverSuccess = "Data updated successfully!"
-                setTimeout(() => {
-                  window.location.href = "/dashboard/about"
-                }, 1500)
-              }
-            })
-            .catch((err) => {
-              console.log(err)
-              this.serverError = `There's some error from the server! ${err.message}`
-            })
-        }
-
-        // remove errors
-        if (
-          instructorNameValid &&
-          instructorImgValid &&
-          instructorCertificatesValid
-        )
-          validForm = true
-
-        if (instructorNameValid) {
-          this.errors = this.errors.filter((e) => e.name !== "instructor_name")
-        }
-        if (instructorImgValid) {
-          this.errors = this.errors.filter((e) => e.name !== "instructor_img")
-        }
-        if (instructorCertificatesValid) {
-          this.errors = this.errors.filter(
-            (e) => e.name !== "instructor_certificates",
-          )
-        }
-        if (instructorDataValid) {
-          this.errors = this.errors.filter(
-            (e) => e.name !== "instructor_data",
-          )
-        }
-      },
-      addInstructorImg(e) {
-        let validImage = true
-        if (e.target.files[0].size >= 2 * 1024 * 1024) {
-          validImage = false
-          if (
-            this.errors.findIndex((err) => err.name === "instructor_img") === -1
-          ) {
-            this.errors = [
-              ...this.errors,
-              {
-                name: "instructor_img",
-                message: "Large image!, please select smaller image",
-              },
-            ]
-          }
-        } else {
-          this.backend_img = e.target.files[0]
-          this.instructor_img = e.target.files[0].name
-          validImage = true
-        }
-
-        if (validImage) {
-          this.errors = this.errors.filter((e) => e.name !== "instructor_img")
-        }
-      },
-      addInstructorCertificates(e) {
-        let certificatesNames = []
-        for (let i of e.target.files) {
-          certificatesNames.push(i.name)
-          this.backend_certificates = [...this.backend_certificates, i]
-        }
-        this.instructor_certificates = certificatesNames
-
-        if (
-          certificatesNames.length > 0 &&
-          this.errors.findIndex((err) => err.name === "instructor_certificates")
-        ) {
-          this.errors = this.errors.filter(
-            (e) => e.name !== "instructor_certificates",
-          )
-        }
-      },
-    },
-    mounted,
-  })
-    .mount("#app")
-
 
   let editorElement = document.querySelector(".editor-<%- instructor.instructor_id %>")
   ClassicEditor

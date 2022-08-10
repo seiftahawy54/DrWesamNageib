@@ -29,8 +29,8 @@ export default Router()
   .post(
     "/add-new-instructor",
     [
-      body("instructorName").trim().isString().isLength({ min: 5 }),
-      body("instructorData").trim().isString().isLength({ min: 5 }),
+      body("instructor_name").trim().isString().isLength({ min: 5 }),
+      body("instructor_data").trim().isString().isLength({ min: 5 }),
     ],
     postAddNewInstructor
   )
@@ -40,8 +40,8 @@ export default Router()
   .post(
     "/edit-instructor/:instructorId",
     [
-      body("instructorName").trim().isString().isLength({ min: 5 }),
-      body("instructorData").trim().isString().isLength({ min: 5 }),
+      body("instructor_name").trim().isString().isLength({ min: 5 }),
+      body("instructor_data").trim().isString().isLength({ min: 5 }),
     ],
     postUpdateInstructor
   )

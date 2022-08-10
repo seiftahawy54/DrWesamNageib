@@ -124,7 +124,7 @@ const addCourseToCart = async (req, res, next) => {
           "error",
           `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`
         );
-        res.redirect(`/courses/${courseId}`);
+        return res.redirect(`/courses/${courseId}`);
       } else {
         req.user.cart.push({ courseId: courseId, roundId: roundId });
 
@@ -139,7 +139,7 @@ const addCourseToCart = async (req, res, next) => {
             "success",
             `Item add successfully, proceed to <a href="/cart">checkout</a> or continue <a href="/courses">Shopping</a>?`
           );
-          res.redirect(`/courses/${courseId}`);
+          return res.redirect(`/courses/${courseId}`);
         } else {
           await errorRaiser(addingResult, next);
         }

@@ -287,37 +287,53 @@ export const postDeleteCertificate = async (req, res, next) => {
 
 export const postAddNewInstructor = async (req, res, next) => {
   try {
-    const instructorName = req.body.instructorName;
-    const instructorData = req.body.instructorData;
-    const instructorImg = req.files[0].path;
-    let instructorCertificates = [];
+    console.log(req.body, req.files);
+    const { instructor_name, instructor_data } = req.body;
+    const instructor_img = req.files[0].path;
+    let instructor_certificates = [];
+
+    console.log(`Instructor's image ===> `, instructor_img);
 
     for (let i = 1; i < req.files.length; i++) {
-      instructorCertificates.push(req.files[i].path);
+      instructor_certificates.push(req.files[i]);
     }
 
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(404).json({
-        message: errors.array()[0].msg,
+      console.log(errors.array());
+      req.flash("error", errors[0].msg);
+      return res.render("dashboard/about/instructor", {
+        title: "Add new instructor",
+        path: "/dashboard/about",
+        editMode: false,
+        instructor: {
+          instructor_data: {
+            instructor_name,
+            instructor_data,
+          },
+        },
       });
     }
 
     const creatingNewInstructor = await About.create({
-      instructor_name: instructorName,
-      instructor_data: instructorData,
-      instructor_image: instructorImg,
-      instructor_certificates: instructorCertificates,
+      instructor_name,
+      instructor_data,
+      instructor_image: instructor_img,
+      instructor_certificates,
     });
 
-    return res.status(201).json({
-      message: "Success",
-      newInstructor: creatingNewInstructor,
-    });
+    console.log(creatingNewInstructor);
+
+    return res.redirect("/dashboard/about");
+
+    // return res.status(201).json({
+    //   message: "Success",
+    //   newInstructor: creatingNewInstructor,
+    // });
   } catch (e) {
     console.log(e);
-    await errorRaiser(e, next, "API");
+    await errorRaiser(e, next);
   }
 };
 
@@ -336,7 +352,7 @@ export const postDeleteInstructor = async (req, res, next) => {
 
     return res.status(201).json({ message: "Success" });
   } catch (e) {
-    await errorRaiser(e, next, "API");
+    await errorRaiser(e, next);
   }
 };
 

@@ -32,6 +32,7 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
         console.log(s3Err);
         await errorRaiser(s3Err, next);
       } else {
+        console.log(`uploading ... ${filename}`);
         return true;
       }
     });

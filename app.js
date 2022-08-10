@@ -81,8 +81,8 @@ app.use(
     "certificate_img",
     "user_img",
     "exam_q_image",
-    "instructorImg",
-    "instructorCertificates"
+    "instructor_img",
+    "instructor_certificates"
   )
 );
 
