@@ -19,24 +19,32 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 export const uploadFile = (filepath, filename, mimetype, res, next) => {
-  return fs.readFile(filepath).then((uploadingBuffer) => {
-    const params = {
-      Bucket: process.env.BUCKET_NAME, // pass your bucket name
-      Key: filename, // file will be saved as testBucket/contacts.csv
-      contentType: multerS3.AUTO_CONTENT_TYPE,
-      contentDisposition: false,
-      Body: JSON.stringify(uploadingBuffer, null, 2),
-    };
-    s3.upload(params, async function (s3Err, data) {
-      if (s3Err) {
-        console.log(s3Err);
-        await errorRaiser(s3Err, next);
-      } else {
-        console.log(`uploading ... ${filename}`);
-        return true;
-      }
+  return fs
+    .readFile(filepath)
+    .then((uploadingBuffer) => {
+      const params = {
+        Bucket: process.env.BUCKET_NAME, // pass your bucket name
+        Key: filename, // file will be saved as testBucket/contacts.csv
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        contentDisposition: false,
+        Body: JSON.stringify(uploadingBuffer, null, 2),
+      };
+
+      const uploadingResult = s3.upload(params, function (s3Err, data) {
+        if (s3Err) {
+          console.log(`uploading error => `, s3Err);
+          errorRaiser(s3Err, next).then((res) => {
+            console.log(`aws error ==> `, s3Err);
+          });
+        } else {
+          console.log(`uploading ... ====>  ${filename}`);
+          return true;
+        }
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
 
 export const getSingleFile = async (filename) => {

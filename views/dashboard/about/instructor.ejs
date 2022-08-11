@@ -28,9 +28,13 @@
     <div class="col-12">
       <%- include('../../includes/errorMessage.ejs') %>
 
-      <form action="/dashboard/about/add-new-instructor" method="post" enctype="multipart/form-data">
+      <form
+        action="<% if (editMode === true) { %> <%= `/dashboard/about/edit-instructor/${instructor.instructor_id}` %> <% } else { %> <%= "/dashboard/about/add-new-instructor" %> <% } %>"
+        method="post" enctype="multipart/form-data">
         <div class="form-floating my-3">
           <input type="text" name="instructor_name" placeholder="Instructor Name"
+                 value="<% if (editMode === true) { %> <%= instructor.instructor_name %>
+            <% } %>"
                  class="form-control my-3 " id="instructor_name" />
           <label for="instructor_name">Instructor Name</label>
         </div>

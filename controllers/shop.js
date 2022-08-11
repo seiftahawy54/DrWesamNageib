@@ -166,23 +166,29 @@ export const getAboutPage = async (req, res, next) => {
       order: ["createdAt"],
     });
 
-    for (let ins of instructors) {
-      console.log(`instructor images ===> `, ins.instructor_image);
-      if (ins.instructor_image && ins.instructor_image.length > 0) {
-        // console.log(`instructor images ===> `, ins.instructor_image);
-        // try {
-        getSingleFile(ins.instructor_image)
-          .then((res) => {
-            console.log(`Instructor Image ==> `, res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        // } catch (e) {
-        //   console.error(e);
-        // }
+    if (process.env.NODE_ENV === "production")
+      for (let ins of instructors) {
+        console.log(`instructor images ===> `, ins.instructor_image);
+        if (ins.instructor_image && ins.instructor_image.length > 0) {
+          getSingleFile(ins.instructor_image)
+            .then((res) => {
+              console.log(`Instructor Image ==> `, res);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+
+        if (
+          ins.instructor_certificates &&
+          ins.instructor_certificates.length > 0
+        ) {
+          for (let img of ins.instructor_certificates) {
+            console.log(`instructor certificate ${img}`);
+            await getSingleFile(img);
+          }
+        }
       }
-    }
 
     return res.render("about/index", {
       title: "About Us",

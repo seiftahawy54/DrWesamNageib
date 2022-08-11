@@ -31,18 +31,44 @@
         </div>
       <% } %>
 
-      <% instructors.forEach(e => { %>
+      <% instructors.forEach(ins => { %>
         <div class="container">
           <div class="row">
-            <div class="col-3">
-              <img class="img-fluid" src="/downloaded_images/<%- e.instructor_img %>" alt="<%- e.instructor_name %>" />
+            <div class="col-lg-3 col-xs-12">
+              <img class="img-fluid" src="/downloaded_images/<%- ins.instructor_image %>"
+                   alt="<%- ins.instructor_name %>" />
             </div>
-            <div class="col">
-              <%= e.instructor_name %>
+            <div class="col-lg-9 col-xs-12">
+              <div class="custom-head fs-4">
+                <%= ins.instructor_name %>
+                <span></span>
+              </div>
+
+              <%- ins.instructor_data %>
+            </div>
+            <div class="col-12">
+              <div class="instructor-certificates">
+                <% ins.instructor_certificates.forEach((img, index) => { %>
+                  <!-- Slides -->
+                  <section class="img-container">
+                    <img src="/downloaded_images/<%- img %>"
+                         alt="certificate-<%= index + 1 %>" loading="lazy" />
+                  </section>
+                <% }) %>
+              </div>
             </div>
           </div>
+
+          <!--<div class="swiper main-slider">
+            <div class="swiper-wrapper">
+
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev d-none d-lg-block"></div>
+            <div class="swiper-button-next d-none d-lg-block"></div>
+          </div>
+-->
         </div>
-        <%- e.instructor_data %>
       <% }) %>
     </section>
   </div>
@@ -51,26 +77,14 @@
 <%- include("../includes/footer.ejs"); %>
 
 <script async type="module">
-  import Swiper from "https://unpkg.com/swiper@7/swiper-bundle.esm.browser.min.js"
+  import Swiper from "https://unpkg.com/swiper@8/swiper-bundle.esm.browser.min.js"
 
-  const aboutSwiper = new Swiper(".about-swiper", {
+  const aboutSwiper = new Swiper(".swiper", {
+    direction: "horizontal",
     loop: true,
-    autoplay: true,
-    // If we need pagination
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-    },
-    breakpoints: {
-      320: {
-        slidesPerView: 1,
-      },
-      992: {
-        slidesPerView: 2,
-      },
-      1200: {
-        slidesPerView: 3,
-      },
+    slidesPerView: 4,
+    scrollbar: {
+      el: ".swiper-scrollbar",
     },
   })
 </script>
