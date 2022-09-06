@@ -212,12 +212,20 @@ export const getUpdateRound = async (req, res, next) => {
     const roundId = req.params.roundId;
     const findingRound = await Rounds.findByPk(roundId);
     const findingRoundCourse = await Courses.findByPk(findingRound.course_id);
-    const allUsers = await sequelize.query(
+    let allUsers = await sequelize.query(
       `SELECT * FROM users WHERE finished_course is null and current_round is null`,
       {
         type: "SELECT",
       }
     );
+
+    allUsers = allUsers.map((user) => {
+      const name = `${user.name.split(" ")[0]} ${user.name.split(" ")[1]}`;
+      return {
+        ...user,
+        name,
+      };
+    });
 
     const roundCourse = (
       await sequelize.query(`SELECT * FROM courses WHERE course_id=?`, {
@@ -256,9 +264,17 @@ export const getUpdateRound = async (req, res, next) => {
     });
 
     findingRoundUsersArr = findingRoundUsersArr.filter((i) => i);
+    /*.map((user) => {
+      const name = `${user.name.split(" ")[0]} ${user.name.split(" ")[1]}`;
+      console.log(name, user.email);
+      return {
+        ...user,
+        name,
+      };
+    });*/
 
     res.render("dashboard/rounds/round_form", {
-      title: "Update Single Round",
+      title: `Update ${roundCourse.title} round`,
       path: "/dashboard/rounds",
       roundCourse: roundCourse,
       editMode: true,

@@ -94,7 +94,7 @@
                            id="user-<%- index %>"
                            name="user-<%- index %>" value="<%= user.user_id %>">
                     <label class="btn-outlined btn-outline-primary" for="user-<%- index %>">
-                      <%- user.name %>
+                      <%- user.name.split(" ")[0] + " " + user.name.split(" ")[1] %>
                       <%- user.email %>
                     </label>
                   <% }) %>
