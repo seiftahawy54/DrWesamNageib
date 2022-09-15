@@ -1,6 +1,6 @@
 <%- include("../includes/top_part.ejs"); %>
-<script src="/js/axios.min.js"></script>
 <link rel="stylesheet" href="/css/user/profile.css" />
+<script src="/js/axios.min.js"></script>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -72,12 +72,13 @@
               <div class="info">
                 Round files
               </div>
-              <div class="info" v-html="round">
+              <div class="info round-files" v-html="round">
               </div>
             </div>
 
+            <span v-if="examsData.userExams" class="performed-exams"></span>
 
-            <span v-if="examsData.userExams">
+            <span v-if="examsData.userExams" >
               Your Performed Exams:
             </span>
 
@@ -156,9 +157,8 @@
   </div>
 </section>
 
-<script src="/js/alpine.min.js"></script>
 
-<script async>
+<script async defer>
   const { createApp } = Vue
 
   async function mounted() {
@@ -167,8 +167,6 @@
     this.payments = (await axios.get("/user-payments")).data.payments
     this.round = (await axios.get("/user-round")).data.round
     this.certificate = (await axios.get("/user-certificates")).data.certificateData
-
-    console.log(this.certificate)
   }
 
   createApp({
