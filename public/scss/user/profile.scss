@@ -15,7 +15,6 @@
   .round-files {
     overflow: scroll;
     max-height: 300px;
-    height: 100px;
   }
 
   .user-content {
@@ -94,6 +93,10 @@
       font-size: vars.$sm_font_size - 4;
     }
 
+    .round-files {
+      height: 450px;
+    }
+    
     .user-img {
       display: flex;
       justify-content: center;

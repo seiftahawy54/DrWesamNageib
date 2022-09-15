@@ -15,7 +15,6 @@
 .profile .round-files {
   overflow: scroll;
   max-height: 300px;
-  height: 100px;
 }
 .profile .user-content {
   line-height: 50px;
@@ -71,6 +70,9 @@
   .profile .user-content {
     font-size: 12px;
   }
+  .profile .round-files {
+    height: 450px;
+  }
   .profile .user-img {
     display: flex;
     justify-content: center;
@@ -84,6 +86,9 @@
 @media (min-width: 576px) and (max-width: 991px) {
   .profile .user-content {
     font-size: 12px;
+  }
+  .profile .round-files {
+    height: 450px;
   }
   .profile .user-img {
     display: flex;
