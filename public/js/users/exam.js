@@ -83,3 +83,9 @@ submitBtn.addEventListener("click", async (e) => {
       });
   }
 });
+
+window.addEventListener("load", () => {
+  if (localStorage.getItem("grade")) {
+    window.location = "/profile";
+  }
+});
