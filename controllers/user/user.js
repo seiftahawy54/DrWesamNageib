@@ -343,6 +343,7 @@ export const postPerformExam = async (req, res, next) => {
 export const getExamPreview = async (req, res, next) => {
   try {
     const replyId = req.params.replyId;
+    // const userData = await Users.findByPk(req.userId);
 
     let replyData = await sequelize.query(
       `
@@ -393,6 +394,7 @@ export const getExamPreview = async (req, res, next) => {
         examData: {
           title: replyData.title,
         },
+        userData: req.user,
       });
     }
 

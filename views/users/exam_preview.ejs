@@ -1,6 +1,26 @@
 <%- include("../includes/top_part.ejs"); %>
 <link rel="stylesheet" href="/css/user/profile.css" />
 <link rel="stylesheet" href="/css/user/exam.css" />
+<style>
+    .user-data {
+        display: none;
+    }
+
+    @media print {
+        .user-data {
+            display: block;
+            position: absolute;
+            z-index: 9999;
+            top: 50px;
+            left: 0;
+            opacity: 0.5;
+        }
+
+        #download-report {
+            display: none;
+        }
+    }
+</style>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -12,6 +32,12 @@
       <h2 class="h1 text-center"><%- examData.title %></h2>
       <span class="mx-auto"></span>
     </div>
+    <!--<div class="offset-lg-3 col-lg-6 col-xs-12">
+      <button class="btn" id="download-report">
+        Download your report
+      </button>
+      <span class="user-data text-center"><%= userData.name %> - <%= userData.user_id %></span>
+    </div>-->
     <div class="row">
       <div class="offset-lg-3 col-lg-6 col-xs-12">
         <div class="question-container" id="questionsContainer">
@@ -50,6 +76,12 @@
     </div>
   </div>
 </section>
+
+<script>
+  document.getElementById("download-report").addEventListener("click", () => {
+    window.print()
+  })
+</script>
 
 <%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>

@@ -26,10 +26,8 @@ export const getAllReplies = async (req, res, next) => {
 
         // createdAt = moment(createdAt).format("DD/MM/YYYY-hh:mm:ss");
         let previewLink = `<a href="/dashboard/exams-replies/${exam_id}">${title}</a>`;
-
         return {
           title,
-
           previewLink,
         };
       })
@@ -58,8 +56,8 @@ export const getAllReplies = async (req, res, next) => {
       title: "Exams",
       path: "/dashboard/exams-replies",
       tableName: "Exams-Replies",
-      addingNewLink: "exams_replies",
-      singleTableName: "exams_replies",
+      addingNewLink: "exam_replies",
+      singleTableName: "exam-replies",
       tableHead: [
         {
           title: "#",
@@ -82,6 +80,7 @@ export const getAllReplies = async (req, res, next) => {
       customStuff: {
         notHaveUpdate: true,
         notHaveNewInsert: true,
+        repliesDeletion: true,
       },
     });
   } catch (e) {
@@ -110,10 +109,10 @@ export const getRepliesForExam = async (req, res, next) => {
 
     let data = await Promise.all(
       allExamsReplies.map(
-        async ({ reply_id, name, grade, createdAt }, index) => {
+        async ({ reply_id, name, grade, createdat }, index) => {
           allPrimaryKeys.push(reply_id);
 
-          let replyDate = moment(createdAt).format("MMM DD h:mm A");
+          const replyDate = moment(createdat).format("MMM DD h:mm A");
           let previewLink = `<a href="/exams/preview/${reply_id}">${name} reply</a>`;
 
           return {
@@ -183,6 +182,32 @@ export const getRepliesForExam = async (req, res, next) => {
         notHaveNewInsert: true,
       },
     });
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+};
+
+export const postDeleteExamReplies = async (req, res, next) => {
+  try {
+    const examId = req.body.examId;
+    const allReplies = await ExamsReplies.findAll({
+      exam_id: examId,
+    });
+
+    // const findingReply = await ExamsReplies.findByPk(replyId);
+    // const deletingResult = await allReplies.destroy();
+    for (const allRepliesKey in allReplies) {
+      console.log(await allReplies[allRepliesKey].destroy());
+    }
+
+    // if (deletingResult) {
+    req.flash("success", "Replies for this exam deleted Successfully");
+    return res.redirect(`/dashboard/exams-replies/`);
+    // }
+    /*
+        req.flash("error", "Something happened");
+        return res.redirect("/dashboard/exams-replies");
+    */
   } catch (e) {
     await errorRaiser(e, next);
   }

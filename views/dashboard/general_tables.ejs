@@ -140,6 +140,18 @@
                     </td>
                   <% } %>
                   <% if ("notDeleteRow" in customStuff) { %>
+                  <% } else if ("repliesDeletion" in customStuff) { %>
+                    <td class="<%= tableName.toLowerCase() %>-delete">
+                      <form
+                        id="deleteRowForm"
+                        action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= singleTableName.toLowerCase() %>"
+                        method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey %>">
+                        <button type="submit" class="btn btn-danger" id="deleteRowButton">
+                          Delete <%= tableName %></button>
+                      </form>
+                    </td>
                   <% } else { %>
                     <td class="<%= tableName.toLowerCase() %>-delete">
                       <form
