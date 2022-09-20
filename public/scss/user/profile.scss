@@ -1,6 +1,25 @@
 @use "../utils/variables" as vars;
 @use "../utils/mediaFns" as mediaQ;
 
+.user-img {
+  position: relative;
+  //display: flex;
+  //justify-content: flex-end;
+  //align-items: center;
+
+  img {
+    max-width: 25vw;
+    object-fit: contain;
+    border-radius: 5px;
+    margin-block-end: 5px;
+    box-shadow: 4px 4px 10px rgba(vars.$main_color, 0.4);
+  }
+}
+
+tr {
+  padding-block: 20px !important;
+}
+
 .profile {
   min-height: calc(100vh - 160px - 161px);
 
@@ -30,21 +49,6 @@
   .exams-previews {
     display: grid;
     grid-template-columns: 1fr 1fr;
-  }
-
-  .user-img {
-    position: relative;
-    //display: flex;
-    //justify-content: flex-end;
-    //align-items: center;
-
-    img {
-      max-width: 100%;
-      object-fit: contain;
-      border-radius: 5px;
-      margin-block-end: 5px;
-      box-shadow: 4px 4px 10px rgba(vars.$main_color, 0.4);
-    }
   }
 
   form {
@@ -96,7 +100,7 @@
     .round-files {
       height: 450px;
     }
-    
+
     .user-img {
       display: flex;
       justify-content: center;

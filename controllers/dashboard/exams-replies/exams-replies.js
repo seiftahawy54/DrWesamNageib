@@ -189,16 +189,31 @@ export const getRepliesForExam = async (req, res, next) => {
 
 export const postDeleteExamReplies = async (req, res, next) => {
   try {
-    const examId = req.body.examId;
+    const examId = req.body.replyId;
     const allReplies = await ExamsReplies.findAll({
-      exam_id: examId,
+      where: {
+        exam_id: examId,
+      },
     });
+
+    if (!examId) {
+      return res.json({
+        message: "Exam id not found",
+      });
+    }
 
     // const findingReply = await ExamsReplies.findByPk(replyId);
     // const deletingResult = await allReplies.destroy();
     for (const allRepliesKey in allReplies) {
-      console.log(await allReplies[allRepliesKey].destroy());
+      await allReplies[allRepliesKey].destroy();
     }
+
+    // console.log(allReplies);
+
+    /*return res.json({
+      examId,
+      allReplies,
+    });*/
 
     // if (deletingResult) {
     req.flash("success", "Replies for this exam deleted Successfully");

@@ -1,3 +1,18 @@
+.user-img {
+  position: relative;
+}
+.user-img img {
+  max-width: 25vw;
+  object-fit: contain;
+  border-radius: 5px;
+  margin-block-end: 5px;
+  box-shadow: 4px 4px 10px rgba(84, 94, 227, 0.4);
+}
+
+tr {
+  padding-block: 20px !important;
+}
+
 .profile {
   min-height: calc(100vh - 160px - 161px);
   /*
@@ -27,16 +42,6 @@
 .profile .exams-previews {
   display: grid;
   grid-template-columns: 1fr 1fr;
-}
-.profile .user-img {
-  position: relative;
-}
-.profile .user-img img {
-  max-width: 100%;
-  object-fit: contain;
-  border-radius: 5px;
-  margin-block-end: 5px;
-  box-shadow: 4px 4px 10px rgba(84, 94, 227, 0.4);
 }
 .profile form {
   display: flex;

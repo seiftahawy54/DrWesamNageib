@@ -470,20 +470,22 @@ export const getBoughtCourses = async (req, res, next) => {
 
 export const getUserRound = async (req, res, next) => {
   try {
-    const roundData = await sequelize.query(
+    let roundData = await sequelize.query(
       `select * from rounds where ? LIKE ANY (rounds.users_ids)`,
       { replacements: [req.user.user_id], type: "SELECT" }
     );
 
-    console.log(roundData);
+    // const noRoundsResult =
+
+    console.log(req.user.name, "===>", roundData);
 
     if (roundData.length === 0 || !"round_link" in roundData[0]) {
       return res
         .status(200)
-        .json({ message: "You are not on any rounds", round: null });
+        .json({ message: "You are not on any rounds", rounds: null });
     }
 
-    if (roundData[0].finished) {
+    /*if (roundData[0].finished) {
       return res
         .status(200)
         .json({ message: "Round is finished", round: null });
@@ -491,9 +493,29 @@ export const getUserRound = async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ message: "Round found", round: roundData[0].round_link });
+      .json({ message: "Round found", round: roundData[0].round_link });*/
+
+    roundData = roundData.filter((round) => !round.finished);
+
+    if (roundData.length === 0) {
+      return res
+        .status(200)
+        .json({ message: "You are not on any rounds", rounds: null });
+    }
+
+    roundData = roundData.map((round) => {
+      return {
+        ...round,
+        round_date: moment(round.round_date).format("MMM DD"),
+      };
+    });
+
+    return res.status(200).json({
+      message: "Round found",
+      rounds: roundData,
+    });
   } catch (e) {
-    await errorRaiser(e, next);
+    await errorRaiser(e, next, "API");
   }
 };
 

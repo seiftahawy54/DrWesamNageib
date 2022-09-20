@@ -7,13 +7,31 @@
     }
 
     @media print {
+        .question {
+            background-color: transparent;
+        }
+
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        nav {
+            display: none !important;
+        }
+
+        footer {
+            display: none;
+        }
+
         .user-data {
             display: block;
-            position: absolute;
             z-index: 9999;
-            top: 50px;
-            left: 0;
-            opacity: 0.5;
+        }
+
+        .user-data-question {
+            opacity: 0.05;
+            left: 20px;
         }
 
         #download-report {
@@ -32,12 +50,11 @@
       <h2 class="h1 text-center"><%- examData.title %></h2>
       <span class="mx-auto"></span>
     </div>
-    <!--<div class="offset-lg-3 col-lg-6 col-xs-12">
-      <button class="btn" id="download-report">
+    <div class="offset-lg-3 col-lg-6 col-xs-12">
+      <button class="my-5 btn" id="download-report">
         Download your report
       </button>
-      <span class="user-data text-center"><%= userData.name %> - <%= userData.user_id %></span>
-    </div>-->
+    </div>
     <div class="row">
       <div class="offset-lg-3 col-lg-6 col-xs-12">
         <div class="question-container" id="questionsContainer">
@@ -48,6 +65,7 @@
                   <h4>Q<sub><%= j + 1 %></sub> - <%= questions[i].questionHeader %></h4>
                   <span></span>
                 </div>
+                <span class="user-data text-center"><%= userData?.name %> - <%= userData?.user_id %></span>
                 <div class="answers-container">
                   <% questions[i].answers.forEach((answer, answerIndex)=> { %>
                     <div class="form-check my-3">
@@ -57,8 +75,10 @@
                         <%- answerIndex === performingData[i].correctAnswer - 1 ? `checked` : "" %>
                         id="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>"
                         name="answer-<%- j %>">
-                      <label class="form-check-label w-100"
+                      <label class="form-check-label w-100 position-relative"
                              for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
+                        <span
+                          class="user-data text-center position-absolute user-data-question"><%= userData?.name %> - <%= userData?.user_id %></span>
                         <%- answer %>
                         <% if ( performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ) { %>
                           <i>(Your answer)</i>
