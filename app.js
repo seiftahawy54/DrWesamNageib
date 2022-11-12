@@ -6,7 +6,6 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import helmet from "helmet";
-import morgan from "morgan";
 import fs from "fs";
 import expressSession from "express-session";
 import SessionStore from "connect-session-sequelize";
@@ -120,7 +119,6 @@ const accessLogStream = fs.createWriteStream(path.resolve("access.log"), {
 
 // app.use(helmet());
 app.use(compression());
-app.use(morgan("dev"));
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticatedAdmin;

@@ -24,6 +24,7 @@ import {
 import { sequelize } from "../utils/db.js";
 import { QueryTypes } from "sequelize";
 import { getSingleFile } from "../utils/aws.js";
+import messages from "../i18n/messages.js";
 
 export const getAllOpinions = async (req, res, next) => {
   try {
@@ -202,24 +203,11 @@ export const getAboutPage = async (req, res, next) => {
 };
 
 export const getContactPage = (req, res, next) => {
-  let message = req.flash("error")[0];
-  if (!(typeof message === "string")) {
-    message = null;
-  }
-
-  let sent;
-
-  if (req.session.sentMessage) {
-    sent = req.session.sentMessage;
-  } else {
-    sent = false;
-  }
-
-  res.render("contactus/index", {
+  return res.render("contactus/index", {
     title: "Contact Us",
     path: "/contact",
-    errorMessage: message,
-    messageSent: sent,
+    errorMessage: null,
+    successMessage: null,
   });
 };
 
@@ -228,25 +216,21 @@ export const postContactPage = async (req, res, next) => {
   const senderEmail = req.body.contact_email;
   const senderContent = req.body.contact_content;
 
-  console.log(senderName, senderEmail, senderContent);
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    req.session.sentMessage = false;
+    console.log(messages);
     return res.render("contactus/index", {
       title: "Contact Us",
       path: "/contact",
-      errorMessage: "Please enter valid data!",
-      messageSent: false,
+      errorMessage: messages.en.validationErrors.invalidInput(errors.array()[0].param),
+      successMessage: null,
     });
   } else {
-    req.session.sentMessage = true;
     const sendingResult = await Messages.create({
       sendername: senderName,
       senderemail: senderEmail,
       message: senderContent,
     });
-    console.log(sendingResult);
     if (sendingResult._options.isNewRecord) {
       req.flash("success", "Your message have been sent successfully");
       return res.redirect("/contact");
@@ -256,7 +240,7 @@ export const postContactPage = async (req, res, next) => {
         path: "/contact",
         errorMessage:
           "Some error happened in our end! please contact us on the phone number!",
-        messageSent: false,
+        successMessage: null,
       });
     }
   }
