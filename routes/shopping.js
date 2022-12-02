@@ -9,6 +9,8 @@ import {
   getOpinionsForm,
   postDeleteFromCart,
   getAllOpinions,
+  getHomepageApi,
+  getAboutPageDataApi,
 } from "../controllers/shop.js";
 import express from "express";
 import { body } from "express-validator";
@@ -16,10 +18,12 @@ import { isAuthenticated } from "../middlewares/dashboard-auth.js";
 
 const router = express.Router();
 
+// EJS shopping routes
 router
   .get("/", getHomePage)
   .get("/all-opinions", getAllOpinions)
   .get("/aboutus", getAboutPage)
+  .get('/api/aboutus', getAboutPageDataApi)
   .get("/download_cv", downloadCV)
   .get("/contact", getContactPage)
   .get("/cart", getShoppingCart)
@@ -55,6 +59,7 @@ router
     ],
     postOpinions
   )
-  .post("/delete_from_cart", postDeleteFromCart);
+  .post("/delete_from_cart", postDeleteFromCart)
+  .get("/api/home", getHomepageApi);
 
 export { router as shoppingRoutes };

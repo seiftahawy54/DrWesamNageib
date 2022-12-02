@@ -35,12 +35,15 @@ export const getAllOpinions = async (req, res, next) => {
   }
 };
 
+// TODO: Remove in new implementation
 export const getHomePage = async (req, res, next) => {
   try {
     const getCoursesResult = await Courses.findAll();
-    const getAllOpinionsResult = await Opinions.findAll();
+    let getAllOpinionsResult = await Opinions.findAll();
 
-    let sortedCourses = sortCourses(getCoursesResult);
+    let sortedCourses = sortCourses(getCoursesResult).sort(
+      (a, b) => a.sort - b.sort
+    );
 
     await downloadingCoursesImages(getCoursesResult);
 
@@ -56,6 +59,26 @@ export const getHomePage = async (req, res, next) => {
     });
   } catch (e) {
     await errorRaiser(e, next);
+  }
+};
+
+export const getHomepageApi = async (req, res) => {
+  try {
+    const getCoursesResult = await Courses.findAll();
+    const getAllOpinionsResult = await Opinions.findAll();
+    let sortedCourses = sortCourses(getCoursesResult).sort(
+      (a, b) => a.sort - b.sort
+    );
+    await downloadingCoursesImages(getCoursesResult);
+    let files = await fs.readdir(path.resolve("public/imgs/imgs/opinions"));
+
+    return res.json({
+      courses: sortedCourses,
+      opinions: getAllOpinionsResult,
+      whatsapp_opinions: files,
+    });
+  } catch (e) {
+    await errorRaiser(e, next, "API");
   }
 };
 
@@ -151,6 +174,56 @@ export const postDeleteFromCart = async (req, res, next) => {
   res.redirect("/cart");
 };
 
+export const getAboutPageDataApi = async (req, res, next) => {
+  try {
+    const paragraphs = await About.findAll({
+      where: {
+        instructor_name: null,
+      },
+      order: ["createdAt"],
+    });
+
+    const instructors = await About.findAll({
+      where: {
+        about_us_paragraph: null,
+      },
+      order: ["createdAt"],
+    });
+
+    if (process.env.NODE_ENV === "production")
+      for (let ins of instructors) {
+        console.log(`instructor images ===> `, ins.instructor_image);
+        if (ins.instructor_image && ins.instructor_image.length > 0) {
+          getSingleFile(ins.instructor_image)
+            .then((res) => {
+              console.log(`Instructor Image ==> `, res);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+
+        if (
+          ins.instructor_certificates &&
+          ins.instructor_certificates.length > 0
+        ) {
+          for (let img of ins.instructor_certificates) {
+            console.log(`instructor certificate ${img}`);
+            await getSingleFile(img);
+          }
+        }
+      }
+    
+    return res.json({
+      paragraphs,
+      instructors,
+    })
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
+}
+
+// TODO: REMOVE IN NEW IMPLEMENTATION
 export const getAboutPage = async (req, res, next) => {
   try {
     const paragraphs = await About.findAll({
@@ -222,7 +295,9 @@ export const postContactPage = async (req, res, next) => {
     return res.render("contactus/index", {
       title: "Contact Us",
       path: "/contact",
-      errorMessage: messages.en.validationErrors.invalidInput(errors.array()[0].param),
+      errorMessage: messages.en.validationErrors.invalidInput(
+        errors.array()[0].param
+      ),
       successMessage: null,
     });
   } else {

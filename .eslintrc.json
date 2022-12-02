@@ -1,0 +1,77 @@
+{
+    "env": {
+        "commonjs": false,
+        "es6": true,
+        "node": true,
+        "jest": true
+    },
+    "extends": [
+        "airbnb-base"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "globalReturn": false
+        },
+        "sourceType": "module",
+        "allowImportExportEverywhere": true,
+        "requireConfigFile": false
+    },
+    "plugins": [
+        "import"
+    ],
+    "rules": {
+        "eqeqeq": 1,
+        "global-require": 0,
+        "import/no-named-as-default": 0,
+        "import/no-named-as-default-member": 0,
+        "import/extensions": [
+            2,
+            "ignorePackages"
+        ],
+        "import/no-commonjs": 2,
+        "import/no-unresolved": 2,
+        "import/prefer-default-export": "warn",
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "linebreak-style": "off",
+        "max-len": 0,
+        "no-multi-str": 0,
+        "no-await-in-loop": 0,
+        "no-continue": "warn",
+        "no-underscore-dangle": [
+            "error",
+            {
+                "allowAfterThis": true,
+                "allow": [
+                    "_id",
+                    "_source",
+                    "_userId",
+                    "_doc"
+                ]
+            }
+        ],
+        "no-unused-vars": [
+            "error",
+            {
+                "args": "all",
+                "argsIgnorePattern": "req|res|next"
+            }
+        ],
+        "valid-typeof" : [
+            "error", 
+            { 
+                "requireStringLiterals": false
+            }
+        ]	
+    }
+}
