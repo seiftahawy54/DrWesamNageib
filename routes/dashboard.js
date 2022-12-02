@@ -67,7 +67,7 @@ router
     ],
     postAddNewDiscount
   )
-  .get("/discount/edit-discount/:discountId", getUpdateDiscount)
+  .get("/discounts/edit-discount/:discountId", getUpdateDiscount)
   .post(
     "/discounts/edit-discount",
     [
