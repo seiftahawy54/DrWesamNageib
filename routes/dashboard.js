@@ -76,6 +76,6 @@ router
     ],
     postUpdateDiscount
   )
-  .post("/discount/delete-discount", postDeleteDiscount);
+  .post("/discounts/delete-discounts", postDeleteDiscount);
 
 export { router as dashboardRoutes };
