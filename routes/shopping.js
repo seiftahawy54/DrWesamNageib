@@ -29,7 +29,7 @@ router
       body("contact_name").isString().notEmpty(),
       body("contact_email").isEmail().notEmpty(),
       body("contact_content").isString().isLength({
-        min: 80,
+        min: 10,
       }),
     ],
     postContactPage

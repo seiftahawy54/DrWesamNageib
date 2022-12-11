@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon app.js $PORT",
-    "inspect": "nodemon --inspect app.js $PORT",
+    "debug": "nodemon --inspect app.js $PORT",
     "web": "node app.js",
     "sass": "sass --watch ./public/scss/:./public/css/",
     "test": "vitest --run --reporter verbose",
