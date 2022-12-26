@@ -171,7 +171,7 @@
             </table>
           </div>
           <% if ("pagination" in customStuff) { %>
-            <%- include('../includes/pagination.ejs', { numberOfLinks: customStuff.pagination.numberOfLinks, activePage: customStuff.pagination.activePage }); %>
+            <%- include('../includes/pagination.ejs', { paginationOptions: customStuff.pagination }); %>
           <% } %>
         </div>
       </div>
