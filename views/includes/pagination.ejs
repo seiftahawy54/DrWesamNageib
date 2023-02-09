@@ -20,6 +20,15 @@
         </a>
       </li>
 
+      <% if (paginationOptions.activePage - 1 < 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="<%= path %>/?page=<%= paginationOptions.activePage - 1 %>">
+            <%= paginationOptions.activePage - 1 %>
+          </a>
+        </li>
+      <% } %>
+
+
       <% if (
         paginationOptions.activePage > paginationOptions.firstPage &&
         paginationOptions.activePage < paginationOptions.lastPage) { %>
@@ -28,6 +37,14 @@
              href="<%= path %>/?page=<%= paginationOptions.activePage %>"
           >
             <%= paginationOptions.activePage %>
+          </a>
+        </li>
+      <% } %>
+
+      <% if (paginationOptions.activePage + 1 < paginationOptions.numberOfLinks) { %>
+        <li class="page-item">
+          <a class="page-link" href="<%= path %>/?page=<%= 1 + paginationOptions.activePage %>">
+            <%= 1 + paginationOptions.activePage %>
           </a>
         </li>
       <% } %>
