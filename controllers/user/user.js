@@ -357,7 +357,7 @@ export const getExamPreview = async (req, res, next) => {
       }
     );
 
-    replyData = replyData.at(0);
+    replyData = Array.isArray(replyData) ? replyData[0] : false;
 
     if (replyData) {
       // Filter questions from images

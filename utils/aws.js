@@ -60,7 +60,8 @@ export const getSingleFile = async (filename) => {
       const filePath = path.resolve("downloaded_images", filename);
       const isAlreadyDownloaded = fs2.existsSync(filePath);
       if (isAlreadyDownloaded) {
-        return reject("file exists");
+        resolve(true);
+        return true;
       }
 
       try {

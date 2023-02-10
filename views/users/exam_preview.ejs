@@ -7,35 +7,8 @@
     }
 
     @media print {
-        .question {
-            background-color: transparent;
-        }
-
-        * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        nav {
+        .question-container {
             display: none !important;
-        }
-
-        footer {
-            display: none;
-        }
-
-        .user-data {
-            display: block;
-            z-index: 9999;
-        }
-
-        .user-data-question {
-            opacity: 0.05;
-            left: 20px;
-        }
-
-        #download-report {
-            display: none;
         }
     }
 </style>
@@ -49,11 +22,6 @@
     <div class="custom-head">
       <h2 class="h1 text-center"><%- examData.title %></h2>
       <span class="mx-auto"></span>
-    </div>
-    <div class="offset-lg-3 col-lg-6 col-xs-12">
-      <button class="my-5 btn" id="download-report">
-        Download your report
-      </button>
     </div>
     <div class="row">
       <div class="offset-lg-3 col-lg-6 col-xs-12">
