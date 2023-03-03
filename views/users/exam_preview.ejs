@@ -4,6 +4,7 @@
 <style>
     .user-data {
         display: none;
+        user-select: none;
     }
 
     @media print {
@@ -29,33 +30,39 @@
           <form id="exam-form">
             <% for (let i = 0, j = 0; i < performingData.length; i++)  { %>
               <div class="question">
-                <div class="custom-head">
-                  <h4>Q<sub><%= j + 1 %></sub> - <%= questions[i].questionHeader %></h4>
-                  <span></span>
-                </div>
-                <span class="user-data text-center"><%= userData?.name %> - <%= userData?.user_id %></span>
-                <div class="answers-container">
-                  <% questions[i].answers.forEach((answer, answerIndex)=> { %>
-                    <div class="form-check my-3">
-                      <input
-                        class="form-check-input <%- answerIndex === performingData[i].correctAnswer - 1 ? "is-valid" : "" %> <%- performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ? "is-invalid" : "" %>"
-                        type="radio" readonly
-                        <%- answerIndex === performingData[i].correctAnswer - 1 ? `checked` : "" %>
-                        id="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>"
-                        name="answer-<%- j %>">
-                      <label class="form-check-label w-100 position-relative"
-                             for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
+                <% if ("correctAnswer" in performingData[i]) { %>
+                  <div class="custom-head">
+                    <h4>Q<sub><%= j + 1 %></sub> - <%= questions[i].questionHeader %></h4>
+                    <span></span>
+                  </div>
+                  <span class="user-data text-center"><%= userData?.name %> - <%= userData?.user_id %></span>
+                  <div class="answers-container">
+                    <% questions[i].answers.forEach((answer, answerIndex)=> { %>
+                      <div class="form-check my-3">
+                        <input
+                          class="form-check-input <%- answerIndex === performingData[i].correctAnswer - 1 ? "is-valid" : "" %> <%- performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ? "is-invalid" : "" %>"
+                          type="radio" readonly
+                          <%- answerIndex === performingData[i].correctAnswer - 1 ? `checked` : "" %>
+                          id="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>"
+                          name="answer-<%- j %>">
+                        <label class="form-check-label w-100 position-relative"
+                               for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
                         <span
                           class="user-data text-center position-absolute user-data-question"><%= userData?.name %> - <%= userData?.user_id %></span>
-                        <%- answer %>
-                        <% if ( performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ) { %>
-                          <i>(Your answer)</i>
-                        <% } %>
-                      </label>
-                    </div>
-                  <% }) %>
-                  <% j += 1 %>
-                </div>
+                          <%- answer %>
+                          <% if ( performingData[i].correctAnswer !== performingData[i].userAnswer && answerIndex === performingData[i].userAnswer - 1 ) { %>
+                            <i>(Your answer)</i>
+                          <% } %>
+                        </label>
+                      </div>
+                    <% }) %>
+                    <% j += 1 %>
+                  </div>
+                <% } else { %>
+                  <img src="/downloaded_images/<%- performingData[i].questionImage %>"
+                       alt="<%= performingData[i].questionImage.split("-")[1] %>" class="img-fluid rounded-3"
+                       loading="lazy" />
+                <% } %>
               </div>
             <% } %>
           </form>

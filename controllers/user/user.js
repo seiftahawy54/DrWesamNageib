@@ -348,8 +348,8 @@ export const getExamPreview = async (req, res, next) => {
     let replyData = await sequelize.query(
       `
       SELECT e.title, e.questions, reply.reply_id, u.name as user_name, reply.grade, reply.user_answers FROM exams_replies reply
-        INNER Join exams e on reply.exam_id = e.exam_id
-        INNER JOIN users u on reply.user_id = u.user_id where reply.reply_id = ?;
+        INNER JOIN exams e ON reply.exam_id = e.exam_id
+        INNER JOIN users u ON reply.user_id = u.user_id where reply.reply_id = ?;
     `,
       {
         replacements: [replyId],
@@ -361,9 +361,9 @@ export const getExamPreview = async (req, res, next) => {
 
     if (replyData) {
       // Filter questions from images
-      replyData.questions = replyData.questions.filter(
-        (q) => "questionHeader" in q
-      );
+      // replyData.questions = replyData.questions.filter(
+      //   (q) => "questionHeader" in q
+      // );
 
       // let questionsWithoutImages = examData.questions
       //   .map((question) => {
@@ -374,16 +374,30 @@ export const getExamPreview = async (req, res, next) => {
       //   .filter((question) => question !== undefined);
 
       let questionsWithUserAnswers = [];
+      let imgsCounter = 0;
+      let answersCounter = 0;
 
-      for (
-        let question = 0;
-        question < replyData.questions.length;
-        question++
-      ) {
-        questionsWithUserAnswers.push({
-          userAnswer: replyData.user_answers[question][`${question + 1}`],
-          correctAnswer: parseInt(replyData.questions[question].correctAnswer),
-        });
+      const newUserAnswerArr = replyData.questions.map((question, index) => {
+        if ("questionHeader" in question) {
+          return replyData.user_answers[answersCounter++];
+        } else {
+          return question;
+        }
+      });
+
+      for (let question = 0; question < newUserAnswerArr.length; question++) {
+        if (!("examImage" in newUserAnswerArr[question])) {
+          questionsWithUserAnswers.push({
+            userAnswer: Object.values(newUserAnswerArr[question])[0],
+            correctAnswer: parseInt(
+              replyData.questions[question].correctAnswer
+            ),
+          });
+        } else {
+          questionsWithUserAnswers.push({
+            questionImage: Object.values(newUserAnswerArr[question])[0],
+          });
+        }
       }
 
       return res.render("users/exam_preview", {

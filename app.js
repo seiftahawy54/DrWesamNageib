@@ -15,6 +15,7 @@ import flash from "connect-flash";
 import Multer from "multer";
 import { Sequelize } from "sequelize";
 import crypto from "crypto";
+import logger from "express-log-psql";
 
 // MY MODULES IMPORTS
 import { sequelize } from "./utils/db.js";
@@ -35,6 +36,7 @@ import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
 import { getExamPreview } from "./controllers/user/user.js";
 import cors from "cors";
+import morgan from "morgan";
 
 dotenv.config();
 const app = express();
@@ -113,12 +115,15 @@ const csrfProtection = csrf();
 app.use(csrfProtection);
 app.use(flash());
 
-const accessLogStream = fs.createWriteStream(path.resolve("access.log"), {
-  flags: "a",
-});
-
 // app.use(helmet());
 app.use(compression());
+app.use(morgan("dev"));
+app.use(
+  logger("tiny", {
+    url: process.env.DATABASE_URL,
+    table: "logs",
+  })
+);
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticatedAdmin;

@@ -362,7 +362,7 @@ export const postRegister = async (req, res, next) => {
       lastName = lastName[0].toUpperCase() + lastName.slice(1);
       Users.create({
         name: firstName + " " + middleName + " " + lastName,
-        email: email,
+        email: email.toLowerCase(),
         whatsapp_no: whatsapp_no,
         specialization: specialization,
         password: await encryptionResult,
