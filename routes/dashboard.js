@@ -67,7 +67,7 @@ router
     ],
     postAddNewDiscount
   )
-  .get("/discount/edit-discount/:discountId", getUpdateDiscount)
+  .get("/discounts/edit-discount/:discountId", getUpdateDiscount)
   .post(
     "/discounts/edit-discount",
     [
@@ -76,6 +76,6 @@ router
     ],
     postUpdateDiscount
   )
-  .post("/discount/delete-discount", postDeleteDiscount);
+  .post("/discounts/delete-discounts", postDeleteDiscount);
 
 export { router as dashboardRoutes };

@@ -362,7 +362,7 @@ export const postRegister = async (req, res, next) => {
       lastName = lastName[0].toUpperCase() + lastName.slice(1);
       Users.create({
         name: firstName + " " + middleName + " " + lastName,
-        email: email,
+        email: email.toLowerCase(),
         whatsapp_no: whatsapp_no,
         specialization: specialization,
         password: await encryptionResult,
@@ -370,12 +370,13 @@ export const postRegister = async (req, res, next) => {
         type: 2,
       })
         .then(async (result) => {
-          await sendGrid.send({
-            to: "drwesamnageib@gmail.com",
-            from: "admin@drwesamnageib.com",
-            subject: "New User Notification",
-            text: "A New User has registered to the website",
-            html: `
+          if (process.env.NODE_ENV === "production") {
+            await sendGrid.send({
+              to: "drwesamnageib@gmail.com",
+              from: "admin@drwesamnageib.com",
+              subject: "New User Notification",
+              text: "A New User has registered to the website",
+              html: `
               <b>This is no REPLY email</b>
               <p>A User with following data have been registered!</p>
               <ul>
@@ -385,7 +386,8 @@ export const postRegister = async (req, res, next) => {
                 <li>Specialization: ${specialization}</li>
               </ul>
             `,
-          });
+            });
+          }
           req.flash(
             "success",
             "You have registered to the website successfully, please login to continue"

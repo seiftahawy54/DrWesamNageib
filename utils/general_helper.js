@@ -181,7 +181,7 @@ export const createCertificate = (
               italics: true,
             },
             {
-              text: `Pharmacist, CPHQ, TOT, CSSYB, MSC, FISQUA\n`,
+              text: `Pharmacist, TOT, CSSYB, MSC, FISQUA\n`,
               italics: true,
             },
             { text: `Wesam Nageib`, font: "Pacifico" },

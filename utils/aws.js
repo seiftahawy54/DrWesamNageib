@@ -52,11 +52,17 @@ export const getSingleFile = async (filename) => {
 
   return new Promise(async (resolve, reject) => {
     if (!fs2.existsSync(downloadedImagesPath)) {
-      fs2.mkdirSync(path.resolve("downloaded_images"));
+      const imgsPath = path.resolve("downloaded_images");
+      fs2.mkdirSync(imgsPath);
       return getSingleFile(filename);
     } else {
       const downloadingUrl = `https://seiftahawy.s3.amazonaws.com/${filename}`;
       const filePath = path.resolve("downloaded_images", filename);
+      const isAlreadyDownloaded = fs2.existsSync(filePath);
+      if (isAlreadyDownloaded) {
+        resolve(true);
+        return true;
+      }
 
       try {
         const response = await axios({

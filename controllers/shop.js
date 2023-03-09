@@ -25,6 +25,7 @@ import { sequelize } from "../utils/db.js";
 import { QueryTypes } from "sequelize";
 import { getSingleFile } from "../utils/aws.js";
 import messages from "../i18n/messages.js";
+import axios from "axios";
 
 export const getAllOpinions = async (req, res, next) => {
   try {
@@ -288,6 +289,7 @@ export const postContactPage = async (req, res, next) => {
   const senderName = req.body.contact_name;
   const senderEmail = req.body.contact_email;
   const senderContent = req.body.contact_content;
+  const sentToken = req.body["g-recaptcha-response"];
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -300,24 +302,51 @@ export const postContactPage = async (req, res, next) => {
       ),
       successMessage: null,
     });
-  } else {
+  }
+
+  const requestBody = {
+    url: `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPCHTA_SECRET}&response=${sentToken}`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+    },
+  };
+
+  const { data } = await axios(requestBody);
+  if (!data.success) {
+    return res.render("contactus/index", {
+      title: "Contact Us",
+      path: "/contact",
+      errorMessage: "Error in reCaptcha!",
+      successMessage: null,
+    });
+  }
+
+  try {
     const sendingResult = await Messages.create({
       sendername: senderName,
       senderemail: senderEmail,
       message: senderContent,
     });
+
     if (sendingResult._options.isNewRecord) {
-      req.flash("success", "Your message have been sent successfully");
-      return res.redirect("/contact");
-    } else {
       return res.render("contactus/index", {
         title: "Contact Us",
         path: "/contact",
-        errorMessage:
-          "Some error happened in our end! please contact us on the phone number!",
-        successMessage: null,
+        errorMessage: null,
+        successMessage: "Your message have been sent successfully",
       });
     }
+
+    return res.render("contactus/index", {
+      title: "Contact Us",
+      path: "/contact",
+      errorMessage:
+        "Some error happened in our end! please contact us on the phone number!",
+      successMessage: null,
+    });
+  } catch (e) {
+    next(e);
   }
 };
 

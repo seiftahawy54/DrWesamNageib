@@ -1,5 +1,6 @@
 <%- include("../includes/top_part.ejs"); %>
 <link rel="stylesheet" href="/css/contactus/index.css" />
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -42,6 +43,8 @@
                       cols="30" rows="30"></textarea>
             <label for="contact_content">Your Message</label>
           </div>
+          <div class="g-recaptcha brochure__form__captcha"
+               data-sitekey="6LcJvQwjAAAAAJrKeHOf5gHw8FGtgQcYeZKLDslE"></div>
           <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
           <button class="btn" type="submit">Send your message</button>
         </form>
@@ -70,16 +73,7 @@
 </section>
 
 <script>
-  'use-strict';
 
-  const dummyField = document.getElementById("dummy-field")
-  const contactFormElement = document.getElementById("contact-form")
-  contactFormElement.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (dummyField.value.length === 0) {
-      contactFormElement.submit();
-    }
-  })
 </script>
 
 <%- include("../includes/footer.ejs"); %>

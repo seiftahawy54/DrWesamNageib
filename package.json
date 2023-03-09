@@ -1,15 +1,16 @@
 {
   "name": "code",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "app.js",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js $PORT",
-    "inspect": "nodemon --inspect app.js $PORT",
+    "dev": "nodemon app.js $PORT",
+    "debug": "nodemon --inspect app.js $PORT",
     "web": "node app.js",
     "sass": "sass --watch ./public/scss/:./public/css/",
-    "test": "vitest --run --reporter verbose"
+    "test": "vitest --run --reporter verbose",
+    "start": "node app.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.51.0",
@@ -37,6 +38,7 @@
     "ejs": "^3.1.6",
     "esm": "^3.2.25",
     "express": "^4.17.1",
+    "express-log-psql": "^1.0.0",
     "express-session": "^1.17.2",
     "express-validator": "^6.14.0",
     "googleapis": "^100.0.0",
@@ -44,6 +46,7 @@
     "helmet": "^5.0.2",
     "joi": "^17.6.0",
     "moment": "^2.29.1",
+    "morgan": "^1.10.0",
     "multer": "^1.4.4",
     "multer-s3": "^2.10.0",
     "open": "^8.4.0",
@@ -56,6 +59,7 @@
     "winston": "^3.8.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@types/bcrypt": "^10.0.28-alpha",
     "@types/body-parser": "^1.19.2",
     "@types/compression": "^1.7.2",
