@@ -5,17 +5,9 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
-import helmet from "helmet";
-import fs from "fs";
-import expressSession from "express-session";
-import SessionStore from "connect-session-sequelize";
-// import pgSession from "connect-pg-simple";
-import csrf from "csurf";
-import flash from "connect-flash";
 import Multer from "multer";
-import { Sequelize } from "sequelize";
 import crypto from "crypto";
-import logger from "express-log-psql";
+import cors from "cors";
 
 // MY MODULES IMPORTS
 import { sequelize } from "./utils/db.js";
@@ -23,10 +15,8 @@ import { coursesRoutes } from "./routes/courses.js";
 import { shoppingRoutes } from "./routes/shopping.js";
 import { authRoutes } from "./routes/auth.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
-import { globalAccess, isAuthenticated } from "./middlewares/dashboard-auth.js";
-import { errorRaiser } from "./utils/error_raiser.js";
+import isAdminAuth from "./middlewares/isAdminAuth.js";
 import { userRoutes } from "./routes/user.js";
-import { getSingleFile } from "./utils/aws.js";
 import { ExamsReplies, Users } from "./models/index.js";
 import { Rounds } from "./models/index.js";
 import { Payment } from "./models/index.js";
@@ -35,35 +25,12 @@ import { isUserAuthenticated } from "./middlewares/user-auth.js";
 import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
 import { getExamPreview } from "./controllers/user/user.js";
-import cors from "cors";
-import morgan from "morgan";
+import notFoundHandler from "./middlewares/notFoundHandler.js";
+import { fileFilter, fileStorage } from "./middlewares/uploader.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
 dotenv.config();
 const app = express();
-
-const fileStorage = Multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "");
-  },
-  filename: (req, file, cb) => {
-    const newFileName =
-      crypto.randomBytes(10).toString("hex") + "-" + file.originalname;
-    console.log(`new file image ====> `, newFileName);
-    cb(null, newFileName);
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/jpeg"
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -96,73 +63,8 @@ app.use(
   express.static(path.resolve("downloaded_images"))
 );
 
-// Session Configurations
-const SequelizeStore = SessionStore(expressSession.Store);
-
-app.use(
-  expressSession({
-    store: new SequelizeStore({
-      db: sequelize,
-      // table: "Sessions",
-    }),
-    secret: "app_secret",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-
-const csrfProtection = csrf();
-app.use(csrfProtection);
-app.use(flash());
-
 // app.use(helmet());
 app.use(compression());
-app.use(morgan("dev"));
-app.use(
-  logger("tiny", {
-    url: process.env.DATABASE_URL,
-    table: "logs",
-  })
-);
-
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isAuthenticatedAdmin;
-  res.locals.isUserAuthenticated = req.session.userIsAuthenticated;
-  res.locals.errorMessage = req.flash("error");
-  res.locals.successMessage = req.flash("success");
-  res.locals.envMode = process.env.NODE_ENV;
-  const token = req.csrfToken();
-  res.cookie("XSRF-TOKEN", token);
-  res.locals.csrfToken = token;
-  // req.session.reload((err) => {
-  //   console.log(`session things: `, err);
-  // });
-  next();
-});
-
-app.use(async (req, res, next) => {
-  if (req.session.user) {
-    const findingUser = await Users.findAll({
-      where: { user_id: req.session.user.user_id },
-    });
-
-    if (!findingUser) {
-      return next();
-    } else {
-      req.user = findingUser[0];
-      return next();
-    }
-  } else {
-    return next();
-  }
-});
-
-app.get("/testing", (req, res, next) => {
-  res.render("testing.ejs", {
-    title: "Testing",
-    path: "/testing",
-  });
-});
 
 app.post(
   "/download_image",
@@ -170,11 +72,13 @@ app.post(
   imageDownloader
 );
 app.use("/courses", coursesRoutes);
-app.use("/dashboard", isAuthenticated, dashboardRoutes);
+app.use("/dashboard", isAdminAuth, dashboardRoutes);
 app.use(authRoutes);
 app.use(shoppingRoutes);
-app.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
+app.get("/exams/preview/:replyId", getExamPreview);
 app.use(isUserAuthenticated, userRoutes);
+app.use("*", notFoundHandler);
+app.use(errorHandler);
 
 Payment.hasOne(Courses, {
   foreignKey: "course_id",
@@ -220,25 +124,6 @@ ExamsReplies.belongsTo(Users, {
   constraints: false,
   onDelete: "cascade",
   onUpdate: "cascade",
-});
-
-app.use((error, req, res, next) => {
-  if (error.errorType === "API") {
-    console.log(error);
-    return res.status(error.httpStatusCode).json({ error: error.message });
-  }
-  console.log(error);
-  return res.status(500).render("500", {
-    title: "Server Error",
-    path: "",
-  });
-});
-
-app.use((req, res, next) => {
-  res.render("404", {
-    title: "There's an error!",
-    path: "",
-  });
 });
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;

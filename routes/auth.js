@@ -23,17 +23,43 @@ import {
   notRepeatedForUser,
 } from "../middlewares/user-auth.js";
 
-const router = Router();
+const registerRoutes = Router();
+const loginRoutes = Router();
+const resetPasswordRoutes = Router();
+const paymentRoutes = Router();
 
-router
-  .get("/login", notRepeatedForUser, getLogin)
+loginRoutes
+  .get("/", getLogin)
   .post(
-    "/login",
+    "/",
     body("email").isEmail().notEmpty(),
     body("password").isString().notEmpty(),
     postLogin
-  )
-  .post("/logout", postLogout)
+  );
+
+registerRoutes.get("/", notRepeatedForUser, getRegister).post(
+  "/",
+  body("first_name").isString().isLength({ min: 3 }).trim(),
+  body("middle_name").isString().isLength({ min: 3 }).trim(),
+  body("last_name").isString().isLength({ min: 3 }).trim(),
+  body("email").isEmail().notEmpty().trim(),
+  body("whatsapp_number").isMobilePhone("any").notEmpty().trim(),
+  body("specialization").isString().notEmpty().trim(),
+  body("password").isString().isLength({ min: 8 }).notEmpty(),
+  body("confirmPassword")
+    .isString()
+    .notEmpty()
+    .custom((value, { req }) => {
+      if (req.body.password.localeCompare(value) === 0) {
+        return true;
+      } else {
+        return new Error("Passwords doesn't match");
+      }
+    }),
+  postRegister
+);
+
+resetPasswordRoutes
   .get("/forget-password", getForgetPassword)
   .post(
     "/forget-password",
@@ -46,29 +72,9 @@ router
     "/reset-password/:token",
     [body("password").isString().isLength({ min: 8 }).trim()],
     postGenerateNewPassword
-  )
-  .get("/register", notRepeatedForUser, getRegister)
-  .post(
-    "/register",
-    body("first_name").isString().isLength({ min: 3 }).trim(),
-    body("middle_name").isString().isLength({ min: 3 }).trim(),
-    body("last_name").isString().isLength({ min: 3 }).trim(),
-    body("email").isEmail().notEmpty().trim(),
-    body("whatsapp_number").isMobilePhone("any").notEmpty().trim(),
-    body("specialization").isString().notEmpty().trim(),
-    body("password").isString().isLength({ min: 8 }).notEmpty(),
-    body("confirmPassword")
-      .isString()
-      .notEmpty()
-      .custom((value, { req }) => {
-        if (req.body.password.localeCompare(value) === 0) {
-          return true;
-        } else {
-          return new Error("Passwords doesn't match");
-        }
-      }),
-    postRegister
-  )
+  );
+
+paymentRoutes
   .get("/success_payment", isUserAuthenticated, getSuccess)
   .post("/success_payment", isUserAuthenticated, postSuccess)
   .get("/cancel_payment", isUserAuthenticated, getCancelled)
@@ -80,4 +86,9 @@ router
     postApplyCoupon
   );
 
-export { router as authRoutes };
+const authenticationRoutes = Router.use("/login", loginRoutes)
+  .use("/register", registerRoutes)
+  .use("/payment", paymentRoutes)
+  .use("/forget-password", resetPasswordRoutes);
+
+export default authenticationRoutes;

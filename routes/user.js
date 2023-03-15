@@ -13,19 +13,18 @@ import {
   getUserRound,
   getUserGrades,
   getUserProfileCertificate,
-} from "../controllers/user/user.js";
-import { Router } from "express";
-import { body } from "express-validator";
-import { globalAccess } from "../middlewares/dashboard-auth.js";
-import { isUserAuthenticated } from "../middlewares/user-auth.js";
+} from "../controllers/user/user.js"
+import { Router } from "express"
+import { body } from "express-validator"
+import { isUserAuthenticated } from "../middlewares/user-auth.js"
 
-const router = Router();
+const router = Router()
+const userProfileRoutes = Router()
+const examsRoutes = Router()
+const certificatesRoutes = Router()
 
-// router.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
-
-router
-  .use(isUserAuthenticated)
-  .get("/profile", getUserProfile)
+userProfileRoutes
+  .get("/", getUserProfile)
   .post("/update-user-img", postUpdateUserImg)
   .get("/update-data/:userId", getUpdateUserData)
   .post(
@@ -35,9 +34,17 @@ router
       body("whatsapp_number").isMobilePhone("any").notEmpty(),
       body("specialization").isString().notEmpty(),
     ],
-    postUpdateUserData
+    postUpdateUserData,
   )
-  .get("/certificates/:courseId", getUserCertificate)
+  .get("/certificates", getUserProfileCertificate)
+
+  .get("/data", getAllUserData)
+  .get("/payments", getBoughtCourses)
+  .get("/round", getUserRound)
+  .get("/grades", getUserGrades)
+certificatesRoutes
+  .get("/:courseId", getUserCertificate)
+examsRoutes
   .get("/exam/submitted-exam", getSubmittedExam)
   .get("/exam/:examId", getPerformExam)
   .post(
@@ -50,12 +57,11 @@ router
         .optional({ nullable: true }),
       body("examId").isString().isLength({ min: 36, max: 36 }),
     ],
-    postPerformExam
+    postPerformExam,
   )
-  .get("/user-data", getAllUserData)
-  .get("/user-payments", getBoughtCourses)
-  .get("/user-round", getUserRound)
-  .get("/user-grades", getUserGrades)
-  .get("/user-certificates", getUserProfileCertificate);
 
-export { router as userRoutes };
+const usersRoutes = Router().use("/profile", userProfileRoutes)
+  .use("/certificates", certificatesRoutes)
+  .use("/exam", examsRoutes)
+
+export default

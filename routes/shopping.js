@@ -14,7 +14,7 @@ import {
 } from "../controllers/shop.js";
 import express from "express";
 import { body } from "express-validator";
-import { isAuthenticated } from "../middlewares/dashboard-auth.js";
+import { isAuthenticated } from "../middlewares/isAdminAuth.js";
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router
   .get("/", getHomePage)
   .get("/all-opinions", getAllOpinions)
   .get("/aboutus", getAboutPage)
-  .get('/api/aboutus', getAboutPageDataApi)
+  .get("/api/aboutus", getAboutPageDataApi)
   .get("/download_cv", downloadCV)
   .get("/contact", getContactPage)
   .get("/cart", getShoppingCart)
