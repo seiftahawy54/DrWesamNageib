@@ -29,7 +29,6 @@ const resetPasswordRoutes = Router();
 const paymentRoutes = Router();
 
 loginRoutes
-  .get("/", getLogin)
   .post(
     "/",
     body("email").isEmail().notEmpty(),

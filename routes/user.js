@@ -17,6 +17,7 @@ import {
 import { Router } from "express"
 import { body } from "express-validator"
 import { isUserAuthenticated } from "../middlewares/user-auth.js"
+import { getShoppingCart } from "../controllers/shop.js"
 
 const router = Router()
 const userProfileRoutes = Router()
@@ -42,8 +43,19 @@ userProfileRoutes
   .get("/payments", getBoughtCourses)
   .get("/round", getUserRound)
   .get("/grades", getUserGrades)
+  ;
+
+
+//-----------------------------------------------
+// Certificates routes
+//-----------------------------------------------
 certificatesRoutes
-  .get("/:courseId", getUserCertificate)
+  .get("/:courseId", getUserCertificate);
+
+
+//-----------------------------------------------
+// User exams performance routes
+//-----------------------------------------------
 examsRoutes
   .get("/exam/submitted-exam", getSubmittedExam)
   .get("/exam/:examId", getPerformExam)
@@ -60,8 +72,9 @@ examsRoutes
     postPerformExam,
   )
 
-const usersRoutes = Router().use("/profile", userProfileRoutes)
+const usersRoutes = Router()
+  .use("/profile", userProfileRoutes)
   .use("/certificates", certificatesRoutes)
-  .use("/exam", examsRoutes)
+  .use("/exam", examsRoutes);
 
-export default
+export default usersRouters;

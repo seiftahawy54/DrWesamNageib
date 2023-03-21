@@ -9,18 +9,21 @@ import express from "express";
 import { isUserAuthenticated } from "../middlewares/user-auth.js";
 import { body } from "express-validator";
 
-const router = express.Router();
+const coursesRoutes = express.Router();
 
-router
-  .get("/", getIndex)
+coursesRoutes
+  .get("/", getAllCoursesData)
   .get("/courses-categories", getCoursesCategories)
-  .get("/all-courses", getAllCoursesData)
   .get("/:courseId", singleCourse)
   .post(
     "/addToCart",
     [body("selected_round").notEmpty()],
     isUserAuthenticated,
     addCourseToCart
-  );
+  )
+  .post("/delete_from_cart", postDeleteFromCart)
+  .get("/cart", getShoppingCart)
 
-export { router as coursesRoutes };
+
+const router = Router().use('/courses', router)
+export default router;

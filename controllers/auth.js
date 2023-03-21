@@ -14,7 +14,7 @@ import {
   extractArrOfPrices,
   findCartCourses,
 } from "../utils/cart_helpers.js";
-import { hashCreator } from "../utils/general_helper.js";
+import { extractErrorMessagesForSchemas, hashCreator } from "../utils/general_helper.js";
 import moment from "moment";
 
 const Environment =
@@ -41,67 +41,55 @@ export const getLogin = (req, res, next) =>
   });
 
 export const postLogin = async (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
   const errors = validationResult(req);
   // console.log("login errors", errors.array());
   if (!errors.isEmpty()) {
-    req.flash("error", "Maybe user name or password is invalid!");
-    return res.status(422).render("auth/login", {
-      title: "Login",
-      path: "/login",
-      user: { email, password },
-      validationErrors: { email: true, password: true },
+    return res.status(422).json({
+      error: true,
+      messages: extractErrorMessagesForSchemas(errors.array()),
     });
-  } else if (
-    email.localeCompare(process.env.ADMIN_EMAIL) === 0 &&
-    password.localeCompare(process.env.ADMIN_PASSWORD) === 0
-  ) {
-    req.session.isAuthenticatedAdmin = true;
-    req.session.adminUser = {
-      email,
-    };
-    res.redirect("/dashboard/overview");
-  } else {
-    Users.findAll({
-      where: {
-        email,
-      },
-    })
-      .then(async (findingUserResult) => {
-        const comparingResult = await bcrypt.compare(
-          password,
-          findingUserResult[0].password
-        );
-        if (comparingResult) {
-          req.session.userIsAuthenticated = true;
-          req.session.user = {
-            email: email,
-            user_id: findingUserResult[0].user_id,
-          };
+  }
 
-          req.flash("success", "Welcome on Board 😄");
-          return res.redirect("/profile");
-        } else {
-          req.flash("error", "Maybe username or password is invalid!");
-          return res.status(422).render("auth/login", {
-            title: "Login",
-            path: "/login",
-            user: { email, password },
-            validationErrors: { email: true, password: true },
-          });
-        }
-      })
-      .catch((err) => {
-        req.flash("error", "Maybe user name or password is invalid!");
+  
+  Users.findAll({
+    where: {
+      email,
+    },
+  })
+    .then(async (findingUserResult) => {
+      const comparingResult = await bcrypt.compare(
+        password,
+        findingUserResult[0].password
+      );
+      if (comparingResult) {
+        req.session.userIsAuthenticated = true;
+        req.session.user = {
+          email: email,
+          user_id: findingUserResult[0].user_id,
+        };
+
+        req.flash("success", "Welcome on Board 😄");
+        return res.redirect("/profile");
+      } else {
+        req.flash("error", "Maybe username or password is invalid!");
         return res.status(422).render("auth/login", {
           title: "Login",
           path: "/login",
           user: { email, password },
           validationErrors: { email: true, password: true },
         });
+      }
+    })
+    .catch((err) => {
+      req.flash("error", "Maybe user name or password is invalid!");
+      return res.status(422).render("auth/login", {
+        title: "Login",
+        path: "/login",
+        user: { email, password },
+        validationErrors: { email: true, password: true },
       });
-  }
+    });
 };
 
 export const getForgetPassword = (req, res, next) => {
