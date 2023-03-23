@@ -5,6 +5,8 @@ import { isUserAuthenticated } from "../middlewares/user-auth.js";
 
 const router = Router();
 
-router.use("/", isUserAuthenticated, UserRoutes);
+router
+  .use("/", AuthRoutes)
+  .use("/", isUserAuthenticated, UserRoutes)
 
 export default router;

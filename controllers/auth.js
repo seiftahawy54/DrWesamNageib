@@ -1,9 +1,11 @@
 import paypal from "@paypal/checkout-server-sdk";
+import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 // import { Courses } from "../models";
 import { errorRaiser } from "../utils/error_raiser.js";
 import { Users, Payment, Rounds, Discounts } from "../models/index.js";
 import sendGrid from "@sendgrid/mail";
+import logger from "../utils/logger.js";
 
 sendGrid.setApiKey(process.env.SEND_GRID_SECRET);
 
@@ -14,7 +16,12 @@ import {
   extractArrOfPrices,
   findCartCourses,
 } from "../utils/cart_helpers.js";
-import { extractErrorMessagesForSchemas, hashCreator } from "../utils/general_helper.js";
+import {
+  constructError,
+  extractErrorMessages,
+  extractErrorMessagesForSchemas,
+  hashCreator,
+} from "../utils/general_helper.js";
 import moment from "moment";
 
 const Environment =
@@ -47,11 +54,10 @@ export const postLogin = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({
       error: true,
-      messages: extractErrorMessagesForSchemas(errors.array()),
+      messages: extractErrorMessages(errors.array()),
     });
   }
 
-  
   Users.findAll({
     where: {
       email,
@@ -63,12 +69,10 @@ export const postLogin = async (req, res, next) => {
         findingUserResult[0].password
       );
       if (comparingResult) {
-        req.session.userIsAuthenticated = true;
-        req.session.user = {
-          email: email,
-          user_id: findingUserResult[0].user_id,
-        };
-
+        const token = jwt.sign({
+          email,
+          role: findingUserResult[0],
+        });
         req.flash("success", "Welcome on Board 😄");
         return res.redirect("/profile");
       } else {
@@ -322,33 +326,17 @@ export const postRegister = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      console.log(errors.array());
-      req.flash(
-        "error",
-        `${errors.array()[0].param} - ${errors.array()[0].msg}`
-      );
-      return res.status(422).render("auth/register", {
-        title: "Register",
-        path: "/register",
-        validationErrors: errors.array(),
-        user: {
-          first_name: firstName,
-          middle_name: middleName,
-          last_name: lastName,
-          email,
-          whatsapp_no,
-          specialization,
-          password,
-          confirmPassword,
-        },
-      });
+      logger.log(errors.array());
+      return res.status(422).json(extractErrorMessages(errors.array()));
     }
+
     const encryptionResult = await bcrypt.hash(password, 12);
     if (await encryptionResult) {
       firstName = firstName[0].toUpperCase() + firstName.slice(1);
       middleName = middleName[0].toUpperCase() + middleName.slice(1);
       lastName = lastName[0].toUpperCase() + lastName.slice(1);
-      Users.create({
+
+      const newUser = await Users.create({
         name: firstName + " " + middleName + " " + lastName,
         email: email.toLowerCase(),
         whatsapp_no: whatsapp_no,
@@ -356,15 +344,16 @@ export const postRegister = async (req, res, next) => {
         password: await encryptionResult,
         cart: [],
         type: 2,
-      })
-        .then(async (result) => {
-          if (process.env.NODE_ENV === "production") {
-            await sendGrid.send({
-              to: "drwesamnageib@gmail.com",
-              from: "admin@drwesamnageib.com",
-              subject: "New User Notification",
-              text: "A New User has registered to the website",
-              html: `
+        role: "normal",
+      });
+
+      if (process.env.NODE_ENV === "production") {
+        await sendGrid.send({
+          to: "drwesamnageib@gmail.com",
+          from: "admin@drwesamnageib.com",
+          subject: "New User Notification",
+          text: "A New User has registered to the website",
+          html: `
               <b>This is no REPLY email</b>
               <p>A User with following data have been registered!</p>
               <ul>
@@ -374,34 +363,11 @@ export const postRegister = async (req, res, next) => {
                 <li>Specialization: ${specialization}</li>
               </ul>
             `,
-            });
-          }
-          req.flash(
-            "success",
-            "You have registered to the website successfully, please login to continue"
-          );
-          return res.redirect("/login");
-        })
-        .catch((err) => {
-          // errorRaiser(err, next);
-          console.log(err);
-          req.flash("error", err.message);
-          return res.render("auth/register", {
-            title: "Register",
-            path: "/register",
-            validationErrors: errors.array(),
-            user: {
-              first_name: firstName,
-              middle_name: middleName,
-              last_name: lastName,
-              email,
-              whatsapp_no,
-              specialization,
-              password,
-              confirmPassword,
-            },
-          });
         });
+      }
+      return res
+        .status(201)
+        .json({ success: true, message: "Account created successfully!" });
     }
   } catch (e) {
     await errorRaiser(e, next);

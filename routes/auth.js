@@ -18,25 +18,22 @@ import {
 } from "../controllers/auth.js";
 import { Router } from "express";
 import { body } from "express-validator";
-import {
-  isUserAuthenticated,
-  notRepeatedForUser,
-} from "../middlewares/user-auth.js";
+import { isUserAuthenticated } from "../middlewares/user-auth.js";
 
 const registerRoutes = Router();
 const loginRoutes = Router();
 const resetPasswordRoutes = Router();
 const paymentRoutes = Router();
 
-loginRoutes
-  .post(
-    "/",
-    body("email").isEmail().notEmpty(),
-    body("password").isString().notEmpty(),
-    postLogin
-  );
+loginRoutes.post(
+  "/",
+  body("email").isEmail().notEmpty(),
+  body("password").isString().notEmpty(),
+  postLogin
+);
 
-registerRoutes.get("/", notRepeatedForUser, getRegister).post(
+registerRoutes
+.post(
   "/",
   body("first_name").isString().isLength({ min: 3 }).trim(),
   body("middle_name").isString().isLength({ min: 3 }).trim(),
@@ -85,7 +82,8 @@ paymentRoutes
     postApplyCoupon
   );
 
-const authenticationRoutes = Router.use("/login", loginRoutes)
+const authenticationRoutes = Router()
+  .use("/login", loginRoutes)
   .use("/register", registerRoutes)
   .use("/payment", paymentRoutes)
   .use("/forget-password", resetPasswordRoutes);

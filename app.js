@@ -11,20 +11,13 @@ import cors from "cors";
 
 // MY MODULES IMPORTS
 import { sequelize } from "./utils/db.js";
-import { coursesRoutes } from "./routes/courses.js";
-import { shoppingRoutes } from "./routes/shopping.js";
-import { authRoutes } from "./routes/auth.js";
-import { dashboardRoutes } from "./routes/dashboard.js";
-import isAdminAuth from "./middlewares/isAdminAuth.js";
-import { userRoutes } from "./routes/user.js";
+import AppRoutes from './routes/index.js'
 import { ExamsReplies, Users } from "./models/index.js";
 import { Rounds } from "./models/index.js";
 import { Payment } from "./models/index.js";
 import { Courses } from "./models/index.js";
-import { isUserAuthenticated } from "./middlewares/user-auth.js";
 import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
-import { getExamPreview } from "./controllers/user/user.js";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
 import { fileFilter, fileStorage } from "./middlewares/uploader.js";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -71,12 +64,13 @@ app.post(
   body("img_id").isString().isLength({ min: 15 }),
   imageDownloader
 );
-app.use("/courses", coursesRoutes);
-app.use("/dashboard", isAdminAuth, dashboardRoutes);
-app.use(authRoutes);
-app.use(shoppingRoutes);
-app.get("/exams/preview/:replyId", getExamPreview);
-app.use(isUserAuthenticated, userRoutes);
+// app.use("/courses", coursesRoutes);
+// app.use("/dashboard", isAdminAuth, dashboardRoutes);
+// app.use(authRoutes);
+// app.use(shoppingRoutes);
+// app.get("/exams/preview/:replyId", getExamPreview);
+// app.use(isUserAuthenticated, userRoutes);
+app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
 

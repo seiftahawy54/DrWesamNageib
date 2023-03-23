@@ -16,10 +16,7 @@ import {
 } from "../controllers/user/user.js"
 import { Router } from "express"
 import { body } from "express-validator"
-import { isUserAuthenticated } from "../middlewares/user-auth.js"
-import { getShoppingCart } from "../controllers/shop.js"
 
-const router = Router()
 const userProfileRoutes = Router()
 const examsRoutes = Router()
 const certificatesRoutes = Router()
@@ -77,4 +74,4 @@ const usersRoutes = Router()
   .use("/certificates", certificatesRoutes)
   .use("/exam", examsRoutes);
 
-export default usersRouters;
+export default usersRoutes;

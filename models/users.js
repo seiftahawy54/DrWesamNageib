@@ -82,6 +82,11 @@ const Users = sequelize.define("user", {
     defaultValue: new Date(),
     allowNull: true,
   },
+  role: {
+    type: Sequelize.ENUM('normal', 'moderator', 'admin', 'instructor'),
+    defaultValue: "normal",
+    allowNull: false,
+  },
 });
 
 export default Users;
