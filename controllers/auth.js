@@ -318,11 +318,7 @@ export const postRegister = async (req, res, next) => {
     let firstName = req.body.first_name;
     let middleName = req.body.middle_name;
     let lastName = req.body.last_name;
-    const email = req.body.email;
-    const whatsapp_no = req.body.whatsapp_number;
-    const specialization = req.body.specialization;
-    const password = req.body.password;
-    const confirmPassword = req.body.password;
+    const { email, whatsapp_no, specialization, password, confirmPassword } = req.body;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -338,7 +334,7 @@ export const postRegister = async (req, res, next) => {
 
       const newUser = await Users.create({
         name: firstName + " " + middleName + " " + lastName,
-        email: email.toLowerCase(),
+        email,
         whatsapp_no: whatsapp_no,
         specialization: specialization,
         password: await encryptionResult,
@@ -365,6 +361,7 @@ export const postRegister = async (req, res, next) => {
             `,
         });
       }
+      
       return res
         .status(201)
         .json({ success: true, message: "Account created successfully!" });
