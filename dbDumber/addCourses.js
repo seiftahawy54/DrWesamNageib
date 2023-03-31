@@ -1,10 +1,9 @@
 import { Courses } from "../models/index.js";
 import { faker } from "@faker-js/faker";
-import bcrypt from "bcrypt";
 
 (async () => {
   try {
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < 1; i++) {
       const courseName = faker.commerce.productName(),
         coursePrice = faker.commerce.price(),
         courseImage = faker.image.imageUrl(),

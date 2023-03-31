@@ -8,7 +8,6 @@ import {
 } from "../../controllers/dashboard/d_courses.js";
 import { body } from "express-validator";
 import { Router } from "express";
-import { upload } from "../../middlewares/multer.js";
 
 export default Router()
   .get("/", getCourses)

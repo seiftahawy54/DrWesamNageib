@@ -45,14 +45,11 @@ const singleCourse = async (req, res, next) => {
 
     const filteredRounds = roundsResult.filter((round) => !round.finished);
 
-    res.render("courses/single_course", {
-      title: course.name,
-      path: "/courses",
+    return res.status(200).json({
       course,
       numberOfCourses: numberOfCourses.count,
       rounds: filteredRounds,
-      moment,
-    });
+    })
   } catch (e) {
     await errorRaiser(e, next);
   }
@@ -80,8 +77,7 @@ export const getCoursesCategories = async (req, res, next) => {
       ({ course_category }) => course_category
     );
     coursesCategories = [...new Set(coursesCategories)];
-    console.log(coursesCategories);
-
+    
     res.status(200).json({
       coursesCategories,
     });

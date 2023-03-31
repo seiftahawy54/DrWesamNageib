@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { getHomepageApi } from "../controllers/shop";
+import { getAllOpinions, getHomepageApi } from "../controllers/shop.js";
 
 const homeRouter = Router();
 
-homeRouter.get("/", getHomepageApi);
+homeRouter
+.get("/", getHomepageApi);
 
-const router = Router().use("/home", getHomepageApi);
+const router = Router().use("/", getHomepageApi);
 
 export default router;

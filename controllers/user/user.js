@@ -1,16 +1,18 @@
 // import { extractCart, getCoursesFormCart } from "../../utils/cart_helpers.js";
 import {
   calculateExamsGrades,
+  constructError,
   createCertificate,
-  deleteFile,
+  extractErrorMessages,
+  extractErrorMessagesForSchemas,
   userPerformedExams,
 } from "../../utils/general_helper.js";
 import { getSingleFile, uploadFile } from "../../utils/aws.js";
 import fs from "fs";
-import path from "path";
 import { sequelize } from "../../utils/db.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
+import logger from "../../utils/logger.js";
 
 import {
   Exams,
@@ -22,6 +24,7 @@ import {
 } from "../../models/index.js";
 import { errorRaiser } from "../../utils/error_raiser.js";
 import axios from "axios";
+import { tree } from "gulp";
 
 export const getUserProfile = async (req, res, next) => {
   try {
@@ -52,8 +55,7 @@ export const getUserProfile = async (req, res, next) => {
       moment,
     });
   } catch (e) {
-    req.flash("error", e.message);
-    res.redirect("/profile");
+    await errorRaiser(e, next);
   }
 };
 
@@ -64,7 +66,6 @@ export const postUpdateUserImg = async (req, res, next) => {
     if (userImg?.path) {
       uploadFile(userImg.path, userImg.filename, userImg.mimetype, res, next)
         .then(async (result) => {
-          console.log(`uploading result: `, result);
           const updatingResult = await Users.update(
             {
               user_img: userImg.path,
@@ -73,17 +74,16 @@ export const postUpdateUserImg = async (req, res, next) => {
           );
 
           if (updatingResult[0] === 1) {
-            req.flash("success", "Success");
-            return res.redirect("/profile");
+            return res.status(200).send({ success: true });
           } else {
-            req.flash("error", "Something wrong happened");
-            return res.redirect("/profile");
+            return res.status(500).json({ message: "Something went wrong" });
           }
         })
         .catch((err) => errorRaiser(err, next));
     } else {
-      req.flash("error", "Please select a valid image!");
-      res.redirect("/profile");
+      res
+        .status(422)
+        .json(constructError("user-img", "Please select a valid image!"));
     }
   } catch (e) {
     await errorRaiser(e, next);
@@ -115,21 +115,8 @@ export const postUpdateUserData = async (req, res, next) => {
   const specialization = req.body.specialization;
   const errors = validationResult(req);
   try {
-    console.log(`errors ===>`, errors.array());
-
     if (!errors.isEmpty()) {
-      return res.render("users/user_form", {
-        title: req.user.name,
-        path: "/profile",
-        user: {
-          ...req.user,
-          name,
-          email,
-          whatsapp_no: whatsappNo,
-          specialization,
-        },
-        validationErrors: errors.array(),
-      });
+      return res.status(422).json(extractErrorMessages(errors.array()));
     }
 
     const updatingUserData = await Users.update(
@@ -142,34 +129,19 @@ export const postUpdateUserData = async (req, res, next) => {
       { where: { user_id: req.user.user_id } }
     );
 
-    console.log(`updating user data result ==> `, updatingUserData);
-
     if (updatingUserData[0] === 1) {
-      req.flash("success", "Your Data is updated successfully");
-      return res.redirect("/profile");
-    } else {
-      req.flash(
-        "error",
-        "Something happened in our end, please contact the admins"
-      );
-      return res.redirect("/profile");
+      // req.flash("success", ");
+      return res
+        .status(200)
+        .json({ success: true, message: "Your Data is updated successfully" });
     }
-  } catch (e) {
-    req.flash("error", e.message);
-    console.log(e);
-    return res.render("users/user_form", {
-      title: req.user.name,
-      path: "/profile",
-      user: {
-        ...req.user,
-        name,
-        email,
-        whatsapp_no: whatsappNo,
-        specialization,
-      },
-      validationErrors: errors.array(),
-      errorMessage: [e.errors[0].message],
+
+    return res.status(500).json({
+      error: true,
+      message: "Server error",
     });
+  } catch (e) {
+    await errorRaiser(e, next, "API");
   }
 };
 
@@ -184,11 +156,6 @@ export const getUserCertificate = async (req, res, next) => {
         type: "SELECT",
       }
     );
-
-    // console.log(`selected rounds: `, roundAndCourse[0].round_date);
-    // console.log(`new certificate: `, roundAndCourse[0].round_date);
-
-    console.log(roundAndCourse[0].special_course);
 
     if (roundAndCourse[0].special_course) {
       getSingleFile(roundAndCourse[0].course_img)
@@ -217,11 +184,18 @@ export const getUserCertificate = async (req, res, next) => {
           certificateDoc.certificateObject.end();
         })
         .catch((err) => {
-          console.error(err);
+          logger.error(err);
+          return res.status(500).json({
+            error: true,
+            message: "Server error",
+          });
         });
     } else {
-      req.flash("error", "Please check your supervisor");
-      return res.redirect("/profile");
+      logger.error(err);
+      return res.status(500).json({
+        error: true,
+        message: "Server error",
+      });
     }
   } catch (e) {
     await errorRaiser(e, next);
@@ -236,7 +210,7 @@ export const getPerformExam = async (req, res, next) => {
       where: { user_id: req.user.user_id, exam_id: examId },
     });
 
-    console.log(`Finding USER REPLY ===> `, findingUserReply);
+    logger.info(`Finding USER REPLY ===> `, findingUserReply);
 
     if (findingExam) {
       let allRoundsUsersIds = await Rounds.findAll({
@@ -259,35 +233,30 @@ export const getPerformExam = async (req, res, next) => {
       }
 
       if (!searchingResult) {
-        req.flash("error", "You are not enrolled on any round!");
-        return res.redirect("/profile");
+        return res.status(401).json({
+          message: "You are not enrolled on any round!",
+        });
       }
 
       if (findingUserReply.length > 0) {
-        req.flash("error", "Exam is already performed!");
-        return res.redirect("/profile");
+        return res.status(200).json({
+          message: "Exam is already performed!",
+        });
       }
 
-      const testing = async () => {
+      (async () => {
         for (const questionObj of findingExam.questions) {
           if ("examImage" in questionObj) {
             const fetchingResult = await getSingleFile(questionObj.examImage);
-            console.log("Image searching result => ", fetchingResult);
+            logger.info("Image searching result => ", fetchingResult);
           }
         }
-      };
+      })();
 
-      await testing();
-
-      return res.status(200).render("users/exam", {
-        title: findingExam.title,
-        path: "/profile",
+      return res.status(200).json({
         exam: findingExam,
       });
     }
-
-    // req.flash("error", "Please check the link!");
-    // return res.redirect("/profile");
   } catch (e) {
     await errorRaiser(e, next);
   }
@@ -323,7 +292,7 @@ export const postPerformExam = async (req, res, next) => {
         user_answers: userAnswers,
       });
 
-      console.log(`creating New Reply Result ====> `, creatingNewReplyResult);
+      logger.info(`creating New Reply Result ====> `, creatingNewReplyResult);
 
       return res.status(201).json({
         grade,
@@ -400,7 +369,15 @@ export const getExamPreview = async (req, res, next) => {
         }
       }
 
-      return res.render("users/exam_preview", {
+      return res.status(200).json({
+        userAnswers: questionsWithUserAnswers,
+        questions: replyData.questions,
+        examData: {
+          title: replyData.title,
+        },
+      });
+
+      /* return res.render("users/exam_preview", {
         title: `Trying Exam ${replyData.title} for User ${replyData.name}`,
         path: "/profile",
         performingData: questionsWithUserAnswers,
@@ -409,11 +386,13 @@ export const getExamPreview = async (req, res, next) => {
           title: replyData.title,
         },
         userData: req.user,
-      });
+      }); */
     }
 
-    req.flash("error", "You've not entered this exam before");
-    return res.redirect("user/profile");
+    return res.status(500).json({
+      error: true,
+      message: "Server Error"
+    })
   } catch (e) {
     await errorRaiser(e, next);
   }
@@ -427,15 +406,18 @@ export const getSubmittedExam = async (req, res, next) => {
 };
 
 export const getAllUserData = async (req, res, next) => {
+  const { name, whatsapp_no, user_id, email, specialization } =
+    await Users.findByPk(req.user.user_id);
   const user = {
-    name: req.user.name,
-    whatsapp_no: req.user.whatsapp_no,
-    user_id: req.user.user_id,
-    email: req.user.email,
-    specialization: req.user.specialization,
+    name,
+    whatsapp_no,
+    user_id,
+    email,
+    specialization,
   };
+
   try {
-    return res.json({ user });
+    return res.status(200).json({ user });
   } catch (e) {
     await errorRaiser(e, next);
   }
@@ -485,29 +467,15 @@ export const getBoughtCourses = async (req, res, next) => {
 export const getUserRound = async (req, res, next) => {
   try {
     let roundData = await sequelize.query(
-      `select * from rounds where ? LIKE ANY (rounds.users_ids)`,
+      `SELECT * FROM rounds WHERE ? LIKE ANY (rounds.users_ids)`,
       { replacements: [req.user.user_id], type: "SELECT" }
     );
-
-    // const noRoundsResult =
-
-    console.log(req.user.name, "===>", roundData);
 
     if (roundData.length === 0 || !"round_link" in roundData[0]) {
       return res
         .status(200)
         .json({ message: "You are not on any rounds", rounds: null });
     }
-
-    /*if (roundData[0].finished) {
-      return res
-        .status(200)
-        .json({ message: "Round is finished", round: null });
-    }
-
-    return res
-      .status(200)
-      .json({ message: "Round found", round: roundData[0].round_link });*/
 
     roundData = roundData.filter((round) => !round.finished);
 

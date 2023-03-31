@@ -6,7 +6,6 @@ import { UUIDV4 } from "sequelize";
 const Payment = sequelize.define("payments", {
   payment_id: {
     type: Sequelize.STRING,
-    allowNull: false,
     primaryKey: true,
     defaultValue: UUIDV4,
   },

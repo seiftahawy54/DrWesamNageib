@@ -12,7 +12,6 @@ const router = express.Router();
 router
   .get("/", getHomePage)
   .get("/aboutus", getAboutPage)
-  .get("/api/aboutus", getAboutPageDataApi)
   .get("/download_cv", downloadCV)
 
 export default router;

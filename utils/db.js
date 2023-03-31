@@ -34,10 +34,6 @@ if (process.env.NODE_ENV === "production") {
         // timestamps: false,
       },
       dialectOptions: {
-        ssl: {
-          require: false,
-          rejectUnauthorized: false
-        }
       },
     }
   );

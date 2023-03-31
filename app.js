@@ -19,8 +19,9 @@ import { Courses } from "./models/index.js";
 import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
-import { fileFilter, fileStorage } from "./middlewares/uploader.js";
+import { fileFilter, fileStorage } from "./middlewares/multer.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import logger from "./utils/logger.js";
 
 dotenv.config();
 const app = express();
@@ -35,12 +36,11 @@ app.use(
   Multer({
     limits: { fileSize: 5 * 1024 * 1024 },
     storage: fileStorage,
-    fileFilter: fileFilter,
+    fileFilter,
   }).any(
     "course_img",
     "detailed_img",
     "certificate_img",
-    "user_img",
     "exam_q_image",
     "instructor_img",
     "instructor_certificates"
@@ -74,7 +74,7 @@ app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
 
-Payment.hasOne(Courses, {
+/* Payment.hasOne(Courses, {
   foreignKey: "course_id",
   through: "course_id",
   constraints: false,
@@ -94,7 +94,7 @@ Payment.hasOne(Rounds, {
   constraints: false,
   onDelete: "cascade",
   onUpdate: "cascade",
-});
+}); */
 Users.hasOne(Rounds, {
   foreignKey: "current_round",
   constraints: false,
@@ -130,7 +130,7 @@ try {
   });
 
   app.listen(port, () => {
-    console.log(`working on http://localhost:${port}`);
+    logger.info(`working on http://localhost:${port}`)
   });
 } catch (e) {
   throw new Error(e);

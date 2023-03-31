@@ -30,15 +30,12 @@ export const getOverview = async (req, res, next) => {
     return user;
   });
 
-  res.render("dashboard/overview", {
-    title: "Overview Page",
-    path: "/dashboard/overview",
+  return res.status(200).json({
     statsNumbers: {
       users: numberOfUsers,
       courses: numberOfCourses,
       payments: numberOfPayments,
     },
-    moment,
   });
 };
 

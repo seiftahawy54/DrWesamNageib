@@ -50,7 +50,6 @@ export const getLogin = (req, res, next) =>
 export const postLogin = async (req, res, next) => {
   const { email, password } = req.body;
   const errors = validationResult(req);
-  // console.log("login errors", errors.array());
   if (!errors.isEmpty()) {
     return res.status(422).json({
       error: true,
@@ -58,42 +57,50 @@ export const postLogin = async (req, res, next) => {
     });
   }
 
-  Users.findAll({
+  const findingUserResult = await Users.findOne({
     where: {
       email,
     },
-  })
-    .then(async (findingUserResult) => {
-      const comparingResult = await bcrypt.compare(
-        password,
-        findingUserResult[0].password
-      );
-      if (comparingResult) {
-        const token = jwt.sign({
-          email,
-          role: findingUserResult[0],
-        });
-        req.flash("success", "Welcome on Board 😄");
-        return res.redirect("/profile");
-      } else {
-        req.flash("error", "Maybe username or password is invalid!");
-        return res.status(422).render("auth/login", {
-          title: "Login",
-          path: "/login",
-          user: { email, password },
-          validationErrors: { email: true, password: true },
-        });
-      }
-    })
-    .catch((err) => {
-      req.flash("error", "Maybe user name or password is invalid!");
-      return res.status(422).render("auth/login", {
-        title: "Login",
-        path: "/login",
-        user: { email, password },
-        validationErrors: { email: true, password: true },
-      });
-    });
+  });
+
+  if (!findingUserResult) {
+    return res.status(422).json(
+      constructError({
+        field: "Email or password",
+        message: "Invalid field",
+      })
+    );
+  }
+
+  const comparingResult = await bcrypt.compare(
+    password,
+    findingUserResult.password
+  );
+
+  if (!comparingResult) {
+    logger.info(`User with email ${email} tried to login with wrong password`);
+    return res.status(422).json(
+      constructError({
+        field: "Email or password",
+        message: "Invalid field",
+      })
+    );
+  }
+
+  const token = jwt.sign(
+    {
+      email,
+      role: findingUserResult.role,
+      user_id: findingUserResult.user_id,
+      name: findingUserResult.name,
+    },
+    process.env.APP_SECRET,
+    {
+      expiresIn: process.env.TOKEN_EXPIRATION,
+    }
+  );
+
+  return res.status(201).json({ success: true, token });
 };
 
 export const getForgetPassword = (req, res, next) => {
@@ -318,7 +325,13 @@ export const postRegister = async (req, res, next) => {
     let firstName = req.body.first_name;
     let middleName = req.body.middle_name;
     let lastName = req.body.last_name;
-    const { email, whatsapp_no, specialization, password, confirmPassword } = req.body;
+    const {
+      email,
+      whatsapp_number,
+      specialization,
+      password,
+      confirmPassword,
+    } = req.body;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -335,13 +348,15 @@ export const postRegister = async (req, res, next) => {
       const newUser = await Users.create({
         name: firstName + " " + middleName + " " + lastName,
         email,
-        whatsapp_no: whatsapp_no,
+        whatsapp_no: whatsapp_number,
         specialization: specialization,
         password: await encryptionResult,
         cart: [],
-        type: 2,
+        type: 1,
         role: "normal",
       });
+
+      logger.info(`New user ${JSON.stringify(newUser)}`);
 
       if (process.env.NODE_ENV === "production") {
         await sendGrid.send({
@@ -361,7 +376,7 @@ export const postRegister = async (req, res, next) => {
             `,
         });
       }
-      
+
       return res
         .status(201)
         .json({ success: true, message: "Account created successfully!" });
@@ -410,16 +425,15 @@ export const getCompletePayment = async (req, res, next) => {
         });
       }
 
-      res.render("auth/complete-payment", {
-        title: "complete payment",
-        path: "/complete-payment",
+      return res.status(200).json({
         bought_courses: filteredCourses,
         clientId,
         couponData,
       });
     } else {
-      req.flash("error", "Please select a course to buy!");
-      res.redirect("/courses");
+      return res.status(422).json({
+        message: "Please select a course to buy!",
+      });
     }
   } catch (e) {
     await errorRaiser(e, next);
@@ -551,17 +565,9 @@ export const postSuccess = async (req, res, next) => {
           status: "failed",
           details: req.session.userOrder,
         });
-        req.flash(
-          "error",
-          "There's an error in completing your payment, please contact us!"
-        );
         await errorRaiser(err, next);
       });
   } catch (e) {
-    req.flash(
-      "error",
-      "There's an error in completing your payment, please contact us!"
-    );
     await errorRaiser(e, next);
   }
 };

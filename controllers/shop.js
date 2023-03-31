@@ -9,7 +9,9 @@ import { Users } from "../models/index.js";
 
 import { errorRaiser } from "../utils/error_raiser.js";
 import {
+  constructError,
   downloadingCoursesImages,
+  extractErrorMessages,
   getCertificatesImage,
   sortCourses,
 } from "../utils/general_helper.js";
@@ -162,11 +164,10 @@ export const postDeleteFromCart = async (req, res, next) => {
     console.log(`deleting result ${deletingResult}`);
 
     if (Array.isArray(deletingResult)) {
-      req.flash("success", "Unwanted items deleted successfully");
-      return res.redirect("/cart");
-    } else {
-      req.flash("error", "Deleting failed!");
-      res.redirect("/cart");
+      return res.status(200).json({
+        success: true,
+        message: "Unwanted items deleted successfully"
+      })
     }
   } catch (e) {
     await errorRaiser(e, next);
@@ -214,15 +215,15 @@ export const getAboutPageDataApi = async (req, res, next) => {
           }
         }
       }
-    
+
     return res.json({
       paragraphs,
       instructors,
-    })
+    });
   } catch (e) {
     await errorRaiser(e, next);
   }
-}
+};
 
 // TODO: REMOVE IN NEW IMPLEMENTATION
 export const getAboutPage = async (req, res, next) => {
@@ -289,37 +290,33 @@ export const postContactPage = async (req, res, next) => {
   const senderName = req.body.contact_name;
   const senderEmail = req.body.contact_email;
   const senderContent = req.body.contact_content;
-  const sentToken = req.body["g-recaptcha-response"];
+
+  let sentToken = "";
+  let requestBody = "";
+
+  if (process.env.NODE_ENV === "production") {
+    sentToken = req.body["g-recaptcha-response"];
+    requestBody = {
+      url: `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPCHTA_SECRET}&response=${sentToken}`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+      },
+    };
+  }
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(messages);
-    return res.render("contactus/index", {
-      title: "Contact Us",
-      path: "/contact",
-      errorMessage: messages.en.validationErrors.invalidInput(
-        errors.array()[0].param
-      ),
-      successMessage: null,
-    });
+    return res.status(422).json(extractErrorMessages(errors.array()));
   }
 
-  const requestBody = {
-    url: `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPCHTA_SECRET}&response=${sentToken}`,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
-    },
-  };
-
-  const { data } = await axios(requestBody);
-  if (!data.success) {
-    return res.render("contactus/index", {
-      title: "Contact Us",
-      path: "/contact",
-      errorMessage: "Error in reCaptcha!",
-      successMessage: null,
-    });
+  if (process.env.NODE_ENV === "production") {
+    const { data } = await axios(requestBody);
+    if (!data.success) {
+      return res
+        .stauts(422)
+        .json(constructError("reCaptcha", "Failed in robot test"));
+    }
   }
 
   try {
@@ -330,23 +327,21 @@ export const postContactPage = async (req, res, next) => {
     });
 
     if (sendingResult._options.isNewRecord) {
-      return res.render("contactus/index", {
-        title: "Contact Us",
-        path: "/contact",
-        errorMessage: null,
-        successMessage: "Your message have been sent successfully",
-      });
+      return res
+        .status(200)
+        .json({ success: true, message: "Message sent successfully" });
     }
 
-    return res.render("contactus/index", {
-      title: "Contact Us",
-      path: "/contact",
-      errorMessage:
-        "Some error happened in our end! please contact us on the phone number!",
-      successMessage: null,
-    });
+    return res
+      .status(500)
+      .json(
+        constructError(
+          "server error",
+          "Message didn't save, Please call us on our number!"
+        )
+      );
   } catch (e) {
-    next(e);
+    await errorRaiser(e, next, "API");
   }
 };
 

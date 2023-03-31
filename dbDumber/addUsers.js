@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 (async () => {
   try {
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 1; i++) {
       const firstName = faker.name.firstName();
       const middleName = faker.name.middleName();
       const lastName = faker.name.lastName();

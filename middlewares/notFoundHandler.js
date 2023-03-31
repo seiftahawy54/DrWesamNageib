@@ -1,6 +1,5 @@
 export default (req, res, next) => {
-  res.render("404", {
-    title: "There's an error!",
-    path: "",
-  });
+  return res.status(404).json({
+    message: "Route not found"
+  })
 }

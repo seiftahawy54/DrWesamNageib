@@ -31,7 +31,6 @@ import DashboardAboutRoutes from "./dashboard/about.js";
 const router = express.Router();
 
 router
-  .get("/", (req, res) => res.status(301).redirect("/dashboard/overview"))
   .get("/overview", getOverview)
   .use("/users", DashboardUsersRoutes)
   .use("/rounds", DashboardRoundsRoutes)
@@ -78,4 +77,4 @@ router
   )
   .post("/discounts/delete-discounts", postDeleteDiscount);
 
-export { router as dashboardRoutes };
+export default router;

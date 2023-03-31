@@ -5,11 +5,12 @@ import {
   getCoursesCategories,
   getAllCoursesData,
 } from "../controllers/courses.js";
-import express from "express";
+import { Router } from "express";
 import { isUserAuthenticated } from "../middlewares/user-auth.js";
 import { body } from "express-validator";
+import { getShoppingCart, postDeleteFromCart } from "../controllers/shop.js";
 
-const coursesRoutes = express.Router();
+const coursesRoutes = Router();
 
 coursesRoutes
   .get("/", getAllCoursesData)
@@ -21,9 +22,8 @@ coursesRoutes
     isUserAuthenticated,
     addCourseToCart
   )
-  .post("/delete_from_cart", postDeleteFromCart)
-  .get("/cart", getShoppingCart)
+  .post("/delete_from_cart", isUserAuthenticated, postDeleteFromCart)
+  .get("/cart", isUserAuthenticated, getShoppingCart);
 
-
-const router = Router().use('/courses', router)
+const router = Router().use("/", coursesRoutes);
 export default router;

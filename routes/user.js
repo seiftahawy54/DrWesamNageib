@@ -13,17 +13,18 @@ import {
   getUserRound,
   getUserGrades,
   getUserProfileCertificate,
-} from "../controllers/user/user.js"
-import { Router } from "express"
-import { body } from "express-validator"
+} from "../controllers/user/user.js";
+import { upload } from "../middlewares/multer.js";
+import { Router } from "express";
+import { body } from "express-validator";
 
-const userProfileRoutes = Router()
-const examsRoutes = Router()
-const certificatesRoutes = Router()
+const userProfileRoutes = Router();
+const examsRoutes = Router();
+const certificatesRoutes = Router();
 
 userProfileRoutes
   .get("/", getUserProfile)
-  .post("/update-user-img", postUpdateUserImg)
+  .post("/update-profile-img", upload().single("user_img"), postUpdateUserImg)
   .get("/update-data/:userId", getUpdateUserData)
   .post(
     "/update-data",
@@ -32,32 +33,26 @@ userProfileRoutes
       body("whatsapp_number").isMobilePhone("any").notEmpty(),
       body("specialization").isString().notEmpty(),
     ],
-    postUpdateUserData,
+    postUpdateUserData
   )
   .get("/certificates", getUserProfileCertificate)
-
   .get("/data", getAllUserData)
   .get("/payments", getBoughtCourses)
-  .get("/round", getUserRound)
-  .get("/grades", getUserGrades)
-  ;
-
+  .get("/round", getUserRound);
 
 //-----------------------------------------------
 // Certificates routes
 //-----------------------------------------------
-certificatesRoutes
-  .get("/:courseId", getUserCertificate);
-
+certificatesRoutes.get("/:courseId", getUserCertificate);
 
 //-----------------------------------------------
 // User exams performance routes
 //-----------------------------------------------
 examsRoutes
-  .get("/exam/submitted-exam", getSubmittedExam)
-  .get("/exam/:examId", getPerformExam)
+  .get("/submitted-exam", getSubmittedExam)
+  .get("/:examId", getPerformExam)
   .post(
-    "/exam",
+    "/",
     [
       body("userAnswers").isArray().isLength({ min: 1 }),
       body("userAnswers.*").isObject(),
@@ -66,12 +61,13 @@ examsRoutes
         .optional({ nullable: true }),
       body("examId").isString().isLength({ min: 36, max: 36 }),
     ],
-    postPerformExam,
+    postPerformExam
   )
+  .get("/grades", getUserGrades);
 
 const usersRoutes = Router()
-  .use("/profile", userProfileRoutes)
+  .use("/", userProfileRoutes)
   .use("/certificates", certificatesRoutes)
-  .use("/exam", examsRoutes);
+  .use("/exams", examsRoutes);
 
 export default usersRoutes;

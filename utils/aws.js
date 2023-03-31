@@ -10,6 +10,7 @@ import multerS3 from "multer-s3";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import path from "path";
 import axios from "axios";
+import logger from "./logger.js";
 
 AWS.config.update({
   accessKeyId: process.env.ACCESS_KEY_ID,
@@ -32,18 +33,18 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
 
       const uploadingResult = s3.upload(params, function (s3Err, data) {
         if (s3Err) {
-          console.log(`uploading error => `, s3Err);
+          logger.error(`uploading error => `, s3Err);
           errorRaiser(s3Err, next).then((res) => {
-            console.log(`aws error ==> `, s3Err);
+            logger.error(`aws error ==> `, s3Err);
           });
         } else {
-          console.log(`uploading ... ====>  ${filename}`);
+          logger.info(`uploading ... ====>  ${filename}`);
           return true;
         }
       });
     })
     .catch((err) => {
-      console.log(err);
+      logger.error(err);
     });
 };
 
@@ -82,14 +83,14 @@ export const getSingleFile = async (filename) => {
         });
 
         writingStream.on("error", (err) => {
-          console.log(err);
+          logger.error(err);
           reject(false);
           return false;
         });
 
         writingStream.end();
       } catch (e) {
-        console.log(e.message);
+        logger.error(e.message);
       }
     }
   });

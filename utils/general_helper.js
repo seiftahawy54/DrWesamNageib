@@ -8,6 +8,7 @@ import fs from "fs";
 import { errorRaiser } from "./error_raiser.js";
 import { ExamImages } from "../models/index.js";
 import { sequelize } from "./db.js";
+import logger from './logger.js'
 
 export const sortCourses = (courses) => {
   let coursesRanks = [];
