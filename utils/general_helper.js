@@ -8,7 +8,7 @@ import fs from "fs";
 import { errorRaiser } from "./error_raiser.js";
 import { ExamImages } from "../models/index.js";
 import { sequelize } from "./db.js";
-import logger from './logger.js'
+import logger from "./logger.js";
 
 export const sortCourses = (courses) => {
   let coursesRanks = [];
@@ -246,17 +246,17 @@ export const downloadingCoursesImages = (courses) => {
     for (const course of courses) {
       await getSingleFile(course.course_img)
         .then((result) => {
-          console.log(`course image`, result);
+          logger.info(`course image ${result}`);
         })
         .catch((err) => {
-          console.error(err);
+          logger.error(err);
         });
       await getSingleFile(course.detailed_img)
         .then((result) => {
-          console.log(`course detailed image`, result);
+          logger.info(`course detailed image ${result}`);
         })
         .catch((err) => {
-          console.error(err);
+          logger.error(err);
         });
     }
 

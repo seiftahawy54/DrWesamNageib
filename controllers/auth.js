@@ -93,6 +93,7 @@ export const postLogin = async (req, res, next) => {
       role: findingUserResult.role,
       user_id: findingUserResult.user_id,
       name: findingUserResult.name,
+      type: findingUserResult.type,
     },
     process.env.APP_SECRET,
     {

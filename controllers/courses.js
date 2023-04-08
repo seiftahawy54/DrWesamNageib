@@ -59,7 +59,7 @@ export const getAllCoursesData = async (req, res, next) => {
   try {
     const courses = await Courses.findAll();
     await downloadingCoursesImages(courses);
-    res.status(200).json({
+    return res.status(200).json({
       courses,
     });
   } catch (e) {
@@ -78,7 +78,7 @@ export const getCoursesCategories = async (req, res, next) => {
     );
     coursesCategories = [...new Set(coursesCategories)];
     
-    res.status(200).json({
+    return res.status(200).json({
       coursesCategories,
     });
   } catch (e) {

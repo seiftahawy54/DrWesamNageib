@@ -15,7 +15,7 @@ router
   .get("/", getRounds)
   .get("/add-new-round", getStartNewRound)
   .post(
-    "/add-new-round",
+    "/",
     [
       body("round_course").notEmpty(),
       body("round_date").notEmpty(),
@@ -24,11 +24,7 @@ router
     postAddNewRound
   )
   .get("/edit-round/:roundId", getUpdateRound)
-  .post(
-    "/edit-round/:roundId",
-    [body("round_date").notEmpty()],
-    postUpdateRound
-  )
-  .post("/delete-rounds", postDeleteRound);
+  .put("/:roundId", [body("round_date").notEmpty()], postUpdateRound)
+  .delete("/", postDeleteRound);
 
 export default router;

@@ -24,7 +24,6 @@ import {
 } from "../../models/index.js";
 import { errorRaiser } from "../../utils/error_raiser.js";
 import axios from "axios";
-import { tree } from "gulp";
 
 export const getUserProfile = async (req, res, next) => {
   try {

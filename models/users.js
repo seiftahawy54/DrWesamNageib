@@ -87,6 +87,10 @@ const Users = sequelize.define("user", {
     defaultValue: "normal",
     allowNull: false,
   },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  }
 });
 
 export default Users;

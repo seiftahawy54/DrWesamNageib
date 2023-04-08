@@ -166,14 +166,12 @@ export const postDeleteFromCart = async (req, res, next) => {
     if (Array.isArray(deletingResult)) {
       return res.status(200).json({
         success: true,
-        message: "Unwanted items deleted successfully"
-      })
+        message: "Unwanted items deleted successfully",
+      });
     }
   } catch (e) {
     await errorRaiser(e, next);
   }
-
-  res.redirect("/cart");
 };
 
 export const getAboutPageDataApi = async (req, res, next) => {
@@ -192,31 +190,30 @@ export const getAboutPageDataApi = async (req, res, next) => {
       order: ["createdAt"],
     });
 
-    if (process.env.NODE_ENV === "production")
-      for (let ins of instructors) {
-        console.log(`instructor images ===> `, ins.instructor_image);
-        if (ins.instructor_image && ins.instructor_image.length > 0) {
-          getSingleFile(ins.instructor_image)
-            .then((res) => {
-              console.log(`Instructor Image ==> `, res);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-
-        if (
-          ins.instructor_certificates &&
-          ins.instructor_certificates.length > 0
-        ) {
-          for (let img of ins.instructor_certificates) {
-            console.log(`instructor certificate ${img}`);
-            await getSingleFile(img);
-          }
-        }
+    for (let ins of instructors) {
+      logger.info(`instructor images ===> ${ins.instructor_image}`);
+      if (ins.instructor_image && ins.instructor_image.length > 0) {
+        getSingleFile(ins.instructor_image)
+          .then((res) => {
+            logger.info(`Instructor Image ==> ${res}`);
+          })
+          .catch((err) => {
+            logger.error(err);
+          });
       }
 
-    return res.json({
+      if (
+        ins.instructor_certificates &&
+        ins.instructor_certificates.length > 0
+      ) {
+        for (let img of ins.instructor_certificates) {
+          logger.info(`instructor certificate ${img}`);
+          await getSingleFile(img);
+        }
+      }
+    }
+
+    return res.status(200).json({
       paragraphs,
       instructors,
     });
@@ -314,7 +311,7 @@ export const postContactPage = async (req, res, next) => {
     const { data } = await axios(requestBody);
     if (!data.success) {
       return res
-        .stauts(422)
+        .status(422)
         .json(constructError("reCaptcha", "Failed in robot test"));
     }
   }

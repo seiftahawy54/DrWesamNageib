@@ -3,7 +3,7 @@ import crypto from "crypto";
 
 const fileStorage = Multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "");
+    cb(null, "uploads");
   },
   filename: (req, file, cb) => {
     cb(null, crypto.randomBytes(10).toString("hex") + "-" + file.originalname);

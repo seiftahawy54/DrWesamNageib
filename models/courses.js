@@ -65,6 +65,10 @@ const Courses = sequelize.define("course", {
     defaultValue: new Date(),
     allowNull: true,
   },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 export default Courses;

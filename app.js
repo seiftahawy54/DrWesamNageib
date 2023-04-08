@@ -6,7 +6,6 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import Multer from "multer";
-import crypto from "crypto";
 import cors from "cors";
 
 // MY MODULES IMPORTS

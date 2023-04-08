@@ -67,23 +67,6 @@ export const getRounds = async (req, res, next) => {
       )
     );
 
-    data = Object.entries(data).map(([key, value], index) => {
-      return {
-        item: value,
-        entry: key,
-      };
-    });
-
-    let finalData = [];
-
-    data.forEach((value, key) => {
-      finalData.push({
-        data: data[key],
-        primaryKey: allPrimaryKeys[key],
-        updateInputName: "roundId",
-      });
-    });
-
     return res.render("dashboard/rounds/rounds_modified", {
       title: "Rounds",
       path: "/dashboard/rounds",

@@ -32,7 +32,7 @@ export const isUserAuthenticated = async (req, res, next) => {
 };
 
 export const isAdminAuthenticated = async (req, res, next) => {
-  if (req.user.role === "admin" && req.user.type >= 4) {
+  if (req.user.type >= 4) {
     return next();
   }
   return res
@@ -41,7 +41,7 @@ export const isAdminAuthenticated = async (req, res, next) => {
 };
 
 export const isModeratorAuthenticated = async (req, res, next) => {
-  if (req.user.role === "moderator" && req.user.type >= 3) {
+  if (req.user.type >= 3) {
     return next();
   }
 
@@ -51,7 +51,7 @@ export const isModeratorAuthenticated = async (req, res, next) => {
 };
 
 export const isInstructorAuthenticated = async (req, res, next) => {
-  if (req.user.role === "instructor" && req.user.type >= 2) {
+  if (req.user.type >= 2) {
     return next();
   }
 

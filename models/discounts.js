@@ -42,6 +42,10 @@ const Discounts = sequelize.define("discount", {
     defaultValue: new Date(),
     allowNull: true,
   },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
+  }
 });
 
 export default Discounts;

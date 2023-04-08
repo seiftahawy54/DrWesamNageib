@@ -17,6 +17,6 @@ router
   .use("/home", HomeRoutes)
   .use("/aboutUs", AboutRoutes)
   .use("/opinions", OpinionsRoutes)
-  .use("/dashboard", isModeratorAuthenticated, DashboardRoutes)
+  .use("/dashboard", isUserAuthenticated, isModeratorAuthenticated, DashboardRoutes)
 
 export default router;
