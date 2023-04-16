@@ -1,117 +1,49 @@
-import { Rounds } from "../../models/index.js";
-import { Courses } from "../../models/index.js";
-import { Users } from "../../models/index.js";
+import { Rounds, Courses, Users } from "../../models/index.js";
 import { errorRaiser } from "../../utils/error_raiser.js";
 import moment from "moment";
 import { validationResult } from "express-validator";
 import { getCoursesFormCart } from "../../utils/cart_helpers.js";
-import { QueryTypes, Sequelize } from "sequelize";
+import { Op, QueryTypes, Sequelize } from "sequelize";
 import { sequelize } from "../../utils/db.js";
 import Discounts from "../../models/discounts.js";
+import { extractErrorMessages } from "../../utils/general_helper.js";
 
 export const getRounds = async (req, res, next) => {
   try {
-    const findingDiscounts = await Rounds.findAll({
+    let rounds = await Rounds.findAll({
       order: [
         ["round_date", "ASC"],
         ["updatedAt", "DESC"],
         ["createdAt", "DESC"],
       ],
-    });
-    const allPrimaryKeys = [];
-
-    let data = await Promise.all(
-      await findingDiscounts.map(
-        async ({ round_id, course_id, users_ids, round_date, finished }) => {
-          allPrimaryKeys.push(round_id);
-
-          let usersForEachRound = await Promise.all(
-            users_ids.map(async (user_id) => {
-              return await Users.findByPk(user_id);
-            })
-          );
-
-          usersForEachRound = usersForEachRound.map((user) => {
-            if (user && "name" in user) {
-              return user.name;
-            } else {
-              return "DELETED USER";
-            }
-          });
-
-          const name = (
-            await Courses.findByPk(course_id, {
-              attributes: ["name"],
-            })
-          )?.name;
-
-          if (usersForEachRound.length === 0) {
-            usersForEachRound = "No users for this round.";
-          }
-
-          if (
-            Array.isArray(usersForEachRound) &&
-            usersForEachRound.length > 10
-          ) {
-            usersForEachRound = usersForEachRound.slice(0, 10);
-          }
-
-          return {
-            noOfUsers: users_ids.length,
-            finished: !finished ? "Working" : "Closed",
-            course_id: name,
-            users_ids: usersForEachRound,
-            round_date: moment(round_date).format("DD-MM-YYYY"),
-          };
-        }
-      )
-    );
-
-    return res.render("dashboard/rounds/rounds_modified", {
-      title: "Rounds",
-      path: "/dashboard/rounds",
-      tableName: "Rounds",
-      addingNewLink: "round",
-      singleTableName: "round",
-      tableHead: [
+      include: [
         {
-          title: "#",
-          name: "rounds-numbers",
-        },
-        {
-          title: "No. Users",
-          name: "number-of-subscribers",
-        },
-        {
-          title: "Round Status",
-          name: "rounds-status",
-        },
-        {
-          title: "Round Course Name",
-          name: "round-course-name",
-        },
-        {
-          title: "Round Users",
-          name: "round-users",
-        },
-        {
-          title: "Round Date",
-          name: "round-date",
-        },
-        {
-          title: "Update Round",
-          name: "update-round",
-        },
-        {
-          title: "Delete Round",
-          name: "delete-round",
+          model: Courses,
+          on: {
+            course_id: { [Op.eq]: Sequelize.col("rounds.course_id") },
+          },
+          attributes: ["name"],
+          where: {
+            isDeleted: false,
+          },
         },
       ],
-      tableRows: finalData,
-      customStuff: {},
+    });
+
+    for (const round of rounds) {
+      round.users_ids = await Promise.all(
+        round.users_ids.map(async (userId) => {
+          const user = await Users.findByPk(userId);
+          return user ? user : "DELETED USER";
+        })
+      );
+    }
+
+    return res.status(200).json({
+      rounds,
+      primaryKey: "round_id",
     });
   } catch (e) {
-    console.log(e);
     await errorRaiser(e, next);
   }
 };
@@ -135,7 +67,6 @@ export const getStartNewRound = async (req, res, next) => {
 
 export const postAddNewRound = async (req, res, next) => {
   try {
-    const allCourses = await Courses.findAll();
     // moment(date).toISOString()
     const roundCourse = req.body.round_course;
     const roundDate = req.body.round_date;
@@ -143,47 +74,18 @@ export const postAddNewRound = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      req.flash("error", errors.array()[0].msg);
-      res.status(402).render("dashboard/rounds/round_form", {
-        title: "Rounds",
-        // path: "/dashboard/rounds",
-        path: "/dashboard/rounds",
-        courses: allCourses,
-        editMode: false,
-        validationErrors: errors.array(),
-        round: {
-          round_course: roundCourse,
-          round_date: roundDate,
-          round_link: roundLink,
-        },
-      });
-    } else {
-      const addingResult = await Rounds.create({
-        course_id: roundCourse,
-        round_date: moment(roundDate).toISOString(),
-        round_link: roundLink,
-        users_ids: [],
-      });
+      return res.status(400).json(extractErrorMessages(errors.array()));
+    }
 
-      if (typeof addingResult === "object") {
-        req.flash("success", "Round Added Successfully");
-        return res.status(201).redirect("/dashboard/rounds");
-      } else {
-        req.flash("error", "Error in adding new round");
-        return res.status(402).render("dashboard/rounds/round_form", {
-          title: "Rounds",
-          // path: "/dashboard/rounds",
-          path: "/dashboard/rounds",
-          courses: allCourses,
-          editMode: false,
-          validationErrors: errors.array(),
-          round: {
-            round_course: roundCourse,
-            round_date: roundDate,
-            round_link: roundLink,
-          },
-        });
-      }
+    const addingResult = await Rounds.create({
+      course_id: roundCourse,
+      round_date: moment(roundDate).toISOString(),
+      round_link: roundLink,
+      users_ids: [],
+    });
+
+    if (typeof addingResult === "object") {
+      return res.status(201).json({ message: "Round Added Successfully" });
     }
   } catch (e) {
     await errorRaiser(e, next);

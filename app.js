@@ -100,18 +100,35 @@ Users.hasOne(Rounds, {
   onDelete: "cascade",
   onUpdate: "cascade",
 });
+
+Rounds.hasOne(Users, {
+  foreignKey: "course_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+
 Rounds.hasOne(Courses, {
   foreignKey: "course_id",
   constraints: false,
   onDelete: "cascade",
   onUpdate: "cascade",
 });
+
 Rounds.belongsToMany(Users, {
   through: "users_ids",
   constraints: false,
   onDelete: "cascade",
   onUpdate: "cascade",
 });
+
+Rounds.belongsToMany(Courses, {
+  through: "users_ids",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+
 ExamsReplies.belongsTo(Users, {
   foreignKey: "user_id",
   constraints: false,

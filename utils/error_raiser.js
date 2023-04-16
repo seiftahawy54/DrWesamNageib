@@ -10,6 +10,6 @@ export const errorRaiser = async (err, next, type = "API") => {
   const error = new Error(err);
   error.httpStatusCode = 500;
   error.errorType = type;
-  logger.error(err);
+  logger.error(JSON.stringify(err));
   return next(error);
 };

@@ -10,23 +10,23 @@ import {
 import { resolve } from "path";
 import { errorRaiser } from "../../utils/error_raiser.js";
 import { uploadFile } from "../../utils/aws.js";
+import dashboardTables from "../../utils/dashboardTables.js";
 import moment from "moment";
 import logger from "../../utils/logger.js";
 
 const getCourses = async (req, res, next) => {
   try {
     const findingAllCourses = await Courses.findAll({
-      where: {
-        isDeleted: false,
-      },
       order: [
         ["course_rank", "ASC"],
         ["updatedAt", "DESC"],
         ["createdAt", "DESC"],
       ],
     });
+    
     return res.status(200).json({
       courses: findingAllCourses,
+      primaryKey: 'course_id'
     });
   } catch (e) {
     await errorRaiser(e, next);
@@ -342,13 +342,13 @@ const postUpdateCourse = async (req, res, next) => {
 
       if (addingResult[0] === 1) {
         return res.status(200).json({
-          message: "Course updated successfully"
+          message: "Course updated successfully",
         });
       }
-      return res.status(500).json({message: "Server error"})
+      return res.status(500).json({ message: "Server error" });
     }
   } catch (e) {
-    await errorRaiser(e, next)
+    await errorRaiser(e, next);
   }
 };
 
