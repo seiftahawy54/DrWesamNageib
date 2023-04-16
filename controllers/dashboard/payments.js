@@ -1,10 +1,22 @@
 import { errorRaiser } from "../../utils/error_raiser.js";
 import moment from "moment";
-import { sequelize } from "../../utils/db.js";
+import { Payment, Users } from "../../models/index.js";
+import {Op, Sequelize} from 'sequelize'
 
 export const getPaymentsPage = async (req, res, next) => {
   try {
-    const allPayments = await sequelize.query(
+    const payments = Payment.findAll({
+      include: [
+        {
+          model: Users,
+          on: {
+            user_id: {
+              [Op.eq]: Sequelize.c
+            }
+          }
+        }
+      ]
+    }); /* await sequelize.query(
       `
       select payments.status as payment_status, "payments"."createdAt" as payment_date, users.name as user_name, course.name as course_name, round.round_date as round_date from payments
         Inner JOIN users on users.user_id = payments.user_id
@@ -14,8 +26,8 @@ export const getPaymentsPage = async (req, res, next) => {
       {
         type: "SELECT",
       }
-    );
-
+    ); */
+    /* 
     const allPrimaryKeys = [];
 
     let data = await Promise.all(
@@ -60,46 +72,11 @@ export const getPaymentsPage = async (req, res, next) => {
         primaryKey: allPrimaryKeys[key],
         updateInputName: "paymentId",
       });
-    });
+    }); */
 
-    return res.render("dashboard/payments", {
-      title: "Payments",
-      path: "/dashboard/payments",
-      tableName: "Payments",
-      addingNewLink: "payments",
-      singleTableName: "payment",
-      tableHead: [
-        {
-          title: "#",
-          name: "payments-number",
-        },
-        {
-          title: "Payment Status",
-          name: "payment-status",
-        },
-        {
-          title: "Payment Date",
-          name: "payment-date",
-        },
-        {
-          title: "Payee Name",
-          name: "payee-name",
-        },
-        {
-          title: "Bought Course",
-          name: "bought-course",
-        },
-        {
-          title: "Bought Round",
-          name: "bought-round",
-        },
-      ],
-      tableRows: finalData,
-      customStuff: {
-        notHaveUpdate: true,
-        notHaveNewInsert: true,
-        notDeleteRow: true,
-      },
+    return res.status(200).json({
+      payments,
+      primaryKey: "payment_id",
     });
   } catch (e) {
     await errorRaiser(e, next);
