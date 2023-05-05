@@ -5,6 +5,21 @@ import { sequelize } from "../../../utils/db.js";
 import moment from "moment";
 import { Op } from "sequelize";
 import { userPerformedExams } from "../../../utils/general_helper.js";
+import {
+  STRING_TYPE,
+  validateRequestInput,
+} from "../../../validators/typesValidators.js";
+
+const getSearchForUser = async (req, res, next) => {
+  let { search } = req.query;
+  const { error, message } = validateRequestInput(search, "input", STRING_TYPE);
+
+  if (error) {
+    return res.status(400).json({
+      message,
+    });
+  }
+};
 
 const getUsers = async (req, res, next) => {
   // const allUsers = await Users.findAll();
@@ -262,4 +277,10 @@ const postUpdateUser = async (req, res, next) => {
   }
 };
 
-export { getUsers, postDeleteUser, getUpdateUser, postUpdateUser };
+export {
+  getUsers,
+  postDeleteUser,
+  getUpdateUser,
+  postUpdateUser,
+  getSearchForUser,
+};

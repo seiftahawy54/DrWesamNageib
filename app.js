@@ -51,7 +51,7 @@ app.use("/robots.txt", express.static(path.resolve("public", "robots.txt")));
 app.use("/sitemap.xml", express.static(path.resolve("public", "sitemap.xml")));
 app.use(express.static(path.resolve("public")));
 app.use(
-  "/downloaded_images",
+  "/static",
   express.static(path.resolve("downloaded_images"))
 );
 
@@ -73,7 +73,7 @@ app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
 
-/* Payment.hasOne(Courses, {
+Payment.hasOne(Courses, {
   foreignKey: "course_id",
   through: "course_id",
   constraints: false,
@@ -93,7 +93,7 @@ Payment.hasOne(Rounds, {
   constraints: false,
   onDelete: "cascade",
   onUpdate: "cascade",
-}); */
+});
 Users.hasOne(Rounds, {
   foreignKey: "current_round",
   constraints: false,
@@ -151,3 +151,5 @@ try {
 } catch (e) {
   throw new Error(e);
 }
+
+export default app;
