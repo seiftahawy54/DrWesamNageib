@@ -141,6 +141,7 @@ const postAddNewCourse = async (req, res, next) => {
     // console.log(`detailed image: `, );
 
     if (!errors.isEmpty()) {
+      console.log(errors.array())
       req.flash("error", errors.array()[0].msg);
       res.status(422).render("dashboard/courses_forms", {
         title: "New Course",
