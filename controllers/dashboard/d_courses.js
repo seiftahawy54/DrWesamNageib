@@ -176,7 +176,7 @@ const postAddNewCourse = async (req, res, next) => {
       special_course: specialCourse,
       course_category: courseCategory,
       total_hours: courseTotalHours,
-    })
+    });
 
     const uploadingFirstImg = await uploadFile(
       courseImg.path,
@@ -184,7 +184,8 @@ const postAddNewCourse = async (req, res, next) => {
       courseImg.mimetype,
       res,
       next,
-    )
+    );
+
     const uploadingSecondImg = await uploadFile(
       detailedImg.path,
       detailedImg.filename,
@@ -193,12 +194,13 @@ const postAddNewCourse = async (req, res, next) => {
       next,
     )
 
-    if (addingResult && uploadingFirstImg && uploadingSecondImg) {
+    if (addingResult) {
       res.status(201).redirect("/dashboard/courses")
     } else {
       res.redirect("/dashboard/add-new-course")
     }
   } catch (e) {
+    console.log(e)
     await errorRaiser(e, next)
   }
 }
