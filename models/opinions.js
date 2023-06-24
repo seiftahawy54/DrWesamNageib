@@ -10,6 +10,10 @@ const Opinions = sequelize.define("opinions", {
     allowNull: false,
     defaultValue: UUIDV4,
   },
+  user_id: {
+    type: Sequelize.STRING,
+    defaultValue: UUIDV4,
+  },
   sender_email: {
     type: Sequelize.STRING,
     allowNull: true,
@@ -31,6 +35,9 @@ const Opinions = sequelize.define("opinions", {
     type: Sequelize.DATE,
     allowNull: true,
     defaultValue: sequelize.literal("current_timestamp"),
+  },
+  rate: {
+    type: Sequelize.DOUBLE,
   },
   createdAt: {
     type: Sequelize.DATE,

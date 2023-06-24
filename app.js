@@ -146,7 +146,7 @@ try {
   });
 
   app.listen(port, () => {
-    logger.info(`working on http://localhost:${port}`)
+    logger.info(`working on ${port}`)
   });
 } catch (e) {
   throw new Error(e);

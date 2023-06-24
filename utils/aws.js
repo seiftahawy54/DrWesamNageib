@@ -49,13 +49,18 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
 };
 
 export const getSingleFile = async (filename) => {
-  const downloadedImagesPath = path.resolve("downloaded_images");
+  const downloadedImagesFolder = path.resolve("downloaded_images");
+  const fullImgPath = path.resolve(downloadedImagesFolder, filename)
 
   return new Promise(async (resolve, reject) => {
-    if (!fs2.existsSync(downloadedImagesPath)) {
+    if (!fs2.existsSync(downloadedImagesFolder)) {
       const imgsPath = path.resolve("downloaded_images");
       fs2.mkdirSync(imgsPath);
       return getSingleFile(filename);
+    } else if (fs2.existsSync(fullImgPath)) {
+      resolve(true);
+      console.log(`${fullImgPath} exists`)
+      return true
     } else {
       const downloadingUrl = `https://seiftahawy.s3.amazonaws.com/${filename}`;
       const filePath = path.resolve("downloaded_images", filename);
