@@ -69,27 +69,7 @@ export const getHomePage = async (req, res, next) => {
 export const getHomepageApi = async (req, res, next) => {
     try {
         const getCoursesResult = await Courses.findAll();
-        const getAllOpinionsResult = await Opinions.findAll({
-            where: {
-                sender_email: {
-                    [Op.ne]: null,
-                }
-            },
-            include: [
-                {
-                    model: Users,
-                    on: {
-                        user_id: {
-                            [Op.eq]: Sequelize.col("opinions.user_id"),
-                        },
-                    },
-                    attributes: ["name"],
-                    where: {
-                        isDeleted: false,
-                    },
-                },
-            ]
-        });
+        const getAllOpinionsResult = await Opinions.findAll({});
         let sortedCourses = sortCourses(getCoursesResult).sort(
             (a, b) => a.sort - b.sort
         );
