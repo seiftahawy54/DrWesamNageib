@@ -11,10 +11,7 @@ import cors from "cors";
 // MY MODULES IMPORTS
 import { sequelize } from "./utils/db.js";
 import AppRoutes from './routes/index.js'
-import { ExamsReplies, Users } from "./models/index.js";
-import { Rounds } from "./models/index.js";
-import { Payment } from "./models/index.js";
-import { Courses } from "./models/index.js";
+import { ExamsReplies, Users, Rounds, Payment, Courses, UserPerRound } from "./models/index.js";
 import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
@@ -135,6 +132,21 @@ ExamsReplies.belongsTo(Users, {
   onDelete: "cascade",
   onUpdate: "cascade",
 });
+
+UserPerRound.hasMany(Users, {
+  foreignKey: "userId",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+})
+
+UserPerRound.hasMany(Rounds, {
+  foreignKey: "roundId",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+})
+
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
