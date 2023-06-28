@@ -11,5 +11,6 @@ export const errorRaiser = async (err, next, type = "API") => {
   error.httpStatusCode = 500;
   error.errorType = type;
   logger.error(JSON.stringify(err));
+  console.log(err)
   return next(error);
 };

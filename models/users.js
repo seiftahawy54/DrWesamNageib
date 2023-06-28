@@ -3,6 +3,8 @@ import { sequelize } from "../utils/db.js";
 import { hashCreator } from "../utils/general_helper.js";
 import { UUIDV4 } from "sequelize";
 
+const usersRoles = ['normal', 'moderator', 'admin', 'instructor'];
+
 const Users = sequelize.define("user", {
   user_id: {
     type: Sequelize.STRING,
@@ -83,7 +85,7 @@ const Users = sequelize.define("user", {
     allowNull: true,
   },
   role: {
-    type: Sequelize.ENUM('normal', 'moderator', 'admin', 'instructor'),
+    type: Sequelize.ENUM(...usersRoles),
     defaultValue: "normal",
     allowNull: false,
   },

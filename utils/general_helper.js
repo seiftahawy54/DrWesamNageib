@@ -387,7 +387,7 @@ export const isEmpty = (obj) => Object.keys(obj).length === 0;
  * @returns - { field: string, reason: string }
  */
 
-export const constructError = (field, message) => ({ field, reason: message });
+export const constructError = (field, message) => ({ field, message });
 
 /**
  * @description Construct the filters for searching in posts
