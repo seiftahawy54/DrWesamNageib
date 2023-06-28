@@ -93,7 +93,6 @@
     "gulp-nodemon": "^2.2.1",
     "gulp-uglify": "^3.0.2",
     "nodemon": "^2.0.15",
-    "prettier": "^2.8.6",
-    "vite": "^4.3.9"
+    "prettier": "^2.8.6"
   }
 }
