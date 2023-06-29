@@ -29,6 +29,11 @@ import PostgresTransport from "winston-postgres-transport";
 //   throw reason;
 // });
 
-const logger = () => true
+const logger = () => {
+  return {
+    info: (msg) => console.log(msg),
+    error: (msg) => console.log(msg)
+  }
+}
 
 export default logger;
