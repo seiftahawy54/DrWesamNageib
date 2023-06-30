@@ -12,8 +12,17 @@ const logger = winston.createLogger({
         new PostgresTransport({
             postgresUrl: process.env.DATABASE_URL,
         }),
+        new winston.transports.Console(),
+        new winston.transports.File({
+            filename: 'logs/combined.log',
+        }),
     ],
-    tableName: 'winston_logs',
+    exceptionHandlers: [
+        new winston.transports.File({ filename: 'logs/exception.log' }),
+    ],
+    rejectionHandlers: [
+        new winston.transports.File({ filename: 'logs/rejections.log' }),
+    ],
 });
 
 logger.add(
@@ -23,7 +32,6 @@ logger.add(
 );
 
 process.on("unhandledRejection", (reason, promise) => {
-    // eslint-disable-next-line no-console
     console.log("Unhandled Rejection at: Promise", promise, "reason:", reason);
     throw reason;
 });

@@ -154,13 +154,13 @@ try {
   const connectionResult = await sequelize.authenticate();
   const syncingResult = await sequelize.sync({
     alter: true,
-    logging: false,
   });
 
   app.listen(port, () => {
     logger.info(`working on ${port}`)
   });
 } catch (e) {
+  logger.error(e)
   throw new Error(e);
 }
 

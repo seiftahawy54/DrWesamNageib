@@ -12,7 +12,6 @@ if (process.env.NODE_ENV === "production") {
     {
       dialect: "postgres",
       protocol: "postgres",
-      logging: true,
       define: {
         // timestamps: false,
       },
