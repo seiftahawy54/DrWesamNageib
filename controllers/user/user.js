@@ -607,7 +607,7 @@ export const getUserProfileCertificate = async (req, res, next) => {
             });
         }
 
-        return res.status(200).json({certificateData: null});
+        return res.status(200).json({certificateData: []});
     } catch (e) {
         await errorRaiser(e, next);
     }

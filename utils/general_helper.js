@@ -246,14 +246,14 @@ export const downloadingCoursesImages = (courses) => {
     for (const course of courses) {
       await getSingleFile(course.course_img)
         .then((result) => {
-          logger.info(`course image ${result}`);
+          logger.info(`course image ${course.course_img} result ${result}`);
         })
         .catch((err) => {
           logger.error(err);
         });
       await getSingleFile(course.detailed_img)
         .then((result) => {
-          logger.info(`course detailed image ${result}`);
+          logger.info(`course detailed image ${course.detailed_img} result ${result}`);
         })
         .catch((err) => {
           logger.error(err);
