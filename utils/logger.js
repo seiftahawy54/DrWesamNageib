@@ -1,5 +1,21 @@
 import winston from "winston";
-import PostgresTransport from "winston-postgres-transport";
+import {PostgresTransport} from "@innova2/winston-pg";
+
+let dbConnectionOptions = {};
+
+if (process.env.NODE_ENV === 'production') {
+    dbConnectionOptions = {
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            require: true,
+            rejectUnauthorized: false,
+        }
+    };
+} else {
+    dbConnectionOptions = {
+        connectionString: process.env.DATABASE_URL,
+    }
+}
 
 const logger = winston.createLogger({
     level: "info",
@@ -9,19 +25,17 @@ const logger = winston.createLogger({
         // - Write all logs with importance level of `error` or less to `error.log`
         // - Write all logs with importance level of `info` or less to `combined.log`
         //
-        new PostgresTransport({
-            postgresUrl: process.env.DATABASE_URL,
-        }),
+        new PostgresTransport(dbConnectionOptions),
         new winston.transports.Console(),
         new winston.transports.File({
             filename: 'logs/combined.log',
         }),
     ],
     exceptionHandlers: [
-        new winston.transports.File({ filename: 'logs/exception.log' }),
+        new winston.transports.File({filename: 'logs/exception.log'}),
     ],
     rejectionHandlers: [
-        new winston.transports.File({ filename: 'logs/rejections.log' }),
+        new winston.transports.File({filename: 'logs/rejections.log'}),
     ],
 });
 
