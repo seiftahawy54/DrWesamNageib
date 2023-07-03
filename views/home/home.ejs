@@ -9,7 +9,7 @@
 <section class="main-header">
   <div class="container">
     <%- include("../includes/errorMessage.ejs"); %>
-    <p>Welcome to Dr. Wesam Nageib's webiste, a certified CPHQ trainer</p>
+    <p>Welcome to Dr. Wesam Nageib's webiste</p>
     <h2>Your way to find success in your career</h2>
     <video src="/videos/intro_vid.mp4" autoplay controls></video>
     <div class="button-container">
@@ -24,41 +24,6 @@
   </div>
 </section>
 <!-- End main header Section -->
-<!-- Start Whatsapp Opinions -->
-
-
-<section class="testimonials whatsapp_opinions">
-  <div class="container">
-    <h2 class="text-center my-5">
-      After Exams Opinions
-    </h2>
-    <!-- Starting Slider -->
-    <!-- Slider main container -->
-    <div class="swiper main-slider">
-      <!-- Additional required wrapper -->
-
-      <div class="swiper-wrapper">
-        <!-- Slides -->
-        <% whatsapp_opinions.forEach((opinion, index) => { %>
-          <div class="swiper-slide">
-            <section class="opinion-container">
-              <img src="/imgs/imgs/opinions/<%- opinion %>" alt="opinion-<%= index %>" loading="lazy" />
-            </section>
-          </div>
-        <% }) %>
-      </div>
-      <!-- If we need pagination -->
-      <div class="swiper-pagination"></div>
-
-      <!-- If we need navigation buttons -->
-      <div class="swiper-button-prev d-none d-lg-block"></div>
-      <div class="swiper-button-next d-none d-lg-block"></div>
-    </div>
-    <!-- End Slider -->
-  </div>
-</section>
-
-<!-- End Whatsapp Opinions -->
 <!-- Start Our Courses Sections -->
 <section class="our-courses">
   <div class="container">
@@ -100,54 +65,6 @@
 </section>
 
 <!-- End JoinUs Section -->
-<!-- Start Testimonials -->
-
-<section class="testimonials">
-  <div class="container">
-    <div class="text-center">
-      <%- include('../../public/imgs/svgs/comments.svg') %>
-      Testimonials
-    </div>
-    <!-- Starting Slider -->
-    <!-- Slider main container -->
-    <div class="swiper main-slider">
-      <!-- Additional required wrapper -->
-
-      <div class="swiper-wrapper">
-
-        <!-- Slides -->
-        <% opinions.forEach(opinion => { %>
-          <div class="swiper-slide">
-            <section class="client-container">
-              <div class="client-data">
-                <%- include('../../public/imgs/svgs/account.svg') %>
-                <div class="client-name-date">
-                  <div class="client-name">
-                    <%- opinion.sender_name %>
-                  </div>
-                  <div class="client-date">
-                    <bdi><%= opinion.created_on ? moment(opinion.created_on).format("YYYY-MM-DD") : moment("2022-01-22").format("YYYY-MM-DD") %></bdi>
-                  </div>
-                </div>
-              </div>
-              <blockquote class="client-opinion ar-font">
-                "<%- opinion.sender_message %>"
-              </blockquote>
-            </section>
-          </div>
-        <% }) %>
-      </div>
-      <!-- If we need pagination -->
-      <div class="swiper-pagination"></div>
-
-      <!-- If we need navigation buttons -->
-      <div class="swiper-button-prev d-none d-lg-block"></div>
-      <div class="swiper-button-next d-none d-lg-block"></div>
-    </div>
-    <!-- End Slider -->
-  </div>
-</section>
-<!-- End Testimonials -->
 <!-- Start info section -->
 <section class="info-section">
   <p class="text-center"><a href="mailto:drwesamnageib@gmail.com" class="reset-link" target="_blank">drwesamnageib@gmail.com</a>

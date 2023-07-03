@@ -119,3 +119,5 @@ dist
 .tern-port
 
 idea
+.idea
+public/certificates/*
