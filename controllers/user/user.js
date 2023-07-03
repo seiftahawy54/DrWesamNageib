@@ -26,6 +26,8 @@ import {errorRaiser} from "../../utils/error_raiser.js";
 import axios from "axios";
 import userPerRound from "../../models/userPerRound.js";
 import {Op, Sequelize} from "sequelize";
+import user from "../../routes/user.js";
+import fs2 from "fs";
 
 export const getUserProfile = async (req, res, next) => {
     try {
@@ -146,63 +148,6 @@ export const postUpdateUserData = async (req, res, next) => {
     }
 };
 
-export const getUserCertificate = async (req, res, next) => {
-    try {
-        const courseId = req.params.courseId;
-
-        const roundAndCourse = await sequelize.query(
-            `select *, course.* from rounds inner join courses course on rounds.round_id = ? and course.course_id = ?`,
-            {
-                replacements: [req.user.finished_course, courseId],
-                type: "SELECT",
-            }
-        );
-
-        if (roundAndCourse[0].special_course) {
-            getSingleFile(roundAndCourse[0].course_img)
-                .then((response) => {
-                    const certificateDoc = createCertificate(
-                        req.user.name,
-                        req.user.user_id,
-                        roundAndCourse[0].name,
-                        roundAndCourse[0].total_hours,
-                        roundAndCourse[0].round_date,
-                        roundAndCourse[0].course_img,
-                        roundAndCourse[0].course_category
-                    );
-
-                    certificateDoc.certificateObject.pipe(
-                        fs.createWriteStream(certificateDoc.certificatePath)
-                    );
-
-                    res.setHeader("Content-Type", "application/pdf");
-                    res.setHeader(
-                        "Content-Disposition",
-                        `inline; filename="${certificateDoc.certificateName}"`
-                    );
-
-                    certificateDoc.certificateObject.pipe(res);
-                    certificateDoc.certificateObject.end();
-                })
-                .catch((err) => {
-                    logger.error(err);
-                    return res.status(500).json({
-                        error: true,
-                        message: "Server error",
-                    });
-                });
-        } else {
-            logger.error(err);
-            return res.status(500).json({
-                error: true,
-                message: "Server error",
-            });
-        }
-    } catch (e) {
-        await errorRaiser(e, next);
-    }
-};
-
 export const getPerformExam = async (req, res, next) => {
     try {
         const examId = req.params.examId;
@@ -245,7 +190,7 @@ export const getPerformExam = async (req, res, next) => {
                 });
             }
 
-            (async () => {
+            await (async () => {
                 for (const questionObj of findingExam.questions) {
                     if ("examImage" in questionObj) {
                         const fetchingResult = await getSingleFile(questionObj.examImage);
@@ -420,7 +365,8 @@ export const getAllUserData = async (req, res, next) => {
 export const getBoughtCourses = async (req, res, next) => {
     try {
         const findingUserPayments = await Payment.findAll({
-            where: {user_id: req.user.user_id},
+            where: {user_id: req.user.user_id, status: "success"},
+            attributes: ['user_id', 'course_id', 'payment_id'],
             include: [
                 {
                     model: Courses,
@@ -438,35 +384,17 @@ export const getBoughtCourses = async (req, res, next) => {
         });
 
         if (
-          !Array.isArray(findingUserPayments) ||
-          findingUserPayments.length === 0
+            !Array.isArray(findingUserPayments) ||
+            findingUserPayments.length === 0
         ) {
-          return res
-            .status(200)
-            .json({ message: "No payments found", payments: [] });
+            return res
+                .status(200)
+                .json({message: "No payments found", payments: []});
         }
-        //
-        // const coursesPayments = findingUserPayments.map((payment) => {
-        //   return payment.course_id;
-        // });
-        //
-        // if (!Array.isArray(coursesPayments) || coursesPayments.length === 0) {
-        //   return res
-        //     .render(200)
-        //     .json({ message: "No courses are payed for!", payments: null });
-        // }
-        //
-        // const findingBoughtCourses = await Promise.all(
-        //   await coursesPayments.map(async (courses) => {
-        //     return await Courses.findByPk(courses, {
-        //       attributes: ["name", "price"],
-        //     });
-        //   })
-        // );
 
         return res
             .status(200)
-            .json({message: "Payments found!", payments: findingBoughtCourses});
+            .json({message: "Payments found!", payments: findingUserPayments});
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -474,11 +402,6 @@ export const getBoughtCourses = async (req, res, next) => {
 
 export const getUserRound = async (req, res, next) => {
     try {
-        // let roundData = await sequelize.query(
-        //   `// SELECT * FROM rounds WHERE ? LIKE ANY (rounds.users_ids)`,
-        //   { replacements: [req.user.user_id], type: "SELECT" }
-        // );
-
         let roundData = await userPerRound.findAll({
             where: {userId: req.user.user_id},
             include: [
@@ -489,6 +412,9 @@ export const getUserRound = async (req, res, next) => {
                         round_id: {
                             [Op.eq]: Sequelize.col("userPerRound.roundId"),
                         },
+                    },
+                    where: {
+                        finished: false,
                     },
                     attributes: ["round_date", "round_id", "finished", "course_id", "round_link"],
                     include: [
@@ -502,7 +428,7 @@ export const getUserRound = async (req, res, next) => {
                             },
                             attributes: ["name", "price"],
                         }
-                    ]
+                    ],
                 }
             ]
         })
@@ -518,7 +444,6 @@ export const getUserRound = async (req, res, next) => {
 
 export const getUserGrades = async (req, res, next) => {
     try {
-        console.log(`entered here`)
         let usersExamsData = await userPerformedExams(req.user.user_id);
 
         res.status(200).json({
@@ -529,86 +454,194 @@ export const getUserGrades = async (req, res, next) => {
     }
 };
 
-export const getUserProfileCertificate = async (req, res, next) => {
+
+export const getUserCertificate = async (req, res, next) => {
     try {
-        const usersExamsData = await sequelize.query(
-            `
-    SELECT e.title, e.questions, reply.reply_id, reply.grade, e.special_exam FROM exams_replies reply
-        INNER JOIN exams e ON reply.exam_id = e.exam_id
-        INNER JOIN users u ON reply.user_id = u.user_id WHERE reply.user_id = ?;
-    `,
+        const courseId = req.params.courseId;
+
+        const roundAndCourse = await Rounds.findOne(
             {
-                replacements: [req.user.user_id],
-                type: "SELECT",
+                where: {course_id: courseId},
+                include: [
+                    {
+                        model: Courses,
+                        as: "course",
+                        on: {
+                            course_id: {
+                                [Op.eq]: Sequelize.col("rounds.course_id"),
+                            },
+                        }
+                    }
+                ]
             }
-        );
+        )
 
-        let havePassedSpecial = false;
+        if (roundAndCourse.course.special_course) {
+            getSingleFile(roundAndCourse.course.course_img)
+                .then((response) => {
+                    const certificateDoc = createCertificate(
+                        req.user.name,
+                        req.user.user_id,
+                        roundAndCourse.course.name,
+                        roundAndCourse.course.total_hours,
+                        roundAndCourse.round_date,
+                        roundAndCourse.course.course_img,
+                        roundAndCourse.course.course_category
+                    );
 
-        for (let reply of usersExamsData) {
-            reply.questions = reply.questions
-                .map((question) => {
-                    if ("questionHeader" in question) return question;
+                    return res.send({certificate: `certificates/${certificateDoc.certificateName}`});
+
                 })
-                .filter((q) => q);
-        }
-
-        for (let reply of usersExamsData) {
-            if (reply.special_exam && reply.grade > reply.questions.length / 2) {
-                havePassedSpecial = true;
-            }
-        }
-
-        let roundDate = "",
-            finishedCourseName = "",
-            courseId;
-
-        if (typeof req.user.finished_course === "string" && havePassedSpecial) {
-            const findingFinishedRoundResult = await Rounds.findByPk(
-                req.user.finished_course
-            );
-
-            if (findingFinishedRoundResult) {
-                const findingFinishedCourseResult = await Courses.findByPk(
-                    findingFinishedRoundResult.course_id
-                );
-
-                roundDate = findingFinishedRoundResult.round_date;
-
-                if (
-                    findingFinishedCourseResult &&
-                    findingFinishedCourseResult.special_course
-                ) {
-                    finishedCourseName = findingFinishedCourseResult.name;
-                    courseId = findingFinishedCourseResult.course_id;
-                }
-            }
-        }
-
-        let certificateData = {};
-
-        if (
-            !(
-                roundDate.length === 0 ||
-                courseId.length === 0 ||
-                finishedCourseName.length === 0
-            )
-        ) {
-            certificateData = {
-                roundDate: moment(roundDate).format("LL"),
-                courseName: finishedCourseName,
-                courseId,
-            };
-        }
-
-        if ("courseId" in certificateData) {
-            return res.status(200).json({
-                certificateData,
+                .catch((err) => {
+                    logger.error(err);
+                    return res.status(500).json({
+                        error: true,
+                        message: "Server error",
+                    });
+                });
+        } else {
+            logger.error(err);
+            return res.status(500).json({
+                error: true,
+                message: "Server error",
             });
         }
-
-        return res.status(200).json({certificateData: []});
     } catch (e) {
         await errorRaiser(e, next);
     }
 };
+
+export const getUserProfileCertificate = async (req, res, next) => {
+    try {
+
+        const {specialExams, findingFinishedRounds} = await userExamsRelatedData(req.user.user_id);
+
+        if (specialExams.length === 0) {
+            return res.status(200).json({message: "You've not passed any exams", certificateData: []});
+        }
+
+        /**
+         *
+         * {
+         *   roundDate: "",
+         *   finishedCourseName: "",
+         *   courseId: ""
+         *  }
+         */
+        let certificatesGenArr = [];
+
+
+        if (Array.isArray(findingFinishedRounds) && findingFinishedRounds.length === 0) {
+            return res.status(200).json({message: "You've not finished any rounds", certificateData: []});
+        }
+
+        for (let finishedRound of findingFinishedRounds) {
+            certificatesGenArr.push({
+                roundDate: moment(finishedRound.rounds[0].round_date).format("LL"),
+                courseName: finishedRound.rounds[0].course.name,
+                courseId: finishedRound.rounds[0].course.course_id
+            })
+        }
+
+        return res.status(200).json({certificateData: certificatesGenArr});
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+};
+
+
+const userExamsRelatedData = async (userId) => {
+    // Finding the user's exams
+    const userExamsData = await ExamsReplies.findAll({
+        where: {
+            user_id: userId,
+        },
+        include: [
+            {
+                model: Exams,
+                as: "exam",
+                on: {
+                    exam_id: {
+                        [Op.eq]: Sequelize.col("exams_replies.exam_id"),
+                    },
+                },
+                where: {
+                    special_exam: true
+                },
+                include: [
+                    {
+                        model: Courses,
+                        on: {
+                            course_id: {
+                                [Op.eq]: Sequelize.col("exam.course_id"),
+                            },
+                        },
+                        where: {
+                            special_course: true
+                        }
+                    }
+                ]
+            },
+        ]
+    })
+
+    // Filter questions from images
+    for (let reply of userExamsData) {
+        reply.exam.questions = reply.exam.questions
+            .map((question) => {
+                if ("questionHeader" in question) return question;
+            })
+            .filter((q) => q);
+    }
+
+    // Finding wither user have passed the special exams with more than 50% of correct answers
+    let specialExams = [];
+    for (let reply of userExamsData) {
+        // TODO add control on success percentage
+        if (reply.grade > reply.exam.questions.length / 2) {
+            specialExams.push(reply.exam.exam_id);
+        }
+    }
+
+    // Finding if the user finished the rounds that made him passed the exam or not.
+    const findingFinishedRounds = await userPerRound.findAll(
+        {
+            where: {userId},
+            include: [
+                {
+                    model: Rounds,
+                    as: "rounds",
+                    on: {
+                        round_id: {
+                            [Op.eq]: Sequelize.col("userPerRound.roundId"),
+                        },
+                    },
+                    where: {
+                        finished: true,
+                    },
+                    attributes: ["round_date", "course_id"],
+                    include: [
+                        {
+                            model: Courses,
+                            as: "course",
+                            on: {
+                                course_id: {
+                                    [Op.eq]: Sequelize.col("rounds.course_id"),
+                                },
+                                special_course: {
+                                    [Op.eq]: true
+                                }
+                            },
+                            attributes: ["course_id", "name", "special_course"],
+                        },
+                    ],
+                }
+            ]
+        }
+    );
+
+    return {
+        specialExams,
+        findingFinishedRounds
+    }
+}

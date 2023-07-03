@@ -11,7 +11,7 @@ import cors from "cors";
 // MY MODULES IMPORTS
 import { sequelize } from "./utils/db.js";
 import AppRoutes from './routes/index.js'
-import { ExamsReplies, Users, Rounds, Payment, Courses, UserPerRound } from "./models/index.js";
+import {ExamsReplies, Users, Rounds, Payment, Courses, UserPerRound, Exams} from "./models/index.js";
 import { imageDownloader } from "./utils/general_helper.js";
 import { body } from "express-validator";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
@@ -50,6 +50,11 @@ app.use(express.static(path.resolve("public")));
 app.use(
   "/static",
   express.static(path.resolve("downloaded_images"))
+);
+
+app.use(
+    "/static/certificates",
+    express.static(path.resolve("public/certificates"))
 );
 
 // app.use(helmet());
@@ -121,6 +126,20 @@ Rounds.belongsToMany(Users, {
 
 Rounds.belongsToMany(Courses, {
   through: "users_ids",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+
+Exams.hasOne(Courses, {
+  through: "course_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+})
+
+ExamsReplies.belongsTo(Exams, {
+  foreignKey: "exam_id",
   constraints: false,
   onDelete: "cascade",
   onUpdate: "cascade",

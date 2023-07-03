@@ -23,6 +23,12 @@ const Exams = sequelize.define("exam", {
   special_exam: {
     type: Sequelize.BOOLEAN,
   },
+  course_id: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    foreignKey: true,
+    defaultValue: UUIDV4,
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),

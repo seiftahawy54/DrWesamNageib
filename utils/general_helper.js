@@ -68,11 +68,6 @@ export const createCertificate = (
   courseCategory = ""
 ) => {
   const certificateName = `${userName}-${userId}.pdf`;
-  const certificatePath = path.resolve(
-    "public",
-    "certificates",
-    certificateName
-  );
   const fontsPath = path.resolve("public", "fonts");
   const fontName = "Lato";
   const imagesPath = path.resolve("downloaded_images");
@@ -139,7 +134,7 @@ export const createCertificate = (
           lineHeight: 1.2,
         },
         {
-          text: `has attended a structured 3-months, ${courseHours} contact hours of training in preparation of ${courseCategory} certificate and is therefore awarded the`,
+          text: `has attended a structured ${courseHours % 24} days of training in preparation of ${courseCategory} certificate and is therefore awarded the`,
           fontSize: "18",
           italics: true,
           alignment: "center",
@@ -237,7 +232,6 @@ export const createCertificate = (
   return {
     certificateObject: certificateDoc,
     certificateName,
-    certificatePath,
   };
 };
 
@@ -350,7 +344,7 @@ export const userPerformedExams = async (userId) => {
 /**
  * @description
  * @param {[{param: string, msg: string}]} expressValidatorArray
- * @returns [{field: string, reason: string}]
+ * @returns {{field: string, message: string}[]}[]
  */
 
 export const extractErrorMessages = (expressValidatorArray) => {
