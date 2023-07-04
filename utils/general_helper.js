@@ -76,7 +76,7 @@ export const createCertificate = (
   const imagesPath = path.resolve("downloaded_images");
 
   const startDate = moment(roundStartingDate).locale("en-CA").format("LL");
-  const endDate = moment(roundStartingDate)
+  let endDate = moment(roundStartingDate)
     .locale("en-CA")
     .add(3, "months")
     .format("LL");
@@ -119,6 +119,11 @@ export const createCertificate = (
   let content = [];
 
   if (courseName === 'CBAHI Accreditation Orientation Course') {
+    endDate = moment(roundStartingDate)
+    .locale("en-CA")
+    .add(5, "days")
+    .format("LL");
+    
     content = [
       {
         image: path.resolve(imagesPath, courseCertificateImg),
