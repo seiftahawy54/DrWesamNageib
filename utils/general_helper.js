@@ -138,7 +138,7 @@ export const createCertificate = (
         lineHeight: 1.2,
       },
       {
-        text: `has attended a structured 5 days, of training in ${courseCategory} and is therefore awarded the`,
+        text: `has attended a structured 5 days, of training in ${courseCategory} with total 20 hours of training and is therefore awarded the`,
         fontSize: "18",
         italics: true,
         alignment: "center",
