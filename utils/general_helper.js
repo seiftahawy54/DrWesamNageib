@@ -6,9 +6,10 @@ import moment from "moment";
 import PDFMake from "pdfmake";
 import fs from "fs";
 import { errorRaiser } from "./error_raiser.js";
-import { ExamImages } from "../models/index.js";
+import {ExamImages, Exams, ExamsReplies} from "../models/index.js";
 import { sequelize } from "./db.js";
 import logger from "./logger.js";
+import {Op, Sequelize} from "sequelize";
 
 export const sortCourses = (courses) => {
   let coursesRanks = [];
@@ -318,20 +319,25 @@ export const imageDownloader = async (req, res, next) => {
 };
 
 export const userPerformedExams = async (userId) => {
-  const usersExamsData = await sequelize.query(
-    `
-    SELECT e.title, e.questions, reply.reply_id, reply.grade, reply."createdAt" FROM exams_replies reply
-        INNER JOIN exams e ON reply.exam_id = e.exam_id
-        INNER JOIN users u ON reply.user_id = u.user_id where reply.user_id = ?;
-    `,
-    {
-      replacements: [userId],
-      type: "SELECT",
-    }
-  );
+  const usersExamsData = await ExamsReplies.findAll({
+    where: {
+      user_id: userId,
+    },
+    include: [
+      {
+        model: Exams,
+        as: "exam",
+        on: {
+          exam_id: {
+            [Op.eq]: Sequelize.col("exams_replies.exam_id"),
+          },
+        },
+      }
+    ]
+  })
 
   for (let i of usersExamsData) {
-    i.questions = i.questions
+    i.exam.questions = i.exam.questions
       .map((question) => {
         if ("questionHeader" in question) return question;
       })

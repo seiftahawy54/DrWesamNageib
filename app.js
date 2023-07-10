@@ -65,12 +65,7 @@ app.post(
   body("img_id").isString().isLength({ min: 15 }),
   imageDownloader
 );
-// app.use("/courses", coursesRoutes);
-// app.use("/dashboard", isAdminAuth, dashboardRoutes);
-// app.use(authRoutes);
-// app.use(shoppingRoutes);
-// app.get("/exams/preview/:replyId", getExamPreview);
-// app.use(isUserAuthenticated, userRoutes);
+
 app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
@@ -138,7 +133,7 @@ Exams.hasOne(Courses, {
   onUpdate: "cascade",
 })
 
-ExamsReplies.belongsTo(Exams, {
+ExamsReplies.hasOne(Exams, {
   foreignKey: "exam_id",
   constraints: false,
   onDelete: "cascade",

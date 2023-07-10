@@ -151,58 +151,53 @@ export const postUpdateUserData = async (req, res, next) => {
 export const getPerformExam = async (req, res, next) => {
     try {
         const examId = req.params.examId;
-        const findingExam = await Exams.findByPk(examId);
-        const findingUserReply = await ExamsReplies.findAll({
-            where: {user_id: req.user.user_id, exam_id: examId},
+        const exam = await Exams.findOne({
+            where: {exam_id: examId, status: true}
         });
 
-        logger.info(`Finding USER REPLY ===> `, findingUserReply);
+        if (!exam) {
+            return res.status(404).json({
+                message: "Exam not found!",
+            })
+        }
 
-        if (findingExam) {
-            let allRoundsUsersIds = await Rounds.findAll({
-                attributes: ["users_ids"],
-            });
-
-            allRoundsUsersIds = allRoundsUsersIds.map(({users_ids}) => {
-                return users_ids;
-            });
-
-            let searchingResult = false;
-
-            for (let round of allRoundsUsersIds) {
-                for (let userId of round) {
-                    if (req.user.user_id === userId) {
-                        searchingResult = true;
-                        break;
+        const isUserInRound = await userPerRound.findAll({
+            where: {
+                userId: req.user.user_id,
+            },
+            include: [
+                {
+                    model: Rounds,
+                    on: {
+                        round_id: {
+                            [Op.eq]: Sequelize.col("userPerRound.roundId"),
+                        },
+                    },
+                    where: {
+                        finished: false,
                     }
                 }
-            }
+            ]
+        })
 
-            if (!searchingResult) {
-                return res.status(401).json({
-                    message: "You are not enrolled on any round!",
-                });
-            }
-
-            if (findingUserReply.length > 0) {
-                return res.status(200).json({
-                    message: "Exam is already performed!",
-                });
-            }
-
-            await (async () => {
-                for (const questionObj of findingExam.questions) {
-                    if ("examImage" in questionObj) {
-                        const fetchingResult = await getSingleFile(questionObj.examImage);
-                        logger.info("Image searching result => ", fetchingResult);
-                    }
-                }
-            })();
-
-            return res.status(200).json({
-                exam: findingExam,
+        if (Array.isArray(isUserInRound) && isUserInRound.length === 0) {
+            return res.status(401).json({
+                message: "You are not enrolled on any round!",
             });
         }
+
+        await (async () => {
+            for (const questionObj of exam.questions) {
+                if ("examImage" in questionObj) {
+                    const fetchingResult = await getSingleFile(questionObj.examImage);
+                    logger.info("Image searching result => ", fetchingResult);
+                }
+            }
+        })();
+
+        return res.status(200).json({
+            exam,
+        });
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -260,85 +255,104 @@ export const getExamPreview = async (req, res, next) => {
         const replyId = req.params.replyId;
         // const userData = await Users.findByPk(req.userId);
 
-        let replyData = await sequelize.query(
-            `
-      SELECT e.title, e.questions, reply.reply_id, u.name as user_name, reply.grade, reply.user_answers FROM exams_replies reply
-        INNER JOIN exams e ON reply.exam_id = e.exam_id
-        INNER JOIN users u ON reply.user_id = u.user_id where reply.reply_id = ?;
-    `,
-            {
-                replacements: [replyId],
-                type: "SELECT",
-            }
-        );
+        //     let replyData = await sequelize.query(
+        //         `
+        //   SELECT e.title, e.questions, reply.reply_id, u.name as user_name, reply.grade, reply.user_answers FROM exams_replies reply
+        //     INNER JOIN exams e ON reply.exam_id = e.exam_id
+        //     INNER JOIN users u ON reply.user_id = u.user_id where reply.reply_id = ?;
+        // `,
+        //         {
+        //             replacements: [replyId],
+        //             type: "SELECT",
+        //         }
+        //     );
 
-        replyData = Array.isArray(replyData) ? replyData[0] : false;
+        const searchingForUser = await userPerRound.findAll({
+            where: {userId: req.user.user_id},
+        })
 
-        if (replyData) {
-            // Filter questions from images
-            // replyData.questions = replyData.questions.filter(
-            //   (q) => "questionHeader" in q
-            // );
-
-            // let questionsWithoutImages = examData.questions
-            //   .map((question) => {
-            //     if ("questionHeader" in question) {
-            //       return question;
-            //     }
-            //   })
-            //   .filter((question) => question !== undefined);
-
-            let questionsWithUserAnswers = [];
-            let imgsCounter = 0;
-            let answersCounter = 0;
-
-            const newUserAnswerArr = replyData.questions.map((question, index) => {
-                if ("questionHeader" in question) {
-                    return replyData.user_answers[answersCounter++];
-                } else {
-                    return question;
-                }
-            });
-
-            for (let question = 0; question < newUserAnswerArr.length; question++) {
-                if (!("examImage" in newUserAnswerArr[question])) {
-                    questionsWithUserAnswers.push({
-                        userAnswer: Object.values(newUserAnswerArr[question])[0],
-                        correctAnswer: parseInt(
-                            replyData.questions[question].correctAnswer
-                        ),
-                    });
-                } else {
-                    questionsWithUserAnswers.push({
-                        questionImage: Object.values(newUserAnswerArr[question])[0],
-                    });
-                }
-            }
-
-            return res.status(200).json({
-                userAnswers: questionsWithUserAnswers,
-                questions: replyData.questions,
-                examData: {
-                    title: replyData.title,
-                },
-            });
-
-            /* return res.render("users/exam_preview", {
-              title: `Trying Exam ${replyData.title} for User ${replyData.name}`,
-              path: "/profile",
-              performingData: questionsWithUserAnswers,
-              questions: replyData.questions,
-              examData: {
-                title: replyData.title,
-              },
-              userData: req.user,
-            }); */
+        if (Array.isArray(searchingForUser) && searchingForUser.length === 0) {
+            return res.status(404).json({
+                message: "User not found!",
+            })
         }
 
-        return res.status(500).json({
-            error: true,
-            message: "Server Error"
+        const replyData = await ExamsReplies.findOne({
+            where: {reply_id: replyId, user_id: req.user.user_id},
+            include: [
+                {
+                    model: Exams,
+                    on: {
+                        exam_id: {
+                            [Op.eq]: Sequelize.col("exams_replies.exam_id"),
+                        }
+                    }
+                }
+            ]
         })
+
+        if (!replyData) {
+            return res.status(404).json({
+                message: "Reply not found!",
+            })
+        }
+
+        // Filter questions from images
+        // replyData.questions = replyData.questions.filter(
+        //   (q) => "questionHeader" in q
+        // );
+
+        // let questionsWithoutImages = examData.questions
+        //   .map((question) => {
+        //     if ("questionHeader" in question) {
+        //       return question;
+        //     }
+        //   })
+        //   .filter((question) => question !== undefined);
+
+
+        let questionsWithUserAnswers = [];
+        let imgsCounter = 0;
+        let answersCounter = 0;
+
+        const newUserAnswerArr = replyData.exam.questions.map((question, index) => {
+            if ("questionHeader" in question) {
+                return replyData.user_answers[answersCounter++];
+            } else {
+                return question;
+            }
+        });
+
+        for (let question = 0; question < newUserAnswerArr.length; question++) {
+            if (!("examImage" in newUserAnswerArr[question])) {
+                questionsWithUserAnswers.push({
+                    userAnswer: Object.values(newUserAnswerArr[question])[0],
+                    correctAnswer: parseInt(
+                        replyData.exam.questions[question].correctAnswer
+                    ),
+                });
+            } else {
+                questionsWithUserAnswers.push({
+                    questionImage: Object.values(newUserAnswerArr[question])[0],
+                });
+            }
+        }
+
+        await (async () => {
+            for (const questionObj of replyData.exam.questions) {
+                if ("examImage" in questionObj) {
+                    const fetchingResult = await getSingleFile(questionObj.examImage);
+                    logger.info("Image searching result => ", fetchingResult);
+                }
+            }
+        })();
+
+        return res.status(200).json({
+            userAnswers: questionsWithUserAnswers,
+            questions: replyData.exam.questions,
+            title: replyData.exam.title,
+        });
+
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -447,7 +461,7 @@ export const getUserGrades = async (req, res, next) => {
         let usersExamsData = await userPerformedExams(req.user.user_id);
 
         res.status(200).json({
-            userExams: usersExamsData.length > 0 ? usersExamsData : null,
+            userExams: usersExamsData.length > 0 ? usersExamsData : [],
         });
     } catch (e) {
         await errorRaiser(e, next);

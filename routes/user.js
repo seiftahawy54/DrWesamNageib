@@ -52,6 +52,7 @@ examsRoutes
     .get("/submitted-exam", getSubmittedExam)
     .get("/grades", getUserGrades)
     .get("/:examId", getPerformExam)
+    .get('/preview/:replyId', getExamPreview)
     .post(
         "/",
         [
