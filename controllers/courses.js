@@ -10,10 +10,11 @@ import {Users} from "../models/index.js";
 import {Rounds} from "../models/index.js";
 import moment from "moment";
 import {validationResult} from "express-validator";
-import {cartIsEmpty, courseExistsInCart} from "../utils/cart_helpers.js";
+import {cartIsEmpty, courseExistsInCart, filterDuplicates} from "../utils/cart_helpers.js";
 import {sequelize} from "../utils/db.js";
 import userPerRound from "../models/userPerRound.js";
 import {Op, Sequelize} from "sequelize";
+import logger from "../utils/logger.js";
 
 const getIndex = async (req, res, next) => {
     try {
@@ -43,7 +44,7 @@ const singleCourse = async (req, res, next) => {
         });
 
         const roundsResult = await Rounds.findAll({
-            where: { course_id: course.course_id },
+            where: {course_id: course.course_id},
         });
 
         const numberOfCourses = await Courses.findAndCountAll();
@@ -93,62 +94,64 @@ export const getCoursesCategories = async (req, res, next) => {
 
 const addCourseToCart = async (req, res, next) => {
     try {
-        const courseId = req.body.courseId;
-        const roundId = req.body.selected_round;
+        const {courseId, roundDate} = req.body;
+        const user = await Users.findOne({where: {user_id: req.user.user_id}});
+        const round = await Rounds.findOne({
+            where: {
+                round_date: roundDate
+            }
+        })
         const errors = validationResult(req);
 
-        let findingItemResult = false;
-
         if (!errors.isEmpty()) {
-            // res.status(422).json({ message: "Please select a valid date!" });
-            req.flash("error", "Please select a valid date!");
-            res.redirect(`/courses/${courseId}`);
-        } else {
-            if (Array.isArray(req.user.cart)) {
-                findingItemResult = courseExistsInCart(req.user.cart, courseId);
-            } else {
-                req.user.cart = [];
-            }
-
-            if (Array.isArray(req.user.cart) && findingItemResult) {
-                req.flash(
-                    "error",
-                    `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`
-                );
-                res.redirect(`/courses/${courseId}`);
-            } else if (Array.isArray(req.user.cart) && findingItemResult) {
-                // res.status(422).json({
-                //   message: ,
-                // });
-
-                req.flash(
-                    "error",
-                    `You've already chosen this course and added to your cart! proceed to <a href="/cart">Checkout</a> or <a href="/complete_payment">pay now</a>?`
-                );
-                return res.redirect(`/courses/${courseId}`);
-            } else {
-                req.user.cart.push({courseId: courseId, roundId: roundId});
-
-                const addingResult = await Users.update(
-                    {cart: req.user.cart},
-                    {where: {user_id: req.user.user_id}}
-                );
-
-                if (Array.isArray(addingResult)) {
-                    // res.status(201).json({ message: "Item added successfully" });
-                    req.flash(
-                        "success",
-                        `Item add successfully, proceed to <a href="/cart">checkout</a> or continue <a href="/courses">Shopping</a>?`
-                    );
-                    return res.redirect(`/courses/${courseId}`);
-                } else {
-                    await errorRaiser(addingResult, next);
-                }
-            }
+            res.status(422).json({message: "Please select a valid date!"});
         }
+
+        const findingItemResult = courseExistsInCart(user.cart, courseId);
+
+        logger.info(`Searching for cart item ${findingItemResult}`)
+
+        if (Array.isArray(user.cart) && findingItemResult) {
+            return res.status(400).json({
+                message: `You've already chosen this course and added to your cart! proceed to Checkout or pay now?`
+            })
+        }
+
+        user.cart = [...user.cart, {courseId: courseId, roundId: round.round_id}];
+
+        // Filter duplicates
+        user.cart = filterDuplicates(user.cart);
+
+        logger.info(`filtered cart => ${user.cart}`)
+
+        // filter empty items
+        user.cart = user.cart.filter((cartItem) => Object.keys(cartItem).length !== 0);
+
+        const addingResult = await Users.update(
+            {cart: user.cart},
+            {where: {user_id: req.user.user_id}}
+        );
+
+        logger.info(`updating cart result ${JSON.stringify(addingResult)}`)
+
+        return res.status(201).json({message: "Course added successfully"});
     } catch (e) {
         await errorRaiser(e, next);
     }
 };
 
-export {getIndex, addCourseToCart, singleCourse};
+const isAddedToCart = async (req, res, next) => {
+    try {
+        const {courseId} = req.params;
+        const {cart} = await Users.findOne({where: {user_id: req.user.user_id}});
+
+        return res.status(200).json({
+            inCart: courseExistsInCart(cart, courseId),
+        })
+
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
+export {getIndex, addCourseToCart, singleCourse, isAddedToCart};

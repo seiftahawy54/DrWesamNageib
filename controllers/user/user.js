@@ -151,7 +151,7 @@ export const postUpdateUserData = async (req, res, next) => {
 export const getPerformExam = async (req, res, next) => {
     try {
         const examId = req.params.examId;
-        const exam = await Exams.findOne({
+        let exam = await Exams.findOne({
             where: {exam_id: examId, status: true}
         });
 
@@ -194,6 +194,18 @@ export const getPerformExam = async (req, res, next) => {
                 }
             }
         })();
+
+        // Filter answers
+        exam.questions = exam.questions.map((question) => {
+                if ("correctAnswer" in question) {
+                    return {
+                        ...question,
+                        correctAnswer: null
+                    }
+                } else {
+                    return question
+                }
+            })
 
         return res.status(200).json({
             exam,

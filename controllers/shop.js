@@ -1,7 +1,7 @@
 import path from "path";
 import {validationResult} from "express-validator";
 // import { addMessage } from "../models/messages.js";
-import {Courses} from "../models/index.js";
+import {Courses, Rounds} from "../models/index.js";
 import {Opinions} from "../models/index.js";
 import {Messages} from "../models/index.js";
 import {About} from "../models/index.js";
@@ -20,7 +20,7 @@ import moment from "moment";
 import {
     calcTotalPrice,
     extractArrOfPrices,
-    filterCart,
+    filterCart, filterDuplicates,
     findCartCourses,
 } from "../utils/cart_helpers.js";
 import {sequelize} from "../utils/db.js";
@@ -29,6 +29,8 @@ import {getSingleFile} from "../utils/aws.js";
 import messages from "../i18n/messages.js";
 import axios from "axios";
 import {isObjEmpty} from "../validators/isObjEmpty.js";
+import user from "../routes/user.js";
+import logger from "../utils/logger.js";
 
 export const getAllOpinions = async (req, res, next) => {
     try {
@@ -73,7 +75,8 @@ export const getHomepageApi = async (req, res, next) => {
         let sortedCourses = sortCourses(getCoursesResult).sort(
             (a, b) => a.sort - b.sort
         );
-        await downloadingCoursesImages(getCoursesResult);
+
+        downloadingCoursesImages(getCoursesResult);
         let files = await fs.readdir(path.resolve("public/imgs/imgs/opinions"));
 
         return res.json({
@@ -88,60 +91,49 @@ export const getHomepageApi = async (req, res, next) => {
 
 export const getShoppingCart = async (req, res, next) => {
     try {
-        if (req.user.cart) {
-            const coursesArr = await findCartCourses(req.user.cart);
-            // console.log(coursesArr);
+        let { cart } = await Users.findOne({
+            where: {user_id: req.user.user_id}
+        })
 
-            let coursesRoundsDates = await Promise.all(
-                coursesArr.map(async ({course_id}) => {
-                    return (
-                        await sequelize.query(
-                            `select round_date from rounds inner join courses course on course.course_id = rounds.course_id`,
-                            {
-                                replacements: [course_id],
-                                type: QueryTypes.SELECT,
-                            }
-                        )
-                    )[0]?.round_date;
-                })
-            );
+        cart = filterDuplicates(cart);
 
-            coursesRoundsDates = coursesRoundsDates.map((courseRound) => courseRound);
-
-            if (Array.isArray(req.user.cart) && req.user.cart.length > 0) {
-                const arrOfPrices = extractArrOfPrices(coursesArr);
-                const totalPrice = calcTotalPrice(arrOfPrices);
-
-                return res.render("shopping/index", {
-                    title: "Shopping Cart",
-                    path: "/cart",
-                    cart: req.user.cart,
-                    bought_courses: coursesArr,
-                    roundsDates: coursesRoundsDates,
-                    totalPrice,
-                    moment,
-                });
-            } else {
-                return res.render("shopping/index", {
-                    title: "Shopping Cart",
-                    path: "/cart",
-                    cart: req.user.cart,
-                    bought_courses: [],
-                    roundsDates: [],
-                    totalPrice: 0,
-                    moment,
-                });
-            }
-        } else {
-            return res.render("shopping/index", {
-                title: "Shopping Cart",
-                path: "/cart",
-                cart: req.user.cart,
-                bought_courses: [],
-                totalPrice: 0,
-                moment,
-            });
+        const coursesArr = await findCartCourses(cart);
+        if (!coursesArr) {
+            return res.status(404).json({message: "Cart is empty"})
         }
+
+
+        logger.info(`filtering duplicate: ${JSON.stringify(cart)}`)
+
+        let coursesRoundsDates = await Promise.all(
+            coursesArr.map(async ({course_id}) => {
+                return (
+                    await Rounds.findAll({
+                        include: [
+                            {
+                                model: Courses,
+                                on: {
+                                    course_id: {
+                                        [Op.eq]: Sequelize.col("rounds.course_id"),
+                                    }
+                                },
+                                where: {
+                                    course_id
+                                }
+                            }
+                        ]
+                    })
+                )
+            })
+        );
+
+        coursesRoundsDates = coursesRoundsDates.map((courseRound) => courseRound);
+
+        const arrOfPrices = extractArrOfPrices(coursesArr);
+        const totalPrice = calcTotalPrice(arrOfPrices);
+
+        return res.json({cart, totalPrice, coursesRoundsDates});
+
     } catch (e) {
         await errorRaiser(e, next);
     }

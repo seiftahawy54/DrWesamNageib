@@ -17,10 +17,12 @@ import {
 import {upload} from "../middlewares/multer.js";
 import {Router} from "express";
 import {body} from "express-validator";
+import {getShoppingCart} from "../controllers/shop.js";
 
 const userProfileRoutes = Router();
 const examsRoutes = Router();
 const certificatesRoutes = Router();
+const userCartRoutes = Router()
 
 userProfileRoutes
     .get("/", getUserProfile)
@@ -66,9 +68,15 @@ examsRoutes
         postPerformExam
     );
 
+//-----------------------------------------------
+// User Cart routes
+//-----------------------------------------------
+userCartRoutes.get('/', getShoppingCart)
+
 const usersRoutes = Router()
     .use("/", userProfileRoutes)
     .use("/certificates", certificatesRoutes)
-    .use("/exams", examsRoutes);
+    .use("/exams", examsRoutes)
+    .use('/cart', userCartRoutes);
 
 export default usersRoutes;
