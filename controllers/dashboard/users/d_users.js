@@ -100,6 +100,10 @@ const getUsers = async (req, res, next) => {
       });
     });
 
+    const numberOfLinks = Math.round(numberOfResults.count / MAX_NUMBER);
+    const next = Number(Number(pageNumber) + 1);
+    const prev = Number(Number(pageNumber) - 1);
+
     return res.render("dashboard/modified_users", {
       title: "Users",
       path: "/dashboard/users",
@@ -139,8 +143,15 @@ const getUsers = async (req, res, next) => {
       tableRows: finalData,
       customStuff: {
         pagination: {
-          numberOfLinks: Math.ceil(numberOfResults.count / MAX_NUMBER),
-          activePage: pageNumber,
+          numberOfLinks,
+          next,
+          prev,
+          hasNext: next <= numberOfLinks,
+          hasPrev: prev >= 1,
+          lastPage: numberOfLinks,
+          firstPage: 1,
+          activePage: Number(pageNumber),
+          path: "/dashboard/users",
         },
         searching: true,
       },

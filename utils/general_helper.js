@@ -1,60 +1,60 @@
-import crypto from "crypto";
-import { unlink } from "fs/promises";
-import { getSingleFile } from "./aws.js";
-import path from "path";
-import moment from "moment";
-import PDFMake from "pdfmake";
-import fs from "fs";
-import { errorRaiser } from "./error_raiser.js";
-import { ExamImages } from "../models/index.js";
+import crypto from "crypto"
+import { unlink } from "fs/promises"
+import { getSingleFile } from "./aws.js"
+import path from "path"
+import moment from "moment"
+import PDFMake from "pdfmake"
+import fs from "fs"
+import { errorRaiser } from "./error_raiser.js"
+import { ExamImages } from "../models/index.js"
 
 export const sortCourses = (courses) => {
-  let coursesRanks = [];
-  const coursesArr = courses;
+  let coursesRanks = []
+  const coursesArr = courses
 
   // Extract Ranks
   for (let coursesArrKey in coursesArr) {
-    coursesRanks[coursesArrKey] = coursesArr[coursesArrKey].course_rank;
+    coursesRanks[coursesArrKey] = coursesArr[coursesArrKey].course_rank
   }
 
   // Sort Based On Ranking
-  coursesRanks = coursesRanks.sort((a, b) => a - b);
+  coursesRanks = coursesRanks.sort((a, b) => a - b)
 
   // Get All Courses In Ranking
   return coursesRanks.map((rank) => {
-    return coursesArr.find((course) => course.course_rank === rank);
-  });
-};
+    return coursesArr.find((course) => course.course_rank === rank)
+  })
+}
 
 export const hashCreator = (size = 10) => {
-  const idHash = crypto.randomBytes(size);
-  return idHash.toString("hex");
-};
+  const idHash = crypto.randomBytes(size)
+  return idHash.toString("hex")
+}
 
 export const extractError = (req) => {
   // Check if the message we extract is there not empty arr!
-  let message = req.flash("error")[0];
-  console.log(`custom error message`, message);
+  let message = req.flash("error")[0]
+  console.log(`custom error message`, message)
   if (!(typeof message === "string")) {
-    message = null;
+    message = null
   }
-  return message;
-};
+  return message
+}
 
 export const deleteFile = async (filePath) => {
   try {
-    await unlink(filePath);
-    return true;
+    await unlink(filePath)
+    return true
   } catch (e) {
-    return false;
+    return false
   }
-};
+}
 
 export const getCertificatesImage = (aboutCertificates) => {
   aboutCertificates.forEach(async ({ certificate_img }) => {
-    await getSingleFile(certificate_img);
-  });
-};
+    await getSingleFile(certificate_img)
+  })
+}
 
 export const createCertificate = (
   userName = "",
@@ -63,62 +63,62 @@ export const createCertificate = (
   courseHours = "",
   roundStartingDate = "",
   courseCertificateImg = "",
-  courseCategory = ""
+  courseCategory = "",
 ) => {
-  const certificateName = `${userName}-${userId}.pdf`;
+  const certificateName = `${userName}-${userId}.pdf`
   const certificatePath = path.resolve(
     "public",
     "certificates",
-    certificateName
-  );
-  const fontsPath = path.resolve("public", "fonts");
-  const fontName = "Lato";
-  const imagesPath = path.resolve("downloaded_images");
+    certificateName,
+  )
+  const fontsPath = path.resolve("public", "fonts")
+  const fontName = "Lato"
+  const imagesPath = path.resolve("downloaded_images")
 
-  const startDate = moment(roundStartingDate).locale("en-CA").format("LL");
+  const startDate = moment(roundStartingDate).locale("en-CA").format("LL")
   const endDate = moment(roundStartingDate)
     .locale("en-CA")
     .add(3, "months")
-    .format("LL");
+    .format("LL")
 
   let sendingData = {
     courseName,
     roundDate: moment(roundStartingDate).format("DD-MM-YYYY"),
-  };
+  }
 
   const fonts = {
     Roboto: {
       normal: path.resolve(
         fontsPath,
         fontName.toLowerCase(),
-        `${fontName}-Regular.ttf`
+        `${fontName}-Regular.ttf`,
       ),
       bold: path.resolve(
         fontsPath,
         fontName.toLowerCase(),
-        `${fontName}-Bold.ttf`
+        `${fontName}-Bold.ttf`,
       ),
       italics: path.resolve(
         fontsPath,
         fontName.toLowerCase(),
-        `${fontName}-Italic.ttf`
+        `${fontName}-Italic.ttf`,
       ),
       bolditalics: path.resolve(
         fontsPath,
         fontName.toLowerCase(),
-        `${fontName}-BoldItalic.ttf`
+        `${fontName}-BoldItalic.ttf`,
       ),
     },
     Pacifico: {
       normal: path.resolve(fontsPath, `Pacifico-Regular.ttf`),
     },
-  };
+  }
 
-  PDFMake.fonts = fonts;
+  PDFMake.fonts = fonts
 
-  let content = [];
+  let content = []
 
-  if (courseName === 'CBAHI Accreditation Orientation Course') {
+  if (courseName === "CBAHI Accreditation Orientation Course") {
     content = [
       {
         image: path.resolve(imagesPath, courseCertificateImg),
@@ -223,7 +223,7 @@ export const createCertificate = (
           },
         ],
       },
-    ];
+    ]
   } else {
     content = [
       {
@@ -329,53 +329,59 @@ export const createCertificate = (
           },
         ],
       },
-    ];
+    ]
   }
 
-  const printer = new PDFMake(fonts);
+  const printer = new PDFMake(fonts)
   const certificateDoc = printer.createPdfKitDocument(
     {
-      watermark: { text: "Dr Wesam Nageib", opacity: 0.1, font: "Pacifico" },
+      background: [
+        {
+          image: path.resolve(imagesPath, courseCertificateImg),
+          width: 792,
+          opacity: 0.1
+        }
+      ],
       pageOrientation: "landscape",
       pageSize: "A4",
       pageMargins: 15,
-      content
+      content,
     },
-    {}
-  );
+    {},
+  )
 
   return {
     certificateObject: certificateDoc,
     certificateName,
     certificatePath,
-  };
-};
+  }
+}
 
 export const downloadingCoursesImages = (courses) => {
   return new Promise(async (resolve, reject) => {
     for (const course of courses) {
       await getSingleFile(course.course_img)
         .then((result) => {
-          console.log(result);
+          console.log(result)
         })
         .catch((err) => {
-          console.error(err);
-        });
+          console.error(err)
+        })
       await getSingleFile(course.detailed_img)
         .then((result) => {
-          console.log(result);
+          console.log(result)
         })
         .catch((err) => {
-          console.error(err);
-        });
+          console.error(err)
+        })
     }
 
-    resolve(true);
-  });
-};
+    resolve(true)
+  })
+}
 
 export const calculateExamsGrades = (reply, exam) => {
-  let totalGrades = 0;
+  let totalGrades = 0
 
   // console.log(reply);
   //
@@ -397,38 +403,38 @@ export const calculateExamsGrades = (reply, exam) => {
   // }
 
   reply.forEach((question, index) => {
-    const questionNumber = Object.keys(question)[0];
-    const userAnswer = question[`${questionNumber}`];
+    const questionNumber = Object.keys(question)[0]
+    const userAnswer = question[`${questionNumber}`]
 
     // console.log(userAnswer);
 
-    console.log(`Exam Correct Answer`, exam[index].correctAnswer);
-    console.log(`User answer`, userAnswer);
+    console.log(`Exam Correct Answer`, exam[index].correctAnswer)
+    console.log(`User answer`, userAnswer)
     if (
       userAnswer &&
       exam[index].correctAnswer.toString() === userAnswer.toString()
     )
-      totalGrades += 1;
-  });
+      totalGrades += 1
+  })
 
-  return totalGrades;
-};
+  return totalGrades
+}
 
 export const imageDownloader = async (req, res, next) => {
   try {
-    const wantedImg = req.body.img_id;
-    console.log(`Received id ====> `, JSON.stringify(req.body, null, 2));
-    const image = await ExamImages.findByPk(wantedImg);
-    console.log(`image_id ===> ${image}`);
-    const result = await getSingleFile(wantedImg);
-    console.log(`searching result ===> ${result}`);
+    const wantedImg = req.body.img_id
+    console.log(`Received id ====> `, JSON.stringify(req.body, null, 2))
+    const image = await ExamImages.findByPk(wantedImg)
+    console.log(`image_id ===> ${image}`)
+    const result = await getSingleFile(wantedImg)
+    console.log(`searching result ===> ${result}`)
     return res.status(200).json({
       result,
-    });
+    })
   } catch (e) {
     // await errorRaiser(e, next);
     res.status(500).json({
       message: e.message,
-    });
+    })
   }
-};
+}

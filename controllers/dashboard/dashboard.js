@@ -161,6 +161,7 @@ export const getOpinionsPage = async (req, res, next) => {
       opinions: fetchingResults,
       numberOfLinks: Math.ceil(numberOfResults.count / 5),
       activePage: pageNumber,
+      paginationOptions: {}
     });
   } catch (e) {
     await errorRaiser(e, next);

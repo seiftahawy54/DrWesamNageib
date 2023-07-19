@@ -1,3 +1,7 @@
+@use "../utils/variables" as vars;
+@use "../utils/common" as common;
+@use "../utils/mediaFns" as mediaQ;
+
 input[type="checkbox"] ~ label {
   cursor: pointer;
 }
@@ -24,6 +28,14 @@ input[type="checkbox"] ~ label {
       font-size: 14px;
       width: 100%;
       word-break: break-word;
+    }
+  }
+}
+
+@include mediaQ.allSmScreens {
+  .users-selection-container {
+    .users-select-button {
+      grid-template-columns: repeat(2, 1fr) !important;
     }
   }
 }

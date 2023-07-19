@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/css/dashboard/navbar.css" />
 <link rel="stylesheet" href="/css/dashboard/dashboard.css" />
 <link rel="stylesheet" href="/css/dashboard/courses.css" />
-<link rel="stylesheet" href="/css/dashboard/round_form.css">
+<link rel="stylesheet" href="/css/dashboard/round_form.css" />
 </head>
 <body>
 
@@ -63,14 +63,18 @@
             </div>
 
 
-            <div class="my-3">
-              <textarea name="round_link" placeholder="Round Links"
-                        class="form-control editor-<%- round.round_id %>"
-              >
-              </textarea>
-              <% if (validationErrors.find(e => e.param === "round_link")) { %>
-                <div class="alert alert-danger" role="alert">Please enter a valid description</div>
-              <% } %>
+            <div class="container-fluid g-0">
+              <div class="row">
+                <div class="my-3">
+                  <textarea name="round_link" placeholder="Round Links"
+                            class="form-control editor-<%- round.round_id %>"
+                  >
+                  </textarea>
+                      <% if (validationErrors.find(e => e.param === "round_link")) { %>
+                        <div class="alert alert-danger" role="alert">Please enter a valid description</div>
+                      <% } %>
+                </div>
+              </div>
             </div>
 
             <div class="users-selection-container">

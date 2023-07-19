@@ -1,1 +1,119 @@
-.navbar{box-shadow:0 3px 6px rgba(0,0,0,.16);height:120px;position:sticky;width:100%;top:0;background-color:#fff;z-index:100;margin-bottom:60px}.navbar .floating-whatsapp{position:absolute;bottom:30px;right:30px}.navbar .navbar-brand{font-size:28px !important;color:#545ee3}.navbar .navbar-toggler{border:1px solid #545ee3;display:flex;justify-content:center;align-items:center}.navbar .navbar-toggler .navbar-toggler-icon{width:100%;height:100%}.navbar .navbar-toggler svg{display:block;fill:#545ee3}.navbar .navbar-nav{gap:40px;align-items:center;background-color:#fff}.navbar .navbar-nav .nav-item a{color:#000;font-size:18px}.navbar .navbar-nav .nav-item a.login-button{display:flex;justify-content:center;align-items:center;color:#fff;gap:10px;transition:all .25s ease-in-out}.navbar .navbar-nav .nav-item a.login-button svg path{transition:all .25s ease-in-out}.navbar .navbar-nav .nav-item a.login-button:hover{color:#545ee3}.navbar .navbar-nav .nav-item a.login-button:hover svg path{fill:#545ee3 !important}.navbar .navbar-nav .nav-item a.active{color:#545ee3}.navbar .navbar-nav .nav-item a.active svg{fill:#545ee3}.navbar .navbar-nav .nav-item a svg{width:26px;height:26px}@media(min-width: 992px)and (max-width: 1199px){.navbar .navbar-nav{gap:23px !important}.navbar .navbar-nav a{padding:0 !important;font-size:16px !important}}@media(max-width: 575px){.navbar{height:80px}.navbar .navbar-brand a{font-size:18px !important}}@media(min-width: 576px)and (max-width: 991px){.navbar{height:80px}.navbar .navbar-brand a{font-size:18px !important}}@media(min-width: 1200px)and (max-width: 1399px){.navbar .navbar-nav{gap:23px !important}.navbar .navbar-nav a{font-size:16px !important}}@media(min-width: 1400px)and (max-width: 1599px){.navbar .navbar-nav{gap:23px !important}.navbar .navbar-nav a{font-size:16px !important}}
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
+.navbar {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  height: 120px;
+  position: sticky;
+  width: 100%;
+  top: 0;
+  background-color: #fff;
+  z-index: 100;
+  margin-bottom: 60px;
+}
+.navbar .floating-whatsapp {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+}
+.navbar .navbar-brand {
+  font-size: 28px !important;
+  color: #545ee3;
+}
+.navbar .navbar-toggler {
+  border: 1px solid #545ee3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.navbar .navbar-toggler .navbar-toggler-icon {
+  width: 100%;
+  height: 100%;
+}
+.navbar .navbar-toggler svg {
+  display: block;
+  fill: #545ee3;
+}
+.navbar .navbar-nav {
+  gap: 40px;
+  align-items: center;
+  background-color: #fff;
+}
+.navbar .navbar-nav .nav-item a {
+  color: #000;
+  font-size: 18px;
+}
+.navbar .navbar-nav .nav-item a.login-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  gap: 10px;
+  transition: all 0.25s ease-in-out;
+}
+.navbar .navbar-nav .nav-item a.login-button svg path {
+  transition: all 0.25s ease-in-out;
+}
+.navbar .navbar-nav .nav-item a.login-button:hover {
+  color: #545ee3;
+}
+.navbar .navbar-nav .nav-item a.login-button:hover svg path {
+  fill: #545ee3 !important;
+}
+.navbar .navbar-nav .nav-item a.active {
+  color: #545ee3;
+}
+.navbar .navbar-nav .nav-item a.active svg {
+  fill: #545ee3;
+}
+.navbar .navbar-nav .nav-item a svg {
+  width: 26px;
+  height: 26px;
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .navbar .navbar-nav {
+    gap: 23px !important;
+  }
+  .navbar .navbar-nav a {
+    padding: 0 !important;
+    font-size: 16px !important;
+  }
+}
+@media (max-width: 575px) {
+  .navbar {
+    height: 80px;
+  }
+  .navbar .navbar-brand a {
+    font-size: 18px !important;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .navbar {
+    height: 80px;
+  }
+  .navbar .navbar-brand a {
+    font-size: 18px !important;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .navbar .navbar-nav {
+    gap: 23px !important;
+  }
+  .navbar .navbar-nav a {
+    font-size: 16px !important;
+  }
+}
+@media (min-width: 1400px) and (max-width: 1599px) {
+  .navbar .navbar-nav {
+    gap: 23px !important;
+  }
+  .navbar .navbar-nav a {
+    font-size: 16px !important;
+  }
+}
+
+/*# sourceMappingURL=nav.css.map */
