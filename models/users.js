@@ -6,6 +6,9 @@ import { UUIDV4 } from "sequelize";
 const usersRoles = ['normal', 'moderator', 'admin', 'instructor'];
 
 const Users = sequelize.define("user", {
+  id: {
+    type: Sequelize.INTEGER,
+  },
   user_id: {
     type: Sequelize.STRING,
     allowNull: false,

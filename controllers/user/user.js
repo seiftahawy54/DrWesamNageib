@@ -112,9 +112,8 @@ export const getUpdateUserData = async (req, res, next) => {
 };
 
 export const postUpdateUserData = async (req, res, next) => {
-    const name = req.body.name;
     const email = req.body.email;
-    const whatsappNo = req.body.whatsapp_number;
+    const whatsappNo = req.body.whatsapp_no;
     const specialization = req.body.specialization;
     const errors = validationResult(req);
     try {
@@ -122,9 +121,23 @@ export const postUpdateUserData = async (req, res, next) => {
             return res.status(422).json(extractErrorMessages(errors.array()));
         }
 
+        const findingOtherUserWithThisEmail = await Users.findOne({
+            where: {
+                email: {
+                    [Op.ne]: req.user.email,
+                    [Op.eq]: email
+                },
+            },
+        })
+
+        if (findingOtherUserWithThisEmail) {
+            return res.status(422).json({
+                errors: constructError('email', 'This email is already taken!'),
+            });
+        }
+
         const updatingUserData = await Users.update(
             {
-                name,
                 email,
                 whatsapp_no: whatsappNo,
                 specialization,
@@ -132,17 +145,13 @@ export const postUpdateUserData = async (req, res, next) => {
             {where: {user_id: req.user.user_id}}
         );
 
-        if (updatingUserData[0] === 1) {
-            // req.flash("success", ");
-            return res
-                .status(200)
-                .json({success: true, message: "Your Data is updated successfully"});
-        }
-
-        return res.status(500).json({
-            error: true,
-            message: "Server error",
-        });
+        return res
+            .status(200)
+            .json({
+                email,
+                whatsappNo,
+                specialization
+            });
     } catch (e) {
         await errorRaiser(e, next, "API");
     }
@@ -197,15 +206,15 @@ export const getPerformExam = async (req, res, next) => {
 
         // Filter answers
         exam.questions = exam.questions.map((question) => {
-                if ("correctAnswer" in question) {
-                    return {
-                        ...question,
-                        correctAnswer: null
-                    }
-                } else {
-                    return question
+            if ("correctAnswer" in question) {
+                return {
+                    ...question,
+                    correctAnswer: null
                 }
-            })
+            } else {
+                return question
+            }
+        })
 
         return res.status(200).json({
             exam,

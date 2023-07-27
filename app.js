@@ -156,11 +156,21 @@ UserPerRound.hasMany(Users, {
 
 UserPerRound.hasMany(Rounds, {
   foreignKey: "roundId",
+  targetKey: "round_id",
   constraints: false,
   onDelete: "cascade",
   onUpdate: "cascade",
 })
 
+Users.belongsTo(UserPerRound, {
+  onDelete: "cascade",
+  onUpdate: "cascade",
+})
+
+Rounds.belongsTo(UserPerRound, {
+  onDelete: "cascade",
+  onUpdate: "cascade",
+})
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 

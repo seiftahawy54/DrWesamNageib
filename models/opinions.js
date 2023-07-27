@@ -4,6 +4,9 @@ import { hashCreator } from "../utils/general_helper.js";
 import { UUIDV4 } from "sequelize";
 
 const Opinions = sequelize.define("opinions", {
+  id: {
+    type: Sequelize.INTEGER,
+  },
   opinion_id: {
     type: Sequelize.STRING,
     primaryKey: true,

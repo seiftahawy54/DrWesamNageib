@@ -3,6 +3,9 @@ import { sequelize } from "../utils/db.js";
 import { UUIDV4 } from "sequelize";
 
 const Exams = sequelize.define("exam", {
+  id: {
+    type: Sequelize.INTEGER,
+  },
   exam_id: {
     type: Sequelize.STRING,
     allowNull: false,

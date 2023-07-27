@@ -28,11 +28,11 @@ userProfileRoutes
     .get("/", getUserProfile)
     .post("/update-profile-img", upload().single("user_img"), postUpdateUserImg)
     .get("/update-data/:userId", getUpdateUserData)
-    .post(
+    .put(
         "/update-data",
         [
             body("email").isEmail().notEmpty(),
-            body("whatsapp_number").isMobilePhone("any").notEmpty(),
+            body("whatsapp_no").isMobilePhone("any").notEmpty(),
             body("specialization").isString().notEmpty(),
         ],
         postUpdateUserData

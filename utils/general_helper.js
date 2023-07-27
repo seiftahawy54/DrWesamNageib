@@ -350,13 +350,19 @@ export const userPerformedExams = async (userId) => {
 /**
  * @description
  * @param {[{param: string, msg: string}]} expressValidatorArray
- * @returns {{field: string, message: string}[]}[]
+ * @returns {[field]: string, message: string}
  */
 
 export const extractErrorMessages = (expressValidatorArray) => {
-  return expressValidatorArray.map((errObj) =>
-    constructError(errObj.param, errObj.msg)
-  );
+  const errorObj = {};
+  for (let error of expressValidatorArray) {
+    console.log(error)
+    errorObj[[error.param]] = error.msg
+  }
+
+  return {
+    errors: errorObj
+  }
 };
 
 /**
@@ -383,11 +389,11 @@ export const isEmpty = (obj) => Object.keys(obj).length === 0;
 /**
  * @description Construct the global object of errors
  * @param {string} field
- * @param {string} message
+ * @param {string} msg
  * @returns - { field: string, reason: string }
  */
 
-export const constructError = (field, message) => ({ field, message });
+export const constructError = (field, msg) => ({ [field]: msg });
 
 /**
  * @description Construct the filters for searching in posts
