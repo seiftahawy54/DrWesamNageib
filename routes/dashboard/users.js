@@ -11,8 +11,8 @@ const router = Router();
 
 router
     .get("/", getUsers)
+    .delete("/:userId", postDeleteUser)
     .get("/search/", getSearchForUser)
-    .post("/delete-users", postDeleteUser)
     .get("/edit-users/:userId", getUpdateUser)
     .post("/edit-user/:userId", postUpdateUser)
 

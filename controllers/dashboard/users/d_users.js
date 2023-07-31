@@ -77,6 +77,9 @@ const getUsers = async (req, res, next) => {
             limit: MAX_NUMBER,
             offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
             order: [["created_on", "DESC"], ["id", "DESC"]],
+            where: {
+                isDeleted: false
+            },
             include: [
                 {
                     model: userPerRound,
@@ -114,7 +117,7 @@ const getUsers = async (req, res, next) => {
                 hasPrev: prev >= 1,
                 lastPage: numberOfLinks,
                 firstPage: 1,
-                activePage: Number(pageNumber),
+                currentPage : Number(pageNumber),
             },
         });
     } catch (e) {
@@ -123,17 +126,21 @@ const getUsers = async (req, res, next) => {
 };
 
 const postDeleteUser = async (req, res, next) => {
-    const userId = req.body.userId;
+    const {userId} = req.params;
     try {
-        const deletingResult = await (await Users.findByPk(userId)).destroy();
-        if (deletingResult[0] >= 1) {
-            req.flash("success", "User deleted successfully!");
-            res.redirect("/dashboard/users");
-        } else {
-            res.status(500).redirect("/dashboard/users");
+        const user = await Users.update({
+            isDeleted: true
+        }, {
+            where: {
+                id: userId
+            }
+        })
+
+        if (user[0] >= 1) {
+            return res.status(200).json({message: "User deleted successfully"});
         }
     } catch (e) {
-        console.error(e, next);
+        await errorRaiser(e, next);
     }
 };
 
