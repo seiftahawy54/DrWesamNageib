@@ -148,7 +148,7 @@ export const createCertificate = (
         width: 100,
       },
       {
-        text: `${startDate} to ${endDate} online ZOOM`.toUpperCase(),
+        text: `${startDate} to ${moment(startDate).add(5, "days").format("LL")} online ZOOM`.toUpperCase(),
         alignment: "center",
         fontSize: 20,
         bold: true,
