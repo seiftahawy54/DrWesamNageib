@@ -3,11 +3,17 @@ import {errorRaiser} from "../../utils/error_raiser.js";
 import moment from "moment";
 import {validationResult} from "express-validator";
 import {Op, Sequelize} from "sequelize";
-import {extractErrorMessages} from "../../utils/general_helper.js";
+import {calcPagination, extractErrorMessages} from "../../utils/general_helper.js";
 import userPerRound from "../../models/userPerRound.js";
 
 export const getRounds = async (req, res, next) => {
     try {
+        let pageNumber = req.query.page;
+
+        if (!pageNumber) {
+            pageNumber = 1;
+        }
+
         let rounds = await Rounds.findAll({
             order: [
                 ["round_date", "ASC"],
@@ -16,6 +22,14 @@ export const getRounds = async (req, res, next) => {
             ],
             attributes: ["round_date", "round_id", "finished", "course_id", "round_link"],
             include: [
+                {
+                    model: userPerRound,
+                    on: {
+                        round_id: {
+                            [Op.eq]: Sequelize.col("userPerRound.roundId"),
+                        }
+                    }
+                },
                 {
                     model: Courses,
                     on: {
@@ -29,8 +43,11 @@ export const getRounds = async (req, res, next) => {
             ],
         });
 
+        const pagination = calcPagination(Rounds, pageNumber)
+
         return res.status(200).json({
             rounds,
+            pagination
         });
     } catch (e) {
         await errorRaiser(e, next);

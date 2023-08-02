@@ -4,7 +4,7 @@ import {errorRaiser} from "../../../utils/error_raiser.js";
 import {sequelize} from "../../../utils/db.js";
 import moment from "moment";
 import {Op} from "sequelize";
-import {userPerformedExams} from "../../../utils/general_helper.js";
+import {calcPagination, userPerformedExams} from "../../../utils/general_helper.js";
 import {
     STRING_TYPE,
     validateRequestInput,
@@ -72,7 +72,6 @@ const getUsers = async (req, res, next) => {
         }
 
         const MAX_NUMBER = 10;
-        const numberOfResults = await Users.findAndCountAll();
         let fetchingResults = await Users.findAll({
             limit: MAX_NUMBER,
             offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
@@ -103,22 +102,11 @@ const getUsers = async (req, res, next) => {
             ]
         });
 
-        const numberOfLinks = Math.round(numberOfResults.count / MAX_NUMBER);
-        const next = Number(Number(pageNumber) + 1);
-        const prev = Number(Number(pageNumber) - 1);
+        const pagination = await calcPagination(Users, pageNumber)
 
         return res.status(200).json({
             users: fetchingResults,
-            pagination: {
-                numberOfLinks,
-                next,
-                prev,
-                hasNext: next <= numberOfLinks,
-                hasPrev: prev >= 1,
-                lastPage: numberOfLinks,
-                firstPage: 1,
-                currentPage : Number(pageNumber),
-            },
+            pagination,
         });
     } catch (e) {
         await errorRaiser(e, next);
