@@ -9,13 +9,13 @@ import Multer from "multer";
 import cors from "cors";
 
 // MY MODULES IMPORTS
-import { sequelize } from "./utils/db.js";
+import {sequelize} from "./utils/db.js";
 import AppRoutes from './routes/index.js'
-import {ExamsReplies, Users, Rounds, Payment, Courses, UserPerRound, Exams} from "./models/index.js";
-import { imageDownloader } from "./utils/general_helper.js";
-import { body } from "express-validator";
+import {ExamsReplies, Users, Rounds, Payment, Courses, UserPerRound, Exams, ExamsCourses} from "./models/index.js";
+import {imageDownloader} from "./utils/general_helper.js";
+import {body} from "express-validator";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
-import { fileFilter, fileStorage } from "./middlewares/multer.js";
+import {fileFilter, fileStorage} from "./middlewares/multer.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import logger from "./utils/logger.js";
 
@@ -28,28 +28,28 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
-app.use(
-  Multer({
-    limits: { fileSize: 5 * 1024 * 1024 },
-    storage: fileStorage,
-    fileFilter,
-  }).any(
-    "course_img",
-    "detailed_img",
-    "certificate_img",
-    "exam_q_image",
-    "instructor_img",
-    "instructor_certificates"
-  )
-);
+// app.use(
+//     Multer({
+//         limits: {fileSize: 5 * 1024 * 1024},
+//         storage: fileStorage,
+//         fileFilter,
+//     }).any(
+//         "course_img",
+//         "detailed_img",
+//         "certificate_img",
+//         "exam_q_image",
+//         "instructor_img",
+//         "instructor_certificates"
+//     )
+// );
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use("/robots.txt", express.static(path.resolve("public", "robots.txt")));
 app.use("/sitemap.xml", express.static(path.resolve("public", "sitemap.xml")));
 app.use(express.static(path.resolve("public")));
 app.use(
-  "/static",
-  express.static(path.resolve("downloaded_images"))
+    "/static",
+    express.static(path.resolve("downloaded_images"))
 );
 
 app.use(
@@ -61,9 +61,9 @@ app.use(
 app.use(compression());
 
 app.post(
-  "/download_image",
-  body("img_id").isString().isLength({ min: 15 }),
-  imageDownloader
+    "/download_image",
+    body("img_id").isString().isLength({min: 15}),
+    imageDownloader
 );
 
 app.use("/api", AppRoutes);
@@ -71,121 +71,128 @@ app.use("*", notFoundHandler);
 app.use(errorHandler);
 
 Payment.hasOne(Courses, {
-  foreignKey: "course_id",
-  through: "course_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "course_id",
+    through: "course_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 Payment.hasOne(Users, {
-  foreignKey: "user_id",
-  through: "user_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "user_id",
+    through: "user_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 Payment.hasOne(Rounds, {
-  foreignKey: "round_id",
-  through: "round_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "round_id",
+    through: "round_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 Users.hasOne(Rounds, {
-  foreignKey: "current_round",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "current_round",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 
 Rounds.hasOne(Users, {
-  foreignKey: "course_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "course_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 
 Rounds.hasOne(Courses, {
-  foreignKey: "course_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "course_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 
 Rounds.belongsToMany(Users, {
-  through: "users_ids",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    through: "users_ids",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 
 Rounds.belongsToMany(Courses, {
-  through: "users_ids",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    through: "users_ids",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 
-Exams.hasOne(Courses, {
-  through: "course_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+ExamsCourses.hasOne(Courses, {
+    foreignKey: "course_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
+})
+
+ExamsCourses.hasOne(Exams, {
+    foreignKey: "exam_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 })
 
 ExamsReplies.hasOne(Exams, {
-  foreignKey: "exam_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "exam_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 
 ExamsReplies.belongsTo(Users, {
-  foreignKey: "user_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "user_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 });
 
 UserPerRound.hasMany(Users, {
-  foreignKey: "userId",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "userId",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 })
 
 UserPerRound.hasMany(Rounds, {
-  foreignKey: "roundId",
-  targetKey: "round_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    foreignKey: "roundId",
+    targetKey: "round_id",
+    constraints: false,
+    onDelete: "cascade",
+    onUpdate: "cascade",
 })
 
 Users.belongsTo(UserPerRound, {
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    onDelete: "cascade",
+    onUpdate: "cascade",
 })
 
 Rounds.belongsTo(UserPerRound, {
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    onDelete: "cascade",
+    onUpdate: "cascade",
 })
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
 try {
-  const connectionResult = await sequelize.authenticate();
-  const syncingResult = await sequelize.sync({
-    alter: true,
-  });
+    const connectionResult = await sequelize.authenticate();
+    const syncingResult = await sequelize.sync({
+        alter: true,
+    });
 
-  app.listen(port, () => {
-    logger.info(`working on ${port}`)
-  });
+    app.listen(port, () => {
+        logger.info(`working on ${port}`)
+    });
 } catch (e) {
-  logger.error(e)
-  throw new Error(e);
+    logger.error(e)
+    throw new Error(e);
 }
 
 export default app;

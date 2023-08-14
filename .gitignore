@@ -122,3 +122,4 @@ dist
 .idea
 
 public/certificates/*
+uploads/*

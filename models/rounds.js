@@ -4,6 +4,9 @@ import { hashCreator } from "../utils/general_helper.js";
 import { UUIDV4 } from "sequelize";
 
 const Rounds = sequelize.define("rounds", {
+  id: {
+    type: Sequelize.INTEGER,
+  },
   round_id: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -46,6 +49,10 @@ const Rounds = sequelize.define("rounds", {
     defaultValue: new Date(),
     allowNull: false,
   },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  }
 });
 
 export default Rounds;

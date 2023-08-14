@@ -1,13 +1,12 @@
 import {Router} from "express";
 import {
     getRounds,
-    getStartNewRound,
     getUpdateRound,
     postAddNewRound,
     postDeleteRound,
     removeUsersFromRounds,
     addUsersToRounds,
-    putUpdateRound
+    putUpdateRound, gerRunningRounds
 } from "../../controllers/dashboard/d_rounds.js";
 import {body} from "express-validator";
 
@@ -15,13 +14,12 @@ const router = Router();
 
 router
     .get("/", getRounds)
-    .get("/:roundId", getUpdateRound)
+    .delete("/:roundId", postDeleteRound)
     .put("/:roundId", [
         body("roundLink").notEmpty().optional(),
         body("roundDate").notEmpty().optional(),
         body("finishRound").notEmpty().optional(),
     ], putUpdateRound)
-    .get("/add-new-round", getStartNewRound)
     .post(
         "/",
         [
@@ -32,10 +30,10 @@ router
         ],
         postAddNewRound
     )
+    .get('/running', gerRunningRounds)
     .put('/addUsers/:roundId', [body('usersIds').isArray().notEmpty()], addUsersToRounds)
     .delete("/removeUsers/:roundId", [
         body("usersIds").isArray().notEmpty(),
     ], removeUsersFromRounds)
-    .delete("/", postDeleteRound);
 
 export default router;

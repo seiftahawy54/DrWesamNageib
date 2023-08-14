@@ -14,22 +14,20 @@ export const getRounds = async (req, res, next) => {
             pageNumber = 1;
         }
 
+        const MAX_NUMBER = 10;
         let rounds = await Rounds.findAll({
+            limit: MAX_NUMBER,
+            offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
             order: [
                 ["round_date", "ASC"],
                 ["updatedAt", "DESC"],
                 ["createdAt", "DESC"],
             ],
-            attributes: ["round_date", "round_id", "finished", "course_id", "round_link"],
+            attributes: ["id", "round_date", "round_id", "finished", "course_id", "round_link"],
+            where: {
+                isDeleted: false,
+            },
             include: [
-                {
-                    model: userPerRound,
-                    on: {
-                        round_id: {
-                            [Op.eq]: Sequelize.col("userPerRound.roundId"),
-                        }
-                    }
-                },
                 {
                     model: Courses,
                     on: {
@@ -43,7 +41,14 @@ export const getRounds = async (req, res, next) => {
             ],
         });
 
-        const pagination = calcPagination(Rounds, pageNumber)
+        for (let roundIndex = 0; roundIndex < rounds.length; roundIndex += 1) {
+            const {count} = (await userPerRound.findAndCountAll({
+                where: {roundId: rounds[roundIndex].round_id},
+            }));
+            rounds[roundIndex].dataValues.noOfUsers = count;
+        }
+
+        const pagination = await calcPagination(Rounds, pageNumber)
 
         return res.status(200).json({
             rounds,
@@ -53,6 +58,21 @@ export const getRounds = async (req, res, next) => {
         await errorRaiser(e, next);
     }
 };
+
+export const gerRunningRounds = async (req, res, next) => {
+    try {
+        const rounds = await Rounds.findAll({
+            where: {
+                finished: false
+            },
+            attributes: ["round_id", "round_date"]
+        });
+
+        return res.status(200).json(rounds);
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
 
 export const getStartNewRound = async (req, res, next) => {
     try {
@@ -168,18 +188,20 @@ export const putUpdateRound = async (req, res, next) => {
 };
 
 export const postDeleteRound = async (req, res, next) => {
-    const roundId = req.body.roundId;
+    const {roundId} = req.params;
 
     try {
-        const deletingResult = await (await Rounds.findByPk(roundId)).destroy();
-
-        if (deletingResult.length === 0) {
-            req.flash("success", "Round deleted successfully");
-            res.redirect("/dashboard/rounds");
-        } else {
-            req.flash("error", "There's An error");
-            res.redirect("/dashboard/rounds");
+        const round = await Rounds.update({
+            isDeleted: true
+        }, {where: {id: roundId}});
+        if (!round) {
+            return res.status(404).json({message: "Round not found"});
         }
+
+        if (round[0] >= 1) {
+            return res.status(200).json({message: "Round deleted successfully"});
+        }
+
     } catch (e) {
         await errorRaiser(e, next);
     }

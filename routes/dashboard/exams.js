@@ -37,7 +37,7 @@ router
     ],
     startNewExam
   )
-  .post("/delete-exams", postDeleteExam)
+  .delete("/:examId", postDeleteExam)
   .post("/exam-image", postAddingExamImage)
   .post(
     "/delete-exam-image",

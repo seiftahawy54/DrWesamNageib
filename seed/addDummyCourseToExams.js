@@ -1,4 +1,4 @@
-import {Courses, Exams} from "../models/index.js";
+import {Courses, Exams, ExamsCourses} from "../models/index.js";
 
 const allExams = await Exams.findAll()
 const courses = await Courses.findOne({
@@ -8,7 +8,8 @@ const courses = await Courses.findOne({
 })
 
 for (let exam of allExams) {
-    await exam.update({
-        course_id: courses.course_id
+    await ExamsCourses.create({
+        course_id: courses.course_id,
+        exam_id: exam.exam_id
     })
 }

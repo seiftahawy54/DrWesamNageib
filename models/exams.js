@@ -2,7 +2,7 @@ import Sequelize from "sequelize";
 import { sequelize } from "../utils/db.js";
 import { UUIDV4 } from "sequelize";
 
-const Exams = sequelize.define("exam", {
+const examsSchema = {
   id: {
     type: Sequelize.INTEGER,
   },
@@ -42,6 +42,10 @@ const Exams = sequelize.define("exam", {
     defaultValue: new Date(),
     allowNull: false,
   },
-});
+};
 
+const Exams = sequelize.define("exam", examsSchema);
+const DeletedExams = sequelize.define('deleted-exam', examsSchema)
+
+export { Exams, DeletedExams };
 export default Exams;

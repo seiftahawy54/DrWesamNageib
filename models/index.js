@@ -11,6 +11,9 @@ import Users from "./users.js";
 import ExamImages from "./exam-images.js";
 import ExamsReplies from "./exams-replies.js";
 import UserPerRound from './userPerRound.js'
+import ExamsCourses from "./ExamsCourses.js";
+import Content from "./content.js";
+import ContentAccessList from "./ContentAccessList.js";
 
 export {
     ExamsReplies,
@@ -25,5 +28,8 @@ export {
     Rounds,
     Users,
     ExamImages,
-    UserPerRound
+    UserPerRound,
+    ExamsCourses,
+    Content,
+    ContentAccessList,
 };
