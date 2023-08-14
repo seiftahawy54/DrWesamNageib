@@ -2,9 +2,9 @@ import Sequelize from "sequelize";
 import {sequelize} from "../utils/db.js";
 import {UUIDV4} from "sequelize";
 
-const ContentAccessList = sequelize.define("content", {
+const ContentAccessList = sequelize.define("contentAccessList", {
     contentId: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         foreignKey: true,
         defaultValue: UUIDV4,
         allowNull: false,

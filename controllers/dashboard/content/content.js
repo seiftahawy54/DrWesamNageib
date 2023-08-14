@@ -1,7 +1,6 @@
 import {errorRaiser} from "../../../utils/error_raiser.js";
-import {Content, Courses, Exams, ExamsCourses, ExamsReplies, UserPerRound} from "../../../models/index.js";
-import {Op, Sequelize} from "sequelize";
-import {calcPagination, constructError, extractErrorMessages} from "../../../utils/general_helper.js";
+import {Content, ContentAccessList, Exams, UserPerRound} from "../../../models/index.js";
+import {calcPagination, extractErrorMessages} from "../../../utils/general_helper.js";
 import {validationResult} from "express-validator";
 
 const allContent = async (req, res, next) => {
@@ -17,7 +16,7 @@ const allContent = async (req, res, next) => {
             offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
         });
 
-        const pagination = await calcPagination(Exams, pageNumber)
+        const pagination = await calcPagination(Content, pageNumber)
 
         return res.status(200).json({
             contents,
@@ -39,17 +38,32 @@ const addNewContent = async (req, res, next) => {
             return res.status(400).json(extractErrorMessages(extractErrorMessages))
         }
 
-        // for (let round of selectedRounds) {
-        //     console.log(round)
-        //     const userPerRound = await UserPerRound.findAll({
-        //         where: {
-        //             roundId: round,
-        //         }
-        //     })
-        //     console.log(userPerRound.length)
-        // }
+        let eachRoundAccessList = [];
 
-        return res.status(200).json(selectedRounds)
+        for (let round of selectedRounds) {
+            eachRoundAccessList = [
+                ...eachRoundAccessList,
+                ...(await UserPerRound.findAll({
+                    where: {
+                        roundId: round,
+                    }
+                })).map(({userId}) => userId)
+            ];
+        }
+
+
+        const newContent = await Content.create({
+            content: file.filename,
+        })
+
+        for (let i = 0; i < eachRoundAccessList.length; i += 1) {
+            await ContentAccessList.create({
+                userId: eachRoundAccessList[i],
+                contentId: newContent.id,
+            })
+        }
+
+        return res.status(200).json(eachRoundAccessList)
 
     } catch (e) {
         await errorRaiser(e, next)

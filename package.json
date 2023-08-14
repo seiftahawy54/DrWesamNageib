@@ -9,7 +9,7 @@
     "debug": "nodemon --inspect app.js $PORT",
     "web": "node app.js",
     "sass": "sass --watch ./public/scss/:./public/css/",
-    "test": "NODE_ENV=test node --test ./tests",
+    "test": "NODE_ENV=test vitest",
     "start": "node app.js"
   },
   "dependencies": {
@@ -59,6 +59,7 @@
     "sass": "^1.45.0",
     "sequelize": "^6.14.0",
     "supertest": "^6.3.3",
+    "vite": "^4.4.9",
     "vitest": "^0.20.3",
     "winston": "^3.9.0"
   },

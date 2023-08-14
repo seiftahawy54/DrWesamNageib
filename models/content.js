@@ -4,7 +4,7 @@ import {UUIDV4} from "sequelize";
 
 const Content = sequelize.define("content", {
     content: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
     },
     isDeleted: {
         type: Sequelize.BOOLEAN,

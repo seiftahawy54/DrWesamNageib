@@ -1,5 +1,5 @@
 // NODE MODULES IMPORTS
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 import path from "path";
 import express from "express";
 import bodyParser from "body-parser";

@@ -6,4 +6,5 @@ import {fileUploader, upload} from "../../middlewares/multer.js";
 
 export default Router()
     .get("/", allContent)
-    .post('/uploadFile', fileUploader.single('contentFile'), addNewContent);
+    .post('/uploadFile', fileUploader.single('contentFile'),
+        body('selectedRounds').isArray().notEmpty(), addNewContent);
