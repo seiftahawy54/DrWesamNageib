@@ -137,7 +137,7 @@ export const createCertificate = (
         fontSize: "18",
         italics: true,
         alignment: "center",
-        marginTop: 10,
+        marginTop: 5,
       },
       {
         text: `Certificate of Attendance of "${courseName}"`,
@@ -150,18 +150,18 @@ export const createCertificate = (
       {
         text: `${startDate} to ${moment(startDate).add(5, "days").format("LL")} online ZOOM`.toUpperCase(),
         alignment: "center",
-        fontSize: 20,
+        fontSize: 18,
         bold: true,
         marginTop: 20,
       },
       {
         alignment: "center",
-        fontSize: 16,
+        fontSize: 14,
         marginTop: 20,
         text: [
           {
             text: "Dr Wesam Nageib\n",
-            fontSize: 20,
+            fontSize: 18,
             bold: true,
             normal: true,
             italics: true,
@@ -183,7 +183,7 @@ export const createCertificate = (
         ],
       },
       {
-        marginTop: 10,
+        marginTop: 5,
         columns: [
           {
             width: "30%",
@@ -243,7 +243,7 @@ export const createCertificate = (
         fontSize: "18",
         italics: true,
         alignment: "center",
-        marginTop: 10,
+        marginTop: 5,
       },
       {
         text: `Certificate of Attendance of Professional in ${courseCategory} "${courseName}"`,
@@ -256,18 +256,18 @@ export const createCertificate = (
       {
         text: `${startDate} to ${endDate} online ZOOM`.toUpperCase(),
         alignment: "center",
-        fontSize: 20,
+        fontSize: 18,
         bold: true,
         marginTop: 20,
       },
       {
         alignment: "center",
-        fontSize: 16,
+        fontSize: 14,
         marginTop: 20,
         text: [
           {
             text: "Dr Wesam Nageib\n",
-            fontSize: 20,
+            fontSize: 18,
             bold: true,
             normal: true,
             italics: true,
@@ -289,7 +289,7 @@ export const createCertificate = (
         ],
       },
       {
-        marginTop: 10,
+        marginTop: 5,
         columns: [
           {
             width: "30%",
