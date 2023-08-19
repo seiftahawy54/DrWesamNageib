@@ -6,7 +6,9 @@ import {
     postDeleteRound,
     removeUsersFromRounds,
     addUsersToRounds,
-    putUpdateRound, gerRunningRounds
+    putUpdateRound,
+    gerRunningRounds,
+    getUsersForRounds
 } from "../../controllers/dashboard/d_rounds.js";
 import {body} from "express-validator";
 
@@ -35,5 +37,6 @@ router
     .delete("/removeUsers/:roundId", [
         body("usersIds").isArray().notEmpty(),
     ], removeUsersFromRounds)
+    .get("/usersForRounds", getUsersForRounds);
 
 export default router;

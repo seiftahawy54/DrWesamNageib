@@ -2,6 +2,7 @@ import {errorRaiser} from "../../../utils/error_raiser.js";
 import {Content, ContentAccessList, Exams, UserPerRound} from "../../../models/index.js";
 import {calcPagination, extractErrorMessages} from "../../../utils/general_helper.js";
 import {validationResult} from "express-validator";
+import {uploadFileV2} from "../../../utils/aws.js";
 
 const allContent = async (req, res, next) => {
     try {
@@ -34,6 +35,8 @@ const addNewContent = async (req, res, next) => {
         const {selectedRounds} = req.body;
         const errors = validationResult(req)
 
+        const {uploadedImage} = await uploadFileV2(file.path, file.filename);
+
         if (!errors.isEmpty()) {
             return res.status(400).json(extractErrorMessages(extractErrorMessages))
         }
@@ -53,7 +56,7 @@ const addNewContent = async (req, res, next) => {
 
 
         const newContent = await Content.create({
-            content: file.filename,
+            contentUrl: uploadedImage.Location
         })
 
         for (let i = 0; i < eachRoundAccessList.length; i += 1) {

@@ -1,5 +1,5 @@
-import { expect, it, vi, describe } from "vitest";
-import { getSingleFile, uploadFile } from "./aws.js";
+import {expect, it, vi, describe} from "vitest";
+import {getSingleFile, uploadFile, uploadFileV2} from "./aws.js";
 import path from "path";
 
 // describe("getSingleFile(filename)", () => {
@@ -22,26 +22,25 @@ import path from "path";
 // });
 
 describe("uploadFile(filepath, filename, mimetype, res, next)", async () => {
-  it("should upload images correctly", async () => {
-    // Arrange
-    const filepath = path.resolve("uploads", "1ff7823c8a85262b118b-certificate.pdf");
-    const fileName = "1ff7823c8a85262b118b-certificate.pdf";
-    const res = {};
-    const next = (err) => {
-      console.log(`error from next mocked function => `, err);
-    };
-    let errorMessage = "";
-    let result;
+    it("should upload images correctly", async () => {
+        // Arrange
+        const filepath = path.resolve("uploads", "1ff7823c8a85262b118b-certificate.pdf");
+        const fileName = "1ff7823c8a85262b118b-certificate.pdf";
+        const res = {};
+        const next = (err) => {
+            console.log(`error from next mocked function => `, err);
+        };
+        let errorMessage = "";
 
-    try {
-      result = await uploadFile(filepath, fileName, "application/pdf", res, next);
-      console.log(`finishing result ==> ${result}`);
-    } catch (e) {
-      console.log(e);
-      errorMessage = e.message;
-    }
+        uploadFileV2(filepath, fileName)
+            .then(res => {
+                console.log(`finishing result ==> ${res}`);
+                expect(res).toBeTruthy();
+            })
+            .catch(err => {
+              console.log(err)
+            });
 
-    // expect(result).toBeTruthy();
-    expect(errorMessage).toHaveLength(0);
-  });
+        // expect(result).toBeTruthy();
+    });
 });

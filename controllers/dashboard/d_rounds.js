@@ -251,3 +251,27 @@ export const addUsersToRounds = async (req, res, next) => {
         await errorRaiser(e, next);
     }
 }
+
+export const getUsersForRounds = async (req, res, next) => {
+    try {
+
+        const unroundedUsers = (await Users.findAll({
+            include: [
+                {
+                    model: userPerRound,
+                    required: false,
+                    on: {
+                        userId: {
+                            [Op.eq]: Sequelize.col("user.user_id"),
+                        },
+                    },
+                }
+            ],
+        })).filter(user => !user.userPerRound)
+
+        return res.status(200).json(unroundedUsers.length);
+
+    } catch (e) {
+        await errorRaiser(e, next)
+    }
+}

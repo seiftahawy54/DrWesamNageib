@@ -3,7 +3,7 @@ import {sequelize} from "../utils/db.js";
 import {UUIDV4} from "sequelize";
 
 const Content = sequelize.define("content", {
-    content: {
+    contentUrl: {
         type: Sequelize.STRING,
     },
     isDeleted: {
