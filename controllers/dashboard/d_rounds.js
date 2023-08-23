@@ -93,7 +93,7 @@ export const getStartNewRound = async (req, res, next) => {
 
 export const postAddNewRound = async (req, res, next) => {
     try {
-        const {round_course: roundCourse, round_date: roundDate, round_link: roundLink, usersIds} = req.body;
+        const {courseId, round_date: roundDate, content: roundLink, usersIds} = req.body;
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -101,7 +101,7 @@ export const postAddNewRound = async (req, res, next) => {
         }
 
         const addingResult = await Rounds.create({
-            course_id: roundCourse,
+            course_id: courseId,
             round_date: moment(roundDate).toISOString(),
             round_link: roundLink,
         });
@@ -252,14 +252,124 @@ export const addUsersToRounds = async (req, res, next) => {
     }
 }
 
+const roundsCoursesQueries = async () => {
+    const freeUsers = (await Users.findAll({
+        include: [
+            {
+                model: userPerRound,
+                required: false,
+                on: {
+                    userId: {
+                        [Op.eq]: Sequelize.col("user.user_id"),
+                    },
+                },
+            }
+        ],
+    })).filter(user => !user.userPerRound)
+
+    const usersInRounds = (await userPerRound.findAll({
+        include: [
+            {
+                model: Users,
+                on: {
+                    user_id: {
+                        [Op.eq]: Sequelize.col("userPerRound.userId"),
+                    },
+                },
+            },
+            {
+                model: Rounds,
+                on: {
+                    round_id: {
+                        [Op.eq]: Sequelize.col("userPerRound.roundId"),
+                    },
+                },
+                where: {
+                    finished: false,
+                }
+            }
+        ]
+    })).map(({users}) => (users)).flat();
+
+    const usersFinishedRounds = (await userPerRound.findAll({
+        include: [
+            {
+                model: Users,
+                on: {
+                    user_id: {
+                        [Op.eq]: Sequelize.col("userPerRound.userId"),
+                    },
+                },
+            },
+            {
+                model: Rounds,
+                on: {
+                    round_id: {
+                        [Op.eq]: Sequelize.col("userPerRound.roundId"),
+                    },
+                },
+                where: {
+                    finished: true,
+                }
+            }
+        ]
+    })).map(({users}) => (users)).flat();
+
+    return {
+        freeUsers,
+        usersInRounds,
+        usersFinishedRounds
+    }
+}
+
 export const getUsersForRounds = async (req, res, next) => {
     try {
 
-        const unroundedUsers = (await Users.findAll({
+        const {freeUsers, usersInRounds, usersFinishedRounds} = await roundsCoursesQueries()
+
+
+        return res.status(200).json({
+            freeUsers,
+            usersInRounds,
+            usersFinishedRounds,
+        });
+
+    } catch (e) {
+        await errorRaiser(e, next)
+    }
+}
+
+export const getRoundsCourses = async (req, res, next) => {
+    try {
+        const courses = await Courses.findAll({
+            attributes: ["name", "course_id"],
+            where: {
+                isDeleted: false,
+            }
+        })
+
+
+        return res.status(200).json(courses);
+
+    } catch (e) {
+        await errorRaiser(e, next)
+    }
+}
+
+
+export const getRoundData = async (req, res, next) => {
+    try {
+        const {roundId} = req.params;
+        const round = await Rounds.findByPk(roundId)
+
+        const {freeUsers, usersInRounds, usersFinishedRounds} = await roundsCoursesQueries()
+        const usersInThisRound = (await Users.findAll({
             include: [
                 {
                     model: userPerRound,
-                    required: false,
+                    where: {
+                        roundId
+                    },
                     on: {
                         userId: {
                             [Op.eq]: Sequelize.col("user.user_id"),
@@ -267,10 +377,15 @@ export const getUsersForRounds = async (req, res, next) => {
                     },
                 }
             ],
-        })).filter(user => !user.userPerRound)
+        }))
 
-        return res.status(200).json(unroundedUsers.length);
-
+        return res.status(200).json({
+            round,
+            freeUsers,
+            usersInRounds,
+            usersFinishedRounds,
+            usersInThisRound
+        })
     } catch (e) {
         await errorRaiser(e, next)
     }

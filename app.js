@@ -11,7 +11,17 @@ import cors from "cors";
 // MY MODULES IMPORTS
 import {sequelize} from "./utils/db.js";
 import AppRoutes from './routes/index.js'
-import {ExamsReplies, Users, Rounds, Payment, Courses, UserPerRound, Exams, ExamsCourses} from "./models/index.js";
+import {
+    ExamsReplies,
+    Users,
+    Rounds,
+    Payment,
+    Courses,
+    UserPerRound,
+    Exams,
+    ExamsCourses,
+    ContentAccessList, Content
+} from "./models/index.js";
 import {imageDownloader} from "./utils/general_helper.js";
 import {body} from "express-validator";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
@@ -169,21 +179,21 @@ UserPerRound.hasMany(Rounds, {
     onUpdate: "cascade",
 })
 
-Users.belongsTo(UserPerRound, {
-    onDelete: "cascade",
-    onUpdate: "cascade",
-})
+Users.belongsTo(UserPerRound)
 
-Rounds.belongsTo(UserPerRound, {
-    onDelete: "cascade",
-    onUpdate: "cascade",
-})
+Rounds.belongsTo(UserPerRound)
+
+Content.belongsTo(ContentAccessList)
+Users.belongsTo(ContentAccessList)
+
+ContentAccessList.hasMany(Content)
+ContentAccessList.hasMany(Users)
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
 try {
-    const connectionResult = await sequelize.authenticate();
-    const syncingResult = await sequelize.sync({
+    await sequelize.authenticate();
+    await sequelize.sync({
         alter: true,
     });
 

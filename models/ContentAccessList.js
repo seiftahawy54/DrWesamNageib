@@ -4,7 +4,7 @@ import {UUIDV4} from "sequelize";
 
 const ContentAccessList = sequelize.define("contentAccessList", {
     contentId: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         foreignKey: true,
         defaultValue: UUIDV4,
         allowNull: false,

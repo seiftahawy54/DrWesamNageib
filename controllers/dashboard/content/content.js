@@ -3,6 +3,7 @@ import {Content, ContentAccessList, Exams, UserPerRound} from "../../../models/i
 import {calcPagination, extractErrorMessages} from "../../../utils/general_helper.js";
 import {validationResult} from "express-validator";
 import {uploadFileV2} from "../../../utils/aws.js";
+import {Sequelize} from "sequelize";
 
 const allContent = async (req, res, next) => {
     try {
@@ -73,7 +74,30 @@ const addNewContent = async (req, res, next) => {
     }
 }
 
+const getContentLink = async (req, res, next) => {
+    try {
+        const {contentId} = req.params;
+
+
+        const content = await Content.findOne({
+            where: {
+                id: contentId,
+            }
+        });
+
+        if (!content) {
+            return res.status(404).json({message: "Content not found"});
+        }
+
+        return res.status(200).json(content);
+
+    } catch (e) {
+        await errorRaiser(e, next)
+    }
+}
+
 export {
     allContent,
-    addNewContent
+    addNewContent,
+    getContentLink
 }
