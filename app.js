@@ -183,8 +183,8 @@ Users.belongsTo(UserPerRound)
 
 Rounds.belongsTo(UserPerRound)
 
-Content.belongsTo(ContentAccessList)
-Users.belongsTo(ContentAccessList)
+// Content.belongsTo(ContentAccessList)
+// Users.belongsTo(ContentAccessList)
 
 ContentAccessList.hasMany(Content)
 ContentAccessList.hasMany(Users)
