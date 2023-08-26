@@ -63,10 +63,8 @@ const getAllContentForUser = async (req, res, next) => {
             return res.status(404).json({message: "Content not found"});
         }
 
-        return res.send(content)
-        content = content.map(({contents}) => contents).flat();
 
-        return res.status(200).json(content);
+        return res.status(200).json(content.contents);
 
     } catch (e) {
         await errorRaiser(e, next)

@@ -152,7 +152,8 @@ export const getUpdateRound = async (req, res, next) => {
 export const putUpdateRound = async (req, res, next) => {
     try {
         const roundId = req.params.roundId;
-        const {roundDate, roundLink, finishRound} = req.body;
+        // const {roundDate, roundLink, finishRound} = req.body;
+        const {courseId, round_date: roundDate, content: roundLink, usersIds, isFinished, isArchived} = req.body;
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -161,7 +162,7 @@ export const putUpdateRound = async (req, res, next) => {
 
         const findingRound = await Rounds.findByPk(roundId);
 
-        if (finishRound) {
+        if (isFinished) {
             const updateResult = await findingRound.update(
                 {
                     finished: true,
@@ -170,6 +171,16 @@ export const putUpdateRound = async (req, res, next) => {
             );
 
             return res.status(200).send('Round is finished!');
+        }
+
+        // Update round's users
+        const userPerRoundResult = await userPerRound.destroy({where: {roundId}});
+
+        for (let userId of usersIds) {
+            await userPerRound.create({
+                userId,
+                roundId
+            })
         }
 
         const updatingRoundsResult = await Rounds.update(
@@ -181,7 +192,10 @@ export const putUpdateRound = async (req, res, next) => {
             {where: {round_id: roundId}}
         );
 
-        return res.status(201).send("Round updated successfully");
+        return res.status(201).send({
+            updatingRoundsResult,
+            userPerRoundResult
+        });
     } catch (e) {
         await errorRaiser(e, next);
     }

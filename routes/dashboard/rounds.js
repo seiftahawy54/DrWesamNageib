@@ -19,9 +19,10 @@ const router = Router();
 router
     .delete("/:roundId", postDeleteRound)
     .put("/:roundId", [
-        body("roundLink").notEmpty().optional(),
-        body("roundDate").notEmpty().optional(),
-        body("finishRound").notEmpty().optional(),
+        body("courseId").isString().notEmpty(),
+        body("roundDate").isString().notEmpty(),
+        body("content").isString().notEmpty(),
+        body('usersIds').isArray().notEmpty(),
     ], putUpdateRound)
     .post(
         "/",
