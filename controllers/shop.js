@@ -91,7 +91,7 @@ export const getHomepageApi = async (req, res, next) => {
 
 export const getShoppingCart = async (req, res, next) => {
     try {
-        let { cart } = await Users.findOne({
+        let {cart} = await Users.findOne({
             where: {user_id: req.user.user_id}
         })
 
@@ -102,13 +102,15 @@ export const getShoppingCart = async (req, res, next) => {
             return res.status(404).json({message: "Cart is empty"})
         }
 
-
         logger.info(`filtering duplicate: ${JSON.stringify(cart)}`)
 
         let coursesRoundsDates = await Promise.all(
-            coursesArr.map(async ({course_id}) => {
+            cart.map(async ({roundId, courseId}) => {
                 return (
-                    await Rounds.findAll({
+                    await Rounds.findOne({
+                        where: {
+                            round_id: roundId
+                        },
                         include: [
                             {
                                 model: Courses,
@@ -117,9 +119,6 @@ export const getShoppingCart = async (req, res, next) => {
                                         [Op.eq]: Sequelize.col("rounds.course_id"),
                                     }
                                 },
-                                where: {
-                                    course_id
-                                }
                             }
                         ]
                     })
@@ -127,7 +126,11 @@ export const getShoppingCart = async (req, res, next) => {
             })
         );
 
-        coursesRoundsDates = coursesRoundsDates.map((courseRound) => courseRound);
+        coursesRoundsDates = coursesRoundsDates.map((courseRound) => ({
+            roundId: courseRound.round_id,
+            roundDate: courseRound.round_date,
+            courseData: courseRound.course
+        })).flat();
 
         const arrOfPrices = extractArrOfPrices(coursesArr);
         const totalPrice = calcTotalPrice(arrOfPrices);

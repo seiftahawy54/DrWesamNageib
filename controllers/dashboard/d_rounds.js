@@ -124,9 +124,16 @@ export const postAddNewRound = async (req, res, next) => {
 export const getUpdateRound = async (req, res, next) => {
     try {
         const roundId = req.params.roundId;
-        const round = await Rounds.findByPk(roundId, {
+        const round = await Rounds.findOne({
+            where: {
+                round_id: roundId
+            }
+        }, {
             attributes: ["round_date", "round_link", "finished", 'round_id'],
         });
+
+        return res.send(round)
+
         const users = await userPerRound.findAll({
             where: {roundId},
             include: [
@@ -279,6 +286,9 @@ const roundsCoursesQueries = async () => {
                 },
             }
         ],
+        order: [
+            ['name', "ASC"]
+        ]
     })).filter(user => !user.userPerRound)
 
     const usersInRounds = (await userPerRound.findAll({
@@ -302,6 +312,9 @@ const roundsCoursesQueries = async () => {
                     finished: false,
                 }
             }
+        ],
+        order: [
+            [Users, "name", "ASC"]
         ]
     })).map(({users}) => (users)).flat();
 
@@ -326,6 +339,9 @@ const roundsCoursesQueries = async () => {
                     finished: true,
                 }
             }
+        ],
+        order: [
+            [Users, "name", "ASC"]
         ]
     })).map(({users}) => (users)).flat();
 
@@ -374,10 +390,17 @@ export const getRoundsCourses = async (req, res, next) => {
 export const getRoundData = async (req, res, next) => {
     try {
         const {roundId} = req.params;
-        const round = await Rounds.findByPk(roundId)
+        const round = await Rounds.findOne({
+            where: {
+                round_id: roundId
+            },
+        })
 
         const {freeUsers, usersInRounds, usersFinishedRounds} = await roundsCoursesQueries()
         const usersInThisRound = (await Users.findAll({
+            order: [
+                ['name', "ASC"]
+            ],
             include: [
                 {
                     model: userPerRound,

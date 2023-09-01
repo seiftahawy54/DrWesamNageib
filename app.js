@@ -150,7 +150,7 @@ const port = process.env.PORT || process.env.DEV_PORT || 4000;
 try {
     await sequelize.authenticate();
     await sequelize.sync({
-        alter: true,
+        // alter: true,
     });
 
     app.listen(port, () => {
