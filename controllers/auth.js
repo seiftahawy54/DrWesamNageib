@@ -37,7 +37,6 @@ const paypalClient = new paypal.core.PayPalHttpClient(
 );
 
 let SelectedCourseData = {};
-
 export const getLogin = (req, res, next) =>
     res.render("auth/login", {
         title: "Login",
@@ -92,6 +91,7 @@ export const postLogin = async (req, res, next) => {
             email,
             role: findingUserResult.role,
             user_id: findingUserResult.user_id,
+            id: findingUserResult.id,
             name: findingUserResult.name,
             type: findingUserResult.type,
         },
@@ -103,7 +103,8 @@ export const postLogin = async (req, res, next) => {
 
     return res.status(201).json({
         token,
-        userId: findingUserResult.user_id,
+        userId: findingUserResult.id,
+        oldUserId: findingUserResult.user_id,
         role: findingUserResult.role,
         type: findingUserResult.type
     });
@@ -310,7 +311,7 @@ export const postApplyCoupon = async (req, res, next) => {
             {
                 applied_coupon: findingCoupon.discount_id,
             },
-            {where: {user_id: req.user.user_id}}
+            {where: {id: req.user.id}}
         );
 
         if (updatingResult) {
@@ -532,7 +533,7 @@ export const postSuccess = async (req, res, next) => {
         const courses = req.user.cart.map(({courseId}) => courseId);
 
         Payment.create({
-            user_id: req.user.user_id,
+            user_id: req.user.id,
             course_id: courses[0],
             round_id: rounds[0],
             status: "success",
@@ -568,7 +569,7 @@ export const postSuccess = async (req, res, next) => {
                         current_round: rounds[0],
                         applied_coupon: null,
                     },
-                    {where: {user_id: req.user.user_id}}
+                    {where: {id: req.user.id}}
                 );
             })
             .then((result) => {
@@ -576,7 +577,7 @@ export const postSuccess = async (req, res, next) => {
             })
             .catch(async (err) => {
                 Payment.create({
-                    user_id: req.user.user_id,
+                    user_id: req.user.id,
                     course_id: req.user.cart,
                     status: "failed",
                     details: req.session.userOrder,

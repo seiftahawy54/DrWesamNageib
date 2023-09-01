@@ -142,7 +142,7 @@ export const postUpdateUserData = async (req, res, next) => {
                 whatsapp_no: whatsappNo,
                 specialization,
             },
-            {where: {user_id: req.user.user_id}}
+            {where: {id: req.user.id}}
         );
 
         return res
@@ -274,19 +274,6 @@ export const postPerformExam = async (req, res, next) => {
 export const getExamPreview = async (req, res, next) => {
     try {
         const replyId = req.params.replyId;
-        // const userData = await Users.findByPk(req.userId);
-
-        //     let replyData = await sequelize.query(
-        //         `
-        //   SELECT e.title, e.questions, reply.reply_id, u.name as user_name, reply.grade, reply.user_answers FROM exams_replies reply
-        //     INNER JOIN exams e ON reply.exam_id = e.exam_id
-        //     INNER JOIN users u ON reply.user_id = u.user_id where reply.reply_id = ?;
-        // `,
-        //         {
-        //             replacements: [replyId],
-        //             type: "SELECT",
-        //         }
-        //     );
 
         const searchingForUser = await userPerRound.findAll({
             where: {userId: req.user.user_id},
@@ -388,7 +375,7 @@ export const getSubmittedExam = async (req, res, next) => {
 
 export const getAllUserData = async (req, res, next) => {
     const {name, whatsapp_no, user_id, email, specialization, user_img} =
-        await Users.findByPk(req.user.user_id);
+        await Users.findByPk(req.user.id);
 
     try {
         return res.status(200).json({name, whatsapp_no, user_id, email, specialization, user_img});

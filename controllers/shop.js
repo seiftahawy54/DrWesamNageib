@@ -151,7 +151,7 @@ export const postDeleteFromCart = async (req, res, next) => {
             {
                 cart: updatedCart,
             },
-            {where: {user_id: req.user.user_id}}
+            {where: {id: req.user.id}}
         );
 
         console.log(`deleting result ${deletingResult}`);

@@ -95,7 +95,7 @@ export const getCoursesCategories = async (req, res, next) => {
 const addCourseToCart = async (req, res, next) => {
     try {
         const {courseId, roundDate} = req.body;
-        const user = await Users.findOne({where: {user_id: req.user.user_id}});
+        const user = await Users.findOne({where: {id: req.user.id}});
         const round = await Rounds.findOne({
             where: {
                 round_date: roundDate
@@ -129,7 +129,7 @@ const addCourseToCart = async (req, res, next) => {
 
         const addingResult = await Users.update(
             {cart: user.cart},
-            {where: {user_id: req.user.user_id}}
+            {where: {id: req.user.id}}
         );
 
         logger.info(`updating cart result ${JSON.stringify(addingResult)}`)
@@ -143,7 +143,7 @@ const addCourseToCart = async (req, res, next) => {
 const isAddedToCart = async (req, res, next) => {
     try {
         const {courseId} = req.params;
-        const {cart} = await Users.findOne({where: {user_id: req.user.user_id}});
+        const {cart} = await Users.findOne({where: {id: req.user.id}});
 
         return res.status(200).json({
             inCart: courseExistsInCart(cart, courseId),

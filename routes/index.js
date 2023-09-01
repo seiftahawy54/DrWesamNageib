@@ -6,7 +6,8 @@ import CoursesRoutes from "./courses.js";
 import AboutRoutes from "./about-us.js";
 import OpinionsRoutes from './opinions.js'
 import DashboardRoutes from './dashboard.js';
-import ContentsRoutes from './content.js'
+import ContentsRoutes from './content.js';
+import PaymentRoutes from './payment.js';
 import {isAdminAuthenticated, isModeratorAuthenticated, isUserAuthenticated} from "../middlewares/user-auth.js";
 
 const router = Router();
@@ -18,6 +19,7 @@ router
     .use("/home", HomeRoutes)
     .use("/aboutUs", AboutRoutes)
     .use("/opinions", OpinionsRoutes)
+    .use('/payment', isUserAuthenticated, PaymentRoutes)
     .use("/contents", isUserAuthenticated, ContentsRoutes)
     .use("/dashboard", isUserAuthenticated, isModeratorAuthenticated, DashboardRoutes)
 

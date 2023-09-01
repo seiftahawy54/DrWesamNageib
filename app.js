@@ -80,47 +80,12 @@ app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
 
-Payment.hasOne(Courses, {
-    foreignKey: "course_id",
-    through: "course_id",
-    constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
-});
-Payment.hasOne(Users, {
-    foreignKey: "user_id",
-    through: "user_id",
-    constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
-});
-Payment.hasOne(Rounds, {
-    foreignKey: "round_id",
-    through: "round_id",
-    constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
-});
-Users.hasOne(Rounds, {
-    foreignKey: "current_round",
-    constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
-});
+Payment.hasOne(Courses);
+Payment.hasOne(Users);
+Payment.hasOne(Rounds);
 
-Rounds.hasOne(Users, {
-    foreignKey: "course_id",
-    constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
-});
-
-Rounds.hasOne(Courses, {
-    foreignKey: "course_id",
-    constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
-});
+Rounds.hasOne(Users);
+Rounds.hasOne(Courses);
 
 Rounds.belongsToMany(Users, {
     through: "users_ids",
@@ -136,12 +101,7 @@ Rounds.belongsToMany(Courses, {
     onUpdate: "cascade",
 });
 
-ExamsCourses.hasOne(Courses, {
-    foreignKey: "course_id",
-    constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
-})
+ExamsCourses.hasOne(Courses)
 
 ExamsCourses.hasOne(Exams, {
     foreignKey: "exam_id",
@@ -157,12 +117,8 @@ ExamsReplies.hasOne(Exams, {
     onUpdate: "cascade",
 });
 
-ExamsReplies.belongsTo(Users, {
-    foreignKey: "user_id",
-    constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
-});
+Users.hasOne(ExamsReplies);
+ExamsReplies.belongsTo(Users);
 
 UserPerRound.hasMany(Users, {
     foreignKey: "userId",
@@ -183,8 +139,8 @@ Users.belongsTo(UserPerRound)
 
 Rounds.belongsTo(UserPerRound)
 
-// Content.belongsTo(ContentAccessList)
-// Users.belongsTo(ContentAccessList)
+Content.belongsTo(ContentAccessList)
+Users.belongsTo(ContentAccessList)
 
 ContentAccessList.hasMany(Content)
 ContentAccessList.hasMany(Users)

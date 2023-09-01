@@ -5,6 +5,8 @@ import { UUIDV4 } from "sequelize";
 const examsSchema = {
   id: {
     type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
   },
   exam_id: {
     type: Sequelize.STRING,

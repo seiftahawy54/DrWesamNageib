@@ -1,6 +1,5 @@
 import {errorRaiser} from "./error_raiser.js";
-import {Users} from "../models/index.js";
-import {Courses} from "../models/index.js";
+import {Courses, Users} from "../models/index.js";
 
 export const createEmptyCart = () => {
 };
@@ -47,7 +46,9 @@ export const findCartCourses = async (cart) => {
     const returnCoursesArr = [];
 
     const findCartCourses = cart.map(async (cartItem) => {
-        return await Courses.findByPk(cartItem.courseId);
+        return await Courses.findOne({
+            where: {course_id: cartItem.courseId}
+        });
     });
 
     for (const course of findCartCourses) {
