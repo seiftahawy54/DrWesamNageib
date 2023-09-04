@@ -88,7 +88,7 @@ export const courseExistsInCart = (cart, courseId) => {
 
 export const filterCart = (cart, searchingItem) => {
     return cart.filter(
-        ({courseId}) => courseId.localeCompare(searchingItem) !== 0
+        ({roundId}) => roundId.localeCompare(searchingItem) !== 0
     );
 };
 

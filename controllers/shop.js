@@ -97,6 +97,14 @@ export const getShoppingCart = async (req, res, next) => {
 
         cart = filterDuplicates(cart);
 
+        if (cart.length === 0) {
+            return res.status(200).json({
+                cart: [],
+                totalPrice: 0,
+                coursesRoundsDates: [],
+            })
+        }
+
         const coursesArr = await findCartCourses(cart);
         if (!coursesArr) {
             return res.status(404).json({message: "Cart is empty"})
@@ -144,11 +152,14 @@ export const getShoppingCart = async (req, res, next) => {
 
 export const postDeleteFromCart = async (req, res, next) => {
     try {
-        const wantedToDelete = req.body.courseId;
+        const {roundId} = req.params;
 
-        const updatedCart = filterCart(req.user.cart, wantedToDelete);
+        const {cart} = await Users.findOne({
+            where: {id: req.user.id}
+        })
+        const updatedCart = cart.filter((item) => item.roundId !== roundId);
 
-        console.log(`updatedCart`, updatedCart);
+        logger.info(`updatedCart`, JSON.stringify(updatedCart));
 
         const deletingResult = await Users.update(
             {

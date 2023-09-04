@@ -3,6 +3,7 @@ import {errorRaiser} from "../../utils/error_raiser.js";
 import {Courses, Rounds, Users} from "../../models/index.js";
 import {calcTotalPrice, extractArrOfPrices, findCartCourses} from "../../utils/cart_helpers.js";
 import {Op, Sequelize} from "sequelize";
+import stripe from "stripe";
 
 /*
 
@@ -54,7 +55,7 @@ import {Op, Sequelize} from "sequelize";
 }
 */
 
-const getAllDataRequiredForPayment = async (req, res, next) => {
+const getAllDataRequiredForPaymentV1 = async (req, res, next) => {
     try {
         const cart = (await Users.findOne({
             where: {
@@ -63,6 +64,12 @@ const getAllDataRequiredForPayment = async (req, res, next) => {
         })).cart
 
         const coursesArr = await findCartCourses(cart);
+
+        if (coursesArr.length === 0) {
+            return res.status(200).json({
+                message: "Cart is empty"
+            })
+        }
 
         if (!coursesArr) {
             return res.status(404).json({
@@ -118,11 +125,11 @@ const getAllDataRequiredForPayment = async (req, res, next) => {
                 auth_token: tokenRequest.data.token,
                 "delivery_needed": "false",
                 "amount_cents": "100",
-                "currency": "USD",
+                "currency": "EGP",
                 "items": [
                     {
                         "name": "Dr Wesam Nageib Courses",
-                        "amount_cents": `${totalPrice * 100}`,
+                        "amount_cents": totalPrice * 100 * 35.9,
                         "description": "Quality courses",
                         "quantity": "1"
                     },
@@ -173,14 +180,91 @@ const getAllDataRequiredForPayment = async (req, res, next) => {
 
         const paymentLink = `https://accept.paymob.com/api/acceptance/iframes/746129?payment_token=${acceptanceRequest.token}`
 
+        // return res.send({
+        //     cart,
+        //     coursesRoundsDates,
+        //     totalPrice,
+        //     paymentLink
+        // })
+
+        return res.send(paymentLink)
+
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
+const getAllDataRequiredForPayment = async (req, res, next) => {
+    try {
+        const cart = (await Users.findOne({
+            where: {
+                id: req.user.id
+            }
+        })).cart
+
+        const coursesArr = await findCartCourses(cart);
+
+        if (coursesArr.length === 0) {
+            return res.status(200).json({
+                message: "Cart is empty"
+            })
+        }
+
+        if (!coursesArr) {
+            return res.status(404).json({
+                message: "Cart is empty"
+            })
+        }
+
+        let coursesRoundsDates = await Promise.all(
+            coursesArr.map(async ({course_id}) => {
+                return (
+                    await Rounds.findAll({
+                        include: [
+                            {
+                                model: Courses,
+                                on: {
+                                    course_id: {
+                                        [Op.eq]: Sequelize.col("rounds.course_id"),
+                                    }
+                                },
+                                where: {
+                                    course_id
+                                }
+                            }
+                        ]
+                    })
+                )
+            })
+        )
+
+        // coursesRoundsDates = coursesRoundsDates.map((courseRound) => courseRound);
+
+        const arrOfPrices = extractArrOfPrices(coursesArr);
+        const totalPrice = calcTotalPrice(arrOfPrices);
+
+
+        const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+
+        let stripeSession = new stripe(process.env.STRIPE_API_KEY);
+        const session = await stripeSession.checkout.sessions.create({
+            line_items: [
+                {
+                    // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+                    price: totalPrice,
+                    quantity: 1,
+                },
+            ],
+            payment_method_types: ["card"],
+            mode: 'payment',
+            success_url: `${fullUrl}/success`,
+            cancel_url: `${fullUrl}/failure`,
+        });
 
         return res.send({
-            // auth_token: tokenRequest.data.token,
-            // order_id: orderRequestData.id,
-            cart,
-            tokenGenerated: acceptanceRequest.token,
-            paymentLink
-        })
+            // paymentLink: session.url,
+            fullUrl
+        });
 
     } catch (e) {
         await errorRaiser(e, next);

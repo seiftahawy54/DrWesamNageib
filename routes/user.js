@@ -17,7 +17,7 @@ import {
 import {upload} from "../middlewares/multer.js";
 import {Router} from "express";
 import {body} from "express-validator";
-import {getShoppingCart} from "../controllers/shop.js";
+import {getShoppingCart, postDeleteFromCart} from "../controllers/shop.js";
 
 const userProfileRoutes = Router();
 const examsRoutes = Router();
@@ -72,6 +72,7 @@ examsRoutes
 // User Cart routes
 //-----------------------------------------------
 userCartRoutes.get('/', getShoppingCart)
+userCartRoutes.delete('/:roundId', postDeleteFromCart)
 
 const usersRoutes = Router()
     .use("/", userProfileRoutes)
