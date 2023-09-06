@@ -467,22 +467,16 @@ export const getBoughtCourses = async (req, res, next) => {
 export const getUserRound = async (req, res, next) => {
   try {
     const roundData = await sequelize.query(
-      `select * from rounds where ? LIKE ANY (rounds.users_ids)`,
+      `select * from rounds where ? LIKE ANY (rounds.users_ids) and finished=false;`,
       { replacements: [req.user.user_id], type: "SELECT" }
     );
 
-    console.log(JSON.stringify(roundData))
+    console.log(`round data ===> `, JSON.stringify(roundData))
 
-    if (roundData.length === 0 || !"round_link" in roundData[0]) {
+    if (roundData.length === 0) {
       return res
         .status(200)
         .json({ message: "You are not on any rounds", round: null });
-    }
-
-    if (roundData[0].finished) {
-      return res
-        .status(200)
-        .json({ message: "Round is finished", round: null });
     }
 
     return res
