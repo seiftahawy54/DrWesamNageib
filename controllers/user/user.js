@@ -471,6 +471,8 @@ export const getUserRound = async (req, res, next) => {
       { replacements: [req.user.user_id], type: "SELECT" }
     );
 
+    console.log(JSON.stringify(roundData))
+
     if (roundData.length === 0 || !"round_link" in roundData[0]) {
       return res
         .status(200)
