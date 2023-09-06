@@ -174,46 +174,32 @@ Payment.hasOne(Courses, {
   foreignKey: "course_id",
   through: "course_id",
   constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
 });
 Payment.hasOne(Users, {
   foreignKey: "user_id",
   through: "user_id",
   constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
 });
 Payment.hasOne(Rounds, {
   foreignKey: "round_id",
   through: "round_id",
   constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
 });
 Users.hasOne(Rounds, {
   foreignKey: "current_round",
   constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
 });
 Rounds.hasOne(Courses, {
   foreignKey: "course_id",
   constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
 });
 Rounds.belongsToMany(Users, {
   through: "users_ids",
   constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
 });
 ExamsReplies.belongsTo(Users, {
   foreignKey: "user_id",
   constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
 });
 
 app.use((error, req, res, next) => {
@@ -242,6 +228,7 @@ try {
   const syncingResult = await sequelize.sync({
     alter: true,
     logging: false,
+    // force: true
   });
 
   app.listen(port, () => {

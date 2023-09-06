@@ -374,7 +374,7 @@ export const getExamPreview = async (req, res, next) => {
 
       for (
         let question = 0;
-        question < replyData.questions.length;
+        question < replyData.questions.length - 1;
         question++
       ) {
         questionsWithUserAnswers.push({
@@ -470,8 +470,6 @@ export const getUserRound = async (req, res, next) => {
       `select * from rounds where ? LIKE ANY (rounds.users_ids)`,
       { replacements: [req.user.user_id], type: "SELECT" }
     );
-
-    console.log(roundData);
 
     if (roundData.length === 0 || !"round_link" in roundData[0]) {
       return res
