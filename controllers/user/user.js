@@ -235,7 +235,7 @@ export const getPerformExam = async (req, res, next) => {
       where: { user_id: req.user.user_id, exam_id: examId },
     });
 
-    console.log(`Finding USER REPLY ===> `, findingUserReply);
+    console.log(`Finding USER REPLY ===> `, JSON.stringify(findingUserReply));
 
     if (findingExam) {
       let allRoundsUsersIds = await Rounds.findAll({
@@ -271,7 +271,6 @@ export const getPerformExam = async (req, res, next) => {
         for (const questionObj of findingExam.questions) {
           if ("examImage" in questionObj) {
             const fetchingResult = await getSingleFile(questionObj.examImage);
-            console.log("Image searching result => ", fetchingResult);
           }
         }
       };
@@ -322,7 +321,7 @@ export const postPerformExam = async (req, res, next) => {
         user_answers: userAnswers,
       });
 
-      console.log(`creating New Reply Result ====> `, creatingNewReplyResult);
+      console.log(`creating New Reply Result ====> `, JSON.stringify(creatingNewReplyResult));
 
       return res.status(201).json({
         grade,
