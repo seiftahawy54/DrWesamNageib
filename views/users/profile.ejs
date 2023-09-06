@@ -51,6 +51,28 @@
               </div>
             </div>
 
+            <span v-if="examsData.userExams">
+              Your Performed Exams:
+            </span>
+
+            <div v-if="examsData.hasOwnProperty('userExams')" class="info-container">
+              <div v-for="(item, index) in examsData.userExams" class="exams-previews info">
+                <div class="preview-{{ index }}">
+                  <span>{{ index + 1}} : </span>
+                  <a :href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
+                </div>
+              </div>
+
+              <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
+                <div class="bought_courses">
+                  <span class="text-center">
+                    <sup><span> {{ grade.grade }} </span></sup> /
+                    <sub><span> {{ grade.questions.length }} </span></sub>
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div class="info-container payments-details">
               <div class="info">
                 Your Bought Courses
@@ -75,30 +97,6 @@
               <div class="info" v-html="round">
               </div>
             </div>
-
-
-            <span v-if="examsData.userExams">
-              Your Performed Exams:
-            </span>
-
-            <div v-if="examsData.hasOwnProperty('userExams')" class="info-container">
-              <div v-for="(item, index) in examsData.userExams" class="exams-previews info">
-                <div class="preview-{{ index }}">
-                  <span>{{ index + 1}} : </span>
-                  <a :href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
-                </div>
-              </div>
-
-              <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
-                <div class="bought_courses">
-                  <span class="text-center">
-                    <sup><span> {{ grade.grade }} </span></sup> /
-                    <sub><span> {{ grade.questions.length }} </span></sub>
-                  </span>
-                </div>
-              </div>
-            </div>
-
 
             <div class='info-container' v-if="certificate">
               <div class="info">
