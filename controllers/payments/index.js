@@ -55,6 +55,8 @@ import stripe from "stripe";
 }
 */
 
+let stripeSession = new stripe(process.env.STRIPE_API_KEY);
+
 const getAllDataRequiredForPaymentV1 = async (req, res, next) => {
     try {
         const cart = (await Users.findOne({
@@ -244,34 +246,46 @@ const getAllDataRequiredForPayment = async (req, res, next) => {
         const totalPrice = calcTotalPrice(arrOfPrices);
 
 
-        const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-
-        let stripeSession = new stripe(process.env.STRIPE_API_KEY);
         const session = await stripeSession.checkout.sessions.create({
             line_items: [
                 {
                     // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-                    price: totalPrice,
+                    price_data: {
+                        currency: "usd",
+                        product_data: {
+                            name: "Quality courses"
+                        },
+                        unit_amount: totalPrice * 100,
+                    },
                     quantity: 1,
                 },
             ],
             payment_method_types: ["card"],
             mode: 'payment',
-            success_url: `${fullUrl}/success`,
-            cancel_url: `${fullUrl}/failure`,
+            success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/cancel`,
         });
 
-        return res.send({
-            // paymentLink: session.url,
-            fullUrl
-        });
+        return res.send(session.url);
 
     } catch (e) {
         await errorRaiser(e, next);
     }
 }
 
+const postSuccessPayment = async (req, res, next) => {
+    try {
+        const {sessionId} = req.body;
+
+        const session = await stripeSession.checkout.sessions.retrieve(sessionId);
+
+        return res.send(session.payment_status)
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
 
 export default {
-    getAllDataRequiredForPayment
+    getAllDataRequiredForPayment,
+    postSuccessPayment
 }
