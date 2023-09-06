@@ -4,6 +4,7 @@ import {Courses, Rounds, Users} from "../../models/index.js";
 import {calcTotalPrice, extractArrOfPrices, findCartCourses} from "../../utils/cart_helpers.js";
 import {Op, Sequelize} from "sequelize";
 import stripe from "stripe";
+import userPerRound from "../../models/userPerRound.js";
 
 /*
 
@@ -279,7 +280,35 @@ const postSuccessPayment = async (req, res, next) => {
 
         const session = await stripeSession.checkout.sessions.retrieve(sessionId);
 
-        return res.send(session.payment_status)
+        if (session.payment_status !== "paid") {
+            return res.status(200).json({
+                message: "Payment is not successful"
+            })
+        }
+
+        const user = await Users.findOne({
+            where: {
+                id: req.user.id
+            }
+        });
+
+        const rounds = user.cart.map((item) => item.roundId)
+
+        for (let round of rounds) {
+            await userPerRound.create({
+                roundId: round,
+                userId: user.id
+            })
+        }
+
+        await user.update({
+            cart: []
+        })
+
+        return res.status(200).json({
+            message: "Payment is successful"
+        })
+
     } catch (e) {
         await errorRaiser(e, next);
     }
