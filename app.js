@@ -90,15 +90,11 @@ Rounds.hasOne(Courses);
 Rounds.belongsToMany(Users, {
     through: "users_ids",
     constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
 });
 
 Rounds.belongsToMany(Courses, {
     through: "users_ids",
     constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
 });
 
 ExamsCourses.hasOne(Courses)
@@ -106,15 +102,11 @@ ExamsCourses.hasOne(Courses)
 ExamsCourses.hasOne(Exams, {
     foreignKey: "exam_id",
     constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
 })
 
 ExamsReplies.hasOne(Exams, {
     foreignKey: "exam_id",
     constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
 });
 
 Users.hasOne(ExamsReplies);
@@ -123,16 +115,12 @@ ExamsReplies.belongsTo(Users);
 UserPerRound.hasMany(Users, {
     foreignKey: "userId",
     constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
 })
 
 UserPerRound.hasMany(Rounds, {
     foreignKey: "roundId",
     targetKey: "round_id",
     constraints: false,
-    onDelete: "cascade",
-    onUpdate: "cascade",
 })
 
 Users.belongsTo(UserPerRound)
