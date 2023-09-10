@@ -3,11 +3,6 @@ import { sequelize } from "../utils/db.js";
 import { UUIDV4 } from "sequelize";
 
 const Courses = sequelize.define("course", {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
   course_id: {
     type: Sequelize.STRING,
     allowNull: false,

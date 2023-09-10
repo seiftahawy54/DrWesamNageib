@@ -13,8 +13,6 @@ const UserPerRound = sequelize.define("userPerRound", {
     userId: {
         type: Sequelize.STRING,
         foreignKey: true,
-        onUpdate: "cascade",
-        onDelete: "cascade",
     },
 });
 

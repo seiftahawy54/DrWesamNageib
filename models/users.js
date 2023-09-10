@@ -70,6 +70,9 @@ const Users = sequelize.define("user", {
   token_date: {
     type: Sequelize.DATE,
   },
+  current_round: {
+    type: Sequelize.STRING,
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),

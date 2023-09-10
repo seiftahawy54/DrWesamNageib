@@ -375,7 +375,11 @@ export const getSubmittedExam = async (req, res, next) => {
 
 export const getAllUserData = async (req, res, next) => {
     const {name, whatsapp_no, user_id, email, specialization, user_img} =
-        await Users.findByPk(req.user.id);
+        await Users.findOne({
+            where: {
+                user_id: req.user.user_id
+            }
+        });
 
     try {
         return res.status(200).json({name, whatsapp_no, user_id, email, specialization, user_img});
@@ -498,36 +502,28 @@ export const getUserCertificate = async (req, res, next) => {
             }
         )
 
-        if (roundAndCourse.course.special_course) {
-            getSingleFile(roundAndCourse.course.course_img)
-                .then((response) => {
-                    const certificateDoc = createCertificate(
-                        req.user.name,
-                        req.user.user_id,
-                        roundAndCourse.course.name,
-                        roundAndCourse.course.total_hours,
-                        roundAndCourse.round_date,
-                        roundAndCourse.course.course_img,
-                        roundAndCourse.course.course_category
-                    );
+        getSingleFile(roundAndCourse.course.course_img)
+            .then((response) => {
+                const certificateDoc = createCertificate(
+                    req.user.name,
+                    req.user.user_id,
+                    roundAndCourse.course.name,
+                    roundAndCourse.course.total_hours,
+                    roundAndCourse.round_date,
+                    roundAndCourse.course.course_img,
+                    roundAndCourse.course.course_category
+                );
 
-                    return res.send({certificate: `certificates/${certificateDoc.certificateName}`});
+                return res.send({certificate: `certificates/${certificateDoc.certificateName}`});
 
-                })
-                .catch((err) => {
-                    logger.error(err);
-                    return res.status(500).json({
-                        error: true,
-                        message: "Server error",
-                    });
+            })
+            .catch((err) => {
+                logger.error(err);
+                return res.status(500).json({
+                    error: true,
+                    message: "Server error",
                 });
-        } else {
-            logger.error(err);
-            return res.status(500).json({
-                error: true,
-                message: "Server error",
             });
-        }
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -598,9 +594,6 @@ const userExamsRelatedData = async (userId) => {
                                 [Op.eq]: Sequelize.col("exam.course_id"),
                             },
                         },
-                        where: {
-                            special_course: true
-                        }
                     }
                 ]
             },

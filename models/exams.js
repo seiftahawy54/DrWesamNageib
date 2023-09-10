@@ -3,15 +3,9 @@ import { sequelize } from "../utils/db.js";
 import { UUIDV4 } from "sequelize";
 
 const examsSchema = {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
   exam_id: {
     type: Sequelize.STRING,
     allowNull: false,
-    primaryKey: true,
     defaultValue: UUIDV4,
   },
   title: {
