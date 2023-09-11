@@ -10,6 +10,7 @@ import {ExamImages, Exams, ExamsReplies, Users} from "../models/index.js";
 import {sequelize} from "./db.js";
 import logger from "./logger.js";
 import {Op, Sequelize} from "sequelize";
+import qr from "qrcode";
 
 export const sortCourses = (courses) => {
     let coursesRanks = [];
@@ -66,176 +67,310 @@ export const createCertificate = (
     courseHours = "",
     roundStartingDate = "",
     courseCertificateImg = "",
-    courseCategory = ""
+    courseCategory = "",
+    qrCodeImg = '',
+    certificateSerial = ''
 ) => {
-    const certificateName = `${userName}-${userId}.pdf`;
-    const fontsPath = path.resolve("public", "fonts");
-    const fontName = "Lato";
-    const imagesPath = path.resolve("downloaded_images");
+    const certificateName = `${userName}-${userId}.pdf`
+    const certificatePath = path.resolve(
+        "public",
+        "certificates",
+        certificateName,
+    )
+    const fontsPath = path.resolve("public", "fonts")
+    const fontName = "Lato"
+    const imagesPath = path.resolve("downloaded_images")
 
-    const startDate = moment(roundStartingDate).locale("en-CA").format("LL");
+    const startDate = moment(roundStartingDate).locale("en-CA").format("LL")
     const endDate = moment(roundStartingDate)
         .locale("en-CA")
         .add(3, "months")
-        .format("LL");
+        .format("LL")
 
     let sendingData = {
         courseName,
         roundDate: moment(roundStartingDate).format("DD-MM-YYYY"),
-    };
+    }
 
     const fonts = {
         Roboto: {
             normal: path.resolve(
                 fontsPath,
                 fontName.toLowerCase(),
-                `${fontName}-Regular.ttf`
+                `${fontName}-Regular.ttf`,
             ),
             bold: path.resolve(
                 fontsPath,
                 fontName.toLowerCase(),
-                `${fontName}-Bold.ttf`
+                `${fontName}-Bold.ttf`,
             ),
             italics: path.resolve(
                 fontsPath,
                 fontName.toLowerCase(),
-                `${fontName}-Italic.ttf`
+                `${fontName}-Italic.ttf`,
             ),
             bolditalics: path.resolve(
                 fontsPath,
                 fontName.toLowerCase(),
-                `${fontName}-BoldItalic.ttf`
+                `${fontName}-BoldItalic.ttf`,
             ),
         },
         Pacifico: {
             normal: path.resolve(fontsPath, `Pacifico-Regular.ttf`),
         },
-    };
+    }
 
-    PDFMake.fonts = fonts;
+    PDFMake.fonts = fonts
 
-    const printer = new PDFMake(fonts);
+    let content = []
+
+    if (courseName === "CBAHI Accreditation Orientation Course") {
+        content = [
+            {
+                image: path.resolve(imagesPath, courseCertificateImg),
+                fit: [150, 150],
+            },
+            {
+                text: userName,
+                alignment: "center",
+                fontSize: "32",
+                bold: true,
+                decoration: "underline",
+                lineHeight: 1.2,
+            },
+            {
+                text: `has attended a structured 5 days, with 20 Hours of training in ${courseCategory} and is therefore awarded the`,
+                fontSize: "18",
+                italics: true,
+                alignment: "center",
+                marginTop: 5,
+            },
+            {
+                text: `Certificate of Attendance of "${courseName}"`,
+                alignment: "center",
+                fontSize: "30",
+                bold: true,
+                marginTop: 30,
+                width: 100,
+            },
+            {
+                text: `${startDate} to ${moment(startDate).add(5, "days").format("LL")} online ZOOM`.toUpperCase(),
+                alignment: "center",
+                fontSize: 18,
+                bold: true,
+                marginTop: 20,
+            },
+            {
+                alignment: "center",
+                fontSize: 14,
+                marginTop: 20,
+                text: [
+                    {
+                        text: "Dr Wesam Nageib\n",
+                        fontSize: 18,
+                        bold: true,
+                        normal: true,
+                        italics: true,
+                    },
+                    {
+                        text: "Course Director\n",
+                        bold: true,
+                        italics: true,
+                    },
+                    {
+                        text: `Professional trainer in health care quality\n`,
+                        italics: true,
+                    },
+                    {
+                        text: `Pharmacist, TOT, CSSGB, CSSBB MSC, FISQUA\n`,
+                        italics: true,
+                    },
+                    {text: `Wesam Nageib`, font: "Pacifico"},
+                ],
+            },
+            {
+                marginTop: 5,
+                columns: [
+                    {
+                        width: "30%",
+                        columns: [
+                            {
+                                width: "25%",
+                                text: "Email:",
+                            },
+                            {
+                                width: "75%",
+                                text: "drwesamnageib@gmail.com",
+                                link: "mailto:drwesamnageib@gamil.com",
+                                decoration: "underline",
+                                color: "#00F",
+                            },
+                        ],
+                    },
+                    {
+                        width: "*",
+                        text: "",
+                    },
+                    {
+                        width: "35%",
+                        columns: [
+                            {
+                                width: "30%",
+                                text: "Website: ",
+                            },
+                            {
+                                width: "70%",
+                                text: "https://www.drwesamnageib.com",
+                                link: "https://www.drwesamnageib.com",
+                                decoration: "underline",
+                                color: "#00F",
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]
+    } else {
+        content = [
+            {
+                columns: [
+                    {
+                        image: path.resolve(imagesPath, courseCertificateImg),
+                        fit: [150, 150],
+                        alignment: "left",
+                        width: "50%"
+                    },
+                    {
+                        image: qrCodeImg,
+                        fit: [150, 150],
+                        alignment: "right",
+                        width: "50%"
+                    }
+                ]
+            },
+            {
+                text: userName,
+                alignment: "center",
+                fontSize: "32",
+                bold: true,
+                decoration: "underline",
+                lineHeight: 1.2,
+            },
+            {
+                text: `has attended a structured 3-months, ${courseHours} contact hours of training in preparation of ${courseCategory} certificate and is therefore awarded the`,
+                fontSize: "18",
+                italics: true,
+                alignment: "center",
+                marginTop: 5,
+            },
+            {
+                text: `Certificate of Attendance of Professional in ${courseCategory} "${courseName}"`,
+                alignment: "center",
+                fontSize: "30",
+                bold: true,
+                marginTop: 30,
+                width: 100,
+            },
+            {
+                text: `${startDate} to ${endDate} online ZOOM`.toUpperCase(),
+                alignment: "center",
+                fontSize: 18,
+                bold: true,
+                marginTop: 20,
+            },
+            {
+                alignment: "center",
+                fontSize: 14,
+                marginTop: 20,
+                text: [
+                    {
+                        text: "Dr Wesam Nageib\n",
+                        fontSize: 18,
+                        bold: true,
+                        normal: true,
+                        italics: true,
+                    },
+                    {
+                        text: "Course Director\n",
+                        bold: true,
+                        italics: true,
+                    },
+                    {
+                        text: `Professional trainer in health care quality\n`,
+                        italics: true,
+                    },
+                    {
+                        text: `Pharmacist, TOT, CSSGB, CSSBB MSC, FISQUA\n`,
+                        italics: true,
+                    },
+                    {text: `Wesam Nageib`, font: "Pacifico"},
+                ],
+            },
+            {
+                marginTop: 5,
+                columns: [
+                    {
+                        width: "30%",
+                        columns: [
+                            {
+                                width: "50%",
+                                text: "Certificate Serial:",
+                            },
+                            {
+                                width: "50%",
+                                text: certificateSerial,
+                            },
+                        ],
+                    },
+                    {
+                        width: "*",
+                        text: "",
+                    },
+                    {
+                        width: "35%",
+                        columns: [
+                            {
+                                width: "30%",
+                                text: "Website: ",
+                            },
+                            {
+                                width: "70%",
+                                text: process.env.FRONTEND_URL,
+                                link: process.env.FRONTEND_URL,
+                                decoration: "underline",
+                                color: "#00F",
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]
+    }
+
+    const printer = new PDFMake(fonts)
     const certificateDoc = printer.createPdfKitDocument(
         {
-            watermark: {text: "Dr Wesam Nageib", opacity: 0.1, font: "Pacifico"},
+            background: [
+                {
+                    image: path.resolve(imagesPath, courseCertificateImg),
+                    width: 792,
+                    opacity: 0.1
+                }
+            ],
             pageOrientation: "landscape",
             pageSize: "A4",
             pageMargins: 15,
-            content: [
-                {
-                    image: path.resolve(imagesPath, courseCertificateImg),
-                    fit: [150, 150],
-                },
-                {
-                    text: userName,
-                    alignment: "center",
-                    fontSize: "32",
-                    bold: true,
-                    decoration: "underline",
-                    lineHeight: 1.2,
-                },
-                {
-                    text: `has attended a structured ${courseHours % 24} days of training in preparation of ${courseCategory} certificate and is therefore awarded the`,
-                    fontSize: "18",
-                    italics: true,
-                    alignment: "center",
-                    marginTop: 10,
-                },
-                {
-                    text: `Certificate of Attendance of Professional in ${courseCategory} "${courseName}"`,
-                    alignment: "center",
-                    fontSize: "30",
-                    bold: true,
-                    marginTop: 30,
-                    width: 100,
-                },
-                {
-                    text: `${startDate} to ${endDate} online ZOOM`.toUpperCase(),
-                    alignment: "center",
-                    fontSize: 20,
-                    bold: true,
-                    marginTop: 20,
-                },
-                {
-                    alignment: "center",
-                    fontSize: 16,
-                    marginTop: 20,
-                    text: [
-                        {
-                            text: "Dr Wesam Nageib\n",
-                            fontSize: 20,
-                            bold: true,
-                            normal: true,
-                            italics: true,
-                        },
-                        {
-                            text: "Course Director\n",
-                            bold: true,
-                            italics: true,
-                        },
-                        {
-                            text: `Professional trainer in health care quality\n`,
-                            italics: true,
-                        },
-                        {
-                            text: `Pharmacist, TOT, CSSYB, MSC, FISQUA\n`,
-                            italics: true,
-                        },
-                        {text: `Wesam Nageib`, font: "Pacifico"},
-                    ],
-                },
-                {
-                    marginTop: 10,
-                    columns: [
-                        {
-                            width: "30%",
-                            columns: [
-                                {
-                                    width: "25%",
-                                    text: "Email:",
-                                },
-                                {
-                                    width: "75%",
-                                    text: "drwesamnageib@gmail.com",
-                                    link: "mailto:drwesamnageib@gamil.com",
-                                    decoration: "underline",
-                                    color: "#00F",
-                                },
-                            ],
-                        },
-                        {
-                            width: "*",
-                            text: "",
-                        },
-                        {
-                            width: "35%",
-                            columns: [
-                                {
-                                    width: "30%",
-                                    text: "Website: ",
-                                },
-                                {
-                                    width: "70%",
-                                    text: "https://www.drwesamnageib.com",
-                                    link: "https://www.drwesamnageib.com",
-                                    decoration: "underline",
-                                    color: "#00F",
-                                },
-                            ],
-                        },
-                    ],
-                },
-            ],
+            content,
         },
-        {}
-    );
+        {},
+    )
 
     return {
         certificateObject: certificateDoc,
         certificateName,
-    };
-};
-
+        certificatePath,
+    }
+}
 export const downloadingCoursesImages = (courses) => {
     return new Promise(async (resolve, reject) => {
         for (const course of courses) {
@@ -287,8 +422,8 @@ export const calculateExamsGrades = (reply, exam) => {
 
         // console.log(userAnswer);
 
-        console.log(`Exam Correct Answer`, exam[index].correctAnswer);
-        console.log(`User answer`, userAnswer);
+        logger.info(`Exam Correct Answer ${exam[index].correctAnswer}`);
+        logger.info(`User answer ${userAnswer}`);
         if (
             userAnswer &&
             exam[index].correctAnswer.toString() === userAnswer.toString()

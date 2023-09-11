@@ -28,6 +28,10 @@ import userPerRound from "../../models/userPerRound.js";
 import {Op, Sequelize} from "sequelize";
 import user from "../../routes/user.js";
 import fs2 from "fs";
+import qr from "qrcode";
+import path from "path";
+import UserPerCertificates from "../../models/UserPerCertificates.js";
+import crypto from "crypto";
 
 export const getUserProfile = async (req, res, next) => {
     try {
@@ -238,7 +242,11 @@ export const postPerformExam = async (req, res, next) => {
             });
         }
 
-        const exam = await Exams.findByPk(examId);
+        const exam = await Exams.findOne({
+            where: {
+                exam_id: examId
+            }
+        });
 
         if (exam) {
             let filteredQuestions = exam.questions.filter(
@@ -502,8 +510,32 @@ export const getUserCertificate = async (req, res, next) => {
             }
         )
 
+        const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${courseId}`);
+        let certificateSerial = '';
+
+        const findingCertificate = await UserPerCertificates.findOne({
+            where: {
+                userId: req.user.user_id,
+                courseId
+            }
+        });
+
+        logger.info(`Certificate search result ${JSON.stringify(findingCertificate)}`)
+
+        if (!findingCertificate) {
+            certificateSerial = crypto.randomBytes(6).toString('hex');
+            const userPerCertificate = await UserPerCertificates.create({
+                certificateHash: certificateSerial,
+                courseId,
+                userId: req.user.user_id
+            });
+            logger.info(`Certificate created !! => ${JSON.stringify(userPerCertificate)}`);
+        } else {
+            certificateSerial = findingCertificate.certificateHash;
+        }
+
         getSingleFile(roundAndCourse.course.course_img)
-            .then((response) => {
+            .then(async (response) => {
                 const certificateDoc = createCertificate(
                     req.user.name,
                     req.user.user_id,
@@ -511,18 +543,30 @@ export const getUserCertificate = async (req, res, next) => {
                     roundAndCourse.course.total_hours,
                     roundAndCourse.round_date,
                     roundAndCourse.course.course_img,
-                    roundAndCourse.course.course_category
+                    roundAndCourse.course.course_category,
+                    checkCertificateQrCode,
+                    certificateSerial
                 );
 
-                return res.send({certificate: `certificates/${certificateDoc.certificateName}`});
+                certificateDoc.certificateObject.pipe(
+                    fs.createWriteStream(path.resolve('public', 'certificates', certificateDoc.certificatePath))
+                );
+
+                res.setHeader("Content-Type", "application/pdf");
+                res.setHeader(
+                    "Content-Disposition",
+                    `inline; filename="${certificateDoc.certificateName}"`
+                );
+
+                certificateDoc.certificateObject.pipe(res);
+                certificateDoc.certificateObject.end();
+
+                // return res.send({certificate: `certificates/${certificateDoc.certificateName}`});
 
             })
-            .catch((err) => {
+            .catch(async (err) => {
                 logger.error(err);
-                return res.status(500).json({
-                    error: true,
-                    message: "Server error",
-                });
+                await errorRaiser(err, next)
             });
     } catch (e) {
         await errorRaiser(e, next);
@@ -584,7 +628,7 @@ const userExamsRelatedData = async (userId) => {
                     },
                 },
                 where: {
-                    special_exam: true
+                    special_exam: process.env.NODE_ENV === 'production'
                 },
                 include: [
                     {
@@ -613,7 +657,11 @@ const userExamsRelatedData = async (userId) => {
     let specialExams = [];
     for (let reply of userExamsData) {
         // TODO add control on success percentage
-        if (reply.grade > reply.exam.questions.length / 2) {
+        if (process.env.NODE_ENV === 'production') {
+            if (reply.grade > reply.exam.questions.length / 2) {
+                specialExams.push(reply.exam.exam_id);
+            }
+        } else {
             specialExams.push(reply.exam.exam_id);
         }
     }
@@ -632,7 +680,7 @@ const userExamsRelatedData = async (userId) => {
                         },
                     },
                     where: {
-                        finished: true,
+                        finished: process.env.NODE_ENV === 'production',
                     },
                     attributes: ["round_date", "course_id"],
                     include: [
