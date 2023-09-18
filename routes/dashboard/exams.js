@@ -28,7 +28,7 @@ router
     postUpdateExam
   )
   .post(
-    "/start-new-exam",
+    "/new-exam",
     [
       body("examTitle").isString().isLength({ min: 5 }),
       body("examStatus").isBoolean(),

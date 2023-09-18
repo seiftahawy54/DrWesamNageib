@@ -164,13 +164,21 @@ export const postUpdateUserData = async (req, res, next) => {
 export const getPerformExam = async (req, res, next) => {
     try {
         const examId = req.params.examId;
+        const type = req.user.type;
+
         let exam = await Exams.findOne({
-            where: {exam_id: examId, status: true}
+            where: {exam_id: examId}
         });
 
         if (!exam) {
             return res.status(404).json({
                 message: "Exam not found!",
+            })
+        }
+
+        if (!exam.status && type < 2) {
+            return res.status(200).json({
+                message: "Exam is closed"
             })
         }
 

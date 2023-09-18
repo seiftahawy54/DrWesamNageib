@@ -75,10 +75,7 @@ export const getAddNewExam = async (req, res, next) => {
 
 export const startNewExam = async (req, res, next) => {
     try {
-        const questions = req.body.questions;
-        const examTitle = req.body.examTitle;
-        const examStatus = req.body.examStatus;
-        const specialExam = req.body.specialExam;
+        const {questions, examTitle, examStatus, specialExam} = req.body;
         const errors = validationResult(req);
         const schemaValidation = await questionsSchema.validate(questions);
 
