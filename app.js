@@ -228,7 +228,6 @@ try {
   const syncingResult = await sequelize.sync({
     alter: true,
     logging: false,
-    // force: true
   });
 
   app.listen(port, () => {

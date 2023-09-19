@@ -67,14 +67,14 @@ export const getSingleFile = async (filename) => {
         });
 
         writingStream.on("error", (err) => {
-          console.log(err);
+          console.log(`AWS Error ==> `, err);
           reject(false);
           return false;
         });
 
         writingStream.end();
       } catch (e) {
-        console.log(e.message);
+        console.log(`AWS error => `, e.message);
       }
     }
   });
