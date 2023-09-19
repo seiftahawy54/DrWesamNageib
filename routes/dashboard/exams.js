@@ -11,6 +11,7 @@ import {
 } from "../../controllers/dashboard/exams/exams.js";
 
 import { body } from "express-validator";
+import {fileUploader} from "../../middlewares/multer.js";
 
 const router = Router();
 
@@ -38,7 +39,7 @@ router
     startNewExam
   )
   .delete("/:examId", postDeleteExam)
-  .post("/exam-image", postAddingExamImage)
+  .post("/exam-image", fileUploader.single('examImage'), postAddingExamImage)
   .post(
     "/delete-exam-image",
     [body("imageId").isString().isLength({ min: 36 })],

@@ -1,7 +1,7 @@
 import {Courses, ExamImages, Exams, ExamsCourses, ExamsReplies, Rounds, Users} from "../../../models/index.js";
 import {errorRaiser} from "../../../utils/error_raiser.js";
 import {validationResult} from "express-validator";
-import {getSingleFile, uploadFile} from "../../../utils/aws.js";
+import {getSingleFile, uploadFile, uploadFileV2} from "../../../utils/aws.js";
 import joi from "joi";
 import {calcPagination} from "../../../utils/general_helper.js";
 import {Op, Sequelize} from "sequelize";
@@ -198,7 +198,7 @@ export const postAddingExamImage = async (req, res, next) => {
         const questionImage = req.files[0];
         // const questionNumber = req.body.number;
 
-        const uploadingQuestionImg = await uploadFile(
+        const uploadingQuestionImg = await uploadFileV2(
             questionImage.path,
             questionImage.filename,
             questionImage.mimetype,
@@ -209,12 +209,12 @@ export const postAddingExamImage = async (req, res, next) => {
         // console.log(questionImage);
 
         const addingNewImage = await ExamImages.create({
-            image_path: questionImage.path,
+            image_path: uploadingQuestionImg.Location,
         });
 
-        if (uploadingQuestionImg) {
-            await getSingleFile(addingNewImage.image_path);
-        }
+        // if (uploadingQuestionImg) {
+        //     await getSingleFile(addingNewImage.image_path);
+        // }
 
         res.status(201).json({
             image_path: addingNewImage.image_path,
