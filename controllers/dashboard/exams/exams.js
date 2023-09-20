@@ -6,6 +6,7 @@ import joi from "joi";
 import {calcPagination} from "../../../utils/general_helper.js";
 import {Op, Sequelize} from "sequelize";
 import {DeletedExams} from "../../../models/exams.js";
+import {upload} from "../../../middlewares/multer.js";
 
 export const getAllExams = async (req, res, next) => {
     try {
@@ -195,30 +196,15 @@ export const postUpdateExam = async (req, res, next) => {
 
 export const postAddingExamImage = async (req, res, next) => {
     try {
-        const questionImage = req.files[0];
+        const questionImage = req.file;
         // const questionNumber = req.body.number;
 
-        const uploadingQuestionImg = await uploadFileV2(
+        const {uploadedImage: uploadingQuestionImg} = await uploadFileV2(
             questionImage.path,
-            questionImage.filename,
-            questionImage.mimetype,
-            res,
-            next
+            questionImage.originalname
         );
 
-        // console.log(questionImage);
-
-        const addingNewImage = await ExamImages.create({
-            image_path: uploadingQuestionImg.Location,
-        });
-
-        // if (uploadingQuestionImg) {
-        //     await getSingleFile(addingNewImage.image_path);
-        // }
-
-        res.status(201).json({
-            image_path: addingNewImage.image_path,
-        });
+        return res.status(201).json(uploadingQuestionImg.Location);
     } catch (e) {
         await errorRaiser(e, next);
     }

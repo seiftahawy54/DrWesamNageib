@@ -163,11 +163,17 @@ export const putUpdateRound = async (req, res, next) => {
         const {courseId, round_date: roundDate, content: roundLink, usersIds, isFinished, isArchived} = req.body;
         const errors = validationResult(req);
 
+        return res.send(roundDate)
+
         if (!errors.isEmpty()) {
             return res.status(400).json(extractErrorMessages(errors.array()));
         }
 
-        const findingRound = await Rounds.findByPk(roundId);
+        const findingRound = await Rounds.findOne({
+            where: {
+                round_id: roundId
+            }
+        });
 
         if (isFinished) {
             const updateResult = await findingRound.update(
@@ -195,6 +201,7 @@ export const putUpdateRound = async (req, res, next) => {
                 round_date: moment(roundDate).toISOString(),
                 round_link: roundLink,
                 finished: false,
+                course_id: courseId
             },
             {where: {round_id: roundId}}
         );
