@@ -44,17 +44,21 @@ const singleCourse = async (req, res, next) => {
         });
 
         const roundsResult = await Rounds.findAll({
-            where: {course_id: course.course_id},
+            where: {
+                course_id: course.course_id,
+                finished: false,
+                archived: false,
+            },
         });
 
         const numberOfCourses = await Courses.findAndCountAll();
 
-        const filteredRounds = roundsResult.filter((round) => !round.finished);
+        // const filteredRounds = roundsResult.filter((round) => !round.finished);
 
         return res.status(200).json({
             course,
             numberOfCourses: numberOfCourses.count,
-            rounds: filteredRounds,
+            rounds: roundsResult,
         })
     } catch (e) {
         await errorRaiser(e, next);

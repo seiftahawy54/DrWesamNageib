@@ -23,7 +23,7 @@ export const getRounds = async (req, res, next) => {
                 ["updatedAt", "DESC"],
                 ["createdAt", "DESC"],
             ],
-            attributes: ["id", "round_date", "round_id", "finished", "course_id", "round_link"],
+            attributes: ["id", "round_date", "round_id", "finished", "course_id", "round_link", "archived"],
             where: {
                 isDeleted: false,
             },
@@ -160,10 +160,8 @@ export const putUpdateRound = async (req, res, next) => {
     try {
         const roundId = req.params.roundId;
         // const {roundDate, roundLink, finishRound} = req.body;
-        const {courseId, round_date: roundDate, content: roundLink, usersIds, isFinished, isArchived} = req.body;
+        const {courseId, roundDate, content: roundLink, usersIds, isFinished, isArchived} = req.body;
         const errors = validationResult(req);
-
-        return res.send(roundDate)
 
         if (!errors.isEmpty()) {
             return res.status(400).json(extractErrorMessages(errors.array()));
@@ -175,8 +173,17 @@ export const putUpdateRound = async (req, res, next) => {
             }
         });
 
+        if (isArchived) {
+            await findingRound.update(
+                {
+                    archived: true,
+                },
+                {where: {round_id: roundId}}
+            );
+        }
+
         if (isFinished) {
-            const updateResult = await findingRound.update(
+            await findingRound.update(
                 {
                     finished: true,
                 },

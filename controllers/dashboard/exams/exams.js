@@ -3,10 +3,25 @@ import {errorRaiser} from "../../../utils/error_raiser.js";
 import {validationResult} from "express-validator";
 import {getSingleFile, uploadFile, uploadFileV2} from "../../../utils/aws.js";
 import joi from "joi";
-import {calcPagination} from "../../../utils/general_helper.js";
+import {calcPagination, constructSelectors, extractErrorMessages} from "../../../utils/general_helper.js";
 import {Op, Sequelize} from "sequelize";
 import {DeletedExams} from "../../../models/exams.js";
 import {upload} from "../../../middlewares/multer.js";
+import * as util from "util";
+
+
+const questionsSchema = joi.array().items(
+    joi.object({
+        questionHeader: joi.string().min(5),
+        answers: joi.array().min(1).items(joi.string()),
+        correctAnswer: joi.string().min(1).max(1),
+        questionHint: joi.string().min(0).optional(),
+        order: joi.string().min(0).optional(),
+    }),
+    joi.object({
+        examImage: joi.string().min(13),
+    })
+);
 
 export const getAllExams = async (req, res, next) => {
     try {
@@ -40,6 +55,8 @@ export const getAllExams = async (req, res, next) => {
                     }
                 ]
         });
+
+        console.log(exams.length)
 
         for (let exam of exams) {
             const {count} = (await ExamsReplies.findAndCountAll({
@@ -76,16 +93,14 @@ export const getAddNewExam = async (req, res, next) => {
 
 export const startNewExam = async (req, res, next) => {
     try {
-        const {questions, examTitle, examStatus, specialExam} = req.body;
+        const {courseId, questions, examTitle, examStatus, specialExam} = req.body;
         const errors = validationResult(req);
-        const schemaValidation = await questionsSchema.validate(questions);
+        const {error} = await questionsSchema.validate(questions);
 
-        console.log(`Validation of schema ===> `, schemaValidation);
+        console.log(`Validation of schema ===> `, util.inspect(error, false, null));
 
-        if ("error" in schemaValidation || !errors.isEmpty()) {
-            return res.status(422).json({
-                errors,
-            });
+        if (error || !errors.isEmpty()) {
+            return res.status(422).json(extractErrorMessages(errors.array()));
         }
 
         const addingExam = await Exams.create({
@@ -93,7 +108,13 @@ export const startNewExam = async (req, res, next) => {
             questions,
             title: examTitle,
             special_exam: specialExam,
+            course_id: courseId,
         });
+
+        const examCourses = await ExamsCourses.create({
+            exam_id: addingExam.exam_id,
+            course_id: courseId,
+        })
 
         return res.status(201).json({
             questions,
@@ -141,17 +162,6 @@ export const getUpdateExam = async (req, res, next) => {
         await errorRaiser(e, next);
     }
 };
-
-const questionsSchema = joi.array().items(
-    joi.object({
-        questionHeader: joi.string().min(5),
-        answers: joi.array().min(1).items(joi.string()),
-        correctAnswer: joi.string().min(1).max(1),
-    }),
-    joi.object({
-        examImage: joi.string().min(13),
-    })
-);
 
 export const postUpdateExam = async (req, res, next) => {
     try {
