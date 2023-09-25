@@ -4,30 +4,19 @@ import {
     constructError,
     createCertificate,
     extractErrorMessages,
-    extractErrorMessagesForSchemas,
     userPerformedExams,
+    validURL,
 } from "../../utils/general_helper.js";
 import {getSingleFile, uploadFile} from "../../utils/aws.js";
 import fs from "fs";
-import {sequelize} from "../../utils/db.js";
 import moment from "moment";
 import {validationResult} from "express-validator";
 import logger from "../../utils/logger.js";
 
-import {
-    Exams,
-    Payment,
-    Courses,
-    Rounds,
-    Users,
-    ExamsReplies,
-} from "../../models/index.js";
+import {Courses, Exams, ExamsReplies, Payment, Rounds, Users,} from "../../models/index.js";
 import {errorRaiser} from "../../utils/error_raiser.js";
-import axios from "axios";
 import userPerRound from "../../models/userPerRound.js";
 import {Op, Sequelize} from "sequelize";
-import user from "../../routes/user.js";
-import fs2 from "fs";
 import qr from "qrcode";
 import path from "path";
 import UserPerCertificates from "../../models/UserPerCertificates.js";
@@ -210,8 +199,11 @@ export const getPerformExam = async (req, res, next) => {
         await (async () => {
             for (const questionObj of exam.questions) {
                 if ("examImage" in questionObj) {
-                    const fetchingResult = await getSingleFile(questionObj.examImage);
-                    logger.info("Image searching result => ", fetchingResult);
+                    if (!validURL(questionObj.examImage)) {
+                        const generatedLink = await getSingleFile(questionObj.examImage);
+                        logger.debug(generatedLink)
+                        questionObj.examImage = generatedLink;
+                    }
                 }
             }
         })();
@@ -365,8 +357,10 @@ export const getExamPreview = async (req, res, next) => {
         await (async () => {
             for (const questionObj of replyData.exam.questions) {
                 if ("examImage" in questionObj) {
-                    const fetchingResult = await getSingleFile(questionObj.examImage);
-                    logger.info("Image searching result => ", fetchingResult);
+                    if (!validURL(questionObj.examImage)) {
+                        const fetchingResult = await getSingleFile(questionObj.examImage);
+                        logger.info(`Image searching result => ${JSON.stringify(fetchingResult)}`);
+                    }
                 }
             }
         })();

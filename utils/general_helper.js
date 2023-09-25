@@ -376,6 +376,7 @@ export const downloadingCoursesImages = (courses) => {
         for (const course of courses) {
             await getSingleFile(course.course_img)
                 .then((result) => {
+                    course.course_img = result;
                     logger.info(`course image ${course.course_img} result ${result}`);
                 })
                 .catch((err) => {
@@ -383,6 +384,7 @@ export const downloadingCoursesImages = (courses) => {
                 });
             await getSingleFile(course.detailed_img)
                 .then((result) => {
+                    course.detailed_img = result;
                     logger.info(`course detailed image ${course.detailed_img} result ${result}`);
                 })
                 .catch((err) => {
@@ -558,4 +560,8 @@ export const calcPagination = async (model, pageNumber) => {
         firstPage: 1,
         currentPage: Number(pageNumber),
     };
+}
+
+export const validURL = (str) =>  {
+    return str.startsWith("http://") || str.startsWith("https://")
 }

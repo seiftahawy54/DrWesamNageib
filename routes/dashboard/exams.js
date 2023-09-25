@@ -18,14 +18,16 @@ const router = Router();
 router
     .get("/", getAllExams)
     .get("/add-new-exams", getAddNewExam)
-    .get("/edit-exam/:examId", getUpdateExam)
-    .post(
-        "/edit-exam",
-        body("examTitle").isString().isLength({min: 5}),
-        body("examStatus").isBoolean(),
-        body("examId").isString().isLength({min: 36}),
-        body("questions").isArray().isLength({min: 1}),
-        body("specialExam").isBoolean(),
+    .get("/:examId", getUpdateExam)
+    .put(
+        `/edit-exam/:examId`,
+        [
+            body("examTitle").isString().isLength({min: 5}),
+            body("examStatus").isBoolean(),
+            body("questions").isArray().isLength({min: 1}),
+            body("specialExam").isBoolean(),
+            body("courseId").isString().isLength({min: 16}),
+        ],
         postUpdateExam
     )
     .post(

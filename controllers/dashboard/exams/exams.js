@@ -3,11 +3,12 @@ import {errorRaiser} from "../../../utils/error_raiser.js";
 import {validationResult} from "express-validator";
 import {getSingleFile, uploadFile, uploadFileV2} from "../../../utils/aws.js";
 import joi from "joi";
-import {calcPagination, constructSelectors, extractErrorMessages} from "../../../utils/general_helper.js";
+import {calcPagination, constructSelectors, extractErrorMessages, validURL} from "../../../utils/general_helper.js";
 import {Op, Sequelize} from "sequelize";
 import {DeletedExams} from "../../../models/exams.js";
 import {upload} from "../../../middlewares/multer.js";
 import * as util from "util";
+import logger from "../../../utils/logger.js";
 
 
 const questionsSchema = joi.array().items(
@@ -15,8 +16,8 @@ const questionsSchema = joi.array().items(
         questionHeader: joi.string().min(5),
         answers: joi.array().min(1).items(joi.string()),
         correctAnswer: joi.string().min(1).max(1),
-        questionHint: joi.string().min(0).optional(),
-        order: joi.string().min(0).optional(),
+        questionHint: joi.string().min(0),
+        order: joi.string().min(0),
     }),
     joi.object({
         examImage: joi.string().min(13),
@@ -34,6 +35,7 @@ export const getAllExams = async (req, res, next) => {
         const exams = await ExamsCourses.findAll({
             limit: MAX_NUMBER,
             offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+            order: [['createdAt', 'DESC']],
             include:
                 [
                     {
@@ -55,8 +57,6 @@ export const getAllExams = async (req, res, next) => {
                     }
                 ]
         });
-
-        console.log(exams.length)
 
         for (let exam of exams) {
             const {count} = (await ExamsReplies.findAndCountAll({
@@ -147,17 +147,60 @@ export const postDeleteExam = async (req, res, next) => {
 
 export const getUpdateExam = async (req, res, next) => {
     try {
-        const examId = req.params.examId;
-        const exam = await Exams.findByPk(examId);
-
-        exam.questions = JSON.stringify(exam.questions);
-
-        res.render("dashboard/exams/exams_forms", {
-            title: "Exams",
-            path: "/dashboard/exams",
-            exam,
-            editMode: true,
+        const {examId} = req.params;
+        const {exam, course_id} = await ExamsCourses.findOne({
+            where: {exam_id: examId},
+            include: [
+                {
+                    model: Exams,
+                    on: {
+                        exam_id: {
+                            [Op.eq]: Sequelize.col("examsCourses.exam_id"),
+                        },
+                    }
+                }
+            ]
         });
+
+        exam.courseId = course_id;
+
+        if (!exam) {
+            return res.status(404).send("Exam Not Found")
+        }
+
+        for (const questionObj of exam.questions) {
+            if ("examImage" in questionObj && !validURL(questionObj.examImage)) {
+                const generatedLink = await getSingleFile(questionObj.examImage);
+                logger.debug(generatedLink);
+                questionObj.examImage = generatedLink;
+            }
+        }
+
+        /*await (async () => {
+            for (const questionObj of exam.questions) {
+                if ("examImage" in questionObj) {
+                    if (!validURL(questionObj.examImage)) {
+                        const generatedLink = await getSingleFile(questionObj.examImage);
+                        logger.debug(generatedLink)
+                        questionObj.examImage = generatedLink;
+                    }
+                }
+            }
+        })();*/
+
+        /*exam.questions = exam.questions.map(q => {
+            if (q.examImage && !(q.examImage.startsWith("http://") || q.examImage.startsWith("https://"))) {
+                const newImageLink = `${process.env.STATIC_URL}/${q.examImage}`;
+                return {
+                    examImage: newImageLink
+                };
+            }
+
+            return q;
+        })
+*/
+        return res.status(200).send(exam)
+
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -165,23 +208,19 @@ export const getUpdateExam = async (req, res, next) => {
 
 export const postUpdateExam = async (req, res, next) => {
     try {
-        const examId = req.body.examId;
+        const examId = req.params.examId;
         const questions = req.body.questions;
         const examTitle = req.body.examTitle;
         const examStatus = req.body.examStatus;
         const specialExam = req.body.specialExam;
 
-        const errors = validationResult(req);
-        const schemaValidation = await questionsSchema.validate(questions);
+        const validationErrors = validationResult(req);
+        const {error} = await questionsSchema.validate(questions);
 
-        console.log(`Testing schema`, schemaValidation);
+        console.log(`Validation of schema ===> `, util.inspect(error, false, null));
 
-        console.log(errors.array());
-
-        if ("error" in schemaValidation || !errors.isEmpty()) {
-            return res.status(422).json({
-                errors,
-            });
+        if (error || !validationErrors.isEmpty()) {
+            return res.status(422).json(extractErrorMessages(validationErrors.array()));
         }
 
         const updatingExam = await Exams.update(
