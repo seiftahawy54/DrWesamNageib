@@ -76,15 +76,33 @@ export const getSingleFile = async (filename) => {
       } catch (e) {
         console.log('image name ', filename)
         console.log(`AWS error => `, e.message);
+        await downloadNormalImages(downloadingUrl, filename);
       }
     }
   });
 };
 
-export const downloadNormalImages = async (url) => {
+export const downloadNormalImages = async (url, filename) => {
   return axios
       .get(url, {
         responseType: 'arraybuffer'
       })
-      .then(response => Buffer.from(response.data, 'binary').toString('base64'))
+      .then(async (response) => {
+        const filePath = path.resolve("downloaded_images", filename);
+        const buffer = Buffer.from(response.data, 'binary').toString('base64')
+        const writingStream = await fs2.createWriteStream(filePath);
+
+        writingStream.write(buffer, "base64");
+
+        writingStream.on("finish", () => {
+          return true;
+        });
+
+        writingStream.on("error", (err) => {
+          console.log(`AWS Error ==> `, err);
+          return false;
+        });
+
+        writingStream.end();
+      })
 }
