@@ -74,8 +74,17 @@ export const getSingleFile = async (filename) => {
 
         writingStream.end();
       } catch (e) {
+        console.log('image name ', filename)
         console.log(`AWS error => `, e.message);
       }
     }
   });
 };
+
+export const downloadNormalImages = async (url) => {
+  return axios
+      .get(url, {
+        responseType: 'arraybuffer'
+      })
+      .then(response => Buffer.from(response.data, 'binary').toString('base64'))
+}
