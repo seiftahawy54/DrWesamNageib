@@ -7,7 +7,7 @@ import {
     postDeleteExam,
     postUpdateExam,
     postAddingExamImage,
-    deleteExamImage,
+    deleteExamImage, searchForExam,
 } from "../../controllers/dashboard/exams/exams.js";
 
 import {body} from "express-validator";
@@ -18,6 +18,7 @@ const router = Router();
 router
     .get("/", getAllExams)
     .get("/add-new-exams", getAddNewExam)
+    .get('/search', searchForExam)
     .get("/:examId", getUpdateExam)
     .put(
         `/edit-exam/:examId`,
@@ -47,6 +48,6 @@ router
         "/delete-exam-image",
         [body("imageId").isString().isLength({min: 36})],
         deleteExamImage
-    );
+    )
 
 export default router;

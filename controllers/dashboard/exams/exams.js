@@ -9,6 +9,7 @@ import {DeletedExams} from "../../../models/exams.js";
 import {upload} from "../../../middlewares/multer.js";
 import * as util from "util";
 import logger from "../../../utils/logger.js";
+import {BOOLEAN_TYPE, STRING_TYPE, validateRequestInput} from "../../../validators/typesValidators.js";
 
 
 const questionsSchema = joi.array().items(
@@ -54,6 +55,9 @@ export const getAllExams = async (req, res, next) => {
                             exam_id: {[Op.eq]: Sequelize.col("examsCourses.exam_id")},
                         },
                         attributes: ["exam_id", "title", "status", "createdAt", "updatedAt", 'id'],
+                        where: {
+                            isDeleted: false
+                        }
                     }
                 ]
         });
@@ -129,7 +133,7 @@ export const postDeleteExam = async (req, res, next) => {
         const {examId} = req.params;
 
         const exam = await Exams.findOne({
-            where: {id: examId}
+            where: {exam_id: examId}
         });
 
         if (!exam) {
@@ -280,3 +284,92 @@ export const deleteExamImage = async (req, res, next) => {
         await errorRaiser(e, next);
     }
 };
+
+export const searchForExam = async (req, res, next) => {
+    try {
+        let {title, courseName, status, special, presentation} = req.query;
+        let error, message;
+        if (title) ({error, message} = validateRequestInput(title, 'title', STRING_TYPE));
+        // if (courseName) ({error, message} = validateRequestInput(courseName, 'courseName', STRING_TYPE));
+        // if (presentation)  ({error, message} = validateRequestInput(presentation, 'presentation', BOOLEAN_TYPE))
+        // if (status)  ({error, message} = validateRequestInput(status, 'status', BOOLEAN_TYPE))
+        // if (special)  ({error, message} = validateRequestInput(special, 'special', BOOLEAN_TYPE))
+
+        if (error) {
+            return res.status(400).send(error);
+        }
+
+        const filterObject = {};
+
+        if (title) {
+            filterObject.exam =
+                {
+                    title: {
+                        [Op.iLike]: `%${title.toLowerCase()}%`
+                    }
+                }
+        }
+
+        // if (courseName) {
+        //     filterObject.course.name = {
+        //         [Op.iLike]: `%${courseName.toLowerCase()}%`
+        //     };
+        // }
+        //
+        // if (phone) {
+        //     filterObject.phone = {
+        //         [Op.iLike]: `${phone.toLowerCase()}`
+        //     };
+        // }
+        //
+        // if (specialization) {
+        //     filterObject.specialization = {
+        //         [Op.iLike]: `%${specialization.toLowerCase()}%`
+        //     };
+        // }
+
+        const exams = await ExamsCourses.findAll({
+            include:
+                [
+                    {
+                        model: Courses,
+                        attributes: ['name'],
+                        on: {
+                            course_id: {[Op.eq]: Sequelize.col("examsCourses.course_id")},
+                        },
+                        where: {
+                            ...filterObject.course,
+                            isDeleted: false,
+                        }
+                    },
+                    {
+                        model: Exams,
+                        on: {
+                            exam_id: {[Op.eq]: Sequelize.col("examsCourses.exam_id")},
+                        },
+                        attributes: ["exam_id", "title", "status", "createdAt", "updatedAt", 'id'],
+                        where: {
+                            ...filterObject.exam,
+                            isDeleted: false
+                        }
+                    }
+                ]
+        })
+
+        if (exams.length === 0)
+            return res.status(404).json(exams)
+
+        for (let exam of exams) {
+            const {count} = (await ExamsReplies.findAndCountAll({
+                where: {exam_id: exam.exam.exam_id},
+            }));
+
+            exam.dataValues.noOfReplies = count;
+        }
+
+        return res.status(200).json(exams)
+    } catch
+        (e) {
+        await errorRaiser(e, next);
+    }
+}

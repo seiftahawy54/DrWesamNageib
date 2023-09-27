@@ -38,6 +38,10 @@ const examsSchema = {
     defaultValue: new Date(),
     allowNull: false,
   },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  }
 };
 
 const Exams = sequelize.define("exam", examsSchema);
