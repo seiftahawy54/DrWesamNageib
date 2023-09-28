@@ -68,7 +68,7 @@ const singleCourse = async (req, res, next) => {
 export const getAllCoursesData = async (req, res, next) => {
     try {
         const courses = await Courses.findAll();
-        await downloadingCoursesImages(courses);
+        downloadingCoursesImages(courses);
         return res.status(200).json({
             courses,
         });

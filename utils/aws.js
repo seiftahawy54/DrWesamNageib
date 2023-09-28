@@ -68,8 +68,8 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
 export const getSingleFile = async (filename) => {
     const downloadedImagesFolder = path.resolve("downloaded_images");
     const fullImgPath = path.resolve(downloadedImagesFolder, filename)
-
-    if (!fs2.existsSync(downloadedImagesFolder)) {
+    const isImagesPathExists = fs2.existsSync(downloadedImagesFolder);
+    if (isImagesPathExists) {
         const imgsPath = path.resolve("downloaded_images");
         fs2.mkdirSync(imgsPath);
         return getSingleFile(filename);
