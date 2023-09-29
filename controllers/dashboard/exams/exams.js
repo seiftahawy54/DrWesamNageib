@@ -10,6 +10,7 @@ import {upload} from "../../../middlewares/multer.js";
 import * as util from "util";
 import logger from "../../../utils/logger.js";
 import {BOOLEAN_TYPE, STRING_TYPE, validateRequestInput} from "../../../validators/typesValidators.js";
+import config from "config";
 
 
 const questionsSchema = joi.array().items(
@@ -32,10 +33,9 @@ export const getAllExams = async (req, res, next) => {
             pageNumber = 1
         }
 
-        const MAX_NUMBER = 10;
         const exams = await ExamsCourses.findAll({
-            limit: MAX_NUMBER,
-            offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+            limit: config.get('paginationMaxSize'),
+            offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
             order: [['createdAt', 'DESC']],
             include:
                 [
@@ -54,7 +54,7 @@ export const getAllExams = async (req, res, next) => {
                         on: {
                             exam_id: {[Op.eq]: Sequelize.col("examsCourses.exam_id")},
                         },
-                        attributes: ["exam_id", "title", "status", "createdAt", "updatedAt", 'id'],
+                        attributes: ["exam_id", "title", "status", "createdAt", "updatedAt", 'id', "presentation"],
                         where: {
                             isDeleted: false
                         }
@@ -217,6 +217,9 @@ export const postUpdateExam = async (req, res, next) => {
         const examTitle = req.body.examTitle;
         const examStatus = req.body.examStatus;
         const specialExam = req.body.specialExam;
+        const presentation = req.body.forPresentation;
+
+        console.log(`Is presentation ===> `, req.body)
 
         const validationErrors = validationResult(req);
         const {error} = await questionsSchema.validate(questions);
@@ -233,6 +236,7 @@ export const postUpdateExam = async (req, res, next) => {
                 questions,
                 title: examTitle,
                 special_exam: specialExam,
+                presentation
             },
             {where: {exam_id: examId}}
         );

@@ -41,7 +41,11 @@ const examsSchema = {
   isDeleted: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
-  }
+  },
+  presentation: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 };
 
 const Exams = sequelize.define("exam", examsSchema);

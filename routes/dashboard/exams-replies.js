@@ -1,13 +1,13 @@
-import { Router } from "express";
+import {Router} from "express";
 import {
-  getAllReplies,
-  getRepliesForExam,
-  postDeleteReply,
-  postDeleteExamReplies,
+    getAllReplies,
+    getRepliesForExam,
+    postDeleteReply,
+    postDeleteAllExamReplies,
 } from "../../controllers/dashboard/exams-replies/exams-replies.js";
 
 export default Router()
-  .get("/", getAllReplies)
-  .post("/delete-exam-replies", postDeleteExamReplies)
-  .post("/delete-exams-replies", postDeleteReply)
-  .get("/:examId", getRepliesForExam);
+    .get("/", getAllReplies)
+    .delete("/:examId", postDeleteAllExamReplies)
+    .delete("/reply/:replyId", postDeleteReply)
+    .get("/exam/:examId", getRepliesForExam);

@@ -1,0 +1,5 @@
+{
+  "paginationMaxSize": "10",
+  "paypalSandboxLink": "https://api-m.sandbox.paypal.com",
+  "paypalLiveLink": "https://api-m.paypal.com"
+}

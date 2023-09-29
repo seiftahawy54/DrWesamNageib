@@ -27,7 +27,6 @@ const Payment = sequelize.define("payments", {
   },
   details: {
     type: Sequelize.JSON,
-    allowNull: false,
   },
   createdAt: {
     type: Sequelize.DATE,

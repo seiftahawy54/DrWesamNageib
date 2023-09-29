@@ -10,6 +10,7 @@ import {
     validateRequestInput,
 } from "../../../validators/typesValidators.js";
 import userPerRound from "../../../models/userPerRound.js";
+import config from "config";
 
 const getSearchForUser = async (req, res, next) => {
     try {
@@ -71,10 +72,9 @@ const getUsers = async (req, res, next) => {
             pageNumber = 1;
         }
 
-        const MAX_NUMBER = 10;
         let fetchingResults = await Users.findAll({
-            limit: MAX_NUMBER,
-            offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+            limit: config.get('paginationMaxSize'),
+            offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
             order: [["created_on", "DESC"], ["id", "DESC"]],
             where: {
                 isDeleted: false

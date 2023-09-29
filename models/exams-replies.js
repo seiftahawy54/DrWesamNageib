@@ -27,6 +27,10 @@ const ExamsReplies = sequelize.define("exams_replies", {
     type: Sequelize.ARRAY(Sequelize.JSON),
     allowNull: false,
   },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  }
 });
 
 export default ExamsReplies;

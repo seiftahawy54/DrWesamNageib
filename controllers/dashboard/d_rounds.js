@@ -5,6 +5,7 @@ import {validationResult} from "express-validator";
 import {Op, Sequelize} from "sequelize";
 import {calcPagination, extractErrorMessages} from "../../utils/general_helper.js";
 import userPerRound from "../../models/userPerRound.js";
+import config from "config";
 
 export const getRounds = async (req, res, next) => {
     try {
@@ -14,10 +15,9 @@ export const getRounds = async (req, res, next) => {
             pageNumber = 1;
         }
 
-        const MAX_NUMBER = 10;
         let rounds = await Rounds.findAll({
-            limit: MAX_NUMBER,
-            offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+            limit: config.get('paginationMaxSize'),
+            offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
             order: [
                 ["round_date", "ASC"],
                 ["updatedAt", "DESC"],
@@ -63,7 +63,7 @@ export const gerRunningRounds = async (req, res, next) => {
     try {
         const rounds = await Rounds.findAll({
             where: {
-                finished: false
+                finished: false,
             },
             attributes: ["round_id", "round_date"]
         });

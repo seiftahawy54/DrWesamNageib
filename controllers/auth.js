@@ -1,7 +1,6 @@
 import paypal from "@paypal/checkout-server-sdk";
 import jwt from "jsonwebtoken";
 import {validationResult} from "express-validator";
-// import { Courses } from "../models";
 import {errorRaiser} from "../utils/error_raiser.js";
 import {Users, Payment, Rounds, Discounts} from "../models/index.js";
 import sendGrid from "@sendgrid/mail";
@@ -23,13 +22,14 @@ import {
     hashCreator,
 } from "../utils/general_helper.js";
 import moment from "moment";
+import userPerRound from "../models/userPerRound.js";
 
-const Environment =
+export const Environment =
     process.env.NODE_ENV === "production"
         ? paypal.core.LiveEnvironment
         : paypal.core.SandboxEnvironment;
 
-const paypalClient = new paypal.core.PayPalHttpClient(
+export const paypalClient = new paypal.core.PayPalHttpClient(
     new Environment(
         process.env.PAYPAL_CLIENT_ID,
         process.env.PAYPAL_CLIENT_SECERT
@@ -459,9 +459,12 @@ export const getCompletePayment = async (req, res, next) => {
 
 export const postCreateOrder = async (req, res, next) => {
     const request = new paypal.orders.OrdersCreateRequest();
-    const coursesArr = await findCartCourses(req.user.cart);
-    let filteredCourses = null,
-        couponData;
+    const {cart} = await Users.findOne({
+        where: {
+            user_id: req.user.user_id,
+        }
+    })
+    const coursesArr = await findCartCourses(cart);
     //  = coursesArr.map((course) => {
     // return {
     //   name: course.name,
@@ -469,30 +472,12 @@ export const postCreateOrder = async (req, res, next) => {
     // };
     // });
 
-    if (typeof req.user.applied_coupon === "string") {
-        const findingCouponData = await Discounts.findByPk(req.user.applied_coupon);
-        if (findingCouponData) couponData = findingCouponData;
-        filteredCourses = coursesArr.map((course) => {
-            let price = course.price;
-
-            if (couponData) {
-                price = price * (1 - findingCouponData.discount_percentage / 100);
-            }
-
-            return {
-                name: course.name,
-                oldPrice: course.price,
-                price,
-            };
-        });
-    } else {
-        filteredCourses = coursesArr.map((course) => {
-            return {
-                name: course.name,
-                price: course.price,
-            };
-        });
-    }
+    let filteredCourses = coursesArr.map((course) => {
+        return {
+            name: course.name,
+            price: course.price,
+        };
+    });
 
     const coursesPrice = extractArrOfPrices(filteredCourses);
     const total = calcTotalPrice(coursesPrice);
@@ -518,21 +503,58 @@ export const postCreateOrder = async (req, res, next) => {
 
     try {
         const order = await paypalClient.execute(request);
-        req.session.userOrder = order;
-        res.json({id: order.result.id});
+        return res.send({id: order.result.id});
     } catch (e) {
-        req.flash("error", "There's an error in payment");
-        res.status(500).json({error: e});
-        // errorRaiser(e, next);
+        await errorRaiser(e, next);
     }
 };
 
 export const postSuccess = async (req, res, next) => {
     try {
-        const rounds = req.user.cart.map(({roundId}) => roundId);
-        const courses = req.user.cart.map(({courseId}) => courseId);
+        const {cart} = await Users.findOne({
+            where: {
+                user_id: req.user.user_id,
+            }
+        })
 
-        Payment.create({
+        const createdPayments = [];
+        const createdRounds = [];
+
+
+        for (let cartItem of cart) {
+            const result = await Payment.create({
+                user_id: req.user.user_id,
+                course_id: cartItem.courseId,
+                round_id: cartItem.roundId,
+                status: "success",
+            })
+
+            createdPayments.push(result);
+        }
+
+        for (let {roundId} of cart) {
+            const result = await userPerRound.create({
+                userId: req.user.user_id,
+                roundId: roundId
+            })
+
+            createdRounds.push(result);
+        }
+
+        await Users.update({
+            cart: [],
+        }, {where: {id: req.user.id}});
+
+        return res.send("Payment is Done");
+
+        // const payment = await Payment.create({
+        //     user_id: req.user.user_id,
+        //     course_id: courses[0],
+        //     round_id: rounds[0],
+        //     status: "success",
+        // })
+
+        /*Payment.create({
             user_id: req.user.id,
             course_id: courses[0],
             round_id: rounds[0],
@@ -583,7 +605,7 @@ export const postSuccess = async (req, res, next) => {
                     details: req.session.userOrder,
                 });
                 await errorRaiser(err, next);
-            });
+            });*/
     } catch (e) {
         await errorRaiser(e, next);
     }

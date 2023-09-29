@@ -70,7 +70,7 @@ resetPasswordRoutes
 
 paymentRoutes
   .get("/success_payment", getSuccess)
-  .post("/success_payment", postSuccess)
+  .post("/success-payment", postSuccess)
   .get("/cancel_payment", getCancelled)
   .get("/complete_payment", getCompletePayment)
   .post("/create-order", postCreateOrder)

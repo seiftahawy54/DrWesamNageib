@@ -11,6 +11,7 @@ import {sequelize} from "./db.js";
 import logger from "./logger.js";
 import {Op, Sequelize} from "sequelize";
 import qr from "qrcode";
+import config from "config";
 
 export const sortCourses = (courses) => {
     let coursesRanks = [];
@@ -543,7 +544,7 @@ export const constructSelectors = (dataObj) =>
 
 
 export const calcPagination = async (model, pageNumber) => {
-    const MAX_NUMBER = 10;
+    const MAX_NUMBER = config.get('paginationMaxSize');
     const numberOfResults = await model.findAndCountAll();
     const numberOfLinks = Math.ceil(numberOfResults.count / MAX_NUMBER);
     const next = Number(Number(pageNumber) + 1);

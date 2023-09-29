@@ -5,7 +5,8 @@ const paymentsRoutes = Router();
 
 
 paymentsRoutes
-    .get('/', PaymentsControllers.getAllDataRequiredForPayment)
-    .post('/check', PaymentsControllers.postSuccessPayment)
+    .get('/stripe/', PaymentsControllers.getAllDataRequiredForPayment)
+    .post('/stripe/check', PaymentsControllers.postSuccessPayment)
+    .post('/paypal/init', PaymentsControllers.postCreatePaypalPayment)
 
 export default paymentsRoutes;

@@ -69,12 +69,11 @@ export const getSingleFile = async (filename) => {
     const downloadedImagesFolder = path.resolve("downloaded_images");
     const fullImgPath = path.resolve(downloadedImagesFolder, filename)
     const isImagesPathExists = fs2.existsSync(downloadedImagesFolder);
-    if (isImagesPathExists) {
-        const imgsPath = path.resolve("downloaded_images");
-        fs2.mkdirSync(imgsPath);
+    if (!isImagesPathExists) {
+        fs2.mkdirSync(downloadedImagesFolder);
         return getSingleFile(filename);
     } else if (fs2.existsSync(fullImgPath)) {
-        logger.info(`${process.env.STATIC_URL}/${filename} exists`)
+        logger.info(`${filename} exists locally`)
         return `${process.env.STATIC_URL}/${filename}`;
     } else {
         const downloadingUrl = `${process.env.AWS_URL}/${filename}`;

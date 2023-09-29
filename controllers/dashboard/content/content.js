@@ -4,6 +4,7 @@ import {calcPagination, extractErrorMessages} from "../../../utils/general_helpe
 import {validationResult} from "express-validator";
 import {uploadFileV2} from "../../../utils/aws.js";
 import {Sequelize} from "sequelize";
+import config from "config";
 
 const allContent = async (req, res, next) => {
     try {
@@ -12,10 +13,9 @@ const allContent = async (req, res, next) => {
             pageNumber = 1
         }
 
-        const MAX_NUMBER = 10;
         const contents = await Content.findAll({
-            limit: MAX_NUMBER,
-            offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+            limit: config.get('paginationMaxSize'),
+            offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
         });
 
         const pagination = await calcPagination(Content, pageNumber)

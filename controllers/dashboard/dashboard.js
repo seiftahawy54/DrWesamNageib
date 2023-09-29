@@ -10,6 +10,7 @@ import { Messages } from "../../models/index.js";
 import { Opinions } from "../../models/index.js";
 import { About } from "../../models/index.js";
 import { extractErrorMessages } from "../../utils/general_helper.js";
+import config from "config";
 
 export const getOverview = async (req, res, next) => {
   let numberOfUsers = await Users.findAll({
@@ -91,16 +92,15 @@ export const getOpinionsPage = async (req, res, next) => {
     if (!pageNumber) {
       pageNumber = 1;
     }
-    const MAX_NUMBER = 5;
     const numberOfResults = await Opinions.findAndCountAll();
     const fetchingResults = await Opinions.findAll({
-      limit: MAX_NUMBER,
-      offset: (parseInt(pageNumber) - 1) * MAX_NUMBER,
+      limit: config.get('paginationMaxSize'),
+      offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
     });
 
     res.status(200).json({
       opinions: fetchingResults,
-      numberOfLinks: Math.ceil(numberOfResults.count / MAX_NUMBER),
+      numberOfLinks: Math.ceil(numberOfResults.count / config.get('paginationMaxSize')),
       activePage: pageNumber,
     });
   } catch (e) {

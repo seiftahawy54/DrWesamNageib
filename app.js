@@ -110,6 +110,8 @@ ExamsCourses.hasOne(Exams, {
 ExamsReplies.hasOne(Exams);
 ExamsReplies.belongsTo(Users);
 
+Exams.hasMany(ExamsReplies);
+
 UserPerRound.hasMany(Users, {
     foreignKey: "userId",
     constraints: false,
@@ -136,6 +138,7 @@ const port = process.env.PORT || process.env.DEV_PORT || 4000;
 try {
     await sequelize.authenticate();
     await sequelize.sync({
+        // alter: true,
     });
 
     app.listen(port, () => {

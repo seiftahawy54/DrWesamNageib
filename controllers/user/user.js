@@ -213,7 +213,7 @@ export const getPerformExam = async (req, res, next) => {
             if ("correctAnswer" in question) {
                 return {
                     ...question,
-                    correctAnswer: null
+                    correctAnswer: type > 1 ? question.correctAnswer : null
                 }
             } else {
                 return question
@@ -287,14 +287,23 @@ export const getExamPreview = async (req, res, next) => {
             where: {userId: req.user.user_id},
         })
 
-        if (Array.isArray(searchingForUser) && searchingForUser.length === 0) {
+        // Bypass user check if user is admin
+        if (req.user.role < 3 && Array.isArray(searchingForUser) && searchingForUser.length === 0) {
             return res.status(404).json({
                 message: "User not found!",
             })
         }
 
+        const searchData = {
+            reply_id: replyId
+        }
+
+        if (req.user.type < 2) {
+            searchData.user_id = req.user.user_id;
+        }
+
         const replyData = await ExamsReplies.findOne({
-            where: {reply_id: replyId, user_id: req.user.user_id},
+            where: searchData,
             include: [
                 {
                     model: Exams,
@@ -358,8 +367,7 @@ export const getExamPreview = async (req, res, next) => {
             for (const questionObj of replyData.exam.questions) {
                 if ("examImage" in questionObj) {
                     if (!validURL(questionObj.examImage)) {
-                        const fetchingResult = await getSingleFile(questionObj.examImage);
-                        logger.info(`Image searching result => ${JSON.stringify(fetchingResult)}`);
+                        questionObj.examImage = await getSingleFile(questionObj.examImage);
                     }
                 }
             }
@@ -384,14 +392,13 @@ export const getSubmittedExam = async (req, res, next) => {
 };
 
 export const getAllUserData = async (req, res, next) => {
-    const {name, whatsapp_no, user_id, email, specialization, user_img} =
-        await Users.findOne({
-            where: {
-                user_id: req.user.user_id
-            }
-        });
-
     try {
+        const {name, whatsapp_no, user_id, email, specialization, user_img} =
+            await Users.findOne({
+                where: {
+                    user_id: req.user.user_id
+                }
+            });
         return res.status(200).json({name, whatsapp_no, user_id, email, specialization, user_img});
     } catch (e) {
         await errorRaiser(e, next);
