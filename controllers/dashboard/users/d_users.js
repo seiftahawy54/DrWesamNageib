@@ -133,31 +133,31 @@ const postDeleteUser = async (req, res, next) => {
 };
 
 const getUpdateUser = async (req, res, next) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
 
-    const findingResult = await Users.findByPk(userId);
+    const user = await Users.findOne({
+        user_id: userId
+    });
+
+    if (!user) {
+        return res.status(404).send("User not found")
+    }
 
     const currentRound = (
         await sequelize.query(
             `SELECT round_date FROM rounds WHERE ? LIKE ANY (rounds.users_ids)`,
             {
                 type: "SELECT",
-                replacements: [findingResult.user_id],
+                replacements: [user.user_id],
             }
         )
     )[0]?.round_date;
 
     const performedExams = await userPerformedExams(userId);
 
-    findingResult.current_round = moment(currentRound).format("DD-MM-YYYY");
+    user.current_round = moment(currentRound).format("DD-MM-YYYY");
 
-    return res.render("dashboard/users_forms", {
-        title: "Update User",
-        path: "/dashboard/users",
-        user: findingResult,
-        performedExams,
-        moment,
-    });
+    return res.status(200).send(user);
 };
 
 const postUpdateUser = async (req, res, next) => {

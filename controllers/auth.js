@@ -19,7 +19,7 @@ import {
     constructError,
     extractErrorMessages,
     extractErrorMessagesForSchemas,
-    hashCreator,
+    hashCreator, isHuman,
 } from "../utils/general_helper.js";
 import moment from "moment";
 import userPerRound from "../models/userPerRound.js";
@@ -47,9 +47,10 @@ export const getLogin = (req, res, next) =>
     });
 
 export const postLogin = async (req, res, next) => {
-    const {email, password} = req.body;
+    const {email, password, googleToken} = req.body;
+    const isHumanCheck = await isHuman(googleToken)
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    if (!errors.isEmpty() || !isHumanCheck) {
         return res.status(422).json({
             error: true,
             messages: extractErrorMessages(errors.array()),
@@ -121,42 +122,45 @@ export const getForgetPassword = (req, res, next) => {
 
 export const postForgetPassword = async (req, res, next) => {
     try {
-        const userEmail = req.body.user_email;
+        const {email: userEmail, googleToken} = req.body;
         const errors = validationResult(req);
 
-        if (!errors.isEmpty()) {
-            req.flash("error", errors.array()[0].msg);
-            return res.render("auth/forget_password", {
-                title: "Forget Password",
-                path: "/forget-password",
-                enteredData: {
-                    user_email: userEmail,
-                },
-                validationErrors: errors.array(),
-            });
+        const isHumanCheck = await isHuman(googleToken)
+
+        if (!errors.isEmpty() || !isHumanCheck) {
+            return res.status(422).send(extractErrorMessages(errors.array()))
         }
 
-        const searchingForUserResult = await Users.findOne({
+        const userData = await Users.findOne({
             where: {
                 email: userEmail,
             },
         });
 
-        if (!searchingForUserResult) {
-            req.flash("error", "There's no users found with this email!");
-            return res.redirect("/forget-password");
+        if (!userData) {
+            return res.status(422).json(
+                constructError(
+                    "email",
+                    "There's no users found with this email!",
+                )
+            );
         }
 
-        if (
-            searchingForUserResult.token_date &&
-            moment().diff(moment(searchingForUserResult.token_date), "hours") * -1 >=
-            1
-        ) {
-            req.flash(
-                "error",
-                "You've already requested to reset your password, please check your email!"
-            );
-            return res.redirect("/");
+        const timePeriod = "hours";
+        const oneHourAhead = moment().add(1, timePeriod).toISOString();
+        const oneHourBefore = moment().subtract(1, timePeriod).toISOString();
+
+        if (userData.token_date) {
+            const sentTokenStillValid = moment(userData.token_date).isBetween(oneHourBefore, oneHourAhead);
+
+            if (sentTokenStillValid) {
+                return res.status(422).json(
+                    constructError(
+                        "message",
+                        "You've requested a reset to your password before, please recheck your email",
+                    )
+                )
+            }
         }
 
         // to: 'test@example.com', // Change to your recipient
@@ -166,41 +170,35 @@ export const postForgetPassword = async (req, res, next) => {
         //   html: '<strong>and easy to do anywhere, even with Node.js</strong>',
 
         const requestedToken = hashCreator(10);
-        const oneHourAhead = moment().add(1, "hour").toISOString();
 
-        const updateUserToken = await searchingForUserResult.update({
+        const updateUserToken = await userData.update({
             reset_token: requestedToken,
             token_date: oneHourAhead,
         });
-        /*
-        reset_token: `${req.get("origin")}/reset-password/${
-                updateUserToken.reset_token
-              }`,
-              token_date: updateUserToken.token_date,
-        */
-        sendGrid
-            .send({
-                to: searchingForUserResult.email,
-                from: "admin@drwesamnageib.com",
-                subject: "Reset Password Request",
-                text: "You've requested a reset to your password please processes the operation",
-                html: `
-              <h1>Password Reset Request</h1>
+
+
+        const mailTemplate = `
+            <h1>Password Reset Request</h1>
               <p>You've requested a reset to your password please process the operation</p>
-              <p>You can click on this link to continue this operation <a href="${req.get(
-                    "origin"
-                )}/reset-password/${updateUserToken.reset_token}">RESET</a></p>
+              <p>You can click on this link to continue this operation <a href="${process.env.FRONTEND_URL}/reset-password/${updateUserToken.reset_token}">RESET</a></p>
               <strong>THE LINK IS AVAILABLE FOR ONE HOUR ONLY!</strong>
-              If you didn't request anything please call us immediately <a href="http://localhost:3000/contactus">Contact US</a>
-            `,
-            })
-            .then((result) => {
-                return res.redirect("/confirm-forget");
-            })
-            .catch((error) => {
-                req.flash("error", error.message);
-                return res.redirect("/");
-            });
+              If you didn't request anything please call us immediately <a href="${process.env.FRONTEND_URL}/contact-us">Contact US</a>
+        `;
+
+        const mailSent = await sendGrid.send({
+            to: userData.email,
+            from: "admin@drwesamnageib.com",
+            subject: "Reset Password Request",
+            text: "You've requested a reset to your password please processes the operation",
+            html: mailTemplate
+        });
+
+        logger.info(`send mail ${JSON.stringify(mailSent)} for user ${userEmail}`);
+
+        return res.status(200).json({
+            message: "Please check your email to reset your password",
+        })
+
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -215,31 +213,46 @@ export const getConfirmForget = async (req, res, next) => {
 
 export const getGenerateNewPassword = async (req, res, next) => {
     try {
-        const token = req.params.token;
-        const userWithToken = await Users.findOne({
+        const token = req.body.token;
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(422).json(extractErrorMessages(errors.array()))
+        }
+
+        const user = await Users.findOne({
             where: {
                 reset_token: token,
             },
         });
 
-        if (!userWithToken) {
-            req.flash("error", "Please check your data!");
-            return res.redirect("/login");
+        if (!user) {
+            return res.status(404).json(
+                constructError(
+                    "token",
+                    "Your request to reset your password is invalid, please submit another request!"
+                )
+            )
         }
 
-        if (moment().diff(moment(userWithToken.token_date), "hours") * -1 >= 1) {
-            req.flash(
-                "error",
-                "Your request to reset your password is invalid, please submit another request!"
-            );
-            return res.redirect("/login");
+        const timePeriod = "hours";
+        const oneHourAhead = moment().add(1, timePeriod).toISOString();
+        const oneHourBefore = moment().subtract(1, timePeriod).toISOString();
+
+        if (user.token_date) {
+            const sentTokenStillValid = moment(user.token_date).isBetween(oneHourBefore, oneHourAhead);
+
+            if (sentTokenStillValid) {
+                return res.status(200).send({
+                    name: user.name,
+                    user_id: user.user_id,
+                    id: user.id,
+                    email: user.email,
+                })
+            }
         }
 
-        res.render("auth/new_password", {
-            title: "Reset Password",
-            path: "/reset-password",
-            resetToken: token,
-        });
+        return res.status(404).send("Token is invalid")
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -247,19 +260,20 @@ export const getGenerateNewPassword = async (req, res, next) => {
 
 export const postGenerateNewPassword = async (req, res, next) => {
     try {
-        const password = req.body.new_password;
-        const confirmPassword = req.body.confirm_password;
-        const token = req.params.token;
+        const { password, confirmPassword, token } = req.body;
 
         if (password !== confirmPassword) {
-            req.flash("error", "Please make sure that your passwords are the same!");
-            return res.redirect(`/reset-password/${token}`);
+            return res.status(422).json(
+                constructError(
+                    "password",
+                    "Passwords do not match",
+                )
+            )
         }
 
-        const encryptionResult = await bcrypt.hash(password, 12);
-        if (!(await encryptionResult)) {
-            req.flash("error", "Some error in the server please contact admin!");
-            return res.redirect(`/reset-password/${token}`);
+        const encryptionResult = bcrypt.hashSync(password, 12);
+        if (!(encryptionResult)) {
+            return res.status(500).send("Something went wrong")
         }
 
         const user = await Users.findOne({
@@ -270,7 +284,7 @@ export const postGenerateNewPassword = async (req, res, next) => {
 
         const updatingUserDataResult = user.update(
             {
-                password: await encryptionResult,
+                password: encryptionResult,
                 reset_token: null,
                 token_date: null,
             },
@@ -281,11 +295,7 @@ export const postGenerateNewPassword = async (req, res, next) => {
             }
         );
 
-        req.flash(
-            "success",
-            "You've successfully updated your password, now you can login"
-        );
-        return res.redirect("/login");
+        return res.status(200).send("You've successfully updated your password, now you can login")
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -338,10 +348,12 @@ export const postRegister = async (req, res, next) => {
             specialization,
             password,
             confirmPassword,
+            googleToken,
         } = req.body;
         const errors = validationResult(req);
+        const isHumanCheck = await isHuman(googleToken)
 
-        if (!errors.isEmpty()) {
+        if (!errors.isEmpty() || !isHumanCheck) {
             logger.log(errors.array());
             return res.status(422).json(extractErrorMessages(errors.array()));
         }

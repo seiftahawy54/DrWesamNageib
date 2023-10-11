@@ -228,7 +228,7 @@ export const postDeleteRound = async (req, res, next) => {
     try {
         const round = await Rounds.update({
             isDeleted: true
-        }, {where: {id: roundId}});
+        }, {where: {round_id: roundId}});
         if (!round) {
             return res.status(404).json({message: "Round not found"});
         }

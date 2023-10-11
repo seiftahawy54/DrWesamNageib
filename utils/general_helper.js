@@ -12,6 +12,7 @@ import logger from "./logger.js";
 import {Op, Sequelize} from "sequelize";
 import qr from "qrcode";
 import config from "config";
+import axios from "axios";
 
 export const sortCourses = (courses) => {
     let coursesRanks = [];
@@ -562,7 +563,29 @@ export const calcPagination = async (model, pageNumber) => {
         currentPage: Number(pageNumber),
     };
 }
-
 export const validURL = (str) =>  {
     return str.startsWith("http://") || str.startsWith("https://")
+}
+
+export const isHuman = async (token) => {
+    if (process.env.NODE_ENV !== "production") {
+        return true;
+    }
+
+    const requestBody = {
+        url: `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPCHTA_SECRET}&response=${token}`,
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+        },
+    };
+
+    const {data} = await axios(requestBody);
+
+    return data.success;
+}
+
+
+export const isTokenValid = (token) => {
+
 }

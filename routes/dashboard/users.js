@@ -13,7 +13,7 @@ router
     .get("/", getUsers)
     .delete("/:userId", postDeleteUser)
     .get("/search/", getSearchForUser)
-    .get("/edit-users/:userId", getUpdateUser)
+    .get("/:userId", getUpdateUser)
     .post("/edit-user/:userId", postUpdateUser)
 
 export default router;
