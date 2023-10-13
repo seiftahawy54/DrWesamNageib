@@ -5,7 +5,7 @@ import {
   postAddNewCourse,
   postDeleteCourse,
   postUpdateCourse,
-} from "../../controllers/dashboard/d_courses.js";
+} from "../../controllers/dashboard/courses.js";
 import { body } from "express-validator";
 import { Router } from "express";
 

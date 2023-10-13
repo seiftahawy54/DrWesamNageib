@@ -547,7 +547,7 @@ export const constructSelectors = (dataObj) =>
 export const calcPagination = async (model, pageNumber) => {
     const MAX_NUMBER = config.get('paginationMaxSize');
     const numberOfResults = await model.findAndCountAll();
-    const numberOfLinks = Math.ceil(numberOfResults.count / MAX_NUMBER);
+    const numberOfLinks = Math.floor(numberOfResults.count / MAX_NUMBER);
     const next = Number(Number(pageNumber) + 1);
     const prev = Number(Number(pageNumber) - 1);
 
@@ -588,4 +588,33 @@ export const isHuman = async (token) => {
 
 export const isTokenValid = (token) => {
 
+}
+
+export const rolesMapper = (byValue = true, role) => {
+    let rolesObj = {};
+
+    if (byValue) {
+        rolesObj = {
+            normal: 1,
+            instructor: 2,
+            moderator: 3,
+            admin: 4,
+        }
+    } else {
+        rolesObj = {
+            1: "normal",
+            2: "instructor",
+            3: "moderator",
+            4: "admin",
+        }
+    }
+
+    return rolesObj[role];
+}
+
+export const rolesMap = {
+    1: "normal",
+    2: "instructor",
+    3: "moderator",
+    4: "admin",
 }

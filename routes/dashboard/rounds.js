@@ -11,7 +11,7 @@ import {
     getUsersForRounds,
     getRoundsCourses,
     getRoundData
-} from "../../controllers/dashboard/d_rounds.js";
+} from "../../controllers/dashboard/rounds.js";
 import {body} from "express-validator";
 
 const router = Router();

@@ -4,16 +4,18 @@ import {
     getUsers,
     postDeleteUser,
     postUpdateUser,
-    getSearchForUser
-} from "../../controllers/dashboard/users/d_users.js";
+    getSearchForUser,
+    getUsersSearchFilters
+} from "../../controllers/dashboard/users/users.js";
 
 const router = Router();
 
 router
     .get("/", getUsers)
-    .delete("/:userId", postDeleteUser)
-    .get("/search/", getSearchForUser)
-    .get("/:userId", getUpdateUser)
+    .get('/filters', getUsersSearchFilters)
     .post("/edit-user/:userId", postUpdateUser)
+    .delete("/:userId", postDeleteUser)
+    .get("/search", getSearchForUser)
+    .get("/:userId", getUpdateUser)
 
 export default router;

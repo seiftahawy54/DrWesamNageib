@@ -393,12 +393,20 @@ export const getSubmittedExam = async (req, res, next) => {
 
 export const getAllUserData = async (req, res, next) => {
     try {
-        const {name, whatsapp_no, user_id, email, specialization, user_img} =
+        let {name, whatsapp_no, user_id, email, specialization, user_img} =
             await Users.findOne({
                 where: {
                     user_id: req.user.user_id
                 }
             });
+
+        try {
+            user_img = await getSingleFile(user_img);
+        } catch (e) {
+            user_img = `${process.env.BACKEND_URL}/imgs/imgs/default-user.png`;
+            console.log(user_img)
+        }
+
         return res.status(200).json({name, whatsapp_no, user_id, email, specialization, user_img});
     } catch (e) {
         await errorRaiser(e, next);

@@ -4,7 +4,7 @@ import {errorRaiser} from "../../../utils/error_raiser.js";
 import {sequelize} from "../../../utils/db.js";
 import moment from "moment";
 import {Op} from "sequelize";
-import {calcPagination, userPerformedExams} from "../../../utils/general_helper.js";
+import {calcPagination, rolesMap, rolesMapper, userPerformedExams} from "../../../utils/general_helper.js";
 import {
     STRING_TYPE,
     validateRequestInput,
@@ -14,13 +14,12 @@ import config from "config";
 
 const getSearchForUser = async (req, res, next) => {
     try {
-        let {name, email, phone, specialization} = req.query;
+        let {name, email, phone, specialization, rounds, role} = req.query;
         let error, message;
         if (name) ({error, message} = validateRequestInput(name, 'name', STRING_TYPE));
         if (email) ({error, message} = validateRequestInput(email, 'email', STRING_TYPE));
         if (phone) ({error, message} = validateRequestInput(phone, 'phone', STRING_TYPE));
         if (specialization) ({error, message} = validateRequestInput(specialization, 'specialization', STRING_TYPE));
-
 
         if (error) {
             return res.status(400).json({message});
@@ -52,10 +51,58 @@ const getSearchForUser = async (req, res, next) => {
             };
         }
 
+        if (rounds) {
+            rounds = moment(rounds).toISOString()
+        } else {
+            rounds = ''
+        }
+
+        if (role) {
+            const mapResult = rolesMapper(true, role)
+            if (mapResult >= 4) {
+                filterObject.type = {
+                    [Op.gte]: mapResult
+                };
+            } else {
+                filterObject.role = {
+                    [Op.eq]: mapResult
+                };
+            }
+        }
+
+        const includeRounds = rounds.length === 0 ? {} : {
+            round_date: rounds
+        }
+
         const users = await Users.findAll({
             where: {
-                ...filterObject
-            }
+                ...filterObject,
+                isDeleted: false,
+            },
+            include: [
+                {
+                    model: userPerRound,
+                    on: {
+                        userId: {
+                            [Op.eq]: sequelize.col("user.user_id"),
+                        }
+                    },
+                    include: [
+                        {
+                            model: Rounds,
+                            on: {
+                                round_id: {
+                                    [Op.eq]: sequelize.col("userPerRound.roundId"),
+                                }
+                            },
+                            attributes: ['round_date'],
+                            where: {
+                                ...includeRounds
+                            }
+                        }
+                    ]
+                }
+            ]
         })
 
         return res.status(200).json(users)
@@ -63,6 +110,38 @@ const getSearchForUser = async (req, res, next) => {
         await errorRaiser(e, next);
     }
 };
+
+const getUsersSearchFilters = async (req, res, next) => {
+    /**
+     * {
+     *     // Categories
+     *     // Values
+     * }
+     */
+
+    const categories = [
+        "Role",
+        "Rounds"
+    ];
+
+    const values = [
+        Object.values(rolesMap),
+        (await Rounds.findAll({
+            attributes: ["round_date"],
+            where: {
+                finished: false,
+                archived: false,
+                isDeleted: false,
+            },
+            order: [["round_date", "DESC"]],
+        })).map(({round_date}) => moment(round_date).format('DD-MMM-YYYY')).flat(),
+    ];
+
+    return res.status(200).send({
+        categories,
+        values
+    })
+}
 
 const getUsers = async (req, res, next) => {
     try {
@@ -120,7 +199,7 @@ const postDeleteUser = async (req, res, next) => {
             isDeleted: true
         }, {
             where: {
-                id: userId
+                user_id: userId
             }
         })
 
@@ -133,7 +212,7 @@ const postDeleteUser = async (req, res, next) => {
 };
 
 const getUpdateUser = async (req, res, next) => {
-    const { userId } = req.params;
+    const {userId} = req.params;
 
     const user = await Users.findOne({
         user_id: userId
@@ -223,4 +302,5 @@ export {
     getUpdateUser,
     postUpdateUser,
     getSearchForUser,
+    getUsersSearchFilters
 };
