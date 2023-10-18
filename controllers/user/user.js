@@ -336,52 +336,35 @@ export const getExamPreview = async (req, res, next) => {
         //   .filter((question) => question !== undefined);
 
 
-        let questionsWithUserAnswers = [];
-        let imgsCounter = 0;
-        let answersCounter = 0;
+      let questionsWithUserAnswers = [];
 
-        const newUserAnswerArr = replyData.exam.questions.map((question, index) => {
-            if ("questionHeader" in question) {
-                return replyData.user_answers[answersCounter++];
-            } else {
-                return question;
-            }
+      for (
+        let question = 0;
+        question < replyData.questions.length;
+        question++
+      ) {
+        questionsWithUserAnswers.push({
+          userAnswer: replyData.user_answers[question][`${question + 1}`],
+          correctAnswer: parseInt(replyData.questions[question].correctAnswer),
         });
+      }
 
-        for (let question = 0; question < newUserAnswerArr.length; question++) {
-            if (!("examImage" in newUserAnswerArr[question])) {
-                questionsWithUserAnswers.push({
-                    userAnswer: Object.values(newUserAnswerArr[question])[0],
-                    correctAnswer: parseInt(
-                        replyData.exam.questions[question].correctAnswer
-                    ),
-                });
-            } else {
-                questionsWithUserAnswers.push({
-                    questionImage: Object.values(newUserAnswerArr[question])[0],
-                });
-            }
-        }
-
-        await (async () => {
-            for (const questionObj of replyData.exam.questions) {
-                if ("examImage" in questionObj) {
-                    if (!validURL(questionObj.examImage)) {
-                        questionObj.examImage = await getSingleFile(questionObj.examImage);
-                    }
-                }
-            }
-        })();
-
-        return res.status(200).json({
-            userAnswers: questionsWithUserAnswers,
-            questions: replyData.exam.questions,
-            title: replyData.exam.title,
-        });
-
-    } catch (e) {
-        await errorRaiser(e, next);
+      return res.render("users/exam_preview", {
+        title: `Trying Exam ${replyData.title} for User ${replyData.name}`,
+        path: "/profile",
+        performingData: questionsWithUserAnswers,
+        questions: replyData.questions,
+        examData: {
+          title: replyData.title,
+        },
+      });
     }
+
+    req.flash("error", "You've not entered this exam before");
+    return res.redirect("user/profile");
+  } catch (e) {
+    await errorRaiser(e, next);
+  }
 };
 
 export const getSubmittedExam = async (req, res, next) => {

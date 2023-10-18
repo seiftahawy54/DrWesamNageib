@@ -80,13 +80,39 @@ app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
 
-Payment.hasOne(Courses);
-Payment.hasOne(Users);
-Payment.hasOne(Rounds);
-
-Rounds.hasOne(Users);
-Rounds.hasOne(Courses);
-
+Payment.hasOne(Courses, {
+  foreignKey: "course_id",
+  through: "course_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Payment.hasOne(Users, {
+  foreignKey: "user_id",
+  through: "user_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Payment.hasOne(Rounds, {
+  foreignKey: "round_id",
+  through: "round_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Users.hasOne(Rounds, {
+  foreignKey: "current_round",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
+Rounds.hasOne(Courses, {
+  foreignKey: "course_id",
+  constraints: false,
+  onDelete: "cascade",
+  onUpdate: "cascade",
+});
 Rounds.belongsToMany(Users, {
     through: "users_ids",
     constraints: false,

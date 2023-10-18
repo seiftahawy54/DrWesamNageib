@@ -102,6 +102,7 @@ export const getOpinionsPage = async (req, res, next) => {
       opinions: fetchingResults,
       numberOfLinks: Math.ceil(numberOfResults.count / config.get('paginationMaxSize')),
       activePage: pageNumber,
+      paginationOptions: {}
     });
   } catch (e) {
     await errorRaiser(e, next);
