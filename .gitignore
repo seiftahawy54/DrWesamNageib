@@ -2,7 +2,7 @@
 publicenv/videos
 public/imgs/non_imgs
 
-downloaded_images*
+downloaded_images/*
 uploaded_images
 backup.js
 testing.js
@@ -118,7 +118,8 @@ dist
 # TernJS port file
 .tern-port
 
-idea
 .idea
+
 public/certificates/*
 uploads/*
+downloaded_images/*

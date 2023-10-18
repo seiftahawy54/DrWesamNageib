@@ -7,25 +7,14 @@ const Rounds = sequelize.define("rounds", {
   round_id: {
     type: Sequelize.STRING,
     allowNull: false,
-    primaryKey: true,
     defaultValue: UUIDV4,
   },
   course_id: {
     type: Sequelize.STRING,
     allowNull: false,
     unique: false,
-    references: {
-      model: "courses",
-      key: "course_id",
-    },
     onDelete: "cascade",
     onUpdate: "cascade",
-  },
-  users_ids: {
-    type: Sequelize.ARRAY(Sequelize.STRING),
-    foreignKey: true,
-    onUpdate: "cascade",
-    onDelete: "cascade",
   },
   round_date: {
     type: Sequelize.DATE,
@@ -35,6 +24,11 @@ const Rounds = sequelize.define("rounds", {
   },
   finished: {
     type: Sequelize.BOOLEAN,
+    defaultValue: false
+  },
+  archived: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
   },
   createdAt: {
     type: Sequelize.DATE,
@@ -46,6 +40,10 @@ const Rounds = sequelize.define("rounds", {
     defaultValue: new Date(),
     allowNull: false,
   },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  }
 });
 
 export default Rounds;

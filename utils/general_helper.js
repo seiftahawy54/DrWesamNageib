@@ -1,75 +1,83 @@
-import crypto from "crypto"
-import { unlink } from "fs/promises"
-import { getSingleFile } from "./aws.js"
-import path from "path"
-import moment from "moment"
-import PDFMake from "pdfmake"
-import fs from "fs"
-import { errorRaiser } from "./error_raiser.js"
-import { ExamImages } from "../models/index.js"
+import crypto from "crypto";
+import {unlink} from "fs/promises";
+import {getSingleFile} from "./aws.js";
+import path from "path";
+import moment from "moment";
+import PDFMake from "pdfmake";
+import fs from "fs";
+import {errorRaiser} from "./error_raiser.js";
+import {ExamImages, Exams, ExamsReplies, Users} from "../models/index.js";
+import {sequelize} from "./db.js";
+import logger from "./logger.js";
+import {Op, Sequelize} from "sequelize";
+import qr from "qrcode";
+import config from "config";
+import axios from "axios";
 
 export const sortCourses = (courses) => {
-  let coursesRanks = []
-  const coursesArr = courses
+  let coursesRanks = [];
+  const coursesArr = courses;
 
   // Extract Ranks
   for (let coursesArrKey in coursesArr) {
-    coursesRanks[coursesArrKey] = coursesArr[coursesArrKey].course_rank
+    coursesRanks[coursesArrKey] = coursesArr[coursesArrKey].course_rank;
   }
 
   // Sort Based On Ranking
-  coursesRanks = coursesRanks.sort((a, b) => a - b)
+  coursesRanks = coursesRanks.sort((a, b) => a - b);
 
   // Get All Courses In Ranking
   return coursesRanks.map((rank) => {
-    return coursesArr.find((course) => course.course_rank === rank)
-  })
-}
+    return coursesArr.find((course) => course.course_rank === rank);
+  });
+};
 
 export const hashCreator = (size = 10) => {
-  const idHash = crypto.randomBytes(size)
-  return idHash.toString("hex")
-}
+  const idHash = crypto.randomBytes(size);
+  return idHash.toString("hex");
+};
 
 export const extractError = (req) => {
   // Check if the message we extract is there not empty arr!
-  let message = req.flash("error")[0]
-  console.log(`custom error message`, message)
+  let message = req.flash("error")[0];
+  console.log(`custom error message`, message);
   if (!(typeof message === "string")) {
-    message = null
+    message = null;
   }
-  return message
-}
+  return message;
+};
 
 export const deleteFile = async (filePath) => {
   try {
-    await unlink(filePath)
-    return true
+    await unlink(filePath);
+    return true;
   } catch (e) {
-    return false
+    return false;
   }
-}
+};
 
 export const getCertificatesImage = (aboutCertificates) => {
-  aboutCertificates.forEach(async ({ certificate_img }) => {
-    await getSingleFile(certificate_img)
-  })
-}
+  aboutCertificates.forEach(async ({certificate_img}) => {
+    await getSingleFile(certificate_img);
+  });
+};
 
 export const createCertificate = (
-  userName = "",
-  userId = "",
-  courseName = "",
-  courseHours = "",
-  roundStartingDate = "",
-  courseCertificateImg = "",
-  courseCategory = "",
+    userName = "",
+    userId = "",
+    courseName = "",
+    courseHours = "",
+    roundStartingDate = "",
+    courseCertificateImg = "",
+    courseCategory = "",
+    qrCodeImg = '',
+    certificateSerial = ''
 ) => {
   const certificateName = `${userName}-${userId}.pdf`
   const certificatePath = path.resolve(
-    "public",
-    "certificates",
-    certificateName,
+      "public",
+      "certificates",
+      certificateName,
   )
   const fontsPath = path.resolve("public", "fonts")
   const fontName = "Lato"
@@ -77,9 +85,9 @@ export const createCertificate = (
 
   const startDate = moment(roundStartingDate).locale("en-CA").format("LL")
   const endDate = moment(roundStartingDate)
-    .locale("en-CA")
-    .add(3, "months")
-    .format("LL")
+      .locale("en-CA")
+      .add(3, "months")
+      .format("LL")
 
   let sendingData = {
     courseName,
@@ -89,24 +97,24 @@ export const createCertificate = (
   const fonts = {
     Roboto: {
       normal: path.resolve(
-        fontsPath,
-        fontName.toLowerCase(),
-        `${fontName}-Regular.ttf`,
+          fontsPath,
+          fontName.toLowerCase(),
+          `${fontName}-Regular.ttf`,
       ),
       bold: path.resolve(
-        fontsPath,
-        fontName.toLowerCase(),
-        `${fontName}-Bold.ttf`,
+          fontsPath,
+          fontName.toLowerCase(),
+          `${fontName}-Bold.ttf`,
       ),
       italics: path.resolve(
-        fontsPath,
-        fontName.toLowerCase(),
-        `${fontName}-Italic.ttf`,
+          fontsPath,
+          fontName.toLowerCase(),
+          `${fontName}-Italic.ttf`,
       ),
       bolditalics: path.resolve(
-        fontsPath,
-        fontName.toLowerCase(),
-        `${fontName}-BoldItalic.ttf`,
+          fontsPath,
+          fontName.toLowerCase(),
+          `${fontName}-BoldItalic.ttf`,
       ),
     },
     Pacifico: {
@@ -179,7 +187,7 @@ export const createCertificate = (
             text: `Pharmacist, TOT, CSSGB, CSSBB MSC, FISQUA\n`,
             italics: true,
           },
-          { text: `Wesam Nageib`, font: "Pacifico" },
+          {text: `Wesam Nageib`, font: "Pacifico"},
         ],
       },
       {
@@ -227,8 +235,20 @@ export const createCertificate = (
   } else {
     content = [
       {
-        image: path.resolve(imagesPath, courseCertificateImg),
-        fit: [150, 150],
+        columns: [
+          {
+            image: path.resolve(imagesPath, courseCertificateImg),
+            fit: [150, 150],
+            alignment: "left",
+            width: "50%"
+          },
+          {
+            image: qrCodeImg,
+            fit: [150, 150],
+            alignment: "right",
+            width: "50%"
+          }
+        ]
       },
       {
         text: userName,
@@ -285,7 +305,7 @@ export const createCertificate = (
             text: `Pharmacist, TOT, CSSGB, CSSBB MSC, FISQUA\n`,
             italics: true,
           },
-          { text: `Wesam Nageib`, font: "Pacifico" },
+          {text: `Wesam Nageib`, font: "Pacifico"},
         ],
       },
       {
@@ -295,15 +315,12 @@ export const createCertificate = (
             width: "30%",
             columns: [
               {
-                width: "25%",
-                text: "Email:",
+                width: "50%",
+                text: "Certificate Serial:",
               },
               {
-                width: "75%",
-                text: "drwesamnageib@gmail.com",
-                link: "mailto:drwesamnageib@gamil.com",
-                decoration: "underline",
-                color: "#00F",
+                width: "50%",
+                text: certificateSerial,
               },
             ],
           },
@@ -320,8 +337,8 @@ export const createCertificate = (
               },
               {
                 width: "70%",
-                text: "https://www.drwesamnageib.com",
-                link: "https://www.drwesamnageib.com",
+                text: process.env.FRONTEND_URL,
+                link: process.env.FRONTEND_URL,
                 decoration: "underline",
                 color: "#00F",
               },
@@ -334,20 +351,20 @@ export const createCertificate = (
 
   const printer = new PDFMake(fonts)
   const certificateDoc = printer.createPdfKitDocument(
-    {
-      background: [
-        {
-          image: path.resolve(imagesPath, courseCertificateImg),
-          width: 792,
-          opacity: 0.1
-        }
-      ],
-      pageOrientation: "landscape",
-      pageSize: "A4",
-      pageMargins: 15,
-      content,
-    },
-    {},
+      {
+        background: [
+          {
+            image: path.resolve(imagesPath, courseCertificateImg),
+            width: 792,
+            opacity: 0.1
+          }
+        ],
+        pageOrientation: "landscape",
+        pageSize: "A4",
+        pageMargins: 15,
+        content,
+      },
+      {},
   )
 
   return {
@@ -356,32 +373,33 @@ export const createCertificate = (
     certificatePath,
   }
 }
-
 export const downloadingCoursesImages = (courses) => {
   return new Promise(async (resolve, reject) => {
     for (const course of courses) {
       await getSingleFile(course.course_img)
-        .then((result) => {
-          console.log(result)
-        })
-        .catch((err) => {
-          console.error(err)
-        })
+          .then((result) => {
+            course.course_img = result;
+            logger.info(`course image ${course.course_img} result ${result}`);
+          })
+          .catch((err) => {
+            logger.error(err);
+          });
       await getSingleFile(course.detailed_img)
-        .then((result) => {
-          console.log(result)
-        })
-        .catch((err) => {
-          console.error(err)
-        })
+          .then((result) => {
+            course.detailed_img = result;
+            logger.info(`course detailed image ${course.detailed_img} result ${result}`);
+          })
+          .catch((err) => {
+            logger.error(err);
+          });
     }
 
-    resolve(true)
-  })
-}
+    resolve(true);
+  });
+};
 
 export const calculateExamsGrades = (reply, exam) => {
-  let totalGrades = 0
+  let totalGrades = 0;
 
   // console.log(reply);
   //
@@ -403,38 +421,200 @@ export const calculateExamsGrades = (reply, exam) => {
   // }
 
   reply.forEach((question, index) => {
-    const questionNumber = Object.keys(question)[0]
-    const userAnswer = question[`${questionNumber}`]
+    const questionNumber = Object.keys(question)[0];
+    const userAnswer = question[`${questionNumber}`];
 
     // console.log(userAnswer);
 
-    console.log(`Exam Correct Answer`, exam[index].correctAnswer)
-    console.log(`User answer`, userAnswer)
+    logger.info(`Exam Correct Answer ${exam[index].correctAnswer}`);
+    logger.info(`User answer ${userAnswer}`);
     if (
-      userAnswer &&
-      exam[index].correctAnswer.toString() === userAnswer.toString()
+        userAnswer &&
+        exam[index].correctAnswer.toString() === userAnswer.toString()
     )
-      totalGrades += 1
-  })
+      totalGrades += 1;
+  });
 
-  return totalGrades
-}
+  return totalGrades;
+};
 
 export const imageDownloader = async (req, res, next) => {
   try {
-    const wantedImg = req.body.img_id
-    console.log(`Received id ====> `, JSON.stringify(req.body, null, 2))
-    const image = await ExamImages.findByPk(wantedImg)
-    console.log(`image_id ===> ${image}`)
-    const result = await getSingleFile(wantedImg)
-    console.log(`searching result ===> ${result}`)
+    const wantedImg = req.body.img_id;
+    console.log(`Received id ====> `, JSON.stringify(req.body, null, 2));
+    const image = await ExamImages.findByPk(wantedImg);
+    console.log(`image_id ===> ${image}`);
+    const result = await getSingleFile(wantedImg);
+    console.log(`searching result ===> ${result}`);
     return res.status(200).json({
       result,
-    })
+    });
   } catch (e) {
     // await errorRaiser(e, next);
     res.status(500).json({
       message: e.message,
-    })
+    });
   }
+};
+
+export const userPerformedExams = async (userId) => {
+  const usersExamsData = await ExamsReplies.findAll({
+    where: {
+      user_id: userId,
+    },
+    include: [
+      {
+        model: Exams,
+        as: "exam",
+        on: {
+          exam_id: {
+            [Op.eq]: Sequelize.col("exams_replies.exam_id"),
+          },
+        },
+      }
+    ]
+  })
+
+  for (let i of usersExamsData) {
+    i.exam.questions = i.exam.questions
+        .map((question) => {
+          if ("questionHeader" in question) return question;
+        })
+        .filter((q) => q);
+  }
+
+  return usersExamsData;
+};
+
+/**
+ * @description
+ * @param {[{param: string, msg: string}]} expressValidatorArray
+ * @returns {[field]: string, message: string}
+ */
+
+export const extractErrorMessages = (expressValidatorArray) => {
+  const errorObj = {};
+  for (let error of expressValidatorArray) {
+    console.log(error)
+    errorObj[[error.param]] = error.msg
+  }
+
+  return {
+    errors: errorObj
+  }
+};
+
+/**
+ * @description
+ * @param {[{path: [string], message: string}]} expressValidatorArray
+ * @returns [{field: string, reason: string}]
+ */
+
+export const extractErrorMessagesForSchemas = (expressValidatorArray) => {
+  return expressValidatorArray.map((errObj) =>
+      constructError(errObj.path[0], errObj.message)
+  );
+};
+
+/**
+ * @description check whether the object passed is empty or not.
+ * @param {object} obj
+ * @returns - true if object is empty
+ *          - false if object is not empty
+ */
+
+export const isEmpty = (obj) => Object.keys(obj).length === 0;
+
+/**
+ * @description Construct the global object of errors
+ * @param {string} field
+ * @param {string} msg
+ * @returns - { field: string, reason: string }
+ */
+
+export const constructError = (field, msg) => ({[field]: msg});
+
+/**
+ * @description Construct the filters for searching in posts
+ * @param {object} dataObj
+ * @returns - { field: string, reason: string }
+ */
+
+export const constructSelectors = (dataObj) =>
+    Object.keys(dataObj).map((prop) => ({[prop]: 1}));
+
+
+export const calcPagination = async (model, pageNumber) => {
+  const MAX_NUMBER = config.get('paginationMaxSize');
+  const numberOfResults = await model.findAndCountAll();
+  const numberOfLinks = Math.floor(numberOfResults.count / MAX_NUMBER);
+  const next = Number(Number(pageNumber) + 1);
+  const prev = Number(Number(pageNumber) - 1);
+
+
+  return {
+    numberOfLinks,
+    next,
+    prev,
+    hasNext: next <= numberOfLinks,
+    hasPrev: prev >= 1,
+    lastPage: numberOfLinks,
+    firstPage: 1,
+    currentPage: Number(pageNumber),
+  };
+}
+export const validURL = (str) =>  {
+  return str.startsWith("http://") || str.startsWith("https://")
+}
+
+export const isHuman = async (token) => {
+  if (process.env.NODE_ENV !== "production") {
+    return true;
+  }
+
+  const requestBody = {
+    url: `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPCHTA_SECRET}&response=${token}`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+    },
+  };
+
+  const {data} = await axios(requestBody);
+
+  return data.success;
+}
+
+
+export const isTokenValid = (token) => {
+
+}
+
+export const rolesMapper = (byValue = true, role) => {
+  let rolesObj = {};
+
+  if (byValue) {
+    rolesObj = {
+      normal: 1,
+      instructor: 2,
+      moderator: 3,
+      admin: 4,
+    }
+  } else {
+    rolesObj = {
+      1: "normal",
+      2: "instructor",
+      3: "moderator",
+      4: "admin",
+    }
+  }
+
+  return rolesObj[role];
+}
+
+export const rolesMap = {
+  1: "normal",
+  2: "instructor",
+  3: "moderator",
+  4: "admin",
 }

@@ -1,6 +1,4 @@
-@use "../utils/variables" as vars;
-@use "../utils/common" as common;
-@use "../utils/mediaFns" as mediaQ;
+@use "./../utils/mediaFns" as mediaQ;
 
 input[type="checkbox"] ~ label {
   cursor: pointer;

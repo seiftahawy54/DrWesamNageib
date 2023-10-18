@@ -10,18 +10,26 @@ import Rounds from "./rounds.js";
 import Users from "./users.js";
 import ExamImages from "./exam-images.js";
 import ExamsReplies from "./exams-replies.js";
+import UserPerRound from './userPerRound.js'
+import ExamsCourses from "./ExamsCourses.js";
+import Content from "./content.js";
+import ContentAccessList from "./ContentAccessList.js";
 
 export {
-  ExamsReplies,
-  About,
-  Discounts,
-  Errors,
-  Messages,
-  Courses,
-  Exams,
-  Opinions,
-  Payment,
-  Rounds,
-  Users,
-  ExamImages,
+    ExamsReplies,
+    About,
+    Discounts,
+    Errors,
+    Messages,
+    Courses,
+    Exams,
+    Opinions,
+    Payment,
+    Rounds,
+    Users,
+    ExamImages,
+    UserPerRound,
+    ExamsCourses,
+    Content,
+    ContentAccessList,
 };

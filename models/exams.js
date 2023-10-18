@@ -2,11 +2,10 @@ import Sequelize from "sequelize";
 import { sequelize } from "../utils/db.js";
 import { UUIDV4 } from "sequelize";
 
-const Exams = sequelize.define("exam", {
+const examsSchema = {
   exam_id: {
     type: Sequelize.STRING,
     allowNull: false,
-    primaryKey: true,
     defaultValue: UUIDV4,
   },
   title: {
@@ -23,6 +22,12 @@ const Exams = sequelize.define("exam", {
   special_exam: {
     type: Sequelize.BOOLEAN,
   },
+  course_id: {
+    type: Sequelize.STRING,
+    allowNull: true,
+    foreignKey: true,
+    defaultValue: UUIDV4,
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),
@@ -33,6 +38,18 @@ const Exams = sequelize.define("exam", {
     defaultValue: new Date(),
     allowNull: false,
   },
-});
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+  presentation: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
+};
 
+const Exams = sequelize.define("exam", examsSchema);
+const DeletedExams = sequelize.define('deleted-exam', examsSchema)
+
+export { Exams, DeletedExams };
 export default Exams;

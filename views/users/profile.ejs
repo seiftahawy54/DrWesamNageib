@@ -1,6 +1,6 @@
 <%- include("../includes/top_part.ejs"); %>
-<script src="/js/axios.min.js"></script>
 <link rel="stylesheet" href="/css/user/profile.css" />
+<script src="/js/axios.min.js"></script>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -14,67 +14,50 @@
           <h2>Your Data</h2>
           <span></span>
         </div>
-        <div class="user-content">
 
-          <div id="app">
-            <div class="info-container">
-              <div class="info">
+        <div id="app">
+          <table class="table table-responsive table-hover">
+            <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Content</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <th scope="row">
                 Name
-              </div>
-
-              <div class="info">
+              </th>
+              <td>
                 {{ userData.name }}
-              </div>
-
-              <div class="info">
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
                 Phone Number
-              </div>
-
-              <div class="info">
+              </th>
+              <td>
                 {{ userData.whatsapp_no }}
-              </div>
-
-              <div class="info">
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
                 Email
-              </div>
-
-              <div class="info">
+              </th>
+              <td>
                 {{ userData.email }}
-              </div>
-
-              <div class="info">
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
                 Specialization
-              </div>
-
-              <div class="info">
+              </th>
+              <td>
                 {{ userData.specialization }}
-              </div>
-            </div>
-
-            <span v-if="examsData.userExams">
-              Your Performed Exams:
-            </span>
-
-            <div v-if="examsData.hasOwnProperty('userExams')" class="info-container">
-              <div v-for="(item, index) in examsData.userExams" class="exams-previews info">
-                <div class="preview-{{ index }}">
-                  <span>{{ index + 1}} : </span>
-                  <a :href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
-                </div>
-              </div>
-
-              <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
-                <div class="bought_courses">
-                  <span class="text-center">
-                    <sup><span> {{ grade.grade }} </span></sup> /
-                    <sub><span> {{ grade.questions.length }} </span></sub>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="info-container payments-details">
-              <div class="info">
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
                 Your Bought Courses
               </div>
               <div class="info" v-if="payments">
@@ -98,6 +81,30 @@
               </div>
             </div>
 
+
+            <span v-if="examsData.userExams">
+              Your Performed Exams:
+            </span>
+
+            <div v-if="examsData.hasOwnProperty('userExams')" class="info-container">
+              <div v-for="(item, index) in examsData.userExams" class="exams-previews info">
+                <div class="preview-{{ index }}">
+                  <span>{{ index + 1}} : </span>
+                  <a :href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
+                </div>
+              </div>
+
+              <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
+                <div class="bought_courses">
+                  <span class="text-center">
+                    <sup><span> {{ grade.grade }} </span></sup> /
+                    <sub><span> {{ grade.questions.length }} </span></sub>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
             <div class='info-container' v-if="certificate">
               <div class="info">
                 Your certificate
@@ -106,67 +113,65 @@
               <div class="info">
                 <a :href="`/certificates/${certificate.courseId}`" class="link-success"
                    v-text="`${certificate.courseName} - ${certificate.roundDate}`"></a>
-              </div>
-            </div>
-
-
-            <div class="info-container">
-              <a :href="`/update-data/${userData.user_id}`" class="btn">
-                Update your data?
-              </a>
-            </div>
-          </div>
-
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Update your data
+              </th>
+              <td>
+                <a :href="`/update-data/${userData.user_id}`" class="btn">
+                  Update your data
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="user-img">
+                <div class="user-img">
+                  <% if (user.user_img) { %>
+                    <img
+                      src="/downloaded_images/<%= user.user_img %>"
+                      alt="<%= user.name %>"
+                    />
+                  <% } else { %>
+                    <img
+                      src="/imgs/imgs/user_img.png"
+                      alt="<%= user.name %>"
+                    />
+                  <% } %>
+                </div>
+              </th>
+              <td>
+                <form action="/update-user-img" method="POST" enctype="multipart/form-data">
+                  <input type="file" name="user_img" id="user_img" placeholder="Update your image"
+                         class="form-control <%= validationError.error === "img" ? "is-invalid" : "" %>">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                  <button type="submit" class="btn">
+                    update image
+                  </button>
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-      <div class="col-12">
-        <div class="row">
-          <div class="col-lg-6 col-xs-12">
-            <div class="user-img">
-              <% if (user.user_img) { %>
-                <img
-                  src="/downloaded_images/<%= user.user_img %>"
-                  alt="<%= user.name %>"
-                />
-              <% } else { %>
-                <img
-                  src="/imgs/imgs/user_img.png"
-                  alt="<%= user.name %>"
-                />
-              <% } %>
-            </div>
-          </div>
-          <div class="col-lg-5 col-xs-12">
-            <form action="/update-user-img" method="POST" enctype="multipart/form-data">
-              <div class="custom-input">
-                <input type="file" name="user_img" id="user_img" placeholder="Update your image"
-                       class="form-control <%= validationError.error === "img" ? "is-invalid" : "" %>">
-              </div>
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-              <button type="submit" class="btn btn-outlined">
-                update image
-              </button>
-            </form>
-          </div>
-        </div>
+
       </div>
     </div>
   </div>
 </section>
 
-<script src="/js/alpine.min.js"></script>
 
-<script async>
+<script async defer>
   const { createApp } = Vue
 
   async function mounted() {
     this.userData = (await axios.get("/user-data")).data.user
     this.examsData = (await axios.get("/user-grades")).data
     this.payments = (await axios.get("/user-payments")).data.payments
-    this.round = (await axios.get("/user-round")).data.round
+    this.rounds = (await axios.get("/user-round")).data.rounds
     this.certificate = (await axios.get("/user-certificates")).data.certificateData
-
-    console.log(this.certificate)
+    console.log(this.rounds)
   }
 
   createApp({
@@ -175,7 +180,7 @@
         examsData: "",
         userData: "",
         payments: "",
-        round: "",
+        rounds: "",
         certificate: "",
       }
     },

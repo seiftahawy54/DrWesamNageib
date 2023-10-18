@@ -1,61 +1,83 @@
 import {
-  getUserProfile,
-  postUpdateUserImg,
-  getUpdateUserData,
-  getUserCertificate,
-  postUpdateUserData,
-  getPerformExam,
-  postPerformExam,
-  getSubmittedExam,
-  getExamPreview,
-  getAllUserData,
-  getBoughtCourses,
-  getUserRound,
-  getUserGrades,
-  getUserProfileCertificate,
+    getUserProfile,
+    postUpdateUserImg,
+    getUpdateUserData,
+    getUserCertificate,
+    postUpdateUserData,
+    getPerformExam,
+    postPerformExam,
+    getSubmittedExam,
+    getExamPreview,
+    getAllUserData,
+    getBoughtCourses,
+    getUserRound,
+    getUserGrades,
+    getUserProfileCertificate,
 } from "../controllers/user/user.js";
-import { Router } from "express";
-import { body } from "express-validator";
-import { globalAccess } from "../middlewares/dashboard-auth.js";
-import { isUserAuthenticated } from "../middlewares/user-auth.js";
+import {upload} from "../middlewares/multer.js";
+import {Router} from "express";
+import {body} from "express-validator";
+import {getShoppingCart, postDeleteFromCart} from "../controllers/shop.js";
 
-const router = Router();
+const userProfileRoutes = Router();
+const examsRoutes = Router();
+const certificatesRoutes = Router();
+const userCartRoutes = Router()
 
-// router.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
+userProfileRoutes
+    .get("/", getUserProfile)
+    .post("/update-profile-img", upload().single("user_img"), postUpdateUserImg)
+    .get("/update-data/:userId", getUpdateUserData)
+    .put(
+        "/update-data",
+        [
+            body("email").isEmail().notEmpty(),
+            body("whatsapp_no").isMobilePhone("any").notEmpty(),
+            body("specialization").isString().notEmpty(),
+        ],
+        postUpdateUserData
+    )
+    .get("/certificates", getUserProfileCertificate)
+    .get("/data", getAllUserData)
+    .get("/payments", getBoughtCourses)
+    .get("/round", getUserRound);
 
-router
-  .use(isUserAuthenticated)
-  .get("/profile", getUserProfile)
-  .post("/update-user-img", postUpdateUserImg)
-  .get("/update-data/:userId", getUpdateUserData)
-  .post(
-    "/update-data",
-    [
-      body("email").isEmail().notEmpty(),
-      body("whatsapp_number").isMobilePhone("any").notEmpty(),
-      body("specialization").isString().notEmpty(),
-    ],
-    postUpdateUserData
-  )
-  .get("/certificates/:courseId", getUserCertificate)
-  .get("/exam/submitted-exam", getSubmittedExam)
-  .get("/exam/:examId", getPerformExam)
-  .post(
-    "/exam",
-    [
-      body("userAnswers").isArray().isLength({ min: 1 }),
-      body("userAnswers.*").isObject(),
-      body("userAnswers.*.*")
-        .isNumeric({ no_symbols: true })
-        .optional({ nullable: true }),
-      body("examId").isString().isLength({ min: 36, max: 36 }),
-    ],
-    postPerformExam
-  )
-  .get("/user-data", getAllUserData)
-  .get("/user-payments", getBoughtCourses)
-  .get("/user-round", getUserRound)
-  .get("/user-grades", getUserGrades)
-  .get("/user-certificates", getUserProfileCertificate);
+//-----------------------------------------------
+// Certificates routes
+//-----------------------------------------------
+certificatesRoutes.get("/:courseId", getUserCertificate);
 
-export { router as userRoutes };
+//-----------------------------------------------
+// User exams performance routes
+//-----------------------------------------------
+examsRoutes
+    .get("/submitted-exam", getSubmittedExam)
+    .get("/grades", getUserGrades)
+    .get("/:examId", getPerformExam)
+    .get('/preview/:replyId', getExamPreview)
+    .post(
+        "/",
+        [
+            body("userAnswers").isArray().isLength({min: 1}),
+            body("userAnswers.*").isObject(),
+            body("userAnswers.*.*")
+                .isNumeric({no_symbols: true})
+                .optional({nullable: true}),
+            body("examId").isString().isLength({min: 36, max: 36}),
+        ],
+        postPerformExam
+    );
+
+//-----------------------------------------------
+// User Cart routes
+//-----------------------------------------------
+userCartRoutes.get('/', getShoppingCart)
+userCartRoutes.delete('/:roundId', postDeleteFromCart)
+
+const usersRoutes = Router()
+    .use("/", userProfileRoutes)
+    .use("/certificates", certificatesRoutes)
+    .use("/exams", examsRoutes)
+    .use('/cart', userCartRoutes);
+
+export default usersRoutes;

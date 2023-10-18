@@ -5,16 +5,14 @@ import {
   postAddNewCourse,
   postDeleteCourse,
   postUpdateCourse,
-} from "../../controllers/dashboard/d_courses.js";
+} from "../../controllers/dashboard/courses.js";
 import { body } from "express-validator";
 import { Router } from "express";
-import { upload } from "../../middlewares/multer.js";
 
 export default Router()
   .get("/", getCourses)
-  .get("/add-new-course", getAddNewCourse)
   .post(
-    "/add-new-course",
+    "/",
     // upload.any("course_img", "detailed_img"),
     [
       body("name").isString().notEmpty(),
@@ -31,10 +29,10 @@ export default Router()
     ],
     postAddNewCourse
   )
-  .get("/edit-course/:courseId", getEditCourse)
-  .post("/delete-courses", postDeleteCourse)
-  .post(
-    "/edit-course/:courseId",
+  .get("/:courseId", getEditCourse)
+  .delete("/:courseId", postDeleteCourse)
+  .put(
+    "/:courseId",
     // upload.any("course_img", "detailed_img"),
     [
       body("name").isString().notEmpty(),

@@ -4,10 +4,17 @@ import { hashCreator } from "../utils/general_helper.js";
 import { UUIDV4 } from "sequelize";
 
 const Opinions = sequelize.define("opinions", {
+  id: {
+    type: Sequelize.INTEGER,
+  },
   opinion_id: {
     type: Sequelize.STRING,
     primaryKey: true,
     allowNull: false,
+    defaultValue: UUIDV4,
+  },
+  user_id: {
+    type: Sequelize.STRING,
     defaultValue: UUIDV4,
   },
   sender_email: {
@@ -31,6 +38,9 @@ const Opinions = sequelize.define("opinions", {
     type: Sequelize.DATE,
     allowNull: true,
     defaultValue: sequelize.literal("current_timestamp"),
+  },
+  rate: {
+    type: Sequelize.DOUBLE,
   },
   createdAt: {
     type: Sequelize.DATE,

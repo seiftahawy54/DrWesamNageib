@@ -6,7 +6,6 @@ const Courses = sequelize.define("course", {
   course_id: {
     type: Sequelize.STRING,
     allowNull: false,
-    primaryKey: true,
     defaultValue: UUIDV4,
   },
   name: {
@@ -64,6 +63,10 @@ const Courses = sequelize.define("course", {
     type: Sequelize.DATE,
     defaultValue: new Date(),
     allowNull: true,
+  },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
   },
 });
 

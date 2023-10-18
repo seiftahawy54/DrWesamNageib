@@ -1,17 +1,21 @@
-import { Router } from "express";
+import {Router} from "express";
 import {
-  getUpdateUser,
-  getUsers,
-  postDeleteUser,
-  postUpdateUser,
-} from "../../controllers/dashboard/users/d_users.js";
+    getUpdateUser,
+    getUsers,
+    postDeleteUser,
+    postUpdateUser,
+    getSearchForUser,
+    getUsersSearchFilters
+} from "../../controllers/dashboard/users/users.js";
 
 const router = Router();
 
 router
-  .get("/", getUsers)
-  .post("/delete-users", postDeleteUser)
-  .get("/edit-users/:userId", getUpdateUser)
-  .post("/edit-user/:userId", postUpdateUser);
+    .get("/", getUsers)
+    .get('/filters', getUsersSearchFilters)
+    .post("/edit-user/:userId", postUpdateUser)
+    .delete("/:userId", postDeleteUser)
+    .get("/search", getSearchForUser)
+    .get("/:userId", getUpdateUser)
 
 export default router;

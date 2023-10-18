@@ -3,11 +3,12 @@ import { sequelize } from "../utils/db.js";
 import { hashCreator } from "../utils/general_helper.js";
 import { UUIDV4 } from "sequelize";
 
+const usersRoles = ['normal', 'moderator', 'admin', 'instructor'];
+
 const Users = sequelize.define("user", {
   user_id: {
     type: Sequelize.STRING,
     allowNull: false,
-    primaryKey: true,
     defaultValue: UUIDV4,
   },
   name: {
@@ -51,9 +52,6 @@ const Users = sequelize.define("user", {
   user_img: {
     type: Sequelize.STRING,
   },
-  current_round: {
-    type: Sequelize.STRING,
-  },
   finished_course: {
     type: Sequelize.STRING,
   },
@@ -72,6 +70,9 @@ const Users = sequelize.define("user", {
   token_date: {
     type: Sequelize.DATE,
   },
+  current_round: {
+    type: Sequelize.STRING,
+  },
   createdAt: {
     type: Sequelize.DATE,
     defaultValue: new Date(),
@@ -82,6 +83,15 @@ const Users = sequelize.define("user", {
     defaultValue: new Date(),
     allowNull: true,
   },
+  role: {
+    type: Sequelize.ENUM(...usersRoles),
+    defaultValue: "normal",
+    allowNull: false,
+  },
+  isDeleted: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  }
 });
 
 export default Users;
