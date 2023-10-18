@@ -25,7 +25,6 @@ import {
 import {imageDownloader} from "./utils/general_helper.js";
 import {body} from "express-validator";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
-import {fileFilter, fileStorage} from "./middlewares/multer.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import logger from "./utils/logger.js";
 
@@ -38,20 +37,6 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
-// app.use(
-//     Multer({
-//         limits: {fileSize: 5 * 1024 * 1024},
-//         storage: fileStorage,
-//         fileFilter,
-//     }).any(
-//         "course_img",
-//         "detailed_img",
-//         "certificate_img",
-//         "exam_q_image",
-//         "instructor_img",
-//         "instructor_certificates"
-//     )
-// );
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use("/robots.txt", express.static(path.resolve("public", "robots.txt")));
