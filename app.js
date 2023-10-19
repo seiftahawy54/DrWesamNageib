@@ -139,7 +139,7 @@ try {
     await sequelize.authenticate();
     await sequelize.sync({
         alter: true,
-        // force: true
+        force: true
     });
 
     app.listen(port, () => {
