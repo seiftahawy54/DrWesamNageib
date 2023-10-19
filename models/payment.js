@@ -9,7 +9,6 @@ const Payment = sequelize.define("payments", {
   },
   payment_id: {
     type: Sequelize.STRING,
-    primaryKey: true,
     defaultValue: UUIDV4,
   },
   course_id: {
