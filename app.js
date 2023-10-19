@@ -146,8 +146,7 @@ try {
         logger.info(`working on ${port}`)
     });
 } catch (e) {
+    console.log(e)
     logger.error(e)
     throw new Error(e);
 }
-
-export default app;
