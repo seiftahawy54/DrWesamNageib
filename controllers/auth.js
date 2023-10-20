@@ -355,7 +355,7 @@ export const postRegister = async (req, res, next) => {
 
 
         if (!errors.isEmpty() || !isHumanCheck) {
-            logger.log(JSON.stringify(errors.array()));
+            logger.info(JSON.stringify(errors.array()));
             return res.status(422).json(extractErrorMessages(errors.array()));
         }
 
