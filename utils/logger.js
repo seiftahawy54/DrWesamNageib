@@ -26,7 +26,14 @@ const logger = winston.createLogger({
         // - Write all logs with importance level of `info` or less to `combined.log`
         //
         // new PostgresTransport(dbConnectionOptions),
-        new winston.transports.Console(),
+        new winston.transports.Console({
+            name: 'debug-console',
+            level: process.env.NODE_ENV === 'production' ? 'info' : 'production',
+            prettyPrint: true,
+            handleExceptions: true,
+            json: false,
+            colorize: true
+        }),
         new winston.transports.File({
             filename: 'logs/combined.log',
         }),

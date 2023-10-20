@@ -353,8 +353,9 @@ export const postRegister = async (req, res, next) => {
         const errors = validationResult(req);
         const isHumanCheck = await isHuman(googleToken)
 
+
         if (!errors.isEmpty() || !isHumanCheck) {
-            logger.log(errors.array());
+            logger.log(JSON.stringify(errors.array()));
             return res.status(422).json(extractErrorMessages(errors.array()));
         }
 
