@@ -386,7 +386,7 @@ export const postRegister = async (req, res, next) => {
                 role: "normal",
             });
 
-            logger.info(`New user ${JSON.stringify(newUser)}`);
+            console.log(`New user ${JSON.stringify(newUser)}`);
 
             if (process.env.NODE_ENV === "production") {
                 await sendGrid.send({
