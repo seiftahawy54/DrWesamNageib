@@ -16,6 +16,12 @@ const Rounds = sequelize.define("rounds", {
     onDelete: "cascade",
     onUpdate: "cascade",
   },
+  users_ids: {
+    type: Sequelize.ARRAY(Sequelize.STRING),
+    foreignKey: true,
+    onUpdate: "cascade",
+    onDelete: "cascade",
+  },
   round_date: {
     type: Sequelize.DATE,
   },
