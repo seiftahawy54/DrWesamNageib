@@ -369,8 +369,8 @@ export const postRegister = async (req, res, next) => {
             return res.status(422).json({field: 'email', message: 'Email already exists!'});
         }
 
-        const encryptionResult = await bcrypt.hash(password, 12);
-        if (await encryptionResult) {
+        const encryptionResult = bcrypt.hashSync(password, 12);
+        if (encryptionResult) {
             firstName = firstName[0].toUpperCase() + firstName.slice(1);
             middleName = middleName[0].toUpperCase() + middleName.slice(1);
             lastName = lastName[0].toUpperCase() + lastName.slice(1);
@@ -412,6 +412,7 @@ export const postRegister = async (req, res, next) => {
                 .json({success: true, message: "Account created successfully!"});
         }
     } catch (e) {
+        console.log(`registration error ==> `, e)
         await errorRaiser(e, next);
     }
 };
