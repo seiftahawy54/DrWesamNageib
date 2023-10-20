@@ -400,7 +400,7 @@ export const postRegister = async (req, res, next) => {
               <ul>
                 <li>Name: ${firstName + " " + middleName + " " + lastName}</li>
                 <li>Email: ${email}</li>
-                <li>Whatsapp Number: ${whatsapp_no}</li>
+                <li>Whatsapp Number: ${whatsapp_number}</li>
                 <li>Specialization: ${specialization}</li>
               </ul>
             `,
