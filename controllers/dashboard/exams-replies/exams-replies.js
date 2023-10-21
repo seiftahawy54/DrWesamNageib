@@ -17,8 +17,6 @@ export const getAllReplies = async (req, res, next) => {
         }
 
         let allExamsReplies = await Exams.findAll({
-            // limit: config.get("paginationMaxSize"),
-            // offset: (parseInt(page) - 1) * config.get("paginationMaxSize"),
             attributes: ["id", ["exam_id", "examId"], ["title", "examTitle"], [Sequelize.fn("COUNT", "exams_replies"), 'repliesCount']],
             include: [
                 {

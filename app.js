@@ -80,12 +80,27 @@ app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
 
-Payment.hasOne(Courses);
-Payment.hasOne(Users);
-Payment.hasOne(Rounds);
+Payment.hasOne(Courses, {
+    constraints: false,
+});
+Payment.hasOne(Users,
+    {
+        constraints: false,
+    }
+);
+Payment.hasOne(Rounds,
+    {
+        constraints: false,
+    });
 
-Rounds.hasOne(Users);
-Rounds.hasOne(Courses);
+Rounds.hasOne(Users,
+    {
+        constraints: false,
+    });
+Rounds.hasOne(Courses,
+    {
+        constraints: false,
+    });
 
 Rounds.belongsToMany(Users, {
     through: "users_ids",
@@ -97,20 +112,39 @@ Rounds.belongsToMany(Courses, {
     constraints: false,
 });
 
-Courses.hasMany(Exams);
-Exams.hasOne(Courses);
+Courses.hasMany(Exams,
+    {
+        constraints: false,
+    });
+Exams.hasOne(Courses,
+    {
+        constraints: false,
+    });
 
-ExamsCourses.hasOne(Courses)
+ExamsCourses.hasOne(Courses,
+    {
+        constraints: false,
+    })
+
 
 ExamsCourses.hasOne(Exams, {
     foreignKey: "exam_id",
     constraints: false,
 })
 
-ExamsReplies.hasOne(Exams);
-ExamsReplies.belongsTo(Users);
+ExamsReplies.hasOne(Exams,
+    {
+        constraints: false,
+    });
+ExamsReplies.belongsTo(Users,
+    {
+        constraints: false,
+    });
 
-Exams.hasMany(ExamsReplies);
+Exams.hasMany(ExamsReplies,
+    {
+        constraints: false,
+    });
 
 UserPerRound.hasMany(Users, {
     foreignKey: "userId",
@@ -123,15 +157,33 @@ UserPerRound.hasMany(Rounds, {
     constraints: false,
 })
 
-Users.belongsTo(UserPerRound)
+Users.belongsTo(UserPerRound,
+    {
+        constraints: false,
+    })
 
-Rounds.belongsTo(UserPerRound)
+Rounds.belongsTo(UserPerRound,
+    {
+        constraints: false,
+    })
 
-Content.belongsTo(ContentAccessList)
-Users.belongsTo(ContentAccessList)
+Content.belongsTo(ContentAccessList,
+    {
+        constraints: false,
+    })
+Users.belongsTo(ContentAccessList,
+    {
+        constraints: false,
+    })
 
-ContentAccessList.hasMany(Content)
-ContentAccessList.hasMany(Users)
+ContentAccessList.hasMany(Content,
+    {
+        constraints: false,
+    })
+ContentAccessList.hasMany(Users,
+    {
+        constraints: false,
+    })
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
@@ -143,7 +195,7 @@ try {
     });
 
     app.listen(port, () => {
-        logger.info(`working on ${port}`)
+        logger.info(`${process.env.BACKEND_URL} working on ${port}`)
     });
 } catch (e) {
     logger.error(e)
