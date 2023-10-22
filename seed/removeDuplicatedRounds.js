@@ -12,7 +12,7 @@ for (let round of allRounds) {
 
 // Remove all rounds
 for (let round of allRounds) {
-    await rounds.destroy({
+    rounds.destroy({
         where: {
             id: {
                 [Op.gt]: 0,
@@ -20,8 +20,8 @@ for (let round of allRounds) {
         },
     });
 }
-
+//
 // Add all rounds
-for (let round of allRounds) {
-    await rounds.create(round);
+for (let key in roundsMap) {
+    rounds.create(roundsMap[key]);
 }

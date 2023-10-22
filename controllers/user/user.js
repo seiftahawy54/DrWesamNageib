@@ -184,7 +184,14 @@ export const getPerformExam = async (req, res, next) => {
                         },
                     },
                     where: {
-                        finished: false,
+                        [Op.or]: [
+                            {
+                                finished: false,
+                            },
+                            {
+                                archived: true
+                            }
+                        ],
                     }
                 }
             ]
