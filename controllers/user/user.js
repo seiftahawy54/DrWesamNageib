@@ -498,8 +498,6 @@ export const getUserRound = async (req, res, next) => {
             ]
         })
 
-        return res.send(roundData);
-
         return res.status(200).json({
             message: "Round found",
             rounds: roundData,
