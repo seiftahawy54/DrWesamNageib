@@ -369,7 +369,9 @@ export const postRegister = async (req, res, next) => {
 
         const existingUser = await Users.findOne({
             where: {
-                email: email,
+                email: {
+                    [Op.iLike]: email
+                },
             },
         })
 

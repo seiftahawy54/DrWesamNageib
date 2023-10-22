@@ -45,7 +45,7 @@ userProfileRoutes
 //-----------------------------------------------
 // Certificates routes
 //-----------------------------------------------
-certificatesRoutes.get("/:courseId", getUserCertificate);
+certificatesRoutes.get("/", getUserCertificate);
 
 //-----------------------------------------------
 // User exams performance routes

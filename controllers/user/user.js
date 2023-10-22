@@ -491,6 +491,8 @@ export const getUserRound = async (req, res, next) => {
             ]
         })
 
+        return res.send(roundData);
+
         return res.status(200).json({
             message: "Round found",
             rounds: roundData,
@@ -682,7 +684,7 @@ const userExamsRelatedData = async (userId) => {
     for (let reply of userExamsData) {
         // TODO add control on success percentage
         if (process.env.NODE_ENV === 'production') {
-            if (reply.grade > reply.exam.questions.length / 2) {
+            if (reply.grade > (reply.exam.questions.length / 2)) {
                 specialExams.push(reply.exam.exam_id);
             }
         } else {
