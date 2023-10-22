@@ -465,7 +465,14 @@ export const getUserRound = async (req, res, next) => {
                         },
                     },
                     where: {
-                        finished: false,
+                        [Op.or]: [
+                            {
+                                finished: false
+                            },
+                            {
+                                archived: true
+                            }
+                        ]
                     },
                     attributes: ["round_date", "round_id", "finished", "course_id", "round_link"],
                     include: [
