@@ -122,4 +122,4 @@ dist
 public/certificates/*
 uploads/*
 bun.lockb
-downloaded_images
+downloaded_images/*
