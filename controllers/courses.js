@@ -57,7 +57,6 @@ const singleCourse = async (req, res, next) => {
         try {
             if (!validURL(course.course_img)) {
                 course.course_img = await getSingleFile(course.course_img);
-                course.course_img = await getSingleFile(course.course_img);
             }
         } catch (e) {
             logger.info(e)

@@ -376,22 +376,26 @@ export const createCertificate = (
 export const downloadingCoursesImages = (courses) => {
     return new Promise(async (resolve, reject) => {
         for (const course of courses) {
-            await getSingleFile(course.course_img)
-                .then((result) => {
-                    course.course_img = result;
-                    logger.info(`course image ${course.course_img} result ${result}`);
-                })
-                .catch((err) => {
-                    logger.error(err);
-                });
-            await getSingleFile(course.detailed_img)
-                .then((result) => {
-                    course.detailed_img = result;
-                    logger.info(`course detailed image ${course.detailed_img} result ${result}`);
-                })
-                .catch((err) => {
-                    logger.error(err);
-                });
+            if (!validURL(course.course_img)) {
+                await getSingleFile(course.course_img)
+                    .then((result) => {
+                        course.course_img = result;
+                        logger.info(`course image ${course.course_img} result ${result}`);
+                    })
+                    .catch((err) => {
+                        logger.error(err);
+                    });
+            }
+            if (!validURL(course.detailed_img)) {
+                await getSingleFile(course.detailed_img)
+                    .then((result) => {
+                        course.detailed_img = result;
+                        logger.info(`course detailed image ${course.detailed_img} result ${result}`);
+                    })
+                    .catch((err) => {
+                        logger.error(err);
+                    });
+            }
         }
 
         resolve(true);
