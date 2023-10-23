@@ -2,7 +2,6 @@
 publicenv/videos
 public/imgs/non_imgs
 
-downloaded_images/*
 uploaded_images
 backup.js
 testing.js
@@ -123,3 +122,4 @@ dist
 public/certificates/*
 uploads/*
 bun.lockb
+downloaded_images
