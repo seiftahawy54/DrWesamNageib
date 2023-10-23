@@ -37,7 +37,6 @@ userProfileRoutes
         ],
         postUpdateUserData
     )
-    .get("/certificates", getUserProfileCertificate)
     .get("/data", getAllUserData)
     .get("/payments", getBoughtCourses)
     .get("/round", getUserRound);
@@ -45,7 +44,9 @@ userProfileRoutes
 //-----------------------------------------------
 // Certificates routes
 //-----------------------------------------------
-certificatesRoutes.get("/", getUserCertificate);
+certificatesRoutes
+    .get("/", getUserProfileCertificate)
+    .get("/:courseId", getUserCertificate);
 
 //-----------------------------------------------
 // User exams performance routes
