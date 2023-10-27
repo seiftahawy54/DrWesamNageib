@@ -551,7 +551,7 @@ export const constructSelectors = (dataObj) =>
 export const calcPagination = async (model, pageNumber) => {
     const MAX_NUMBER = config.get('paginationMaxSize');
     const numberOfResults = await model.findAndCountAll();
-    const numberOfLinks = Math.ceil(numberOfResults.count / MAX_NUMBER);
+    const numberOfLinks = Math.round(numberOfResults.count / MAX_NUMBER);
     const next = Number(Number(pageNumber) + 1);
     const prev = Number(Number(pageNumber) - 1);
 
