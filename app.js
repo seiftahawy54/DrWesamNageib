@@ -28,6 +28,7 @@ import notFoundHandler from "./middlewares/notFoundHandler.js";
 import {fileFilter, fileStorage} from "./middlewares/multer.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import logger from "./utils/logger.js";
+import fs from "fs";
 
 dotenv.config();
 const app = express();
@@ -190,9 +191,11 @@ const port = process.env.PORT || process.env.DEV_PORT || 4000;
 try {
     await sequelize.authenticate();
     await sequelize.sync({
-        // alter: true,
+        alter: true,
         // force: true
     });
+
+    fs.mkdirSync("downloaded_images", {recursive: true});
 
     app.listen(port, () => {
         logger.info(`${process.env.BACKEND_URL} working on ${port}`)

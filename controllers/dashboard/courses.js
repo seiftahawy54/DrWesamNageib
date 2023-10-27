@@ -364,7 +364,7 @@ const postUpdateCourse = async (req, res, next) => {
         } = req.body;
 
         const errors = validationResult(req);
-        console.log(courseDescription)
+
         if (!errors.isEmpty()) {
             return res.status(400).json(extractErrorMessages(errors.array()));
         }
