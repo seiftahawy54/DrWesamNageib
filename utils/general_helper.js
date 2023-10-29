@@ -547,11 +547,15 @@ export const constructError = (field, msg) => ({[field]: msg});
 export const constructSelectors = (dataObj) =>
     Object.keys(dataObj).map((prop) => ({[prop]: 1}));
 
-
-export const calcPagination = async (model, pageNumber) => {
+/**
+ * @description Construct the filters for searching in posts
+ * @param {object} dataObj
+ * @returns - { field: string, reason: string }
+ */
+export const calcPagination = async (model, pageNumber, isSearch, results) => {
     const MAX_NUMBER = config.get('paginationMaxSize');
-    const numberOfResults = await model.findAndCountAll();
-    const numberOfLinks = Math.round(numberOfResults.count / MAX_NUMBER);
+    const numberOfResults = isSearch ? results.length : (await model.findAndCountAll()).count;
+    const numberOfLinks = Math.round(numberOfResults / MAX_NUMBER);
     const next = Number(Number(pageNumber) + 1);
     const prev = Number(Number(pageNumber) - 1);
 

@@ -1,7 +1,6 @@
 import {Router} from "express";
 import {
     getRounds,
-    getUpdateRound,
     postAddNewRound,
     postDeleteRound,
     removeUsersFromRounds,
@@ -16,22 +15,20 @@ import {body} from "express-validator";
 
 const router = Router();
 
+const roundsValidation = [
+    body('roundTitle').isString().notEmpty(),
+    body("courseId").isString().notEmpty(),
+    body("roundDate").isString().notEmpty(),
+    body("content").isString().notEmpty(),
+    body('usersIds').isArray().notEmpty(),
+];
+
 router
     .delete("/:roundId", postDeleteRound)
-    .put("/:roundId", [
-        body("courseId").isString().notEmpty(),
-        body("roundDate").isString().notEmpty(),
-        body("content").isString().notEmpty(),
-        body('usersIds').isArray().notEmpty(),
-    ], putUpdateRound)
+    .put("/:roundId", roundsValidation, putUpdateRound)
     .post(
         "/",
-        [
-            body("courseId").isString().notEmpty(),
-            body("roundDate").isString().notEmpty(),
-            body("content").isString().notEmpty(),
-            body('usersIds').isArray().notEmpty(),
-        ],
+        roundsValidation,
         postAddNewRound
     )
     .get('/running', gerRunningRounds)

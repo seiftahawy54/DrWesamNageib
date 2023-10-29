@@ -23,7 +23,7 @@ export const getRounds = async (req, res, next) => {
                 ["updatedAt", "DESC"],
                 ["createdAt", "DESC"],
             ],
-            attributes: ["id", "round_date", "round_id", "finished", "course_id", "round_link", "archived"],
+            attributes: ["id", "round_date", "round_id", "title", "finished", "course_id", "round_link", "archived"],
             where: {
                 isDeleted: false,
             },
@@ -93,7 +93,7 @@ export const getStartNewRound = async (req, res, next) => {
 
 export const postAddNewRound = async (req, res, next) => {
     try {
-        const {courseId, round_date: roundDate, content: roundLink, usersIds} = req.body;
+        const {courseId, round_date: roundDate, content: roundLink, usersIds, roundTitle: title} = req.body;
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -106,6 +106,7 @@ export const postAddNewRound = async (req, res, next) => {
             round_link: roundLink,
             finished: false,
             archived: false,
+            title,
         });
 
         for (let userId of usersIds) {
@@ -167,7 +168,7 @@ export const putUpdateRound = async (req, res, next) => {
     try {
         const roundId = req.params.roundId;
         // const {roundDate, roundLink, finishRound} = req.body;
-        const {courseId, roundDate, content: roundLink, usersIds, isFinished, isArchived} = req.body;
+        const {courseId, roundDate, content: roundLink, usersIds, isFinished, isArchived, roundTitle: title} = req.body;
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -191,6 +192,7 @@ export const putUpdateRound = async (req, res, next) => {
                 course_id: courseId,
                 finished: isFinished,
                 archived: isArchived,
+                title,
             },
             {where: {round_id: roundId}}
         );
@@ -425,5 +427,60 @@ export const getRoundData = async (req, res, next) => {
         })
     } catch (e) {
         await errorRaiser(e, next)
+    }
+}
+
+const getRoundsFilters = async (req, res, next) => {
+    try {
+        const categories = [
+            "Rounds",
+            "Courses",
+            "Status",
+            "Archived",
+        ];
+
+        const roundsDates = await Rounds.findAll({
+            attributes: ["round_date"],
+            where: {
+                isDeleted: false,
+            },
+            order: [["round_date", "DESC"]],
+        });
+
+        const courses = await Courses.findAll({
+            attributes: ["name"],
+            where: {
+                isDeleted: false,
+            },
+            order: [["name", "ASC"]],
+        })
+
+        const values = [
+            roundsDates,
+            courses,
+            [
+                "Working",
+                "Finished",
+            ],
+            [
+                "Archived",
+                "Unarchived",
+            ]
+        ];
+
+        return res.status(200).json({
+            categories,
+            values
+        })
+    } catch (e) {
+        await errorRaiser(e, next)
+    }
+}
+
+export const performSearchingOperation = async (req, res, next) => {
+    try {
+
+    } catch (e) {
+
     }
 }

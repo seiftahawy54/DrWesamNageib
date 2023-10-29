@@ -6,6 +6,7 @@ import moment from "moment";
 import {Op} from "sequelize";
 import {calcPagination, rolesMap, rolesMapper, userPerformedExams} from "../../../utils/general_helper.js";
 import {
+    NUMBER_TYPE,
     STRING_TYPE,
     validateRequestInput,
 } from "../../../validators/typesValidators.js";
@@ -14,12 +15,17 @@ import config from "config";
 
 const getSearchForUser = async (req, res, next) => {
     try {
-        let {name, email, phone, specialization, rounds, role} = req.query;
+        let {name, email, phone, specialization, rounds, role, page} = req.query;
         let error, message;
         if (name) ({error, message} = validateRequestInput(name, 'name', STRING_TYPE));
         if (email) ({error, message} = validateRequestInput(email, 'email', STRING_TYPE));
         if (phone) ({error, message} = validateRequestInput(phone, 'phone', STRING_TYPE));
         if (specialization) ({error, message} = validateRequestInput(specialization, 'specialization', STRING_TYPE));
+        if (page) ({error, message} = validateRequestInput(page, 'page', STRING_TYPE))
+
+        if (!page) {
+            page = 1
+        }
 
         if (error) {
             return res.status(400).json({message});
@@ -105,7 +111,12 @@ const getSearchForUser = async (req, res, next) => {
             ]
         })
 
-        return res.status(200).json(users)
+        const pagination = await calcPagination(null, page, true, users)
+
+        return res.status(200).json({
+            pagination,
+            users
+        })
     } catch (e) {
         await errorRaiser(e, next);
     }
