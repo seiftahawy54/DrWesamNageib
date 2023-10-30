@@ -76,7 +76,7 @@ export const getSingleFile = async (filename) => {
         fs2.mkdirSync(downloadedImagesFolder);
         return getSingleFile(filename);
     } else if (fs2.existsSync(fullImgPath)) {
-        logger.info(`${filename} exists locally`)
+        console.log(`${filename} exists locally`)
         return new URL(`${process.env.STATIC_URL}/${filename}`).href;
     } else {
         const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
@@ -87,6 +87,7 @@ export const getSingleFile = async (filename) => {
         }
 
         try {
+            console.log(`aws searching url ${downloadingUrl}`)
             const response = await axios({
                 method: "GET",
                 url: downloadingUrl,
@@ -99,7 +100,7 @@ export const getSingleFile = async (filename) => {
             writingStream.write(buffer, "base64");
 
             writingStream.on("finish", () => {
-                logger.info(`${new URL(`${process.env.STATIC_URL}/${filename}`)} image downloaded successfully`)
+                console.log(`${new URL(`${process.env.STATIC_URL}/${filename}`).href} image downloaded successfully`)
                 return new URL(`${process.env.STATIC_URL}/${filename}`).href;
             });
 
@@ -111,7 +112,7 @@ export const getSingleFile = async (filename) => {
         } catch (e) {
             // logger.error(`image with problems ${filename}`);
             // logger.error(e.message);
-            return `${process.env.AWS_URL}/${filename}`;
+            return new URL(`${process.env.AWS_URL}/${filename}`).href;
         }
     }
 };
