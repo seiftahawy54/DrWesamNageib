@@ -197,8 +197,6 @@ try {
         // force: true
     });
 
-    fs.mkdirSync(path.resolve("downloaded_images"), {recursive: true});
-
     app.listen(port, () => {
         logger.info(`${process.env.BACKEND_URL} working on ${port}`)
     });

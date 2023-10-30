@@ -77,13 +77,13 @@ export const getSingleFile = async (filename) => {
         return getSingleFile(filename);
     } else if (fs2.existsSync(fullImgPath)) {
         logger.info(`${filename} exists locally`)
-        return `${process.env.STATIC_URL}/${filename}`;
+        return new URL(`${process.env.STATIC_URL}/${filename}`).href;
     } else {
         const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
         const filePath = path.resolve("downloaded_images", filename);
         const isAlreadyDownloaded = fs2.existsSync(filePath);
         if (isAlreadyDownloaded) {
-            return `${process.env.STATIC_URL}/${filename}`;
+            return new URL(`${process.env.STATIC_URL}/${filename}`).href;
         }
 
         try {
@@ -99,8 +99,8 @@ export const getSingleFile = async (filename) => {
             writingStream.write(buffer, "base64");
 
             writingStream.on("finish", () => {
-                logger.info(`${process.env.STATIC_URL}/${filename} image downloaded successfully`)
-                return `${process.env.STATIC_URL}/${filename}`;
+                logger.info(`${new URL(`${process.env.STATIC_URL}/${filename}`)} image downloaded successfully`)
+                return new URL(`${process.env.STATIC_URL}/${filename}`).href;
             });
 
             writingStream.on("error", (err) => {
