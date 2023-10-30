@@ -6,6 +6,10 @@ import multerS3 from "multer-s3";
 import path from "path";
 import axios from "axios";
 import logger from "./logger.js";
+import {exec} from "child_process";
+import {promisify} from "util";
+
+const execAsync = promisify(exec);
 
 dotenv.config();
 
@@ -73,7 +77,7 @@ export const getSingleFile = async (filename) => {
     console.log(`========> isImagesPathExists ${fs2.existsSync(downloadedImagesFolder)}`);
     if (!isImagesPathExists) {
         console.log(`downloaded images folder not found`);
-        fs2.mkdirSync(downloadedImagesFolder);
+        await execAsync('mkdir downloaded_images');
         return getSingleFile(filename);
     } else if (fs2.existsSync(fullImgPath)) {
         console.log(`${filename} exists locally`)
