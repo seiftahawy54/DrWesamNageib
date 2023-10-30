@@ -8,6 +8,6 @@ import {
 
 export default Router()
     .get("/", getAllReplies)
+    .delete("/replies/:replyId", postDeleteReply)
     .delete("/:examId", postDeleteAllExamReplies)
-    .delete("/reply/:replyId", postDeleteReply)
     .get("/exam/:examId", getRepliesForExam);

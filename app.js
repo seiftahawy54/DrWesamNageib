@@ -29,6 +29,7 @@ import {fileFilter, fileStorage} from "./middlewares/multer.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import logger from "./utils/logger.js";
 import fs from "fs";
+import morgan from "morgan";
 
 dotenv.config();
 const app = express();
@@ -80,6 +81,7 @@ app.post(
 app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
+app.use(morgan("common"));
 
 Payment.hasOne(Courses, {
     constraints: false,
@@ -195,7 +197,7 @@ try {
         // force: true
     });
 
-    fs.mkdirSync("downloaded_images", {recursive: true});
+    fs.mkdirSync(path.resolve("downloaded_images"), {recursive: true});
 
     app.listen(port, () => {
         logger.info(`${process.env.BACKEND_URL} working on ${port}`)

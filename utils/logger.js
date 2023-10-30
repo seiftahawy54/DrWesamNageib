@@ -28,7 +28,7 @@ const logger = winston.createLogger({
         // new PostgresTransport(dbConnectionOptions),
         new winston.transports.Console({
             name: 'debug-console',
-            level: process.env.NODE_ENV === 'production' ? 'info' : 'production',
+            level: 'debug',
             prettyPrint: true,
             handleExceptions: true,
             json: false,

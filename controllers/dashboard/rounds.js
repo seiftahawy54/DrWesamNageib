@@ -109,12 +109,10 @@ export const postAddNewRound = async (req, res, next) => {
             title,
         });
 
-        for (let userId of usersIds) {
             await userPerRound.create({
                 userId,
                 roundId: addingResult.round_id
             })
-        }
 
         if (typeof addingResult === "object") {
             return res.status(201).json({message: "Round Added Successfully"});
@@ -176,13 +174,14 @@ export const putUpdateRound = async (req, res, next) => {
         }
 
         // Update round's users
-        const userPerRoundResult = await userPerRound.destroy({where: {roundId}});
-
-        for (let userId of usersIds) {
-            await userPerRound.create({
+        if (!isFinished) {
+            await userPerRound.destroy({where: {roundId}});
+            const newUsersArr = usersIds.map(userId => ({
                 userId,
                 roundId
-            })
+            }));
+
+            await userPerRound.bulkCreate(newUsersArr);
         }
 
         const updatingRoundsResult = await Rounds.update(
@@ -199,7 +198,7 @@ export const putUpdateRound = async (req, res, next) => {
 
         return res.status(201).send({
             updatingRoundsResult,
-            userPerRoundResult
+            // userPerRoundResult
         });
     } catch (e) {
         await errorRaiser(e, next);

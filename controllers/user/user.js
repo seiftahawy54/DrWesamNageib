@@ -208,7 +208,7 @@ export const getPerformExam = async (req, res, next) => {
                 if ("examImage" in questionObj) {
                     if (!validURL(questionObj.examImage)) {
                         const generatedLink = await getSingleFile(questionObj.examImage);
-                        logger.debug(generatedLink)
+                        logger.info(`images search ===> ${generatedLink}`)
                         questionObj.examImage = generatedLink;
                     }
                 }
@@ -373,7 +373,9 @@ export const getExamPreview = async (req, res, next) => {
         await (async () => {
             for (const questionObj of replyData.exam.questions) {
                 if ("examImage" in questionObj) {
+                    console.log(questionObj.examImage)
                     if (!validURL(questionObj.examImage)) {
+                        console.log(`searching for ${questionObj.examImage} from replies`)
                         questionObj.examImage = await getSingleFile(questionObj.examImage);
                     }
                 }
@@ -481,7 +483,7 @@ export const getUserRound = async (req, res, next) => {
                             }
                         ]
                     },
-                    attributes: ["round_date", "round_id", "finished", "course_id", "round_link"],
+                    attributes: ["round_date", "round_id", "finished", "course_id", "title", "round_link"],
                     include: [
                         {
                             model: Courses,

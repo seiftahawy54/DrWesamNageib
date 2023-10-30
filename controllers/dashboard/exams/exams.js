@@ -371,7 +371,10 @@ export const searchForExam = async (req, res, next) => {
             exam.dataValues.noOfReplies = count;
         }
 
-        return res.status(200).json(exams)
+        return res.status(200).json({
+            exams,
+            pagination: {}
+        })
     } catch
         (e) {
         await errorRaiser(e, next);
