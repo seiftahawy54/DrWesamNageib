@@ -587,7 +587,7 @@ export const getUserCertificate = async (req, res, next) => {
                 );
 
                 certificateDoc.certificateObject.pipe(
-                    fs.createWriteStream(path.resolve('public', 'certificates', certificateDoc.certificatePath))
+                    fs.createWriteStream(encodeURIComponent(path.resolve('public', 'certificates', certificateDoc.certificatePath)))
                 );
 
                 res.setHeader("Content-Type", "application/pdf");
