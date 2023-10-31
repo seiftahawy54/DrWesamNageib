@@ -307,6 +307,14 @@ const postUpdateUser = async (req, res, next) => {
     }
 };
 
+const getUserUpdateData = async (req, res, next) => {
+    try {
+
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
 export {
     getUsers,
     postDeleteUser,
