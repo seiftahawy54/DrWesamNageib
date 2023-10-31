@@ -44,7 +44,7 @@ registerRoutes.post(
             value.split("").every((letter) => letter.toLowerCase() === letter)
         )
         .withMessage(messages.en.validationErrors.invalidEmailLetters),
-    body("whatsapp_number").isMobilePhone("any").notEmpty().trim(),
+    body("whatsappNumber").isMobilePhone("any").notEmpty().trim(),
     body("specialization").isString().notEmpty().trim(),
     body("password").isString().isLength({min: 8}).notEmpty(),
     body("confirmPassword")

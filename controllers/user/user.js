@@ -241,6 +241,8 @@ export const postPerformExam = async (req, res, next) => {
         const examId = req.body.examId;
         const errors = validationResult(req);
 
+        logger.info(`userAnswers ===> ${JSON.stringify(userAnswers)} USERID ====> ${req.user.user_id}`);
+
         if (!errors.isEmpty()) {
             console.log(errors.array());
             return res.status(422).json({

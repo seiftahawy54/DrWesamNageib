@@ -352,7 +352,7 @@ export const postRegister = async (req, res, next) => {
         let lastName = req.body.last_name;
         const {
             email,
-            whatsapp_number,
+            whatsappNumber: whatsapp_number,
             specialization,
             password,
             confirmPassword,
@@ -364,7 +364,9 @@ export const postRegister = async (req, res, next) => {
 
         if (!errors.isEmpty() || !isHumanCheck) {
             logger.info(JSON.stringify(errors.array()));
-            return res.status(422).json(extractErrorMessages(errors.array()));
+            const exactErrorMessages = extractErrorMessages(errors.array());
+            console.log(`exactErrorMessages => `, exactErrorMessages)
+            return res.status(422).json(exactErrorMessages);
         }
 
         const existingUser = await Users.findOne({
@@ -376,7 +378,7 @@ export const postRegister = async (req, res, next) => {
         })
 
         if (existingUser) {
-            return res.status(422).json({field: 'email', message: 'Email already exists!'});
+            return res.status(422).json({email: 'Email already exists!'});
         }
 
         const encryptionResult = bcrypt.hashSync(password, 12);
