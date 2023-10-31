@@ -603,8 +603,7 @@ export const getUserCertificate = async (req, res, next) => {
 
             })
             .catch(async (err) => {
-                logger.error(err);
-                await errorRaiser(err, next)
+                return res.status(500).send({message: "Something went wrong"});
             });
     } catch (e) {
         console.log(e)
