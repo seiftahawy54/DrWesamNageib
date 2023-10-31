@@ -129,8 +129,20 @@ export const createCertificate = (
     if (courseName === "CBAHI Accreditation Orientation Course") {
         content = [
             {
-                image: validURL(courseCertificateImg) ? courseCertificateImg : path.resolve(imagesPath, courseCertificateImg),
-                fit: [150, 150],
+                columns: [
+                    {
+                        image: validURL(courseCertificateImg) ? courseCertificateImg : path.resolve(imagesPath, courseCertificateImg),
+                        fit: [150, 150],
+                        alignment: "left",
+                        width: "50%"
+                    },
+                    {
+                        image: qrCodeImg,
+                        fit: [150, 150],
+                        alignment: "right",
+                        width: "50%"
+                    }
+                ]
             },
             {
                 text: userName,

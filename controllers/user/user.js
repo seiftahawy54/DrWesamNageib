@@ -570,6 +570,8 @@ export const getUserCertificate = async (req, res, next) => {
 
         const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${courseId}`);
 
+        logger.info(`certificate ${courseId} ${roundAndCourse.round_date} ${req.user.user_id} QR code`)
+
         getSingleFile(roundAndCourse.course.course_img)
             .then(async (response) => {
                 const certificateDoc = createCertificate(
@@ -654,6 +656,7 @@ const userExamsRelatedData = async (userId) => {
     const userExamsData = await ExamsReplies.findAll({
         where: {
             user_id: userId,
+            "$exam.special_exam$": true,
         },
         include: [
             {
@@ -663,9 +666,6 @@ const userExamsRelatedData = async (userId) => {
                     exam_id: {
                         [Op.eq]: Sequelize.col("exams_replies.exam_id"),
                     },
-                },
-                where: {
-                    special_exam: process.env.NODE_ENV === 'production'
                 },
                 include: [
                     {
