@@ -7,10 +7,10 @@ import logger from "./logger.js";
  * @param {'API' | ''} type
  */
 export const errorRaiser = async (err, next, type = "API") => {
-  console.log(`received error ${err.message}`)
+  console.log(`received error ${JSON.stringify(err.message)}`)
   err.httpStatusCode = 500;
   err.errorType = type;
   err.message = err.message;
-  logger.error(err);
+  logger.info(err);
   return next(err);
 };

@@ -545,7 +545,6 @@ export const getUserCertificate = async (req, res, next) => {
             }
         )
 
-        const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${courseId}`);
         let certificateSerial = '';
 
         const findingCertificate = await UserPerCertificates.findOne({
@@ -569,6 +568,8 @@ export const getUserCertificate = async (req, res, next) => {
             certificateSerial = findingCertificate.certificateHash;
         }
 
+        const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${courseId}`);
+
         getSingleFile(roundAndCourse.course.course_img)
             .then(async (response) => {
                 const certificateDoc = createCertificate(
@@ -579,7 +580,7 @@ export const getUserCertificate = async (req, res, next) => {
                     roundAndCourse.round_date,
                     roundAndCourse.course.course_img,
                     roundAndCourse.course.course_category,
-                    checkCertificateQrCode,
+                    await checkCertificateQrCode,
                     certificateSerial
                 );
 
@@ -604,6 +605,7 @@ export const getUserCertificate = async (req, res, next) => {
                 await errorRaiser(err, next)
             });
     } catch (e) {
+        console.log(e)
         await errorRaiser(e, next);
     }
 };
@@ -634,7 +636,7 @@ export const getUserProfileCertificate = async (req, res, next) => {
 
         for (let finishedRound of findingFinishedRounds) {
             certificatesGenArr.push({
-                roundDate: moment(finishedRound.rounds[0].round_date).format("LL"),
+                roundDate: finishedRound.rounds[0].title,
                 courseName: finishedRound.rounds[0].course.name,
                 courseId: finishedRound.rounds[0].course.course_id
             })
@@ -704,7 +706,10 @@ const userExamsRelatedData = async (userId) => {
     // Finding if the user finished the rounds that made him passed the exam or not.
     const findingFinishedRounds = await userPerRound.findAll(
         {
-            where: {userId},
+            where: {
+                userId,
+                "$rounds.course.special_course$": true,
+            },
             include: [
                 {
                     model: Rounds,
@@ -714,10 +719,7 @@ const userExamsRelatedData = async (userId) => {
                             [Op.eq]: Sequelize.col("userPerRound.roundId"),
                         },
                     },
-                    where: {
-                        finished: process.env.NODE_ENV === 'production',
-                    },
-                    attributes: ["round_date", "course_id"],
+                    attributes: ["round_date", "course_id", "title"],
                     include: [
                         {
                             model: Courses,
@@ -726,9 +728,6 @@ const userExamsRelatedData = async (userId) => {
                                 course_id: {
                                     [Op.eq]: Sequelize.col("rounds.course_id"),
                                 },
-                                special_course: {
-                                    [Op.eq]: true
-                                }
                             },
                             attributes: ["course_id", "name", "special_course"],
                         },
@@ -737,6 +736,8 @@ const userExamsRelatedData = async (userId) => {
             ]
         }
     );
+
+
 
     return {
         specialExams,
