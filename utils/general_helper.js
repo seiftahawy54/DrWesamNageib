@@ -442,8 +442,7 @@ export const calculateExamsGrades = (reply, exam) => {
 
         // console.log(userAnswer);
 
-        logger.info(`Exam Correct Answer ${exam[index].correctAnswer}`);
-        logger.info(`User answer ${userAnswer}`);
+        logger.info(`Q ${index + 1} Exam Correct Answer ${exam[index]?.correctAnswer} User answer ${userAnswer} `);
         if (
             userAnswer &&
             exam[index].correctAnswer.toString() === userAnswer.toString()
@@ -629,7 +628,11 @@ export const rolesMapper = (byValue = true, role) => {
         }
     }
 
-    return rolesObj[role];
+    if (role > 4) {
+        return rolesObj['4'];
+    } else {
+        return rolesObj[role];
+    }
 }
 
 export const rolesMap = {

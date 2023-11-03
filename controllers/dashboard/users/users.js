@@ -1,9 +1,9 @@
-import {Users} from "../../../models/index.js";
+import {Exams, ExamsReplies, Users} from "../../../models/index.js";
 import {Rounds} from "../../../models/index.js";
 import {errorRaiser} from "../../../utils/error_raiser.js";
 import {sequelize} from "../../../utils/db.js";
 import moment from "moment";
-import {Op} from "sequelize";
+import {Op, Sequelize} from "sequelize";
 import {calcPagination, rolesMap, rolesMapper, userPerformedExams} from "../../../utils/general_helper.js";
 import {
     NUMBER_TYPE,
@@ -225,29 +225,62 @@ const postDeleteUser = async (req, res, next) => {
 const getUpdateUser = async (req, res, next) => {
     const {userId} = req.params;
 
+    // Searching for user
     const user = await Users.findOne({
-        user_id: userId
+        where: {
+            user_id: userId
+        }
     });
 
     if (!user) {
         return res.status(404).send("User not found")
     }
 
-    const currentRound = (
-        await sequelize.query(
-            `SELECT round_date FROM rounds WHERE ? LIKE ANY (rounds.users_ids)`,
+    // Searching if user joined any rounds
+    const rounds = await userPerRound.findAll({
+        where: {
+            userId: userId
+        },
+        include: [
             {
-                type: "SELECT",
-                replacements: [user.user_id],
+                model: Rounds,
+                attributes: ['round_id', 'round_date', 'finished', 'course_id', 'title', 'round_link'],
+                on: {
+                    round_id: {
+                        [Op.eq]: Sequelize.col("userPerRound.roundId"),
+                    },
+                }
             }
-        )
-    )[0]?.round_date;
+        ]
+    })
 
-    const performedExams = await userPerformedExams(userId);
+    // Exams Replies
+    const examsReplies = await ExamsReplies.findAll({
+        where: {
+            user_id: userId
+        },
+        attributes: ['reply_id'],
+        include: [
+            {
+                model: Exams,
+                as: "exam",
+                on: {
+                    exam_id: {
+                        [Op.eq]: Sequelize.col("exams_replies.exam_id"),
+                    },
+                },
+                attributes: ['exam_id', 'title']
+            }
+        ]
+    });
 
-    user.current_round = moment(currentRound).format("DD-MM-YYYY");
+    user.type = rolesMapper(false, user.type);
 
-    return res.status(200).send(user);
+    return res.status(200).send({
+        user,
+        rounds,
+        examsReplies
+    });
 };
 
 const postUpdateUser = async (req, res, next) => {

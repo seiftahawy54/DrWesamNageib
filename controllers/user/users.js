@@ -22,7 +22,7 @@ import path from "path";
 import UserPerCertificates from "../../models/UserPerCertificates.js";
 import crypto from "crypto";
 
-export const getUserProfile = async (req, res, next) => {
+const getUserProfile = async (req, res, next) => {
     try {
         if (req.user.user_img) {
             try {
@@ -55,7 +55,7 @@ export const getUserProfile = async (req, res, next) => {
     }
 };
 
-export const postUpdateUserImg = async (req, res, next) => {
+const postUpdateUserImg = async (req, res, next) => {
     try {
         const userImg = req?.files[0];
 
@@ -86,7 +86,7 @@ export const postUpdateUserImg = async (req, res, next) => {
     }
 };
 
-export const getUpdateUserData = async (req, res, next) => {
+const getUpdateUserData = async (req, res, next) => {
     try {
         if (!"user_id" in req.user) {
             req.flash("error", "Something happened");
@@ -104,7 +104,7 @@ export const getUpdateUserData = async (req, res, next) => {
     }
 };
 
-export const postUpdateUserData = async (req, res, next) => {
+const postUpdateUserData = async (req, res, next) => {
     const email = req.body.email;
     const whatsappNo = req.body.whatsapp_no;
     const specialization = req.body.specialization;
@@ -150,7 +150,7 @@ export const postUpdateUserData = async (req, res, next) => {
     }
 };
 
-export const getPerformExam = async (req, res, next) => {
+const getPerformExam = async (req, res, next) => {
     try {
         const examId = req.params.examId;
         const type = req.user.type;
@@ -235,7 +235,7 @@ export const getPerformExam = async (req, res, next) => {
     }
 };
 
-export const postPerformExam = async (req, res, next) => {
+const postPerformExam = async (req, res, next) => {
     try {
         const userAnswers = req.body.userAnswers;
         const examId = req.body.examId;
@@ -288,7 +288,7 @@ export const postPerformExam = async (req, res, next) => {
     }
 };
 
-export const getExamPreview = async (req, res, next) => {
+const getExamPreview = async (req, res, next) => {
     try {
         const replyId = req.params.replyId;
 
@@ -395,14 +395,14 @@ export const getExamPreview = async (req, res, next) => {
     }
 };
 
-export const getSubmittedExam = async (req, res, next) => {
+const getSubmittedExam = async (req, res, next) => {
     res.render("users/exam-result", {
         title: "Your exam has submitted successfully",
         path: "/profile",
     });
 };
 
-export const getAllUserData = async (req, res, next) => {
+const getAllUserData = async (req, res, next) => {
     try {
         let {name, whatsapp_no, user_id, email, specialization, user_img} =
             await Users.findOne({
@@ -424,7 +424,7 @@ export const getAllUserData = async (req, res, next) => {
     }
 };
 
-export const getBoughtCourses = async (req, res, next) => {
+const getBoughtCourses = async (req, res, next) => {
     try {
         const findingUserPayments = await Payment.findAll({
             where: {user_id: req.user.user_id, status: "success"},
@@ -462,7 +462,7 @@ export const getBoughtCourses = async (req, res, next) => {
     }
 };
 
-export const getUserRound = async (req, res, next) => {
+const getUserRound = async (req, res, next) => {
     try {
         let roundData = await userPerRound.findAll({
             where: {userId: req.user.user_id},
@@ -511,7 +511,7 @@ export const getUserRound = async (req, res, next) => {
     }
 };
 
-export const getUserGrades = async (req, res, next) => {
+const getUserGrades = async (req, res, next) => {
     try {
         let usersExamsData = await userPerformedExams(req.user.user_id);
 
@@ -524,7 +524,7 @@ export const getUserGrades = async (req, res, next) => {
 };
 
 
-export const getUserCertificate = async (req, res, next) => {
+const getUserCertificate = async (req, res, next) => {
     try {
         const courseId = req.params.courseId;
 
@@ -599,8 +599,6 @@ export const getUserCertificate = async (req, res, next) => {
                 certificateDoc.certificateObject.pipe(res);
                 certificateDoc.certificateObject.end();
 
-                // return res.send({certificate: `certificates/${certificateDoc.certificateName}`});
-
             })
             .catch(async (err) => {
                 return res.status(500).send({message: "Something went wrong"});
@@ -611,7 +609,7 @@ export const getUserCertificate = async (req, res, next) => {
     }
 };
 
-export const getUserProfileCertificate = async (req, res, next) => {
+const getUserProfileCertificate = async (req, res, next) => {
     try {
 
         const {specialExams, findingFinishedRounds} = await userExamsRelatedData(req.user.user_id);
@@ -742,4 +740,21 @@ const userExamsRelatedData = async (userId) => {
         specialExams,
         findingFinishedRounds
     }
+}
+
+export default {
+    getUserProfile,
+    getUserProfileCertificate,
+    postUpdateUserImg,
+    getUpdateUserData,
+    getUserCertificate,
+    postUpdateUserData,
+    getPerformExam,
+    postPerformExam,
+    getSubmittedExam,
+    getExamPreview,
+    getAllUserData,
+    getBoughtCourses,
+    getUserRound,
+    getUserGrades
 }
