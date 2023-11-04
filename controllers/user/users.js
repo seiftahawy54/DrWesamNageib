@@ -358,7 +358,16 @@ const getExamPreview = async (req, res, next) => {
         });
 
         for (let question = 0; question < newUserAnswerArr.length; question++) {
-            console.log(`===============> Current Iteration `,  newUserAnswerArr[question])
+            if (newUserAnswerArr[question] === undefined) {
+                questionsWithUserAnswers.push({
+                    userAnswer: null,
+                    correctAnswer: parseInt(
+                        replyData.exam.questions[question].correctAnswer
+                    ),
+                });
+                continue;
+            }
+
             if (!("examImage" in newUserAnswerArr[question])) {
                 questionsWithUserAnswers.push({
                     userAnswer: Object.values(newUserAnswerArr[question])[0],
