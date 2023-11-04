@@ -205,11 +205,21 @@ const getPerformExam = async (req, res, next) => {
 
         await (async () => {
             for (const questionObj of exam.questions) {
-                if ("examImage" in questionObj) {
+                if (questionObj && ("examImage" in questionObj)) {
                     if (!validURL(questionObj.examImage)) {
                         const generatedLink = await getSingleFile(questionObj.examImage);
                         logger.info(`images search ===> ${generatedLink}`)
                         questionObj.examImage = generatedLink;
+                    } else if (validURL(questionObj.examImage)) {
+                        const imageURL = new URL(questionObj.examImage);
+                        const backendHostURL = new URL(process.env.BACKEND_URL)
+
+                        if (imageURL.hostname === backendHostURL.hostname) {
+                            questionObj.examImage = imageURL.pathname.split('/').at(-1);
+                            const generatedLink = await getSingleFile(questionObj.examImage);
+                            logger.info(`images search ===> ${generatedLink}`)
+                            questionObj.examImage = generatedLink;
+                        }
                     }
                 }
             }
@@ -259,7 +269,7 @@ const postPerformExam = async (req, res, next) => {
 
         if (exam) {
             let filteredQuestions = exam.questions.filter(
-                (examObj) => "questionHeader" in examObj
+                (examObj) => examObj && ("questionHeader" in examObj)
             );
 
             const grade = calculateExamsGrades(userAnswers, filteredQuestions);
@@ -389,6 +399,16 @@ const getExamPreview = async (req, res, next) => {
                     if (!validURL(questionObj.examImage)) {
                         console.log(`searching for ${questionObj.examImage} from replies`)
                         questionObj.examImage = await getSingleFile(questionObj.examImage);
+                    } else if (validURL(questionObj.examImage)) {
+                        const imageURL = new URL(questionObj.examImage);
+                        const backendHostURL = new URL(process.env.BACKEND_URL)
+
+                        if (imageURL.hostname === backendHostURL.hostname) {
+                            questionObj.examImage = imageURL.pathname.split('/').at(-1);
+                            const generatedLink = await getSingleFile(questionObj.examImage);
+                            logger.info(`images search ===> ${generatedLink}`)
+                            questionObj.examImage = generatedLink;
+                        }
                     }
                 }
             }
@@ -743,7 +763,6 @@ const userExamsRelatedData = async (userId) => {
             ]
         }
     );
-
 
 
     return {

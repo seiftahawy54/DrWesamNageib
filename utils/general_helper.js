@@ -493,7 +493,7 @@ export const userPerformedExams = async (userId) => {
     for (let i of usersExamsData) {
         i.exam.questions = i.exam.questions
             .map((question) => {
-                if ("questionHeader" in question) return question;
+                if (question && ("questionHeader" in question)) return question;
             })
             .filter((q) => q);
     }
