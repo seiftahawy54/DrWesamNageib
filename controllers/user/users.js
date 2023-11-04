@@ -210,12 +210,15 @@ const getPerformExam = async (req, res, next) => {
                         const generatedLink = await getSingleFile(questionObj.examImage);
                         logger.info(`images search ===> ${generatedLink}`)
                         questionObj.examImage = generatedLink;
-                    } else if (validURL(questionObj.examImage)) {
+                    } else {
                         const imageURL = new URL(questionObj.examImage);
                         const backendHostURL = new URL(process.env.BACKEND_URL)
 
+                        console.log(`comparing image ===> ${imageURL.hostname} ${backendHostURL.hostname}`)
+
                         if (imageURL.hostname === backendHostURL.hostname) {
                             questionObj.examImage = imageURL.pathname.split('/').at(-1);
+                            console.log(`splitted image id =====> ${questionObj.examImage}`)
                             const generatedLink = await getSingleFile(questionObj.examImage);
                             logger.info(`images search ===> ${generatedLink}`)
                             questionObj.examImage = generatedLink;
@@ -399,7 +402,7 @@ const getExamPreview = async (req, res, next) => {
                     if (!validURL(questionObj.examImage)) {
                         console.log(`searching for ${questionObj.examImage} from replies`)
                         questionObj.examImage = await getSingleFile(questionObj.examImage);
-                    } else if (validURL(questionObj.examImage)) {
+                    } else {
                         const imageURL = new URL(questionObj.examImage);
                         const backendHostURL = new URL(process.env.BACKEND_URL)
 
