@@ -406,8 +406,11 @@ const getExamPreview = async (req, res, next) => {
                         const imageURL = new URL(questionObj.examImage);
                         const backendHostURL = new URL(process.env.BACKEND_URL)
 
+                        console.log(`comparing image ===> ${imageURL.hostname} ${backendHostURL.hostname}`)
+
                         if (imageURL.hostname === backendHostURL.hostname) {
                             questionObj.examImage = imageURL.pathname.split('/').at(-1);
+                            console.log(`splitted image id =====> ${questionObj.examImage}`)
                             const generatedLink = await getSingleFile(questionObj.examImage);
                             logger.info(`images search ===> ${generatedLink}`)
                             questionObj.examImage = generatedLink;
