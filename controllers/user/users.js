@@ -358,6 +358,7 @@ const getExamPreview = async (req, res, next) => {
         });
 
         for (let question = 0; question < newUserAnswerArr.length; question++) {
+            console.log(`===============> Current Iteration `,  newUserAnswerArr[question])
             if (!("examImage" in newUserAnswerArr[question])) {
                 questionsWithUserAnswers.push({
                     userAnswer: Object.values(newUserAnswerArr[question])[0],
