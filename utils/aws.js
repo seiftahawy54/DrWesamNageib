@@ -73,10 +73,7 @@ export const getSingleFile = async (filename) => {
     const downloadedImagesFolder = path.resolve("downloaded_images");
     const fullImgPath = path.resolve(downloadedImagesFolder, filename)
     const isImagesPathExists = fs2.existsSync(downloadedImagesFolder);
-    console.log(`the path ${downloadedImagesFolder}`);
-    console.log(`========> isImagesPathExists ${fs2.existsSync(downloadedImagesFolder)}`);
     if (!isImagesPathExists) {
-        console.log(`downloaded images folder not found`);
         await execAsync('mkdir downloaded_images');
         return getSingleFile(filename);
     } else if (fs2.existsSync(fullImgPath)) {

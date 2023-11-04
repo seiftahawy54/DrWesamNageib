@@ -197,6 +197,8 @@ try {
         // force: true
     });
 
+    await execAsync('mkdir downloaded_images');
+    
     app.listen(port, () => {
         logger.info(`${process.env.BACKEND_URL} working on ${port}`)
     });
