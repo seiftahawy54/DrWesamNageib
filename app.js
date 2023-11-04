@@ -30,6 +30,8 @@ import errorHandler from "./middlewares/errorHandler.js";
 import logger from "./utils/logger.js";
 import fs from "fs";
 import morgan from "morgan";
+import {promisify} from "util";
+import {exec} from "child_process";
 
 dotenv.config();
 const app = express();
@@ -197,8 +199,9 @@ try {
         // force: true
     });
 
+    const execAsync = promisify(exec);
     await execAsync('mkdir downloaded_images');
-    
+
     app.listen(port, () => {
         logger.info(`${process.env.BACKEND_URL} working on ${port}`)
     });
