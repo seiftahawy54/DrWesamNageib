@@ -5,15 +5,15 @@ import {validURL} from "../utils/general_helper.js";
 dotenv.config();
 
 const allExams = await Exams.findAll()
-
-const modifiedExams = {};
-
-for (let exam of allExams) {
-    for (let q of exam.questions) {
-        if (q === null) {
-            console.log(exam.title)
-        }
-    }
+//
+// const modifiedExams = {};
+//
+// for (let exam of allExams) {
+//     for (let q of exam.questions) {
+//         if (q === null) {
+//             console.log(exam.title)
+//         }
+//     }
     // const newQuestions = exam.questions.map((q) => {
     //     if (q && "examImage" in q) {
     //         if (validURL(q.examImage)) {
@@ -30,9 +30,9 @@ for (let exam of allExams) {
     //         return q;
     //     }
     // })
-
-    // modifiedExams[exam.exam_id] = newQuestions;
-}
+//
+//     // modifiedExams[exam.exam_id] = newQuestions;
+// }
 //
 // Object.keys(modifiedExams).forEach(async (examId) => {
 //     await Exams.update({

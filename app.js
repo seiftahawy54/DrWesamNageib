@@ -199,9 +199,6 @@ try {
         // force: true
     });
 
-    const execAsync = promisify(exec);
-    await execAsync('mkdir downloaded_images');
-
     app.listen(port, () => {
         logger.info(`${process.env.BACKEND_URL} working on ${port}`)
     });

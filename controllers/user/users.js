@@ -363,7 +363,7 @@ const getExamPreview = async (req, res, next) => {
         let answersCounter = 0;
 
         const newUserAnswerArr = replyData.exam.questions.map((question, index) => {
-            if ("questionHeader" in question) {
+            if (question && ("questionHeader" in question)) {
                 return replyData.user_answers[answersCounter++];
             } else {
                 return question;
@@ -371,7 +371,7 @@ const getExamPreview = async (req, res, next) => {
         });
 
         for (let question = 0; question < newUserAnswerArr.length; question++) {
-            if (newUserAnswerArr[question] === undefined) {
+            if (newUserAnswerArr[question] && newUserAnswerArr[question] === undefined) {
                 questionsWithUserAnswers.push({
                     userAnswer: null,
                     correctAnswer: parseInt(
@@ -381,7 +381,7 @@ const getExamPreview = async (req, res, next) => {
                 continue;
             }
 
-            if (!("examImage" in newUserAnswerArr[question])) {
+            if (newUserAnswerArr[question] && !("examImage" in newUserAnswerArr[question])) {
                 questionsWithUserAnswers.push({
                     userAnswer: Object.values(newUserAnswerArr[question])[0],
                     correctAnswer: parseInt(
@@ -397,7 +397,7 @@ const getExamPreview = async (req, res, next) => {
 
         await (async () => {
             for (const questionObj of replyData.exam.questions) {
-                if ("examImage" in questionObj) {
+                if (questionObj && ("examImage" in questionObj)) {
                     console.log(questionObj.examImage)
                     if (!validURL(questionObj.examImage)) {
                         console.log(`searching for ${questionObj.examImage} from replies`)
