@@ -48,7 +48,7 @@ const getCheckCertificate = async (req, res, next) => {
         }
     )
 
-    const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${certificate.courseId}`);
+    const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${certificateSerialNumber}`);
     let certificateSerial = '';
 
     const user = await Users.findOne({where: {user_id: certificate.userId}});
@@ -64,16 +64,15 @@ const getCheckCertificate = async (req, res, next) => {
                     roundAndCourse.round_date,
                     roundAndCourse.course.course_img,
                     roundAndCourse.course.course_category,
-                    checkCertificateQrCode,
+                    await checkCertificateQrCode,
                     certificateSerial
                 );
 
                 certificateDoc.certificateObject.pipe(
-                    fs.createWriteStream(path.resolve('public', 'certificates', certificateDoc.certificatePath))
+                    fs.createWriteStream(encodeURIComponent(path.resolve('public', 'certificates', `${certificateDoc.certificatePath}`)))
                 );
 
                 res.setHeader("Content-Type", "application/pdf");
-                res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
                 res.setHeader(
                     "Content-Disposition",
                     `inline; filename="${certificateDoc.certificateName}"`
@@ -81,11 +80,12 @@ const getCheckCertificate = async (req, res, next) => {
 
                 certificateDoc.certificateObject.pipe(res);
                 certificateDoc.certificateObject.end();
-
             })
             .catch(async (err) => {
-                logger.error(err);
-                await errorRaiser(err, next)
+                console.log(err)
+                return res.status(500).json({
+                    message: "Something went wrong",
+                })
             });
     } catch (e) {
         logger.error(e);

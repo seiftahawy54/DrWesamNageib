@@ -69,19 +69,20 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
         });
 };
 
-export const getSingleFile = async (filename) => {
-    const downloadedImagesFolder = path.resolve("downloaded_images");
+export const getSingleFile = async (filename, customPath = '') => {
+    const downloadedImagesFolder = customPath.length > 0 ? path.resolve(customPath) : path.resolve("downloaded_images");
     const fullImgPath = path.resolve(downloadedImagesFolder, filename)
     const isImagesPathExists = fs2.existsSync(downloadedImagesFolder);
+    logger.info(`custom path ${isImagesPathExists} ${customPath}`);
     if (!isImagesPathExists) {
-        await execAsync('mkdir downloaded_images');
-        return getSingleFile(filename);
+        const creationResult = await execAsync(`mkdir -p "${downloadedImagesFolder}"`)
+        return getSingleFile(filename, customPath);
     } else if (fs2.existsSync(fullImgPath)) {
-        console.log(`${filename} exists locally`)
+        console.log(`${filename} exists locally at ${fullImgPath}`);
         return new URL(`${process.env.STATIC_URL}/${filename}`).href;
     } else {
         const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
-        const filePath = path.resolve("downloaded_images", filename);
+        const filePath = path.resolve(downloadedImagesFolder, filename);
         const isAlreadyDownloaded = fs2.existsSync(filePath);
         if (isAlreadyDownloaded) {
             return new URL(`${process.env.STATIC_URL}/${filename}`).href;

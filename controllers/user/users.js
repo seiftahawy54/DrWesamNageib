@@ -604,7 +604,9 @@ const getUserCertificate = async (req, res, next) => {
             certificateSerial = findingCertificate.certificateHash;
         }
 
-        const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${courseId}`);
+        const qrCodeLink = `${process.env.FRONTEND_URL}/check/certificate/${certificateSerial}`;
+
+        const checkCertificateQrCode = await qr.toDataURL(qrCodeLink);
 
         logger.info(`certificate ${courseId} ${roundAndCourse.round_date} ${req.user.user_id} QR code`)
 
