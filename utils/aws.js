@@ -69,51 +69,41 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
         });
 };
 
-export const getSingleFile = async (filename, customPath = '') => {
-    const downloadedImagesFolder = customPath.length > 0 ? path.resolve(customPath) : path.resolve("downloaded_images");
+export const getSingleFile = async (filename) => {
+    const downloadedImagesFolder = path.resolve("downloaded_images");
     const fullImgPath = path.resolve(downloadedImagesFolder, filename)
     const isImagesPathExists = fs2.existsSync(downloadedImagesFolder);
     logger.info(`custom path ${isImagesPathExists} ${customPath}`);
-    if (!isImagesPathExists) {
-        return new URL(`${process.env.AWS_URL}/${filename}`).href;
-    } else if (fs2.existsSync(fullImgPath)) {
-        console.log(`${filename} exists locally at ${fullImgPath}`);
-        return new URL(`${process.env.STATIC_URL}/${filename}`).href;
-    } else {
-        const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
-        const filePath = path.resolve(downloadedImagesFolder, filename);
-        const isAlreadyDownloaded = fs2.existsSync(filePath);
-        if (isAlreadyDownloaded) {
+
+    const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
+    const filePath = path.resolve(downloadedImagesFolder, filename);
+
+    try {
+        console.log(`aws searching url ${downloadingUrl}`)
+        const response = await axios({
+            method: "GET",
+            url: downloadingUrl,
+            responseType: "blob",
+        });
+        const buffer = Buffer.from(response.data.data).toString("base64");
+
+        const writingStream = await fs2.createWriteStream(filePath);
+
+        writingStream.write(buffer, "base64");
+
+        writingStream.on("finish", () => {
+            console.log(`${new URL(`${process.env.STATIC_URL}/${filename}`).href} image downloaded successfully`)
             return new URL(`${process.env.STATIC_URL}/${filename}`).href;
-        }
+        });
 
-        try {
-            console.log(`aws searching url ${downloadingUrl}`)
-            const response = await axios({
-                method: "GET",
-                url: downloadingUrl,
-                responseType: "blob",
-            });
-            const buffer = Buffer.from(response.data.data).toString("base64");
+        writingStream.on("error", (err) => {
+            logger.error(err.message);
+        });
 
-            const writingStream = await fs2.createWriteStream(filePath);
-
-            writingStream.write(buffer, "base64");
-
-            writingStream.on("finish", () => {
-                console.log(`${new URL(`${process.env.STATIC_URL}/${filename}`).href} image downloaded successfully`)
-                return new URL(`${process.env.STATIC_URL}/${filename}`).href;
-            });
-
-            writingStream.on("error", (err) => {
-                logger.error(err.message);
-            });
-
-            writingStream.end();
-        } catch (e) {
-            // logger.error(`image with problems ${filename}`);
-            // logger.error(e.message);
-            return new URL(`${process.env.AWS_URL}/${filename}`).href;
-        }
+        writingStream.end();
+    } catch (e) {
+        // logger.error(`image with problems ${filename}`);
+        // logger.error(e.message);
+        return new URL(`${process.env.AWS_URL}/${filename}`).href;
     }
-};
+}
