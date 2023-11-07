@@ -73,7 +73,7 @@ export const getSingleFile = async (filename) => {
     const downloadedImagesFolder = path.resolve("downloaded_images");
     const fullImgPath = path.resolve(downloadedImagesFolder, filename)
     const isImagesPathExists = fs2.existsSync(downloadedImagesFolder);
-    logger.info(`custom path ${isImagesPathExists} ${customPath}`);
+    logger.info(`custom path ${isImagesPathExists}`);
 
     const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
     const filePath = path.resolve(downloadedImagesFolder, filename);
