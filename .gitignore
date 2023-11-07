@@ -119,8 +119,12 @@ dist
 .idea
 
 public/certificates/*
-uploads/*
+uploads/*.jpg
+uploads/*.png
+uploads/*.jpeg
 bun.lockb
-downloaded_images/*
+downloaded_images/*.jpg
+downloaded_images/*.png
+downloaded_images/*.jpeg
 seed/exams
 
