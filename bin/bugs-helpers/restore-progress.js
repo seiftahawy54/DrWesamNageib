@@ -1,6 +1,6 @@
 import {calculateExamsGrades} from "../../utils/general_helper.js";
 import userExamProgress from "../../models/UserExamProgress.js";
-import {Exams} from "../../models/index.js";
+import {Exams, ExamsReplies} from "../../models/index.js";
 import crypto from "crypto";
 
 const restoreProgress = async (progressId) => {
@@ -26,11 +26,20 @@ const restoreProgress = async (progressId) => {
 
     // 3- Create and insert it into users replies table in production DB
     const generatedUUIDV4 = crypto.randomUUID();
-    console.log(`
-        insert into exams_replies set (reply_id, exam_id, user_id, grade, user_answers, "createdAt", "updatedAt")
-        VALUES ('${generatedUUIDV4}', '${exam.exam_id}', '${progressData.userId}', ${grade}, '${JSON.stringify(progressData.userAnswers)}', now(), now());
-    `)
+    // console.log(`
+    //     insert into exams_replies (reply_id, exam_id, user_id, grade, user_answers, "createdAt", "updatedAt")
+    //     VALUES ('${generatedUUIDV4}', '${exam.exam_id}', '${progressData.userId}', ${grade}, '${JSON.stringify(progressData.userAnswers)}', now(), now());
+    // `)
 
+    const creationResult = await ExamsReplies.create({
+        exam_id: exam.exam_id,
+        user_id: progressData.userId,
+        grade,
+        user_answers: progressData.userAnswers,
+        isDeleted: false
+    })
+
+    console.log(creationResult)
     /*
 
     INSERT INTO public.exams_replies (reply_id, exam_id, user_id, grade, user_answers, "createdAt", "updatedAt")
@@ -41,4 +50,4 @@ VALUES ('cb646689-1ef9-452a-935c-d588932a3b97', '85d7d442-d675-410e-b0a2-c77d315
     */
 }
 
-await restoreProgress(188)
+await restoreProgress(290)

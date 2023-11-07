@@ -75,8 +75,7 @@ export const getSingleFile = async (filename, customPath = '') => {
     const isImagesPathExists = fs2.existsSync(downloadedImagesFolder);
     logger.info(`custom path ${isImagesPathExists} ${customPath}`);
     if (!isImagesPathExists) {
-        const creationResult = await execAsync(`mkdir -p "${downloadedImagesFolder}"`)
-        return getSingleFile(filename, customPath);
+        return new URL(`${process.env.AWS_URL}/${filename}`).href;
     } else if (fs2.existsSync(fullImgPath)) {
         console.log(`${filename} exists locally at ${fullImgPath}`);
         return new URL(`${process.env.STATIC_URL}/${filename}`).href;
