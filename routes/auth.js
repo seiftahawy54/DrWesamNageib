@@ -33,7 +33,7 @@ loginRoutes.post(
 
 registerRoutes.post(
     "/",
-    body("first_name").isString().isLength({min: 3}).withMessage().trim(),
+    body("first_name").isString().isLength({min: 3}).trim(),
     body("middle_name").isString().isLength({min: 3}).trim(),
     body("last_name").isString().isLength({min: 3}).trim(),
     body("email")

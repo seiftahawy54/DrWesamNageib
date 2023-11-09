@@ -268,7 +268,7 @@ export const getGenerateNewPassword = async (req, res, next) => {
 
 export const postGenerateNewPassword = async (req, res, next) => {
     try {
-        const { password, confirmPassword, token } = req.body;
+        const {password, confirmPassword, token} = req.body;
 
         if (password !== confirmPassword) {
             return res.status(422).json(
@@ -378,7 +378,11 @@ export const postRegister = async (req, res, next) => {
         })
 
         if (existingUser) {
-            return res.status(422).json({email: 'Email already exists!'});
+            return res.status(422).json({
+                errors: {
+                    email: 'Email already exists!'
+                }
+            });
         }
 
         const encryptionResult = bcrypt.hashSync(password, 12);
