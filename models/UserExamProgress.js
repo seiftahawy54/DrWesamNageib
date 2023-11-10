@@ -7,6 +7,7 @@ const UserExamProgress = sequelize.define("userExamProgress", {
     },
     userId: {
         type: Sequelize.STRING,
+        unique: false,
     },
     userAnswers: {
         type: Sequelize.ARRAY(Sequelize.JSON),
