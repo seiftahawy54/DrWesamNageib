@@ -7,7 +7,7 @@ const postSaveProgress = async (req, res, next) => {
 
         const creatingNewReplyResult = await UserExamProgress.create({
             examId,
-            userId: req.body.user_id,
+            userId: req.user.user_id,
             userAnswers,
             submissionDate: new Date()
         });

@@ -46,8 +46,8 @@ const getSearchForUser = async (req, res, next) => {
         }
 
         if (phone) {
-            filterObject.phone = {
-                [Op.iLike]: `${phone.toLowerCase()}`
+            filterObject.whatsapp_no = {
+                [Op.iLike]: `%${phone}%`
             };
         }
 
@@ -348,11 +348,35 @@ const getUserUpdateData = async (req, res, next) => {
     }
 }
 
+const getUserSpecialRoundAccess = async (req, res, next) => {
+    try {
+        const usersCurrentRounds = await userPerRound.findAll({
+            where: {
+                userId: req.user.user_id,
+            },
+        })
+
+        const rounds = await Rounds.findAll({
+            where: {
+                round_id: {
+                    [Op.notIn]: usersCurrentRounds.map((round) => round.roundId),
+                },
+            },
+            attributes: ['round_id', 'round_date', 'finished', 'title'],
+        })
+
+        return res.status(200).send(rounds)
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
 export {
     getUsers,
     postDeleteUser,
     getUpdateUser,
     postUpdateUser,
     getSearchForUser,
-    getUsersSearchFilters
+    getUsersSearchFilters,
+    getUserSpecialRoundAccess,
 };

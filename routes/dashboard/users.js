@@ -5,7 +5,8 @@ import {
     postDeleteUser,
     postUpdateUser,
     getSearchForUser,
-    getUsersSearchFilters
+    getUsersSearchFilters,
+    getUserSpecialRoundAccess
 } from "../../controllers/dashboard/users/users.js";
 
 const router = Router();
@@ -16,6 +17,7 @@ router
     .post("/edit-user/:userId", postUpdateUser)
     .delete("/:userId", postDeleteUser)
     .get("/search", getSearchForUser)
+    .get('/specialAccessRounds', getUserSpecialRoundAccess)
     .get("/:userId", getUpdateUser)
 
 export default router;

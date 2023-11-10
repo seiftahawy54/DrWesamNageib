@@ -376,9 +376,16 @@ const getExamPreview = async (req, res, next) => {
                     ),
                 });
             } else {
-                questionsWithUserAnswers.push({
-                    questionImage: Object.values(newUserAnswerArr[question])[0],
-                });
+                console.log(`the error ===> `, question, newUserAnswerArr[question])
+                if (questionsWithUserAnswers[question]) {
+                    questionsWithUserAnswers.push({
+                        questionImage: Object.values(newUserAnswerArr[question])[0],
+                    });
+                } else {
+                    questionsWithUserAnswers.push({
+                        questionImage: 'https://placehold.co/600x400',
+                    });
+                }
             }
         }
 

@@ -41,6 +41,7 @@
     "express-log-psql": "^1.0.0",
     "express-session": "^1.17.2",
     "express-validator": "^6.14.0",
+    "google-libphonenumber": "^3.2.33",
     "googleapis": "^100.0.0",
     "gulp-sass": "^5.1.0",
     "helmet": "^5.0.2",

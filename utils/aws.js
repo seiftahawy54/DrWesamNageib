@@ -71,19 +71,18 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
 
 export const getSingleFile = async (filename) => {
     try {
-        const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.]/g, '_'); // Sanitize the filename
         const downloadedImagesFolder = path.resolve("downloaded_images");
-        const fullImgPath = path.resolve(downloadedImagesFolder, sanitizedFilename);
+        const fullImgPath = path.resolve(downloadedImagesFolder, filename);
 
         // Check if the file already exists
         if (fs2.existsSync(fullImgPath)) {
-            const existingLink = new URL(`${process.env.STATIC_URL}/${sanitizedFilename}`).href;
+            const existingLink = new URL(`${process.env.STATIC_URL}/${filename}`).href;
             console.log(`${existingLink} already exists.`);
             return existingLink;
         }
 
         const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
-        const filePath = path.resolve(downloadedImagesFolder, sanitizedFilename);
+        const filePath = path.resolve(downloadedImagesFolder, filename);
 
         console.log(`AWS searching URL: ${downloadingUrl}`);
         const response = await axios({
@@ -97,11 +96,11 @@ export const getSingleFile = async (filename) => {
 
         await fs2.promises.writeFile(filePath, buffer, "base64");
 
-        const createdLink = new URL(`${process.env.STATIC_URL}/${sanitizedFilename}`).href;
+        const createdLink = new URL(`${process.env.STATIC_URL}/${filename}`).href;
         console.log(`${createdLink} image downloaded successfully`);
         return createdLink;
     } catch (e) {
-        logger.error(`Error downloading image ${filename}: ${error.message}`);
+        logger.error(`Error downloading image ${filename}: ${e.message}`);
         return `${process.env.AWS_URL}/${filename}`; // Return the AWS URL in case of an error
     }
 }
