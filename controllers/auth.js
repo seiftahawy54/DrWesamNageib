@@ -366,7 +366,7 @@ export const postRegister = async (req, res, next) => {
             logger.info(JSON.stringify(errors.array()));
             const exactErrorMessages = extractErrorMessages(errors.array());
             console.log(`exactErrorMessages => `, exactErrorMessages)
-            return res.status(422).json(exactErrorMessages);
+            return res.status(422).json({...exactErrorMessages.errors});
         }
 
         const existingUser = await Users.findOne({
@@ -379,9 +379,7 @@ export const postRegister = async (req, res, next) => {
 
         if (existingUser) {
             return res.status(422).json({
-                errors: {
-                    email: 'Email already exists!'
-                }
+                email: 'Email already exists!'
             });
         }
 
