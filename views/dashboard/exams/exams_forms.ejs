@@ -1,0 +1,223 @@
+<%- include("../../includes/top_part.ejs"); %>
+<!-- Dashboard Globals -->
+<%- include("../../includes/dashboard_includes.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css" />
+<link rel="stylesheet" href="/css/dashboard/exams.css" />
+</head>
+<body>
+<section class="courses certificate">
+  <%- include("../../includes/dashboard-navbar.ejs"); %>
+  <div class="container">
+    <div class="row g-0">
+      <div class="col-12">
+        <div class="content">
+          <div class="custom-head">
+            <h2>
+              <% if (editMode === true) { %>
+                <%= "Update exam" %>
+              <% } else { %>
+                <%= "Add new exam" %>
+              <% } %>
+            </h2>
+            <span></span>
+          </div>
+          <%- include('../../includes/errorMessage.ejs'); %>
+          <form
+            action="/dashboard/<% if (editMode === true) { %><%= "edit-exams/" + exam.exam_id %><% } else { %>add-new-exams<% } %>"
+            method="POST" id="exams-form"
+          <% if (editMode === true) { %> <%= `data-edit-mode=true` %>
+          <% } else { %> <%= `data-edit-mode=false ` %>
+            <% } %>
+          >
+            <!-- Exam Status -->
+
+            <% if (editMode) { %>
+              <%- include('../../includes/check-input.ejs', {id: "exam-status", checked: exam.status, label: "Exam Status", name: "exam-status" } ); %>
+            <% } else { %>
+              <%- include('../../includes/check-input.ejs', {id: "exam-status", checked: false, label: "Exam Status", name: "exam-status" } ); %>
+            <% } %>
+
+            <!-- Exam Type -->
+
+            <% if (editMode) { %>
+              <%- include('../../includes/check-input.ejs', {id: "special-exam", checked: exam.special_exam, label: "Special Exam", name: "special-exam" } ); %>
+            <% } else { %>
+              <%- include('../../includes/check-input.ejs', {id: "special-exam", checked: false, label: "Special Exam", name: "special-exam" } ); %>
+            <% } %>
+
+            <!-- Exam Title -->
+
+            <%- include('../../includes/main-input.ejs', {
+            type: "text",
+            name: "exam-title",
+            placeholder: "exam title",
+            id: "exam-title",
+            label: "Exam Title",
+            value: 'title' in exam ? exam.title : "" ,
+            custom: ["required"] }); %>
+
+
+            <!-- (New | Updated) Questions Container -->
+            <div class="questions-container" id="questions-container">
+
+            </div>
+
+            <div class="my-3 d-flex justify-content-between">
+              <!-- Add New Exam Btn -->
+              <button class="btn" id="add-new-exam" type="button">
+                Add new question
+              </button>
+
+
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" id='newImgBtn' data-bs-toggle="modal"
+                      data-bs-target="#images-modal">
+                Add new image
+              </button>
+            </div>
+
+            <hr>
+
+            <% if (editMode) { %>
+              <input type="hidden" name="examId" value="<%= exam.exam_id %>" id="examId" />
+            <% } %>
+
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" id="csrfToken" />
+            <button type="submit" class="btn submitBtn" id="submitBtn">
+              <% if (editMode === true) { %>
+                <%= "Update exam" %>
+              <% } else { %>
+                <%= "Add new exam" %>
+              <% } %>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% if (editMode) { %>
+  <span class="d-none" id="editingInputExams">
+  <%- exam.questions %>
+</span>
+<% } %>
+
+<button type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          Add new question
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id='question-form'>
+        <div class="modal-body">
+          <%- include('../../includes/main-input.ejs', {
+          type: "text",
+          name: "question-header",
+          placeholder: "question header",
+          id: "question-header",
+          label: "Question Title",
+          value: "",
+          custom: []}); %>
+          <hr />
+          <h5>Answers</h5>
+          <button class="btn" id="new-question-btn">
+            Add new answer
+          </button>
+
+          <div id="answers-container">
+          </div>
+          <hr>
+          <%- include('../../includes/main-input.ejs', {
+          type: "number",
+          name: "question-answer",
+          placeholder: "question answer",
+          id: "correct-answer",
+          label: "Correct Answer",
+          value: "",
+          custom: [`max="4" min="1"`] }); %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" data-bs-target="#exampleModal"
+                  id="save-question">Save changes
+          </button>
+          <button type="button" class="d-none" data-bs-dismiss="modal" id="hiddenDismissBtn"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<button type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#submittingForm"
+        id="new-modal-btn">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="submittingForm" tabindex="-1" aria-labelledby="submittingForm" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Exam Data Saved</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Exam data saved successfully!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="d-none" data-bs-toggle="images-modal" data-bs-target="images-modal" id="dismiss-image-modal">
+
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="images-modal" tabindex="-1" aria-labelledby="images-modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="image-title">
+          Add image
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%- include('../../includes/main-input.ejs', {
+        type: "file",
+        name: "question-image",
+        placeholder: "Question Image",
+        label: "",
+        id: "question-image",
+        value: "",
+        custom: [] }); %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-danger" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="new-image-btn">Add image</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="/js/axios.min.js" async></script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/dashboard/exams_forms.js"></script>
+
+<%- include("../../includes/bottom_part.ejs"); %>

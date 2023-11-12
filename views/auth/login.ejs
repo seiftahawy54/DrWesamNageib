@@ -1,0 +1,52 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/auth/login.css" />
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="custom-login">
+  <div class="container g-0">
+    <div class="row g-0">
+      <div class="custom-head">
+        <div class="custom-head-data">
+          <h2 class="text-center">Login</h2>
+          <span class="w-100"></span>
+        </div>
+      </div>
+    </div>
+    <div class="row g-0">
+      <div class="">
+        <%- include('../includes/errorMessage.ejs'); %>
+        <form action="/login" method="POST" novalidate class="">
+          <div class="form-floating my-3">
+            <input type="email" name="email" id="email" placeholder="Your email"
+                   class="form-control <%= validationErrors.email ? "is-invalid" : "" %>"
+                   value="<%= user.email %>" />
+            <label for="email">Your Email</label>
+          </div>
+          <div class="form-floating my-3">
+            <input type="password" name="password" id="password" placeholder="Your password"
+                   class="form-control <%= validationErrors.password ? "is-invalid" : "" %>"
+                   value="<%= user.password %>" />
+            <label for="password">Your Password</label>
+          </div>
+          <div class="login-options w-100 d-flex justify-content-between">
+            <a href="/register" class="reset-link">Create account</a>
+            <a href="/forget-password" class="reset-link">Forget Password</a>
+          </div>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div class="row">
+            <div class="">
+              <button class="btn w-100 my-4">
+                Login
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

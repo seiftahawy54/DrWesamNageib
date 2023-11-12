@@ -1,0 +1,148 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/auth/login.css" />
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="register-form " id="app">
+  <%- include("../includes/errorMessage.ejs"); %>
+  <div class="container">
+    <div class="custom-head">
+      <h2>Register</h2>
+      <span></span>
+    </div>
+    <form action="/register" method="POST" @submit.prevent="checkIfValidForm" id="registerForm">
+      <div class="row g-0">
+        <div class="col-lg-6 col-xs-12 pe-lg-3">
+          <div class="form-floating my-3">
+            <input type="text" name="first_name" id="first_name" placeholder="Enter your first name"
+                   class="form-control <%= validationErrors.find(e => e.param === "first_name") ? "is-invalid" : "" %>"
+                   value="<%= user.first_name %>"
+                   @change="checkFirstName"
+            />
+            <label for="name">Your First Name (In English)</label>
+          </div>
+
+          <template v-if="firstNameError.length > 0">
+            <div class="text-danger">
+              {{ firstNameError }}
+            </div>
+          </template>
+        </div>
+        <div class="col-lg-6 col-xs-12 ps-lg-3">
+          <div class="form-floating my-3">
+            <input type="text" name="middle_name" id="middle_name" placeholder="Enter your middle name"
+                   class="form-control <%= validationErrors.find(e => e.param === "middle_name") ? "is-invalid" : "" %>"
+                   value="<%= user.middle_name %>"
+            />
+            <label for="name">Your Middle Name (In English)</label>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="form-floating my-3">
+            <input type="text" name="last_name" id="last_name" placeholder="Enter your last name"
+                   class="form-control <%= validationErrors.find(e => e.param === "last_name") ? "is-invalid" : "" %>"
+                   value="<%= user.last_name %>"
+            />
+            <label for="name">Your Last Name (In English)</label>
+          </div>
+        </div>
+        <div class="col-12">
+
+          <div class="form-floating my-3">
+            <input type="email" name="email" id="email" placeholder="Enter your email"
+                   class="form-control <%= validationErrors.find(e => e.param === "email") ? "is-invalid" : "" %>"
+                   value="<%= user.email %>"
+            />
+            <label for="email">Your Email</label>
+          </div>
+
+        </div>
+        <div class="col-12">
+
+
+          <div class="form-floating my-3">
+            <input type="tel" name="whatsapp_number" id="whatsapp_number" placeholder="Your whatsapp number"
+                   class="form-control <%= validationErrors.find(e => e.param === "whatsapp_number") ? "is-invalid" : "" %>"
+                   value="<%= user.whatsapp_no %>"
+            />
+            <label for="whatsapp_number">Whatsapp Number</label>
+          </div>
+        </div>
+        <div class="col-12">
+
+          <div class="form-floating my-3">
+            <input type="text" name="specialization" id="specialization" placeholder="Enter your specialization"
+                   class="form-control <%= validationErrors.find(e => e.param === "specialization") ? "is-invalid" : "" %>"
+                   value="<%= user.specialization %>"
+            />
+            <label for="specialization">Specialization</label>
+          </div>
+        </div>
+        <div class="col-12">
+
+          <div class="form-floating my-3">
+            <input type="password" name="password" id="password" placeholder="Enter your specialization"
+                   class="form-control <%= validationErrors.find(e => e.param === "password") ? "is-invalid" : "" %>"
+                   value="<%= user.password %>"
+            />
+            <label for="password">Enter Your Password</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-floating my-3">
+            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Enter your specialization"
+                   class="form-control <%= validationErrors.find(e => e.param === "confirmPassword") ? "is-invalid" : "" %>"
+                   value="<%= user.confirmPassword %>"
+            />
+            <label for="confirmPassword">Confirm Your Password</label>
+          </div>
+        </div>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button class="btn" type="submit">
+          Register
+        </button>
+
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  const { createApp } = Vue
+
+  createApp({
+      data() {
+        return {
+          firstNameError: ""
+        }
+      },
+      methods: {
+        checkFirstName(e) {
+          if (e.target.value.split('.').length >= 2 || e.target.value.slice(0, 2).toLowerCase() === 'dr') {
+            if (this.firstNameError.length === 0) {
+              this.firstNameError = `Please don't add titles before like: (dr. John Doe)`
+            }
+          } else {
+            if (this.firstNameError.length > 0) {
+              this.firstNameError = ''
+            }
+          }
+        },
+        checkIfValidForm(e) {
+          const registerForm = document.querySelector('#registerForm')
+
+          if (!(this.firstNameError.length > 0)) {
+            registerForm.submit()
+          }
+        }
+      }
+    }
+  )
+    .mount('#app')
+
+</script>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

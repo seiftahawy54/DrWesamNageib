@@ -1,0 +1,198 @@
+@use "../utils/variables" as vars;
+@use "../utils/mediaFns" as mediaQ;
+
+.custom-login {
+  min-height: calc(100vh - 131px - 131px - 80px);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: 1fr;
+  width: 35vw;
+  margin: auto;
+
+  .custom-head {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+
+    .custom-head-data {
+      width: fit-content;
+    }
+  }
+
+  .login-options {
+    a {
+      color: vars.$main_color;
+      text-decoration: underline;
+    }
+  }
+}
+
+.login-form,
+.opinions-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin-block: 100px 110px;
+  min-height: calc(100vh - 131px - 161px - 110px);
+
+  .container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .login-options {
+    .reset-link {
+    }
+
+    .register-link {
+      text-decoration: underline;
+    }
+  }
+
+  .content-container {
+    border: 1px solid vars.$main_color;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    padding: 100px 80px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    width: 50vw;
+
+    .header-dash-line {
+      margin-block: 15px 55px;
+      width: 50px;
+      height: 2px;
+      background-color: vars.$main_color;
+      margin-inline: auto;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      justify-content: center;
+      width: auto;
+
+      .login-options {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      input,
+      textarea,
+      select {
+        //width: 465px;
+        //height: 44px;
+        //margin-block-end: 30px;
+        //padding: 12px;
+        border-radius: 4px;
+        border: 1px solid vars.$main_color;
+
+        &::placeholder {
+          font-family: vars.$main_font;
+        }
+      }
+
+      textarea {
+        height: 200px;
+      }
+
+      select {
+        line-height: 42px;
+        height: 50px;
+      }
+
+      .cart-courses {
+        span {
+          color: #fff;
+          background-color: vars.$main_color;
+          width: fit-content;
+          padding: 10px 20px;
+          border-radius: 4px;
+          display: flex;
+        }
+      }
+
+      button {
+        width: fit-content !important;
+        margin-block-start: 30px;
+        align-self: center;
+      }
+    }
+  }
+}
+
+.register-form {
+  .content-container {
+    form {
+      input {
+        width: 465px;
+      }
+    }
+  }
+}
+
+.opinions-form {
+  form {
+    button {
+      font-size: vars.$lg_font_size;
+    }
+  }
+}
+
+@include mediaQ.allSmScreens {
+  .custom-login {
+    width: 90vw;
+  }
+
+  .login-form,
+  .register-form,
+  .opinions-form {
+    .login-options {
+      .reset-link {
+        font-size: vars.$xs_font_size - 2;
+      }
+
+      .register-link {
+        font-size: vars.$xs_font_size - 2;
+      }
+    }
+
+    .content-container {
+      width: 90vw !important;
+      padding: 30px;
+
+      h2 {
+        text-align: center;
+      }
+
+      form {
+        width: 100%;
+      }
+    }
+  }
+}
+
+@include mediaQ.tabletIpad {
+  .login-options {
+    .reset-link {
+      font-size: vars.$sm_font_size;
+    }
+
+    .register-link {
+      font-size: vars.$sm_font_size;
+    }
+  }
+
+  .custom-login {
+    width: 50vw;
+  }
+}

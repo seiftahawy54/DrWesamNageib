@@ -1,0 +1,140 @@
+<%- include("../includes/top_part.ejs"); %>
+<!-- Dashboard Globals -->
+<%- include("../includes/dashboard_includes.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css" />
+<script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+</head>
+<body>
+
+<section class="courses">
+  <%- include("../includes/dashboard-navbar.ejs"); %>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="content">
+          <div class="custom-head">
+            <h2>
+              <% if (editMode === true) { %>
+                <%= "Update Course" %>
+              <% } else { %>
+                <%= "Add new course" %>
+              <% } %>
+            </h2>
+            <span></span>
+          </div>
+          <%- include('../includes/errorMessage.ejs'); %>
+          <form
+            action="/dashboard/courses/<% if (editMode === true) { %><%= "edit-course/" + course.course_id %><% } else { %>add-new-course<% } %>"
+            method="POST" enctype="multipart/form-data">
+            <div class="form-floating my-3">
+              <input type="text" name="name" placeholder="Course Name"
+                     class="form-control <%= validationErrors.find(e => e.param === "name") ? "is-invalid" : "" %>"
+                     value="<% if (editMode === true) { %><%= course.name %><% } %>" id="course_name" />
+              <label for="course_name">Course Name</label>
+            </div>
+
+
+            <div class="form-floating my-3">
+              <input type="text" name="arabic_name" placeholder="Arabic Name"
+
+                     class="form-control <%= validationErrors.find(e => e.param === "arabic_name") ? "is-invalid" : "" %>"
+                     value="<% if (editMode === true) { %><%= course.ar_course_name %><% } %>"
+                     id="arabic_name" />
+              <label for="arabic_name">Arabic Course Name</label>
+            </div>
+
+            <div class="form-floating my-3">
+              <input type="number" name="price" placeholder="Course Price"
+                     class="form-control <%= validationErrors.find(e => e.param === "price") ? "is-invalid" : "" %>"
+                     value="<% if (editMode === true) { %><%= course.price %><% } %>" id="course_price" />
+              <label for="course_price">Course Price</label>
+            </div>
+            <div class="form-floating my-3">
+              <input type="text" name="thumbnail" placeholder="Course Thumbnail"
+                     class="form-control <%= validationErrors.find(e => e.param === "thumbnail") ? "is-invalid" : "" %>"
+                     value="<% if (editMode === true) { %><%= course.course_thumbnail %><% } %>"
+                     id="course_thumbnail" />
+              <label for="course_thumbnail">Course Thumbnail</label>
+            </div>
+
+            <div class="form-floating my-3">
+              <input type="number" name="course_rank" placeholder="Course Rank"
+
+                     class="form-control <%= validationErrors.find(e => e.param === "course_rank") ? "is-invalid" : "" %>"
+                     value="<% if (editMode === true) { %><%= course.course_rank %><% } %>"
+                     id="course_rank" min="0" />
+              <label for="course_rank">Course Rank</label>
+            </div>
+
+            <div class="my-3">
+              <textarea name="description" placeholder="Course Description"
+                        class="form-control editor-<%- course.course_id %>"
+              >
+              </textarea>
+              <% if (validationErrors.find(e => e.param === "description")) { %>
+                <div class="alert alert-danger">Please enter a valid description</div>
+              <% } %>
+            </div>
+            <div class="my-3">
+              <label for="brief_img">Brief Image</label>
+              <input type="file" name="course_img" placeholder="Upload course image"
+                     id="brief_img"
+                     class="form-control <%= validationErrors.find(e => e.param === "course_img") ? "is-invalid" : "" %>"
+                     accept="image/*" />
+            </div>
+            <div class="my-3">
+              <label for="detailed_img">Detailed Image</label>
+              <input type="file" name="detailed_img" placeholder="Upload course image"
+                     class="form-control <%= validationErrors.find(e => e.param === "detailed_img") ? "is-invalid" : "" %>"
+                     accept="image/*" />
+            </div>
+
+            <!-- Exam Status -->
+
+            <% if (editMode) { %>
+              <%- include('../includes/check-input.ejs', {id: "course-special", checked: course.special_course, label: "Special Course", name: "special_course" } ); %>
+            <% } else { %>
+              <%- include('../includes/check-input.ejs', {id: "course-special", checked: false, label: "Special Course", name: "special_course" } ); %>
+            <% } %>
+
+            <div class="row">
+              <div class="col-6">
+                <div class="form-floating my-3">
+                  <input type="number" name="total_hours" placeholder="Total hours"
+                         class="form-control <%= validationErrors.find(e => e.param === "total_hours") ? "is-invalid" : "" %>"
+                         value="<% if (editMode) { %><%= course.total_hours %><% } %>"
+                         id="total_hours" min="0" />
+                  <label for="total_hours">Course Total Hours</label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-floating my-3">
+                  <input type="text" name="course_category" placeholder="Course Category"
+                         class="form-control <%= validationErrors.find(e => e.param === "course_category") ? "is-invalid" : "" %>"
+                         value="<% if (editMode) { %><%= course.course_category %><% } %>"
+                         id="total_hours" min="0" />
+                  <label for="total_hours">Course Category</label>
+                </div>
+              </div>
+            </div>
+
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="courseId" value="<%= course.course_id %>">
+            <button type="submit" class="btn submitBtn">
+              <% if (editMode === true) { %>
+                <%= "Update Course" %>
+              <% } else { %>
+                <%= "Add new course" %>
+              <% } %>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/courses_scripts.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

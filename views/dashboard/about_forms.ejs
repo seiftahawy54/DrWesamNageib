@@ -1,0 +1,54 @@
+<%- include("../includes/top_part.ejs"); %>
+<!-- Dashboard Globals -->
+<%- include("../includes/dashboard_includes.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css" />
+</head>
+<body>
+<section class="courses certificate">
+  <%- include("../includes/dashboard-navbar.ejs"); %>
+  <div class="container ">
+    <div class="row">
+      <div class="col-12">
+        <div class="content">
+          <div class="custom-head">
+            <h2>
+              <% if (editMode === "true") { %>
+                <%= "Update about" %>
+              <% } else { %>
+                <%= "Add new about"; %>
+              <% } %>
+            </h2>
+            <span></span>
+          </div>
+          <% if (errorMessage) { %>
+            <div class="error-container">
+              <%- errorMessage; %>
+            </div>
+          <% } %>
+          <form
+            action="/dashboard/<% if (editMode === 'true') { %><%= "edit-certificate/" + certificate.certificate_id %><% } else { %>add-new-about<% } %>"
+            method="POST" enctype="multipart/form-data">
+            <div class="my-3">
+              <input type="file" name="certificate_img" placeholder="Upload certificate image"
+                     class="form-control <%= validationErrors.find(e => e.param === 'certificate_img') ? "is-invalid" : "" %>"
+                     accept="image/*" />
+            </div>
+
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
+            <button type="submit" class="btn submitBtn">
+              <% if (editMode === "true") { %>
+                <%= "Update Certificate"; %>
+              <% } else { %>
+                <%= "Add new certificate"; %>
+              <% } %>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/bottom_part.ejs"); %>

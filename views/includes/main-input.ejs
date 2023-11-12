@@ -1,0 +1,12 @@
+<% if (type === 'file') { %>
+  <div class="my-3">
+    <label for="<%= id %>" class="form-label"><%= label %></label>
+    <input class="form-control" type="<%= type %>" id="<%= id %>" name="<%= name %>" <%- custom.toString() %>>
+  </div>
+<% } else { %>
+  <div class="form-floating my-3">
+    <input type="<%= type %>" name="<%= name %>" placeholder="<%= placeholder %>" class="form-control"
+           value="<%= value %>" id="<%= id %>" <%- custom.toString() %>/>
+    <label for="<%= id %>"><%= label %></label>
+  </div>
+<% } %>

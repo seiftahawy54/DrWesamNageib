@@ -1,0 +1,187 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/user/profile.css" />
+<script src="/js/axios.min.js"></script>
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="profile">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 mb-5">
+        <%- include("../includes/errorMessage.ejs"); %>
+        <div class="custom-head">
+          <h2>Your Data</h2>
+          <span></span>
+        </div>
+
+        <div id="app">
+          <table class="table table-responsive table-hover">
+            <thead>
+            <tr>
+              <th scope="col">Data</th>
+              <th scope="col">Content</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <th scope="row">
+                Name
+              </th>
+              <td>
+                {{ userData.name }}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Phone Number
+              </th>
+              <td>
+                {{ userData.whatsapp_no }}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Email
+              </th>
+              <td>
+                {{ userData.email }}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Specialization
+              </th>
+              <td>
+                {{ userData.specialization }}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Your Bought Courses
+              </th>
+              <td>
+                <div class="info" v-if="payments">
+                  <template v-for="payment in payments" :key="payment.id">
+                    <div class="bought_courses">
+                      <span v-text="payment.name"></span>
+                      <span v-text="payment.price"></span>
+                    </div>
+                  </template>
+                </div>
+                <div class="info" v-if="!payments">
+                  <span>You haven't bought any courses yet!</span>
+                </div>
+              </td>
+            </tr>
+            <template v-for="round in rounds" :key="round.round_id">
+              <tr>
+                <th scope="row">
+                  Round {{ round.round_date}} files
+                </th>
+                <td>
+                  <div v-if="rounds">
+                    <div class="info round-files" v-html="round.round_link">
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </template>
+            <tr v-if="examsData.userExams">
+              <th scope="row">
+                Your Performed Exams:
+              </th>
+              <td v-if="examsData.hasOwnProperty('userExams')">
+                <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
+                  <a :href="`/exams/preview/${ grade.reply_id }`" class="me-3">{{ grade.title }} report</a>
+                  <span class="text-center">
+                                <sup><span> {{ grade.grade }} </span></sup> /
+                                <sub><span> {{ grade.questions.length }} </span></sub>
+                              </span>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="certificate">
+              <th scope="row">
+                Certificates
+              </th>
+              <td>
+                <a :href="`/certificates/${certificate.courseId}`" class="link-success"
+                   v-text="`${certificate.courseName} - ${certificate.roundDate}`"></a>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                Update your data
+              </th>
+              <td>
+                <a :href="`/update-data/${userData.user_id}`" class="btn">
+                  Update your data
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="user-img">
+                <div class="user-img">
+                  <% if (user.user_img) { %>
+                    <img
+                      src="/downloaded_images/<%= user.user_img %>"
+                      alt="<%= user.name %>"
+                    />
+                  <% } else { %>
+                    <img
+                      src="/imgs/imgs/user_img.png"
+                      alt="<%= user.name %>"
+                    />
+                  <% } %>
+                </div>
+              </th>
+              <td>
+                <form action="/update-user-img" method="POST" enctype="multipart/form-data">
+                  <input type="file" name="user_img" id="user_img" placeholder="Update your image"
+                         class="form-control <%= validationError.error === "img" ? "is-invalid" : "" %>">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                  <button type="submit" class="btn">
+                    update image
+                  </button>
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script async defer>
+  const { createApp } = Vue
+
+  async function mounted() {
+    this.userData = (await axios.get("/user-data")).data.user
+    this.examsData = (await axios.get("/user-grades")).data
+    this.payments = (await axios.get("/user-payments")).data.payments
+    this.rounds = (await axios.get("/user-round")).data.rounds
+    this.certificate = (await axios.get("/user-certificates")).data.certificateData
+    console.log(this.rounds)
+  }
+
+  createApp({
+    data() {
+      return {
+        examsData: "",
+        userData: "",
+        payments: "",
+        rounds: "",
+        certificate: "",
+      }
+    },
+    mounted,
+  }).mount("#app")
+</script>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

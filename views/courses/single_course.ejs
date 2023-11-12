@@ -1,14 +1,106 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/courses/courses.css" />
+<link rel="stylesheet" href="/css/courses/courses.css"/>
+<link rel="stylesheet" href="/css/courses/single_course.css"/>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
 
 <section class="single-course-section">
-    <div class="container">
-        
+  <div class="container">
+    <div class="bread-crumb">
+      <div class="crumb-links">
+        <a href="/" class="home-page reset-link">Home</a> /
+        <a href="/courses" class="courses-page reset-link">Courses</a> /
+        <a class="course-name-page reset-link"><%- course.name %></a>
+      </div>
+      <div class="next-prev">
+        <a href="/courses"
+           class="reset-link">
+          <%- include('../../public/imgs/svgs/right_arrow.svg') %>
+          Prev
+        </a>
+        |
+        <a href="/courses" class="reset-link">
+          Next
+          <%- include('../../public/imgs/svgs/left_arrow.svg') %>
+        </a>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-lg-5 offset-lg-1 col-xs-12">
+        <div class="course-image">
+          <img src="/downloaded_images/<%- course.detailed_img %>" alt="<%- course.name %>" class="w-100 "/>
+        </div>
+      </div>
+      <div class="col-lg-4 col-xs-12">
+        <div class="course-data">
+          <%- include("../includes/errorMessage.ejs"); %>
+          <h2>
+            <%- course.name %>
+          </h2>
+          <div class="course-price">
+            &dollar;<%- course.price %>
+          </div>
+          <div class="course-description">
+            <bdi>
+              <%- course.description %>
+            </bdi>
+          </div>
+          <% if (Array.isArray(rounds) && rounds.length > 0) { %>
+            <form action="/courses/addToCart" method="post">
+
+              <!--            <div class="form-container">-->
+              <% rounds.forEach(round => { %>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="selected_round" value="<%- round.round_id %>"
+                         id="<%- round.round_id %>">
+                  <label class="form-check-label"
+                         for="<%- round.round_id %>"><%- moment(round.round_date).format("DD-MM-YYYY") %></label>
+                </div>
+              <% }) %>
+
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+              <input type="hidden" name="courseId" value="<%= course.course_id %>"/>
+              <button class="btn mt-5" type="submit">
+                Add to cart
+              </button>
+              <!--            </div>-->
+            </form>
+          <% } else { %>
+            <div class="alert alert-primary">
+              Sorry, There's no available rounds for this course.
+            </div>
+            <button class="btn btn-disabled" disabled>Add to cart</button>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/single_course.js"></script>
 <%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>

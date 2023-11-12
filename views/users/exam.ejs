@@ -1,0 +1,85 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/user/profile.css" />
+<link rel="stylesheet" href="/css/user/exam.css" />
+<style>
+    @media print {
+        .row {
+            display: none;
+        }
+    }
+</style>
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="exam">
+  <div class="container">
+    <% if (!exam) { %>
+      <div class="alert fs-4 text-center alert-danger" role="alert">
+        Wrong exam link!
+      </div>
+    <% } else if (!exam.status) { %>
+      <div class="alert fs-4 text-center alert-danger" role="alert">
+        This Exam Is Closed
+      </div>
+    <% } else { %>
+      <div class="alert fs-4 text-center alert-danger d-none" role="alert" id="alert-message">
+
+      </div>
+      <div class="custom-head">
+        <h2 class="h1 text-center"><%- exam.title %></h2>
+        <span class="mx-auto"></span>
+      </div>
+      <div class="row">
+        <div class="offset-lg-3 col-lg-6 col-xs-12">
+          <div class="question-container" id="questionsContainer">
+            <form id="exam-form">
+              <% /* exam.questions.forEach((examItem, questionIndex) => { */ %>
+              <% for (let i = 0, j = 0; i < exam.questions.length; i++)  { %>
+                <div class="question">
+                  <% if ("answers" in exam.questions[i] && "questionHeader" in exam.questions[i]) { %>
+                    <div class="custom-head">
+                      <h4>Q<sub><%= j + 1 %></sub> - <%= exam.questions[i].questionHeader %></h4>
+                      <span></span>
+                    </div>
+                    <div class="answers-container">
+                      <% exam.questions[i].answers.forEach((answer, answerIndex)=> { %>
+                        <div class="form-check my-3 answer">
+                          <input class="form-check-input" type="radio"
+                                 id="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>"
+                                 name="answer-<%- j %>">
+                          <label class="form-check-label w-100"
+                                 for="q-<%- j + 1 %>-answer-<%- answerIndex + 1 %>">
+                            <%- answer %>
+                          </label>
+                        </div>
+                      <% }) %>
+                      <% j += 1 %>
+                    </div>
+                  <% } else { %>
+                    <img src="/downloaded_images/<%- exam.questions[i].examImage %>"
+                         alt="<%= exam.questions[i].examImage.split("-")[1] %>" class="img-fluid rounded-3"
+                         loading="lazy" />
+                  <% } %>
+                </div>
+              <% } %>
+            </form>
+          </div>
+        </div>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" id="csrfToken" />
+        <input type="hidden" value="<%- exam.exam_id %>" name="examId" id="examId">
+        <div class="offset-3 col-6">
+          <div class="submit-container">
+            <button class="btn" id="submit-exam">Submit Exam</button>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<script src="/js/axios.min.js"></script>
+<script src="/js/users/exam.js"></script>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

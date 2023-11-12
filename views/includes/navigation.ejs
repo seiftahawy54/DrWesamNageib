@@ -1,32 +1,74 @@
-
 <nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand" href="/">Dr. Wasam Naguib</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav d-flex w-100 justify-content-end">
-                <li class="nav-item">
-                    <a class="nav-link <%- path === '/' ? 'active' : '' %>" aria-current="page" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link  <%- path === '/courses' ? 'active' : '' %>" href="/courses">Courses</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link <%- path === '/aboutme' ? 'active' : '' %>" href="/aboutme">About me</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <%- path === '/contact' ? 'active' : '' %>" href="/contact">Contact</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <%- path === '/cart' ? 'active' : '' %>" href="/cart">
-                        <%- include('../../public/imgs/svgs/cart.svg') %>
-                    </a>
-                </li>
-            </ul>
-        </div>
+  <div class="container">
+    <a class="navbar-brand" href="/">Quality Leaders</a>
+    <button class="navbar-toggler d-sm-block d-lg-none" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon">
+        <%- include('../../public/imgs/svgs/navbar_icon.svg') %>
+      </span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav d-flex w-100 justify-content-end">
+        <li class="nav-item">
+          <a class="nav-link <%- path === "/" ? "active" : "" %>" aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link  <%- path === "/courses" ? "active" : "" %>" href="/courses">Courses</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%- path === "/aboutus" ? "active" : "" %>" href="/aboutus">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%- path === "/contact" ? "active" : "" %>" href="/contact">Contact</a>
+        </li>
+        <% if (isUserAuthenticated) { %>
+          <!--          <div class="dropdown">-->
+          <!--            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"-->
+          <!--                    data-bs-toggle="dropdown" aria-expanded="false">-->
+          <!--              Profile-->
+          <!--            </button>-->
+          <!--            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">-->
+          <!--              <li><a class="dropdown-item" href="/exams">Exams</a></li>-->
+          <!--              &lt;!&ndash;              <li><a class="dropdown-item" href="#">Another action</a></li>&ndash;&gt;-->
+          <!--              &lt;!&ndash;              <li><a class="dropdown-item" href="#">Something else here</a></li>&ndash;&gt;-->
+          <!--            </ul>-->
+          <!--          </div>-->
+          <li class="nav-item">
+            <a class="nav-link <%- path === "/profile" ? "active" : "" %>" href="/profile">
+              Profile
+            </a>
+          </li>
+        <% } %>
+        <% if (!isUserAuthenticated && !isAuthenticated) { %>
+          <li class="nav-item">
+            <a class="nav-link login-button btn" href="/login">
+              Login
+            </a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <form action="/logout" method="POST">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <button class="nav-link login-button btn">Logout</button>
+            </form>
+          </li>
+        <% } %>
+        <% if (isAuthenticated) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard/overview">
+              Dashboard
+            </a>
+          </li>
+        <% } %>
+        <% if (isUserAuthenticated) { %>
+          <li class="nav-item">
+            <a class="nav-link <%- path === "/cart" ? "active" : "" %>" href="/cart">
+              <%- include('../../public/imgs/svgs/cart.svg') %>
+            </a>
+          </li>
+        <% } %>
+      </ul>
     </div>
+  </div>
 </nav>

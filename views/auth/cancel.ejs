@@ -1,0 +1,27 @@
+<%- include("../includes/top_part.ejs"); %>
+<style>
+    .cancel-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 161px);
+    }
+</style>
+</head>
+<body>
+
+<section class="cancel-page">
+  <div class="container">
+    <h2>Your payment has cancelled 😥</h2>
+    <p>You will be directed in few seconds...</p>
+  </div>
+</section>
+
+<script>
+  setTimeout(() => {
+    window.location = "<%- returnLocation %>"
+  }, 6000);
+</script>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

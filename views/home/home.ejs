@@ -1,175 +1,126 @@
 <%- include("../includes/top_part.ejs"); %>
 <link rel="stylesheet" href="/css/home.css" />
+<link href="https://unpkg.com/swiper@7/swiper-bundle.min.css" rel="stylesheet" />
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
 
 <!-- Start main header Section -->
 <section class="main-header">
-    <div class="container">
-        <p>Welcome to Dr. Wessam Nagib's webiste, a certified CPHQ trainer</p>
-        <h2>Your way to find success in your career</h2>
-        <video src="/videos/intro_vid.mp4" width="700" height="400" autoplay controls></video>
-        <div class="button-container">
-            <button class="btn">Browse Courses</button>
-            <button class="btn">Free Trial</button>
-        </div>
-        <div class="courses-scroll">
-            Our Courses
-            <%- include('../../public/imgs/svgs/down_arrow.svg') %>
-        </div>
+  <div class="container">
+    <%- include("../includes/errorMessage.ejs"); %>
+    <p>Welcome to Dr. Wesam Nageib's webiste</p>
+    <h2>Your way to find success in your career</h2>
+    <video src="/videos/intro_vid.mp4" autoplay controls></video>
+    <div class="button-container">
+      <a class="btn" href="/courses">Browse Courses</a>
+      <a class="btn" href="https://www.youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA/videos" target="_blank">Free
+        Trial</a>
     </div>
+    <div class="courses-scroll">
+      Our Courses
+      <%- include('../../public/imgs/svgs/down_arrow.svg') %>
+    </div>
+  </div>
 </section>
 <!-- End main header Section -->
 <!-- Start Our Courses Sections -->
 <section class="our-courses">
-    <div class="container">
-        <div class="row courses-container justify-content-center">
-            <div class="course-thumbnail col ">
-                <img src="/imgs/imgs/book.png" alt="Course thumbnail" />
-            </div>
-            <div class="course-text col">
-                <h3 class="course-title-en">CPHQ Preparation</h3>
-                <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-                <p>
-                    This course is designed for healthcare professionals who are seeking certification by the Healthcare
-                    Quality Certification Commission. The CPHQ Exam Preparation is an intensive review of the
-                    comprehensive body of knowledge that is designed according to the content outline of the CPHQ Exam.
-                </p>
-                <div class="button-container">
-                    <button class="btn">View Course</button>
-                    <button class="btn">Sample Session</button>
-                </div>
-            </div>
+  <div class="container">
+    <% courses.forEach((course, index) => { %>
+      <div class="row courses-container justify-content-center">
+        <div class="course-text col">
+          <h3 class="course-title-en"><%- course.name %></h3>
+          <h3 class="course-title-ar"><%- course.ar_course_name %></h3>
+          <p class="ar-font">
+            <%- course.description %>
+          </p>
+          <div class="button-container">
+            <a class="btn" href="/courses/<%- course.course_id %>">View Course</a>
+            <a class="btn" href="https://www.youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA/videos" target="_blank">
+              Sample Session
+            </a>
+          </div>
         </div>
-        <div class="row courses-container justify-content-center">
-            <div class="course-text offset-1 col">
-                <h3 class="course-title-en">CPHQ Preparation</h3>
-                <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-                <p>
-                    This course is designed for healthcare professionals who are seeking certification by the Healthcare
-                    Quality Certification Commission. The CPHQ Exam Preparation is an intensive review of the
-                    comprehensive body of knowledge that is designed according to the content outline of the CPHQ Exam.
-                </p>
-                <div class="button-container">
-                    <button class="btn">View Course</button>
-                    <button class="btn">Sample Session</button>
-                </div>
-            </div>
-            <div class="course-thumbnail col ">
-                <img src="/imgs/imgs/book.png" alt="Course thumbnail" />
-            </div>
+        <div class="course-thumbnail col ">
+          <img src="/downloaded_images/<%- course.course_img %>" alt="<%- course.name %>" />
         </div>
-        <div class="row courses-container justify-content-center">
-            <div class="course-thumbnail col ">
-                <img src="/imgs/imgs/book.png" alt="Course thumbnail" />
-            </div>
-            <div class="course-text col">
-                <h3 class="course-title-en">CPHQ Preparation</h3>
-                <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-                <p>
-                    This course is designed for healthcare professionals who are seeking certification by the Healthcare
-                    Quality Certification Commission. The CPHQ Exam Preparation is an intensive review of the
-                    comprehensive body of knowledge that is designed according to the content outline of the CPHQ Exam.
-                </p>
-                <div class="button-container">
-                    <button class="btn">View Course</button>
-                    <button class="btn">Sample Session</button>
-                </div>
-            </div>
-        </div>
-        <div class="row courses-container justify-content-center">
-            <div class="course-text offset-1 col">
-                <h3 class="course-title-en">CPHQ Preparation</h3>
-                <h3 class="course-title-ar">التحضير لامتحان جودة الرعاية الصحية</h3>
-                <p>
-                    This course is designed for healthcare professionals who are seeking certification by the Healthcare
-                    Quality Certification Commission. The CPHQ Exam Preparation is an intensive review of the
-                    comprehensive body of knowledge that is designed according to the content outline of the CPHQ Exam.
-                </p>
-                <div class="button-container">
-                    <button class="btn">View Course</button>
-                    <button class="btn">Sample Session</button>
-                </div>
-            </div>
-            <div class="course-thumbnail col ">
-                <img src="/imgs/imgs/book.png" alt="Course thumbnail" />
-            </div>
-        </div>
-    </div>
+      </div>
+    <% }) %>
+  </div>
 </section>
 <!-- End Our Courses Sections -->
-<!-- Start Testimonials -->
+<!-- Start JoinUs Section -->
 
-<section class="testimonials">
+<section class="join-us">
+  <div class="overlay">
     <div class="container">
-        <div class="text-center">
-            <%- include('../../public/imgs/svgs/comments.svg') %>
-            Testimonials
-        </div>
-        <!-- Starting Slider -->
-        <!-- Slider main container -->
-        <div class="swiper">
-            <!-- Additional required wrapper -->
-            <div class="swiper-wrapper">
-                <!-- Slides -->
-                <div class="swiper-slide">
-                    <section class="client-container">
-                        <div class="client-data">
-                            <%- include('../../public/imgs/svgs/account.svg') %>
-                            <div class="client-name-date">
-                                <div class="client-name">
-                                    John Doe
-                                </div>
-                                <div class="client-date">
-                                    January - 2022
-                                </div>
-                            </div>
-                        </div>
-                        <p class="client-opinion">
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eu aliquet diam, at
-                            interdum velit. Vivamus ut arcu non augue malesuada maximus. Cras hendrerit et dui
-                            quis varius."
-                        </p>
-                    </section>
-                </div>
-                <div class="swiper-slide">
-                    <section class="client-container">
-                        <div class="client-data">
-                            <%- include('../../public/imgs/svgs/account.svg') %>
-                            <div class="client-name-date">
-                                <div class="client-name">
-                                    John Doe
-                                </div>
-                                <div class="client-date">
-                                    January - 2022
-                                </div>
-                            </div>
-                        </div>
-                        <p class="client-opinion">
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eu aliquet diam, at
-                            interdum velit. Vivamus ut arcu non augue malesuada maximus. Cras hendrerit et dui
-                            quis varius."
-                        </p>
-                    </section>
-                </div>
-            </div>
-            <!-- If we need pagination -->
-            <div class="swiper-pagination"></div>
-
-            <!-- If we need navigation buttons -->
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
-        </div>
-        <!-- End Slider -->
+      <div class="text-center">
+        <h2>Make the best decision you could ever take in your career right now!</h2>
+        <p>Meet your expectations with our best in-game, highly trained, and well-skilled instructors.</p>
+        <a class="btn reset-link d-inline-flex" href="/courses">Join Now</a>
+      </div>
     </div>
+  </div>
 </section>
-<!-- End Testimonials -->
+
+<!-- End JoinUs Section -->
 <!-- Start info section -->
 <section class="info-section">
-    <p class="text-center"><a href="mailto:info@drwesam.com" class="reset-link">info@drwesam.com</a></p>
+  <p class="text-center"><a href="mailto:drwesamnageib@gmail.com" class="reset-link" target="_blank">drwesamnageib@gmail.com</a>
+  </p>
 </section>
 <!-- End info section -->
+<!-- Start Floating Whatsapp -->
+
+<div class="floating-whatsapp">
+  <a href="https://wa.me/966548794731">
+    <%- include("../../public/imgs/svgs/whatsapp.svg"); %>
+  </a>
+</div>
+
+<!-- End Floating Whatsapp -->
+<!-- Start Social Media -->
+
+<section class="social-media">
+  <a href="https://www.facebook.com/groups/690198168518293/?ref=share" class="reset-link" target="_blank">
+    <%- include("../../public/imgs/svgs/social_media/facebook.svg"); %>
+  </a>
+  <a href="https://www.linkedin.com/in/wesam-nageib-00132116a" class="reset-link" target="_blank">
+    <%- include("../../public/imgs/svgs/social_media/linkedin.svg"); %>
+  </a>
+  <a href="https://t.me/joinchat/HIXyqBaQ6su0JL3Q3jzjNg" class="reset-link" target="_blank">
+    <%- include("../../public/imgs/svgs/social_media/telegram.svg"); %>
+  </a>
+  <a href="https://youtube.com/channel/UCk_rc4hmGJgBhZj9bQMwYDA" class="reset-link" target="_blank">
+    <%- include("../../public/imgs/svgs/social_media/youtube.svg"); %>
+  </a>
+</section>
+
+<!-- End Social Media -->
 
 <%- include("../includes/footer.ejs"); %>
+
+<script async type="module">
+  import Swiper from "https://unpkg.com/swiper@7/swiper-bundle.esm.browser.min.js"
+
+  const swiper = new Swiper(".main-slider", {
+    loop: true,
+    autoplay: true,
+    // If we need pagination
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+
+    // Navigation arrows
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    slidesPerView: 1,
+  })
+
+</script>
+
 <%- include("../includes/bottom_part.ejs"); %>

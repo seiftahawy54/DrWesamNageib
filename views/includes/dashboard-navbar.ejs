@@ -1,0 +1,63 @@
+<nav class="navbar fixed-top">
+  <div class="container">
+    <div class="navbar-brand">
+      <div class="logged-in-user">
+        <div class="user-img">
+          <img class='img-fluid' src="/imgs/imgs/user_img.png" alt="user-thumbnail" />
+        </div>
+        <div class="user-info">
+          <span class="user-name">
+            <a href="/dashboard/overview" class="reset-link">
+              Dr. Wesam
+            </a>
+          </span>
+          <span class="user-type">
+            <a href="/" class="reset-link">
+              Owner
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- End NavbarHeader -->
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+            aria-controls="offcanvasNavbar">
+      <span class="navbar-toggler-icon">
+        <%- include('../../public/imgs/svgs/navbar_icon.svg') %>
+      </span>
+    </button>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel"></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body navbar-links-container">
+        <div class="nav-links">
+          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+            <%- include('./navlinks', {routeName: "overview", linkText: "Overview" }); %>
+            <%- include('./navlinks', {routeName: "users", linkText: "Users" }); %>
+            <%- include('./navlinks', {routeName: "rounds", linkText: "Rounds" }); %>
+            <%- include('./navlinks', {routeName: "courses", linkText: "Courses" }); %>
+            <%- include('./navlinks', {routeName: "messages", linkText: "Messages" }); %>
+            <%- include('./navlinks', {routeName: "opinions", linkText: "Opinions" }); %>
+            <%- include('./navlinks', {routeName: "payments", linkText: "Payments" }); %>
+            <%- include('./navlinks', {routeName: "about", linkText: "About" }); %>
+            <%- include('./navlinks', {routeName: "discounts", linkText: "Discounts" }); %>
+            <%- include('./navlinks', {routeName: "exams", linkText: "Exams" }); %>
+            <%- include('./navlinks', {routeName: "exams-replies", linkText: "Exams Replies" }); %>
+            <li class="nav-item">
+              <form action="/logout" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <button type="submit" class="reset-btn">
+                  <%- include('../../public/imgs/svgs/logout.svg') %>
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

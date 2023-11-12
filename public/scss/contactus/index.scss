@@ -1,0 +1,114 @@
+@use "../utils/common" as common;
+@use "../utils/variables" as vars;
+@use "../utils/mediaFns" as mediaQ;
+
+.contact-us {
+  margin-block-start: 60px;
+  height: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h3 {
+    margin-block-end: 30px;
+  }
+
+  .separator {
+    width: 2px;
+    height: 100%;
+    background-color: vars.$main_color;
+  }
+
+  form {
+    position: relative;
+    /*
+
+    &:after {
+      content: "";
+      top: 0;
+      right: 0;
+      width: 1px;
+      height: 300px;
+      background-color: red;
+      position: absolute;
+    }
+    */
+
+    /*.form-control {
+      border: none;
+      padding: 0;
+
+      input, textarea {
+        width: 100%;
+        border: 1px solid vars.$main_color;
+        border-radius: 4px;
+        padding: 12px;
+
+        &::placeholder {
+          font-family: vars.$sans_font;
+        }
+      }
+
+      textarea {
+        height: 160px;
+      }
+
+      &:nth-of-type(even) {
+        margin-block: 20px;
+      }
+    }*/
+
+    textarea {
+      height: 160px !important;
+    }
+
+    button {
+      width: 100%;
+      margin-block-start: 20px;
+    }
+  }
+
+  .contact-alternative {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    height: 100%;
+
+    a {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: vars.$xl_font_size;
+
+      svg:not(:nth-of-type(1)) {
+        @include common.similarHW(28px);
+      }
+    }
+  }
+}
+
+@include mediaQ.allSmScreens {
+  .contact-us {
+    min-height: 100vh;
+
+    .contact-alternative {
+      gap: 30px;
+      border-top: 1px solid vars.$main_color;
+      margin-block: 30px;
+
+      * {
+        font-size: vars.$sm_font_size !important;
+      }
+    }
+  }
+}
+
+@include mediaQ.tabletIpad {
+  .contact-us {
+    h3 {
+      font-size: vars.$md_header_size !important;
+    }
+  }
+}

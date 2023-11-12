@@ -1,0 +1,187 @@
+<%- include("../../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css">
+<link rel="stylesheet" href="/css/dashboard/about.css" />
+
+
+<script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+</head>
+<body>
+
+
+<section id="app">
+  <%- include("../../includes/dashboard-navbar.ejs"); %>
+
+  <div class="container">
+    <div class="custom-head">
+      <h2>
+        <% if (editMode === true) { %>
+          <%= "Update instructor data" %>
+        <% } else { %>
+          <%= "Add new instructor data" %>
+        <% } %>
+      </h2>
+      <span></span>
+    </div>
+
+    <div class="col-12">
+      <%- include('../../includes/errorMessage.ejs') %>
+
+      <form
+        action="<% if (editMode === true) { %> <%= `/dashboard/about/edit-instructor/${instructor.instructor_id}` %> <% } else { %> <%= "/dashboard/about/add-new-instructor" %> <% } %>"
+        method="post" enctype="multipart/form-data">
+        <div class="form-floating my-3">
+          <input type="text" name="instructor_name" placeholder="Instructor Name"
+                 value="<% if (editMode === true) { %> <%= instructor.instructor_name %>
+            <% } %>"
+                 class="form-control my-3 " id="instructor_name" />
+          <label for="instructor_name">Instructor Name</label>
+        </div>
+
+        <div class="form-floating my-3">
+          <textarea name="instructor_data" class="form-control editor-<%- instructor.instructor_id %>"
+                    placeholder="Instructor Data"></textarea>
+        </div>
+
+        <div class="my-3">
+          <div class="input-group">
+            <label for="instructor_img" class="input-group-text">Instructor Personal Image</label>
+            <input type="file" name="instructor_img" placeholder="Instructor Image"
+                   class="form-control"
+                   id="instructor_img" />
+          </div>
+        </div>
+
+        <div class="my-3">
+          <div class="input-group">
+            <label for="instructor_certificates" class="input-group-text">Instructor Certificates</label>
+            <input type="file" name="instructor_certificates" placeholder="Instructor Certificates"
+                   class="form-control"
+                   multiple="true"
+                   id="instructor_certificates" />
+          </div>
+        </div>
+
+
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <input type="hidden" name="instructorId" value="<%= instructor.course_id %>">
+
+        <button class="btn" type="submit" id="submitButton">
+          <% if (editMode === true) { %>
+            <%= "Update instructor data" %>
+          <% } else { %>
+            <%= "Add new instructor" %>
+          <% } %>
+        </button>
+      </form>
+      <!--      <div v-if="serverError.length > 0" class="alert alert-danger text-center fs-2">
+              {{ serverError }}
+            </div>
+
+            <div v-if="serverSuccess.length > 0" class="alert alert-info text-center fs-2">
+              {{ serverSuccess }}
+            </div>-->
+
+      <!--<form @submit.prevent="submitForm">
+        <div class="form-floating my-3">
+          <input type="text" name="instructor_name" placeholder="Instructor Name"
+                 class="form-control" v-model="instructor_name"
+                 :class="{ 'is-invalid': errors.find(e => e.name === 'instructor_name') }"
+                 id="instructor_name" />
+          <label for="instructor_name">Instructor Name</label>
+          <div v-if="errors.find(e => e.name === 'instructor_name')">
+            <span class="text-danger fs-6" v-text="errors[errors.findIndex(e => e.name === 'instructor_name')].message">
+            </span>
+          </div>
+        </div>
+
+        <div class="my-3">
+          <textarea name="instructor_data" class="form-control editor-<%- instructor.instructor_id %>"
+                    placeholder="Instructor Data">
+              </textarea>
+          &lt;!&ndash;          <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>&ndash;&gt;
+
+          <div v-if="errors.find(e => e.name === 'instructor_data')">
+            <span class="text-danger fs-6" v-text="errors[errors.findIndex(e => e.name === 'instructor_data')].message">
+            </span>
+          </div>
+        </div>
+
+        <div class="my-3">
+          <div class="input-group">
+            <label for="instructor_img" class="input-group-text">Instructor Personal Image</label>
+            <input type="file" name="instructor_img" placeholder="Instructor Image"
+                   class="form-control" @change="addInstructorImg"
+                   :class="{ 'is-invalid': errors.find(e => e.name === 'instructor_img') }"
+                   id="instructor_img" />
+          </div>
+          <div v-if="errors.find(e => e.name === 'instructor_img')">
+            <span class="text-danger fs-6" v-text="errors[errors.findIndex(e => e.name === 'instructor_img')].message">
+            </span>
+          </div>
+        </div>
+
+        <div class="my-3">
+          <div class="input-group">
+            <label for="instructor_certificates" class="input-group-text">Instructor Certificates</label>
+            <input type="file" name="instructor_certificates" placeholder="Instructor Certificates"
+                   class="form-control" @change="addInstructorCertificates"
+                   multiple="true"
+                   :class="{ 'is-invalid': errors.find(e => e.name === 'instructor_certificates') }"
+                   id="instructor_certificates" />
+          </div>
+          <div v-if="errors.find(e => e.name === 'instructor_certificates')">
+            <span class="text-danger fs-6"
+                  v-text="errors[errors.findIndex(e => e.name === 'instructor_certificates')].message">
+            </span>
+          </div>
+          <div v-if="instructor_certificates.length > 0">
+            <h4>Selected Images</h4>
+            <ol>
+              <li v-for="img in instructor_certificates">
+                {{ img }}
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <button class="btn" type="submit" id="submitButton">
+          <% if (editMode === true) { %>
+            <%= "Update instructor data" %>
+          <% } else { %>
+            <%= "Add new instructor" %>
+          <% } %>
+        </button>
+        <input type="hidden" value="<%= csrfToken %>" ref="csrfToken">
+      </form>-->
+    </div>
+
+  </div>
+</section>
+
+
+<script>
+
+  let editorElement = document.querySelector(".editor-<%- instructor.instructor_id %>")
+  ClassicEditor
+    .create(editorElement, {
+      toolbar: ["heading", "|", "bold", "italic", "link", "|", "bulletedList", "numberedList", "undo", "redo", "insertTable", "|",
+        "indent", "outdent", "|"],
+    })
+    .then(editorData => {
+      editor = editorData
+      <% if (editMode === true) { %>
+      editor.setData("<%- instructor.instructor_data %>")
+      <% } %>
+    })
+    .catch(err => {
+      console.error(err)
+    })
+
+  ClassicEditor.replaceAll()
+
+</script>
+
+
+<%- include("../../includes/bottom_part.ejs"); %>

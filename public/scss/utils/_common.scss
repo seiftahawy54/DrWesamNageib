@@ -1,4 +1,11 @@
-@use 'variables' as vars;
+@use "variables" as vars;
+
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 
 @mixin similarHW($dimension, $important: null) {
   @if ($important) {
@@ -41,5 +48,5 @@
 }
 
 %commonTransition {
-  transition: all .25s ease-in-out;
+  transition: all 0.25s ease-in-out;
 }

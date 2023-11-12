@@ -1,0 +1,167 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/auth/complete-payment.css"/>
+</head>
+<body>
+
+<% if (Array.isArray(bought_courses)) { %>
+
+  <section class="complete-payment">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <%- include('../includes/errorMessage.ejs'); %>
+          <h2 class="h1">
+            Your Going to buy:
+          </h2>
+          <div class="bought-course-data">
+            <% bought_courses.forEach(course => { %>
+              <div class="course-name">
+                course name:
+                <div class="data">
+                  <%= course.name %>
+                </div>
+              </div>
+            <% }) %>
+            <% bought_courses.forEach(course => { %>
+              <div class="course-price">
+                course price:
+                <% if (couponData) { %>
+                  <div class="data">
+                    &dollar;<%= course.price %>
+                    <del>&dollar;<%= course.oldPrice %></del>
+                  </div>
+                <% } else  { %>
+                  <div class="data">
+                    &dollar; <%= course.price %>
+                  </div>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+
+          <div id="paypal-button-container">
+
+          </div>
+
+        </div>
+        <div class="col-md-4">
+          <h3 class="h2">Have a coupon?</h3>
+          <form action="/apply-coupon" method="POST">
+            <div class="my-3 form-floating">
+              <input type="text" name="coupon_name" id="coupon_name" placeholder="Coupon" class="form-control"/>
+              <label for="coupon_name">Enter your coupon</label>
+            </div>
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+            <button class="btn" type="submit">
+              Apply coupon
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=<%- clientId %>&components=buttons"></script>
+  <script type="module">
+
+    try {
+      // const courseJSON = '//JSON.stringify(course)        ';
+      // const courseObject = JSON.parse(courseJSON);
+      const boughtCoursesString = '<%- JSON.stringify(bought_courses) %>'
+      const boughtCoursesJSON = JSON.parse(boughtCoursesString)
+      const boughtArray = boughtCoursesJSON.map((course) => {
+        return {
+          item: {
+            name: course.name,
+            price: course.price
+          }
+        }
+      })
+
+      const strigifiedCourses = JSON.stringify(boughtArray)
+
+      paypal.Buttons({
+        createOrder: function () {
+          return fetch("/create-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": "<%= csrfToken %>"
+            },
+            body: strigifiedCourses
+          })
+            .then((response) => {
+              if (response.ok) {
+                return response.json();
+              }
+              return response.json().then(json => {
+                Promise.reject(json);
+              })
+                .catch(err => {
+                  console.error(err)
+                });
+            })
+            .then(wantedThings => {
+              console.log(`wantedthings`, wantedThings);
+              return wantedThings.id;
+            })
+            .catch(err => {
+              console.error(err);
+            });
+        },
+        onApprove: function (data, actions) {
+          // This function captures the funds from the transaction.
+          return actions.order.capture().then(function (details) {
+            fetch("/success_payment", {
+              method: "POST",
+              headers: {
+                "x-csrf-token": "<%= csrfToken %>"
+              },
+              redirect: "follow",
+              body: JSON.stringify({
+                purchasingDetails: details
+              })
+            })
+              .then(response => {
+                console.log("server_response", response);
+                window.location = response.url;
+              });
+          })
+            .catch(err => {
+              console.error(`approve error`, err);
+            });
+        },
+        onCancel: (data) => {
+          window.location = "/cancel_payment";
+          fetch("/cancel_payment", {
+            method: "get",
+            body: JSON.stringify({
+              cancellingData: data
+            })
+          })
+            .then(response => {
+              console.log("server_response", response);
+            })
+            .catch(err => {
+              console.error(`approve error`, err);
+            });
+        },
+        onError: () => {
+          return window.location = '/';
+        },
+        style: {
+          layout: "vertical",
+          color: "blue",
+          shape: "rect",
+          label: "paypal"
+        }
+      }).render("#paypal-button-container");
+    } catch (e) {
+      window.location.herf = "/"
+    }
+  </script>
+<% } %>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

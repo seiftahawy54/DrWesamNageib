@@ -1,0 +1,104 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css" />
+</head>
+<body>
+
+<section class="courses">
+  <%- include("../includes/dashboard-navbar.ejs"); %>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="content">
+          <div class="custom-head">
+            <h2>
+              Update User
+            </h2>
+            <span></span>
+          </div>
+          <form
+            action="/dashboard/users/edit-user/<%= user.user_id %>"
+            method="POST">
+            <div class="form-floating my-3">
+              <input type="text" name="name" placeholder="User Name" class="form-control"
+                     value="<%= user.name %>" id="user_name" />
+              <label for="user_name">User Name</label>
+            </div>
+            <div class="form-floating my-3">
+              <input type="text" name="email" placeholder="User Email" class="form-control"
+                     value="<%= user.email %>" id="user_email" />
+              <label for="user_email">User Email</label>
+            </div>
+            <div class="form-floating my-3">
+              <input type="tel" name="whatsapp_no" placeholder="User Number" class="form-control"
+                     value="<%= user.whatsapp_no %>" id="whatsapp_no" />
+              <label for="whatsapp_no">Whatsapp Number</label>
+            </div>
+            <div class="form-floating my-3">
+              <input type="text" name="specialization" placeholder="User Specialization" class="form-control"
+                     value="<%= user.specialization %>" id="specialization" />
+              <label for="specialization">Specialization</label>
+            </div>
+            <% if (user.current_round) { %>
+              <div class="form-check my-3">
+                <input type="checkbox" name="finishing_round" id="finishing_round" class="form-check-input" />
+                <label for="finishing_round" class="form-check-label">Finished Round</label>
+              </div>
+            <% } %>
+
+            <% if (user.current_round) { %>
+              <div class="form-floating my-3">
+                <input type="text" name="current_round" placeholder="Current Round" class="form-control" disabled
+                       value="<%= user.current_round %>" id="current_round" />
+                <label for="current_round">Current Round</label>
+              </div>
+            <% } %>
+
+            <% if (performedExams?.length > 0) { %>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th scope="col">
+                      Exam Title
+                    </th>
+                    <th scope="col">
+                      Exam Grade
+                    </th>
+                    <th scope="col">
+                      Perform Date
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <% performedExams.forEach(reply => { %>
+                    <tr>
+                      <td>
+                        <%= reply.title %>
+                      </td>
+                      <td>
+                        <%= reply.grade %>
+                      </td>
+                      <td>
+                        <%= moment(reply.createdAt).format("DD-MM-YYYY") %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            <% } %>
+
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <button type="submit" class="btn">
+              Update User
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/bottom_part.ejs"); %>

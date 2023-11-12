@@ -1,0 +1,11 @@
+<% if (errorMessage.length > 0) { %>
+  <div class="alert fs-4 text-center alert-danger" role="alert">
+    <%- errorMessage[0]; %>
+  </div>
+<% } %>
+
+<% if (successMessage.length > 0) { %>
+  <div class="alert fs-4 text-center alert-primary" role="alert">
+    <%- successMessage[0] %>
+  </div>
+<% } %>

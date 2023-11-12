@@ -1,0 +1,70 @@
+<%- include('./includes/top_part.ejs'); %>
+
+Our main testing page!
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script src="/js/axios.min.js"></script>
+
+
+<div id="app">
+  <div v-for="item in Object.keys(message)">
+    {{item}} => {{ message[item] }}
+  </div>
+</div>
+
+
+<!--<Suspense>-->
+<!--  <template id="app">{{ message }}</template>-->
+<!--</Suspense>-->
+
+<script async>
+  const { createApp } = Vue
+
+
+  /*  async function setup() {
+      return (await axios.get('/user-data')).data
+    }*/
+
+
+  async function mounted() {
+    this.message = (await axios.get('/user-data')).data.user
+
+    console.log(this.message)
+  }
+
+  createApp({
+    data() {
+      return {
+        message: ''
+      }
+    },
+    mounted
+  }).mount('#app')
+</script>
+
+<!--<div id="like_button_container"></div>-->
+
+<!-- Load React. -->
+<!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+<!--<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>-->
+<!--<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>-->
+<!--<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>-->
+
+<!--&lt;!&ndash;<script src="/js/like_button.js"></script>&ndash;&gt;-->
+<!--<script type="text/babel">-->
+<!--  const LikeButton = React.createClass({-->
+<!--    render: () => {-->
+<!--      return <div>Testing</div>-->
+<!--    },-->
+<!--  })-->
+
+
+<!--  const domContainer = document.querySelector("#like_button_container")-->
+<!--  const root = ReactDOM.createRoot(domContainer)-->
+<!--  // root.render(e(LikeButton));-->
+<!--  root.render()-->
+
+<!--</script>-->
+
+<%- include('./includes/bottom_part.ejs'); %>

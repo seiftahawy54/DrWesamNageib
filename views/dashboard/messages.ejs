@@ -1,0 +1,59 @@
+<%- // include("../includes/top_part.ejs");    %>
+
+
+<%- include("./general_tables.ejs"); %>
+
+<!--
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css"/>
+<link rel="stylesheet" href="/css/dashboard/messages.css"/>
+</head>
+<body>
+
+<section class="courses messages">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- // include("../includes/dashboard-navbar.ejs");  %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <main class="content-header">
+            <div class="custom-head">
+              <h2>Messages</h2>
+              <span></span>
+            </div>
+          </main>
+
+          <div class="courses-data messages-data">
+            <div class="table-head">
+              <span class="message-name">Message email</span>
+              <span class="message-email">Message name</span>
+              <span class="message-content">Message Content</span>
+              <span class="message-delete">Delete Message</span>
+            </div>
+            <% /* messages.forEach(message => {  %>
+              <div class="table-row">
+                <span class="message-name"><%=  message.sendername  %></span>
+                <span class="message-email"><%=  message.senderemail  %></span>
+                <span class="message-content"><%=  message.message;  %></span>
+                <div class="course-delete">
+                  <form action="/dashboard/delete-message" method="post">
+                    <input type="hidden" name="_csrf" value="<%=  csrfToken;  %>"/>
+                    <input type="hidden" name="messageId" value="<%=  message.messageid;  %>">
+                    <button type="submit" class="btn btn-danger">Delete message</button>
+                  </form>
+                </div>
+              </div>
+            <%  }); */ %>
+          </div>
+          <%- // include("../includes/pagination.ejs");  %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+-->
+
+<%- // include("../includes/bottom_part.ejs");    %>

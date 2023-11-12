@@ -1,0 +1,27 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/opinion/index.css">
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="opinions">
+  <div class="container">
+    <div class="custom-head">
+      <h2 class="h1 text-center">What our clients say about us 😄</h2>
+      <span></span>
+    </div>
+    <section class="opinions-images">
+      <% opinionsImages.forEach((opinion, index) => { %>
+        <div class="opinion-<%= index + 1 %>">
+          <img src="/imgs/imgs/opinions/<%- opinion %>" alt="<%= index %>" class="opinion-img"/>
+        </div>
+      <% }) %>
+    </section>
+    <section class="opinions-join text-center">
+      What are you waiting for?! <a href="/courses/" class="btn">join now!</a>
+    </section>
+  </div>
+</section>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

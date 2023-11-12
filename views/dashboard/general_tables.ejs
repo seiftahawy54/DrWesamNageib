@@ -1,0 +1,264 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css" />
+<link rel="stylesheet" href="/css/dashboard/dashboard.css" />
+<link rel="stylesheet" href="/css/dashboard/courses.css">
+<link rel="stylesheet" href="/css/dashboard/about.css" />
+
+<style>
+    .table-head {
+        grid-template-columns: repeat(<%= tableHead.length %>, 1fr) !important;
+    }
+
+    .table-row {
+        grid-template-columns: repeat(<%= tableHead.length %>, 1fr) !important;
+    }
+
+    td.<%= tableName.toLowerCase() %>-update a, td.<%= singleTableName.toLowerCase() %>-delete a {
+        width: fit-content;
+        margin: auto;
+    }
+
+    span.round-user {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px 20px;
+    }
+
+    span.chip {
+        border-radius: 30px;
+        background-color: var(--bs-primary);
+        color: #fff;
+        padding: 0 0.6em;
+        display: block;
+    }
+
+    td.replies {
+        /*display: grid;*/
+        /*grid-template-columns: auto auto auto;*/
+    }
+
+    .message {
+        word-break: break-all;
+        overflow: scroll;
+    }
+
+    .custom-head {
+        text-align: left;
+    }
+
+</style>
+</head>
+<body>
+
+<section class="courses <%= tableName %>">
+  <%- include("../includes/dashboard-navbar.ejs"); %>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="content text-center">
+          <%- include("../includes/errorMessage.ejs"); %>
+          <main class="content-header">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="custom-head col-2">
+                  <h2><%= tableName %></h2>
+                  <span></span>
+                </div>
+                <% if ("searching" in customStuff) { %>
+                  <form action="/dashboard/<%= tableName.toLowerCase() %>" method="get" class="offset-4 col-4">
+                    <input type="search" name="search" placeholder="Search"
+                           id="searching_users" class="form-control form-control" />
+                  </form>
+                  <a class="btn btn-success col-2"
+                     href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
+                    Add new <%= singleTableName.toLowerCase() %>
+                  </a>
+                <% } else if ("deletingAllMessages" in customStuff) { %>
+                  <div class="offset-lg-6 col-md-4">
+                    <div class="row">
+                      <form class="col-md-5" action="/dashboard/messages/delete-all-messages" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <button class="btn btn-danger">
+                          Delete all messages
+                        </button>
+                      </form>
+                      <div class="col-md-5 offset-md-2">
+                        <a class="btn btn-success "
+                           href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
+                          Add new <%= singleTableName.toLowerCase() %>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                <% } else if ("notHaveNewInsert" in customStuff) { %>
+
+                <% } else { %>
+                  <div class="offset-8 col-2">
+                    <a class="btn btn-success"
+                       href="/dashboard/<%= tableName.toLowerCase() %>/add-new-<%= addingNewLink %>">
+                      Add new <%= singleTableName.toLowerCase() %>
+                    </a>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </main>
+          <div class="table-responsive">
+            <table class="table align-middle ">
+              <thead>
+              <tr>
+                <% tableHead.forEach(column => { %>
+                  <th scope='col' class="<%= tableName %>-<%= column.name %>"><%- column.title %></th>
+                <% }) %>
+              </tr>
+              </thead>
+              <tbody>
+              <% tableRows.forEach(({
+                                      data,
+                                      primaryKey,
+                                      updateInputName,
+                                    }, index) => { %>
+                <tr>
+                  <% if (!("pagination" in customStuff)) { %>
+                    <th class="table-active">
+                      <%= index + 1 %>
+                    </th>
+                  <% } %>
+                  <% Object.entries(data.item).forEach((item, index) => { %>
+                    <td class="<%- item[0].toLowerCase() %> <%- item[0] === "index" ? "table-active" : "" %>">
+                      <%- item[1] %>
+                    </td>
+                  <% }) %>
+                  <% if ("notHaveUpdate" in customStuff) { %>
+                  <% } else { %>
+                    <td class="<%= tableName.toLowerCase() %>-update">
+                      <a
+                        href="/dashboard/<%= tableName.toLowerCase() %>/edit-<%= singleTableName.toLowerCase() %>/<%= primaryKey %>?edit=true"
+                        class="btn btn-success">
+                        Update <%= tableName %>
+                      </a>
+                    </td>
+                  <% } %>
+                  <% if ("notDeleteRow" in customStuff) { %>
+                  <% } else if ("repliesDeletion" in customStuff) { %>
+                    <td class="<%= tableName.toLowerCase() %>-delete">
+                      <form
+                        id="deleteRowForm"
+                        action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= singleTableName.toLowerCase() %>"
+                        method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey %>">
+                        <button type="submit" class="btn btn-danger" id="deleteRowButton">
+                          Delete <%= tableName %></button>
+                      </form>
+                    </td>
+                  <% } else { %>
+                    <td class="<%= tableName.toLowerCase() %>-delete">
+                      <form
+                        id="deleteRowForm"
+                        action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= tableName.toLowerCase() %>"
+                        method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey %>">
+                        <button type="submit" class="btn btn-danger" id="deleteRowButton">
+                          Delete <%= tableName %></button>
+                      </form>
+                    </td>
+                  <% } %>
+                </tr>
+              <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <% if ("pagination" in customStuff) { %>
+            <%- include('../includes/pagination.ejs', { paginationOptions: customStuff.pagination }); %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% if ("copyLink" in customStuff) { %>
+  <button type="button" class="btn btn-primary d-none" id='copyAlert' data-bs-toggle="modal"
+          data-bs-target="#exampleModal">
+    Copy Modal
+  </button>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Link Copied</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Exam Link has been copied!
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary d-none" id="deletingModalButton" data-bs-toggle="modal"
+        data-bs-target="#confirmationModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Deletion Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete it?
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" id="confirmDeletionButton">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  <% if ("copyLink" in customStuff) { %>
+  const showCopyModal = document.getElementById("copyAlert")
+  console.log(showCopyModal)
+
+  const copyExamLink = (link) => {
+    navigator.clipboard.writeText(`${window.origin}${link.textContent}`)
+    console.log(showCopyModal)
+    showCopyModal.click()
+  }
+  <% } %>
+
+  const deletingButton = document.querySelector("#deleteRowButton")
+  const deletingForm = document.querySelector("#deleteRowForm")
+  const deletingModalButton = document.querySelector("#deletingModalButton")
+  const confirmDeletion = document.querySelector("#confirmDeletionButton")
+
+  deletingForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+
+    console.log(`confirmDeletion`, confirmDeletion)
+
+    deletingModalButton.click()
+
+    confirmDeletion.addEventListener("click", () => {
+      deletingForm.submit()
+    })
+
+  })
+
+</script>
+
+<%- include("../includes/bottom_part.ejs"); %>

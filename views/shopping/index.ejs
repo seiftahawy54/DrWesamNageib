@@ -1,0 +1,86 @@
+<%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/cart/cart.css">
+</head>
+<body>
+<%- include("../includes/navigation.ejs"); %>
+
+<section class="shopping-cart">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 col-xs-12">
+        <div class="cart-header">
+          <h3>My Cart</h3>
+          <a href="/courses" class="reset-link">
+            Continue shopping
+            <%- include('../../public/imgs/svgs/right_chevron.svg') %>
+          </a>
+        </div>
+        <hr/>
+        <% if (bought_courses.length > 0) { %>
+          <div class="cart-content">
+            <% bought_courses.forEach((course, index)=> { %>
+              <div class="row purchase-details">
+                <div class="col-6">
+                  <img src="/downloaded_images/<%- course.course_img %>" alt="<%- course.name %>"
+                       class="w-100 img-fluid"/>
+                </div>
+                <div class="col-5">
+                  <h3><%- course.name; %></h3>
+                  <p>&dollar; <%- course.price; %></p>
+                  <p><%- course.course_thumbnail; %></p>
+                  <p><%= moment(roundsDates[index]).format("DD-MM-YYYY"); %></p>
+                </div>
+                <form action="/delete_from_cart" class="delete-icon" method="POST">
+                  <input type="hidden" name="courseId" value="<%- course.course_id %>">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                  <button class="reset-btn" type="submit">
+                    <%- include('../../public/imgs/svgs/delete_icon.svg') %>
+                  </button>
+                </form>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <h4>There's no courses in your cart, you can go and add some</h4>
+          <a href="/courses" class="btn">Courses</a>
+        <% } %>
+      </div>
+      <div class="col-lg-4 col-xs-12 offset-lg-2">
+        <h3>Order Summary</h3>
+        <hr/>
+        <div>
+          <div class="row">
+            <div class="col">
+              <h4>
+                Subtotal
+              </h4>
+            </div>
+            <div class="col">
+              <% bought_courses.forEach(course => { %>
+                <p>&dollar;<%- course.price %></p>
+              <% }) %>
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="col">
+              <h4>
+                Total
+              </h4>
+            </div>
+            <div class="col">
+              &dollar;<%= totalPrice %>
+            </div>
+          </div>
+          <a class="btn w-100" href="/complete_payment">
+            Complete To Checkout
+            <!--            Pay with <img src="/imgs/imgs/paypal.png" alt="Pay with paypal" class="d-inline"/>-->
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include("../includes/footer.ejs"); %>
+<%- include("../includes/bottom_part.ejs"); %>

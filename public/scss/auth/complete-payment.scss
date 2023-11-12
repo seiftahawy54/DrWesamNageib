@@ -1,0 +1,33 @@
+@use "../utils/variables" as vars;
+@use "../utils/common" as common;
+
+.complete-payment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 131px);
+
+  .bought-course-data {
+    border: 1px solid vars.$main_color;
+    border-radius: 4px;
+    padding: 24px;
+    //width: 50vw;
+    margin-block: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    .data {
+      background-color: vars.$main_color;
+      color: #fff;
+      padding: 10px;
+      width: fit-content;
+      border-radius: 4px;
+    }
+
+    .course-name,
+    .course-price {
+      font-size: vars.$lg_font_size;
+    }
+  }
+}

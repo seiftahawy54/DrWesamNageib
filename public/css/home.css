@@ -1,3 +1,9 @@
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
 .our-courses .course-text .button-container, .main-header .button-container {
   display: flex;
   width: 100%;
@@ -10,21 +16,21 @@
   height: 55px;
 }
 .our-courses .course-text .button-container button:nth-of-type(1), .main-header .button-container button:nth-of-type(1) {
-  background-color: #E354A1;
+  background-color: #545ee3;
   color: #fff;
 }
 .our-courses .course-text .button-container button:nth-of-type(1):hover, .main-header .button-container button:nth-of-type(1):hover {
   background-color: transparent;
-  color: #E354A1;
-  border: 1px solid #E354A1;
+  color: #545ee3;
+  border: 1px solid #545ee3;
 }
 .our-courses .course-text .button-container button:nth-of-type(2), .main-header .button-container button:nth-of-type(2) {
   background-color: transparent;
-  color: #E354A1;
-  border: 1px solid #E354A1;
+  color: #545ee3;
+  border: 1px solid #545ee3;
 }
 .our-courses .course-text .button-container button:nth-of-type(2):hover, .main-header .button-container button:nth-of-type(2):hover {
-  background-color: #E354A1;
+  background-color: #545ee3;
   color: #fff;
 }
 
@@ -39,6 +45,7 @@
   font-weight: bold;
   margin-block-end: 45px;
   font-size: 32px;
+  font-variant: small-caps;
 }
 .main-header video {
   margin-block: 0 30px;
@@ -46,10 +53,29 @@
   object-fit: cover;
   width: 700px;
   height: 400px;
+  max-width: 100%;
 }
 .main-header .courses-scroll {
   margin-block: 40px 100px;
-  color: #E354A1;
+  color: #545ee3;
+}
+
+.whatsapp_opinions .swiper {
+  padding-block-end: 20px;
+}
+.whatsapp_opinions .swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.whatsapp_opinions .swiper img {
+  object-fit: contain;
+  max-width: 100%;
+  width: 500px;
+  height: 500px;
+}
+.whatsapp_opinions .swiper .swiper-pagination {
+  bottom: -3px;
 }
 
 .our-courses .courses-container {
@@ -62,6 +88,7 @@
   margin: auto;
 }
 .our-courses .course-text .course-title-ar {
+  direction: rtl;
   font-family: "Cairo", sans-serif !important;
 }
 .our-courses .course-text p {
@@ -76,7 +103,7 @@
   display: flex;
 }
 .testimonials .client-container {
-  width: 536px;
+  max-width: 536px;
   margin: auto;
 }
 .testimonials .client-container .client-data {
@@ -95,6 +122,114 @@
 }
 .testimonials .client-container p.client-opinion {
   line-height: 40px;
+}
+
+.join-us {
+  background-image: url("/imgs/imgs/drs.jpg");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-blend-mode: color;
+  margin-block-end: 30px;
+}
+.join-us .overlay {
+  min-height: 400px;
+  background-color: rgba(84, 94, 227, 0.7);
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.join-us .overlay div {
+  line-height: 40px;
+}
+.join-us .overlay div h2 {
+  font-size: 2.35rem;
+  font-weight: bolder;
+}
+.join-us .overlay div p,
+.join-us .overlay div a {
+  font-size: 20px;
+}
+.join-us .overlay a {
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+.join-us .overlay a:hover {
+  color: #fff;
+  border-color: #fff;
+}
+
+.floating-whatsapp {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 999;
+  background-color: #fff;
+  width: 70px;
+  height: 70px;
+  border: 1px solid #545ee3;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);
+}
+
+.social-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-block-start: 50px;
+}
+
+@media (max-width: 575px) {
+  video {
+    object-fit: contain !important;
+  }
+
+  .join-us h2 {
+    font-size: 20px !important;
+  }
+  .join-us a,
+.join-us p {
+    font-size: 16px !important;
+  }
+
+  .floating-whatsapp {
+    width: 50px;
+    height: 50px;
+  }
+  .floating-whatsapp svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  video {
+    object-fit: contain !important;
+  }
+
+  .join-us h2 {
+    font-size: 20px !important;
+  }
+  .join-us a,
+.join-us p {
+    font-size: 16px !important;
+  }
+
+  .floating-whatsapp {
+    width: 50px;
+    height: 50px;
+  }
+  .floating-whatsapp svg {
+    width: 30px;
+    height: 30px;
+  }
 }
 
 /*# sourceMappingURL=home.css.map */

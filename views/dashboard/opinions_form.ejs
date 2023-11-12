@@ -1,0 +1,87 @@
+<%- include("../includes/top_part.ejs"); %>
+<!-- Dashboard Globals -->
+<%- include("../includes/dashboard_includes.ejs"); %>
+<link rel="stylesheet" href="/css/dashboard/navbar.css"/>
+<link rel="stylesheet" href="/css/dashboard/dashboard.css"/>
+<link rel="stylesheet" href="/css/dashboard/courses.css"/>
+<script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+</head>
+<body>
+
+<section class="opinions courses">
+  <div class="container-fluid g-0">
+    <div class="row g-0">
+      <div class="col-3">
+        <%- include("../includes/dashboard-navbar.ejs"); %>
+      </div>
+      <div class="col-9">
+        <div class="content">
+          <div class="custom-head">
+            <h2>
+              Update Opinion
+            </h2>
+            <span></span>
+          </div>
+
+          <%- include("../includes/errorMessage.ejs"); %>
+          <form
+            action="/dashboard/edit-opinion/<%- opinion.opinion_id %>"
+            method="POST" enctype="multipart/form-data">
+            <div class="form-floating my-3">
+              <input type="text" name="sender_name" placeholder="Opinion Name"
+                     class="form-control <%= validationErrors.find(e => e.param === 'sender_name') ? "is-invalid" : "" %>"
+                     value="<%= opinion.sender_name %>" id="opinion_name"/>
+              <label for="opinion_name">Sender Name</label>
+            </div>
+            <div class="form-floating my-3">
+              <input type="email" name="sender_email" placeholder="Opinion Email"
+                     class="form-control <%= validationErrors.find(e => e.param === 'sender_email') ? "is-invalid" : "" %>"
+                     value="<%= opinion.sender_email %>" id="opinion_email"/>
+              <label for="opinion_email">Sender Email</label>
+            </div>
+
+            <div class="form-floating my-3">
+              <input type="date" name="date" placeholder="Opinion Email"
+                     class="form-control <%= validationErrors.find(e => e.param === 'date') ? "is-invalid" : "" %>"
+                     value="<%= moment(opinion.created_on).format("MM-DD-YYYY") %>"
+                     id="date"/>
+              <label for="date">Date</label>
+            </div>
+            <select name="sender_course" class="form-control my-3" id="enrolled-course">
+              <option selected="<%= opinion.sender_course === "" %>" value="">Select your course
+              </option>
+              <option selected="<%= opinion.sender_course === "full" %>" value="full">CPHQ Full
+                Course
+              </option>
+              <option selected="<%= opinion.sender_course === "focused" %>" value="focused">CPHQ
+                Focused Revision
+              </option>
+              <option selected="<%= opinion.sender_course === "revision" %>" value="revision">CPHQ
+                Revision only
+              </option>
+            </select>
+
+            <div class="form-floating my-3">
+              <textarea name="opinion" placeholder="Opinion"
+                        class="form-control <%= validationErrors.find(e => e.param === 'opinion') ? "is-invalid" : "" %>"
+                        id="opinion"><%= opinion.sender_message %></textarea>
+              <label for="opinion">Opinion</label>
+            </div>
+
+            <input type="hidden" name="opinionId" value="<%= opinion.opinion_id %>"/>
+            <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+            <button type="submit" class="btn submitBtn">
+              Update Opinion
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  console.log('<%= opinion.created_on %>')
+</script>
+
+<%- include("../includes/bottom_part.ejs"); %>

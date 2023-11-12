@@ -1,0 +1,23 @@
+<%- include("./includes/top_part.ejs"); %>
+<style>
+    .page-content {
+        min-height: calc(100vh - 160px - 161px);
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+<%- include("./includes/navigation.ejs"); %>
+
+<main class="page-content">
+  <div class="container">
+    <h1>Page not found!</h1>
+    <p>Please try another link from navigation</p>
+  </div>
+</main>
+
+<%- include("./includes/footer.ejs"); %>
+<%- include("./includes/bottom_part.ejs"); %>

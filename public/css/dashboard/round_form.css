@@ -1,0 +1,38 @@
+input[type=checkbox] ~ label {
+  cursor: pointer;
+}
+
+.users-selection-container .users-select-button {
+  overflow-y: scroll;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.users-selection-container .users-select-button .btn-check:checked + .btn-outline-primary {
+  color: #fff !important;
+}
+.users-selection-container .users-select-button label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  text-align: center;
+  padding: 20px;
+  min-height: 65px;
+  font-size: 14px;
+  width: 100%;
+  word-break: break-word;
+}
+
+@media (max-width: 575px) {
+  .users-selection-container .users-select-button {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .users-selection-container .users-select-button {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/*# sourceMappingURL=round_form.css.map */

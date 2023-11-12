@@ -1,13 +1,92 @@
 <%- include("../includes/top_part.ejs"); %>
+<link rel="stylesheet" href="/css/about/index.css" />
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
 
 <section class="aboutme">
-    <div class="container">
-        This is great about me page!
+  <div class="container">
+    <div class="custom-head">
+      Who is Dr Wesam Nageib?
+      <span></span>
     </div>
+    <p class="main-paragraph">
+      Hello 👋, <br />
+      My name is Wesam Nageib, I have a <span class="custom-word">Bachelors degree in pharmacy science</span>, certified
+      <span
+        class="custom-word">CSSYB</span>, <span class="custom-word">TOT trainer</span>, <span
+        class="custom-word">MSC cerified</span> and <span class="custom-word">ISQUA member.</span>
+      <br />
+    </p>
+
+    <section class="fs-6">
+      <% paragraphs.forEach(p => { %>
+        <%- p.about_us_paragraph %>
+      <% }) %>
+
+      <% if (instructors.length > 0 ) { %>
+        <div class="custom-head">
+          Our Instructors
+          <span></span>
+        </div>
+      <% } %>
+
+      <% instructors.forEach(ins => { %>
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-3 col-xs-12">
+              <img class="img-fluid" src="/downloaded_images/<%- ins.instructor_image %>"
+                   alt="<%- ins.instructor_name %>" />
+            </div>
+            <div class="col-lg-9 col-xs-12">
+              <div class="custom-head fs-4">
+                <%= ins.instructor_name %>
+                <span></span>
+              </div>
+
+              <%- ins.instructor_data %>
+            </div>
+            <div class="col-12">
+              <div class="instructor-certificates">
+                <% ins.instructor_certificates.forEach((img, index) => { %>
+                  <!-- Slides -->
+                  <section class="img-container">
+                    <img src="/downloaded_images/<%- img %>"
+                         alt="certificate-<%= index + 1 %>" loading="lazy" />
+                  </section>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+
+          <!--<div class="swiper main-slider">
+            <div class="swiper-wrapper">
+
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev d-none d-lg-block"></div>
+            <div class="swiper-button-next d-none d-lg-block"></div>
+          </div>
+-->
+        </div>
+      <% }) %>
+    </section>
+  </div>
 </section>
 
 <%- include("../includes/footer.ejs"); %>
+
+<script async type="module">
+  import Swiper from "https://unpkg.com/swiper@8/swiper-bundle.esm.browser.min.js"
+
+  const aboutSwiper = new Swiper(".swiper", {
+    direction: "horizontal",
+    loop: true,
+    slidesPerView: 4,
+    scrollbar: {
+      el: ".swiper-scrollbar",
+    },
+  })
+</script>
+
 <%- include("../includes/bottom_part.ejs"); %>
