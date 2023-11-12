@@ -585,7 +585,7 @@ const getUserCertificate = async (req, res, next) => {
             certificateSerial = findingCertificate.certificateHash;
         }
 
-        const qrCodeLink = `${process.env.FRONTEND_URL}/check/certificate/${certificateSerial}`;
+        const qrCodeLink = `${process.env.FRONTEND_URL}/check/certificates/${certificateSerial}`;
 
         const checkCertificateQrCode = await qr.toDataURL(qrCodeLink);
 
