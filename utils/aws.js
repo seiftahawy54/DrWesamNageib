@@ -6,6 +6,10 @@ import multerS3 from "multer-s3";
 import path from "path";
 import axios from "axios";
 import logger from "./logger.js";
+import {exec} from "child_process";
+import {promisify} from "util";
+
+const execAsync = promisify(exec);
 
 dotenv.config();
 
@@ -66,72 +70,37 @@ export const uploadFile = (filepath, filename, mimetype, res, next) => {
 };
 
 export const getSingleFile = async (filename) => {
-    const downloadedImagesFolder = path.resolve("downloaded_images");
-    const fullImgPath = path.resolve(downloadedImagesFolder, filename)
-    const isImagesPathExists = fs2.existsSync(downloadedImagesFolder);
-    if (!isImagesPathExists) {
-        fs2.mkdirSync(downloadedImagesFolder);
-        return getSingleFile(filename);
-    } else if (fs2.existsSync(fullImgPath)) {
-        logger.info(`${filename} exists locally`)
-        return `${process.env.STATIC_URL}/${filename}`;
-    } else {
-        const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
-        const filePath = path.resolve("downloaded_images", filename);
-        const isAlreadyDownloaded = fs2.existsSync(filePath);
-        if (isAlreadyDownloaded) {
-            return `${process.env.STATIC_URL}/${filename}`;
+    try {
+        const downloadedImagesFolder = path.resolve("downloaded_images");
+        const fullImgPath = path.resolve(downloadedImagesFolder, filename);
+
+        // Check if the file already exists
+        if (fs2.existsSync(fullImgPath)) {
+            const existingLink = new URL(`${process.env.STATIC_URL}/${filename}`).href;
+            console.log(`${existingLink} already exists.`);
+            return existingLink;
         }
 
-        try {
-            const response = await axios({
-                method: "GET",
-                url: downloadingUrl,
-                responseType: "blob",
-            });
-            const buffer = Buffer.from(response.data.data).toString("base64");
+        const downloadingUrl = `${process.env.AWS_URL}/${filename}`;
+        const filePath = path.resolve(downloadedImagesFolder, filename);
 
-            const writingStream = await fs2.createWriteStream(filePath);
+        console.log(`AWS searching URL: ${downloadingUrl}`);
+        const response = await axios({
+            method: "GET",
+            url: downloadingUrl,
+            responseType: "arraybuffer", // Changed responseType to arraybuffer
+        });
+        const buffer = Buffer.from(response.data);
 
-            writingStream.write(buffer, "base64");
+        await fs2.promises.mkdir(downloadedImagesFolder, { recursive: true }); // Ensure directory exists
 
-            writingStream.on("finish", () => {
-                logger.info(`${process.env.STATIC_URL}/${filename} image downloaded successfully`)
-                return `${process.env.STATIC_URL}/${filename}`;
-            });
+        await fs2.promises.writeFile(filePath, buffer, "base64");
 
-            writingStream.on("error", (err) => {
-                logger.error(err.message);
-            });
-
-        writingStream.end();
-      } catch (e) {
-        console.log(e.message);
-      }
+        const createdLink = new URL(`${process.env.STATIC_URL}/${filename}`).href;
+        console.log(`${createdLink} image downloaded successfully`);
+        return createdLink;
+    } catch (e) {
+        logger.error(`Error downloading image ${filename}: ${e.message}`);
+        return `${process.env.AWS_URL}/${filename}`; // Return the AWS URL in case of an error
     }
-};
-
-export const downloadNormalImages = async (url, filename) => {
-  return axios
-      .get(url, {
-        responseType: 'arraybuffer'
-      })
-      .then(async (response) => {
-        const filePath = path.resolve("downloaded_images", filename);
-        const buffer = Buffer.from(response.data, 'binary').toString('base64')
-        const writingStream = await fs2.createWriteStream(filePath);
-
-        writingStream.write(buffer, "base64");
-
-        writingStream.on("finish", () => {
-          return true;
-        });
-
-        writingStream.on("error", (err) => {
-          console.log(`AWS Error ==> `, err);
-          return false;
-        });
-
-        writingStream.end();
-      })
 }

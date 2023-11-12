@@ -25,6 +25,12 @@ const getCheckCertificate = async (req, res, next) => {
         })
     }
 
+    if (!certificate.courseId) {
+        return res.status(404).json({
+            message: "Certificate not found",
+        })
+    }
+
     const roundAndCourse = await Rounds.findOne(
         {
             where: {course_id: certificate.courseId},
@@ -42,46 +48,49 @@ const getCheckCertificate = async (req, res, next) => {
         }
     )
 
-    const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${certificate.courseId}`);
+    const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${certificateSerialNumber}`);
     let certificateSerial = '';
 
     const user = await Users.findOne({where: {user_id: certificate.userId}});
 
-    getSingleFile(roundAndCourse.course.course_img)
-        .then(async (response) => {
-            const certificateDoc = createCertificate(
-                user.name,
-                user.user_id,
-                roundAndCourse.course.name,
-                roundAndCourse.course.total_hours,
-                roundAndCourse.round_date,
-                roundAndCourse.course.course_img,
-                roundAndCourse.course.course_category,
-                checkCertificateQrCode,
-                certificateSerial
-            );
+    try {
+        getSingleFile(roundAndCourse.course.course_img)
+            .then(async (response) => {
+                const certificateDoc = createCertificate(
+                    user.name,
+                    user.user_id,
+                    roundAndCourse.course.name,
+                    roundAndCourse.course.total_hours,
+                    roundAndCourse.round_date,
+                    roundAndCourse.course.course_img,
+                    roundAndCourse.course.course_category,
+                    await checkCertificateQrCode,
+                    certificateSerial
+                );
 
-            certificateDoc.certificateObject.pipe(
-                fs.createWriteStream(path.resolve('public', 'certificates', certificateDoc.certificatePath))
-            );
+                certificateDoc.certificateObject.pipe(
+                    fs.createWriteStream(encodeURIComponent(path.resolve('public', 'certificates', `${certificateDoc.certificatePath}`)))
+                );
 
-            res.setHeader("Content-Type", "application/pdf");
-            res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
-            res.setHeader(
-                "Content-Disposition",
-                `inline; filename="${certificateDoc.certificateName}"`
-            );
+                res.setHeader("Content-Type", "application/pdf");
+                res.setHeader(
+                    "Content-Disposition",
+                    `inline; filename="${certificateDoc.certificateName}"`
+                );
 
-            certificateDoc.certificateObject.pipe(res);
-            certificateDoc.certificateObject.end();
-
-            // return res.send({certificate: `certificates/${certificateDoc.certificateName}`});
-
-        })
-        .catch(async (err) => {
-            logger.error(err);
-            await errorRaiser(err, next)
-        });
+                certificateDoc.certificateObject.pipe(res);
+                certificateDoc.certificateObject.end();
+            })
+            .catch(async (err) => {
+                console.log(err)
+                return res.status(500).json({
+                    message: "Something went wrong",
+                })
+            });
+    } catch (e) {
+        logger.error(e);
+        await errorRaiser(e, next)
+    }
 }
 
 export default {

@@ -22,7 +22,7 @@ import path from "path";
 import UserPerCertificates from "../../models/UserPerCertificates.js";
 import crypto from "crypto";
 
-export const getUserProfile = async (req, res, next) => {
+const getUserProfile = async (req, res, next) => {
     try {
         if (req.user.user_img) {
             try {
@@ -55,7 +55,7 @@ export const getUserProfile = async (req, res, next) => {
     }
 };
 
-export const postUpdateUserImg = async (req, res, next) => {
+const postUpdateUserImg = async (req, res, next) => {
     try {
         const userImg = req?.files[0];
 
@@ -86,7 +86,7 @@ export const postUpdateUserImg = async (req, res, next) => {
     }
 };
 
-export const getUpdateUserData = async (req, res, next) => {
+const getUpdateUserData = async (req, res, next) => {
     try {
         if (!"user_id" in req.user) {
             req.flash("error", "Something happened");
@@ -104,7 +104,7 @@ export const getUpdateUserData = async (req, res, next) => {
     }
 };
 
-export const postUpdateUserData = async (req, res, next) => {
+const postUpdateUserData = async (req, res, next) => {
     const email = req.body.email;
     const whatsappNo = req.body.whatsapp_no;
     const specialization = req.body.specialization;
@@ -150,7 +150,7 @@ export const postUpdateUserData = async (req, res, next) => {
     }
 };
 
-export const getPerformExam = async (req, res, next) => {
+const getPerformExam = async (req, res, next) => {
     try {
         const examId = req.params.examId;
         const type = req.user.type;
@@ -184,7 +184,14 @@ export const getPerformExam = async (req, res, next) => {
                         },
                     },
                     where: {
-                        finished: false,
+                        [Op.or]: [
+                            {
+                                finished: false,
+                            },
+                            {
+                                archived: true
+                            }
+                        ],
                     }
                 }
             ]
@@ -198,10 +205,10 @@ export const getPerformExam = async (req, res, next) => {
 
         await (async () => {
             for (const questionObj of exam.questions) {
-                if ("examImage" in questionObj) {
+                if (questionObj && ("examImage" in questionObj)) {
                     if (!validURL(questionObj.examImage)) {
                         const generatedLink = await getSingleFile(questionObj.examImage);
-                        logger.debug(generatedLink)
+                        logger.info(`images search ===> ${generatedLink}`)
                         questionObj.examImage = generatedLink;
                     }
                 }
@@ -228,11 +235,13 @@ export const getPerformExam = async (req, res, next) => {
     }
 };
 
-export const postPerformExam = async (req, res, next) => {
+const postPerformExam = async (req, res, next) => {
     try {
         const userAnswers = req.body.userAnswers;
         const examId = req.body.examId;
         const errors = validationResult(req);
+
+        logger.info(`userAnswers ===> ${JSON.stringify(userAnswers)} USERID ====> ${req.user.user_id}`);
 
         if (!errors.isEmpty()) {
             console.log(errors.array());
@@ -250,7 +259,7 @@ export const postPerformExam = async (req, res, next) => {
 
         if (exam) {
             let filteredQuestions = exam.questions.filter(
-                (examObj) => "questionHeader" in examObj
+                (examObj) => examObj && ("questionHeader" in examObj)
             );
 
             const grade = calculateExamsGrades(userAnswers, filteredQuestions);
@@ -279,7 +288,7 @@ export const postPerformExam = async (req, res, next) => {
     }
 };
 
-export const getExamPreview = async (req, res, next) => {
+const getExamPreview = async (req, res, next) => {
     try {
         const replyId = req.params.replyId;
 
@@ -341,7 +350,7 @@ export const getExamPreview = async (req, res, next) => {
         let answersCounter = 0;
 
         const newUserAnswerArr = replyData.exam.questions.map((question, index) => {
-            if ("questionHeader" in question) {
+            if (question && ("questionHeader" in question)) {
                 return replyData.user_answers[answersCounter++];
             } else {
                 return question;
@@ -349,7 +358,17 @@ export const getExamPreview = async (req, res, next) => {
         });
 
         for (let question = 0; question < newUserAnswerArr.length; question++) {
-            if (!("examImage" in newUserAnswerArr[question])) {
+            if (newUserAnswerArr[question] && newUserAnswerArr[question] === undefined) {
+                questionsWithUserAnswers.push({
+                    userAnswer: null,
+                    correctAnswer: parseInt(
+                        replyData.exam.questions[question].correctAnswer
+                    ),
+                });
+                continue;
+            }
+
+            if (newUserAnswerArr[question] && !("examImage" in newUserAnswerArr[question])) {
                 questionsWithUserAnswers.push({
                     userAnswer: Object.values(newUserAnswerArr[question])[0],
                     correctAnswer: parseInt(
@@ -357,16 +376,25 @@ export const getExamPreview = async (req, res, next) => {
                     ),
                 });
             } else {
-                questionsWithUserAnswers.push({
-                    questionImage: Object.values(newUserAnswerArr[question])[0],
-                });
+                console.log(`the error ===> `, question, newUserAnswerArr[question])
+                if (questionsWithUserAnswers[question]) {
+                    questionsWithUserAnswers.push({
+                        questionImage: Object.values(newUserAnswerArr[question])[0],
+                    });
+                } else {
+                    questionsWithUserAnswers.push({
+                        questionImage: 'https://placehold.co/600x400',
+                    });
+                }
             }
         }
 
         await (async () => {
             for (const questionObj of replyData.exam.questions) {
-                if ("examImage" in questionObj) {
+                if (questionObj && ("examImage" in questionObj)) {
+                    console.log(questionObj.examImage)
                     if (!validURL(questionObj.examImage)) {
+                        console.log(`searching for ${questionObj.examImage} from replies`)
                         questionObj.examImage = await getSingleFile(questionObj.examImage);
                     }
                 }
@@ -384,14 +412,14 @@ export const getExamPreview = async (req, res, next) => {
     }
 };
 
-export const getSubmittedExam = async (req, res, next) => {
+const getSubmittedExam = async (req, res, next) => {
     res.render("users/exam-result", {
         title: "Your exam has submitted successfully",
         path: "/profile",
     });
 };
 
-export const getAllUserData = async (req, res, next) => {
+const getAllUserData = async (req, res, next) => {
     try {
         let {name, whatsapp_no, user_id, email, specialization, user_img} =
             await Users.findOne({
@@ -413,7 +441,7 @@ export const getAllUserData = async (req, res, next) => {
     }
 };
 
-export const getBoughtCourses = async (req, res, next) => {
+const getBoughtCourses = async (req, res, next) => {
     try {
         const findingUserPayments = await Payment.findAll({
             where: {user_id: req.user.user_id, status: "success"},
@@ -451,7 +479,7 @@ export const getBoughtCourses = async (req, res, next) => {
     }
 };
 
-export const getUserRound = async (req, res, next) => {
+const getUserRound = async (req, res, next) => {
     try {
         let roundData = await userPerRound.findAll({
             where: {userId: req.user.user_id},
@@ -465,9 +493,16 @@ export const getUserRound = async (req, res, next) => {
                         },
                     },
                     where: {
-                        finished: false,
+                        [Op.or]: [
+                            {
+                                finished: false
+                            },
+                            {
+                                archived: true
+                            }
+                        ]
                     },
-                    attributes: ["round_date", "round_id", "finished", "course_id", "round_link"],
+                    attributes: ["round_date", "round_id", "finished", "course_id", "title", "round_link"],
                     include: [
                         {
                             model: Courses,
@@ -493,7 +528,7 @@ export const getUserRound = async (req, res, next) => {
     }
 };
 
-export const getUserGrades = async (req, res, next) => {
+const getUserGrades = async (req, res, next) => {
     try {
         let usersExamsData = await userPerformedExams(req.user.user_id);
 
@@ -506,7 +541,7 @@ export const getUserGrades = async (req, res, next) => {
 };
 
 
-export const getUserCertificate = async (req, res, next) => {
+const getUserCertificate = async (req, res, next) => {
     try {
         const courseId = req.params.courseId;
 
@@ -527,7 +562,6 @@ export const getUserCertificate = async (req, res, next) => {
             }
         )
 
-        const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${courseId}`);
         let certificateSerial = '';
 
         const findingCertificate = await UserPerCertificates.findOne({
@@ -551,6 +585,12 @@ export const getUserCertificate = async (req, res, next) => {
             certificateSerial = findingCertificate.certificateHash;
         }
 
+        const qrCodeLink = `${process.env.FRONTEND_URL}/check/certificates/${certificateSerial}`;
+
+        const checkCertificateQrCode = await qr.toDataURL(qrCodeLink);
+
+        logger.info(`certificate ${courseId} ${roundAndCourse.round_date} ${req.user.user_id} QR code`)
+
         getSingleFile(roundAndCourse.course.course_img)
             .then(async (response) => {
                 const certificateDoc = createCertificate(
@@ -561,12 +601,12 @@ export const getUserCertificate = async (req, res, next) => {
                     roundAndCourse.round_date,
                     roundAndCourse.course.course_img,
                     roundAndCourse.course.course_category,
-                    checkCertificateQrCode,
+                    await checkCertificateQrCode,
                     certificateSerial
                 );
 
                 certificateDoc.certificateObject.pipe(
-                    fs.createWriteStream(path.resolve('public', 'certificates', certificateDoc.certificatePath))
+                    fs.createWriteStream(encodeURIComponent(path.resolve('public', 'certificates', certificateDoc.certificatePath)))
                 );
 
                 res.setHeader("Content-Type", "application/pdf");
@@ -578,19 +618,17 @@ export const getUserCertificate = async (req, res, next) => {
                 certificateDoc.certificateObject.pipe(res);
                 certificateDoc.certificateObject.end();
 
-                // return res.send({certificate: `certificates/${certificateDoc.certificateName}`});
-
             })
             .catch(async (err) => {
-                logger.error(err);
-                await errorRaiser(err, next)
+                return res.status(500).send({message: "Something went wrong"});
             });
     } catch (e) {
+        console.log(e)
         await errorRaiser(e, next);
     }
 };
 
-export const getUserProfileCertificate = async (req, res, next) => {
+const getUserProfileCertificate = async (req, res, next) => {
     try {
 
         const {specialExams, findingFinishedRounds} = await userExamsRelatedData(req.user.user_id);
@@ -616,7 +654,7 @@ export const getUserProfileCertificate = async (req, res, next) => {
 
         for (let finishedRound of findingFinishedRounds) {
             certificatesGenArr.push({
-                roundDate: moment(finishedRound.rounds[0].round_date).format("LL"),
+                roundDate: finishedRound.rounds[0].title,
                 courseName: finishedRound.rounds[0].course.name,
                 courseId: finishedRound.rounds[0].course.course_id
             })
@@ -634,6 +672,7 @@ const userExamsRelatedData = async (userId) => {
     const userExamsData = await ExamsReplies.findAll({
         where: {
             user_id: userId,
+            "$exam.special_exam$": true,
         },
         include: [
             {
@@ -643,9 +682,6 @@ const userExamsRelatedData = async (userId) => {
                     exam_id: {
                         [Op.eq]: Sequelize.col("exams_replies.exam_id"),
                     },
-                },
-                where: {
-                    special_exam: process.env.NODE_ENV === 'production'
                 },
                 include: [
                     {
@@ -675,7 +711,7 @@ const userExamsRelatedData = async (userId) => {
     for (let reply of userExamsData) {
         // TODO add control on success percentage
         if (process.env.NODE_ENV === 'production') {
-            if (reply.grade > reply.exam.questions.length / 2) {
+            if (reply.grade > (reply.exam.questions.length / 2)) {
                 specialExams.push(reply.exam.exam_id);
             }
         } else {
@@ -686,7 +722,10 @@ const userExamsRelatedData = async (userId) => {
     // Finding if the user finished the rounds that made him passed the exam or not.
     const findingFinishedRounds = await userPerRound.findAll(
         {
-            where: {userId},
+            where: {
+                userId,
+                "$rounds.course.special_course$": true,
+            },
             include: [
                 {
                     model: Rounds,
@@ -696,10 +735,7 @@ const userExamsRelatedData = async (userId) => {
                             [Op.eq]: Sequelize.col("userPerRound.roundId"),
                         },
                     },
-                    where: {
-                        finished: process.env.NODE_ENV === 'production',
-                    },
-                    attributes: ["round_date", "course_id"],
+                    attributes: ["round_date", "course_id", "title"],
                     include: [
                         {
                             model: Courses,
@@ -708,9 +744,6 @@ const userExamsRelatedData = async (userId) => {
                                 course_id: {
                                     [Op.eq]: Sequelize.col("rounds.course_id"),
                                 },
-                                special_course: {
-                                    [Op.eq]: true
-                                }
                             },
                             attributes: ["course_id", "name", "special_course"],
                         },
@@ -720,8 +753,26 @@ const userExamsRelatedData = async (userId) => {
         }
     );
 
+
     return {
         specialExams,
         findingFinishedRounds
     }
+}
+
+export default {
+    getUserProfile,
+    getUserProfileCertificate,
+    postUpdateUserImg,
+    getUpdateUserData,
+    getUserCertificate,
+    postUpdateUserData,
+    getPerformExam,
+    postPerformExam,
+    getSubmittedExam,
+    getExamPreview,
+    getAllUserData,
+    getBoughtCourses,
+    getUserRound,
+    getUserGrades
 }

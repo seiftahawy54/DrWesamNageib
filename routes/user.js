@@ -1,19 +1,4 @@
-import {
-    getUserProfile,
-    postUpdateUserImg,
-    getUpdateUserData,
-    getUserCertificate,
-    postUpdateUserData,
-    getPerformExam,
-    postPerformExam,
-    getSubmittedExam,
-    getExamPreview,
-    getAllUserData,
-    getBoughtCourses,
-    getUserRound,
-    getUserGrades,
-    getUserProfileCertificate,
-} from "../controllers/user/user.js";
+import usersController from "../controllers/user/users.js";
 import {upload} from "../middlewares/multer.js";
 import {Router} from "express";
 import {body} from "express-validator";
@@ -25,9 +10,9 @@ const certificatesRoutes = Router();
 const userCartRoutes = Router()
 
 userProfileRoutes
-    .get("/", getUserProfile)
-    .post("/update-profile-img", upload().single("user_img"), postUpdateUserImg)
-    .get("/update-data/:userId", getUpdateUserData)
+    .get("/", usersController.getUserProfile)
+    .post("/update-profile-img", upload().single("user_img"), usersController.postUpdateUserImg)
+    .get("/update-data/:userId", usersController.getUpdateUserData)
     .put(
         "/update-data",
         [
@@ -35,26 +20,27 @@ userProfileRoutes
             body("whatsapp_no").isMobilePhone("any").notEmpty(),
             body("specialization").isString().notEmpty(),
         ],
-        postUpdateUserData
+        usersController.postUpdateUserData
     )
-    .get("/certificates", getUserProfileCertificate)
-    .get("/data", getAllUserData)
-    .get("/payments", getBoughtCourses)
-    .get("/round", getUserRound);
+    .get("/data", usersController.getAllUserData)
+    .get("/payments", usersController.getBoughtCourses)
+    .get("/round", usersController.getUserRound);
 
 //-----------------------------------------------
 // Certificates routes
 //-----------------------------------------------
-certificatesRoutes.get("/:courseId", getUserCertificate);
+certificatesRoutes
+    .get("/", usersController.getUserProfileCertificate)
+    .get("/:courseId", usersController.getUserCertificate);
 
 //-----------------------------------------------
 // User exams performance routes
 //-----------------------------------------------
 examsRoutes
-    .get("/submitted-exam", getSubmittedExam)
-    .get("/grades", getUserGrades)
-    .get("/:examId", getPerformExam)
-    .get('/preview/:replyId', getExamPreview)
+    .get("/submitted-exam", usersController.getSubmittedExam)
+    .get("/grades", usersController.getUserGrades)
+    .get("/:examId", usersController.getPerformExam)
+    .get('/preview/:replyId', usersController.getExamPreview)
     .post(
         "/",
         [
@@ -65,7 +51,7 @@ examsRoutes
                 .optional({nullable: true}),
             body("examId").isString().isLength({min: 36, max: 36}),
         ],
-        postPerformExam
+        usersController.postPerformExam
     );
 
 //-----------------------------------------------

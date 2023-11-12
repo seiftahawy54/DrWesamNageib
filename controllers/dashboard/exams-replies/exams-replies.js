@@ -17,8 +17,6 @@ export const getAllReplies = async (req, res, next) => {
         }
 
         let allExamsReplies = await Exams.findAll({
-            // limit: config.get("paginationMaxSize"),
-            // offset: (parseInt(page) - 1) * config.get("paginationMaxSize"),
             attributes: ["id", ["exam_id", "examId"], ["title", "examTitle"], [Sequelize.fn("COUNT", "exams_replies"), 'repliesCount']],
             include: [
                 {
@@ -126,19 +124,14 @@ export const postDeleteAllExamReplies = async (req, res, next) => {
 export const postDeleteReply = async (req, res, next) => {
     try {
         const {replyId} = req.params;
-        const findingReply = await ExamsReplies.findAll({
+        const findingReply = await ExamsReplies.findOne({
             where: {
-                exam_id: replyId
+                reply_id: replyId
             }
         });
         const deletingResult = await findingReply.destroy();
 
-        if (deletingResult) {
-            req.flash("success", "Reply Deleted Successfully");
-            return res.redirect(`/dashboard/exams-replies/${replyId}`);
-        }
-        req.flash("error", "Something happened");
-        return res.redirect("/dashboard/exams-replies");
+        return res.status(200).send(deletingResult)
     } catch (e) {
         await errorRaiser(e, next);
     }

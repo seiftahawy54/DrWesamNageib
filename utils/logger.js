@@ -1,4 +1,5 @@
 import winston from "winston";
+import {PostgresTransport} from "@innova2/winston-pg";
 
 let dbConnectionOptions = {};
 
@@ -24,7 +25,15 @@ const logger = winston.createLogger({
         // - Write all logs with importance level of `error` or less to `error.log`
         // - Write all logs with importance level of `info` or less to `combined.log`
         //
-        new winston.transports.Console(),
+        // new PostgresTransport(dbConnectionOptions),
+        new winston.transports.Console({
+            name: 'debug-console',
+            level: 'debug',
+            prettyPrint: true,
+            handleExceptions: true,
+            json: false,
+            colorize: true
+        }),
         new winston.transports.File({
             filename: 'logs/combined.log',
         }),

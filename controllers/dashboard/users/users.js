@@ -1,11 +1,12 @@
-import {Users} from "../../../models/index.js";
+import {Exams, ExamsReplies, Users} from "../../../models/index.js";
 import {Rounds} from "../../../models/index.js";
 import {errorRaiser} from "../../../utils/error_raiser.js";
 import {sequelize} from "../../../utils/db.js";
 import moment from "moment";
-import {Op} from "sequelize";
+import {Op, Sequelize} from "sequelize";
 import {calcPagination, rolesMap, rolesMapper, userPerformedExams} from "../../../utils/general_helper.js";
 import {
+    NUMBER_TYPE,
     STRING_TYPE,
     validateRequestInput,
 } from "../../../validators/typesValidators.js";
@@ -14,12 +15,17 @@ import config from "config";
 
 const getSearchForUser = async (req, res, next) => {
     try {
-        let {name, email, phone, specialization, rounds, role} = req.query;
+        let {name, email, phone, specialization, rounds, role, page} = req.query;
         let error, message;
         if (name) ({error, message} = validateRequestInput(name, 'name', STRING_TYPE));
         if (email) ({error, message} = validateRequestInput(email, 'email', STRING_TYPE));
         if (phone) ({error, message} = validateRequestInput(phone, 'phone', STRING_TYPE));
         if (specialization) ({error, message} = validateRequestInput(specialization, 'specialization', STRING_TYPE));
+        if (page) ({error, message} = validateRequestInput(page, 'page', STRING_TYPE))
+
+        if (!page) {
+            page = 1
+        }
 
         if (error) {
             return res.status(400).json({message});
@@ -40,8 +46,8 @@ const getSearchForUser = async (req, res, next) => {
         }
 
         if (phone) {
-            filterObject.phone = {
-                [Op.iLike]: `${phone.toLowerCase()}`
+            filterObject.whatsapp_no = {
+                [Op.iLike]: `%${phone}%`
             };
         }
 
@@ -105,7 +111,12 @@ const getSearchForUser = async (req, res, next) => {
             ]
         })
 
-        return res.status(200).json(users)
+        const pagination = await calcPagination(null, page, true, users)
+
+        return res.status(200).json({
+            pagination,
+            users
+        })
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -214,29 +225,62 @@ const postDeleteUser = async (req, res, next) => {
 const getUpdateUser = async (req, res, next) => {
     const {userId} = req.params;
 
+    // Searching for user
     const user = await Users.findOne({
-        user_id: userId
+        where: {
+            user_id: userId
+        }
     });
 
     if (!user) {
         return res.status(404).send("User not found")
     }
 
-    const currentRound = (
-        await sequelize.query(
-            `SELECT round_date FROM rounds WHERE ? LIKE ANY (rounds.users_ids)`,
+    // Searching if user joined any rounds
+    const rounds = await userPerRound.findAll({
+        where: {
+            userId: userId
+        },
+        include: [
             {
-                type: "SELECT",
-                replacements: [user.user_id],
+                model: Rounds,
+                attributes: ['round_id', 'round_date', 'finished', 'course_id', 'title', 'round_link'],
+                on: {
+                    round_id: {
+                        [Op.eq]: Sequelize.col("userPerRound.roundId"),
+                    },
+                }
             }
-        )
-    )[0]?.round_date;
+        ]
+    })
 
-    const performedExams = await userPerformedExams(userId);
+    // Exams Replies
+    const examsReplies = await ExamsReplies.findAll({
+        where: {
+            user_id: userId
+        },
+        attributes: ['reply_id'],
+        include: [
+            {
+                model: Exams,
+                as: "exam",
+                on: {
+                    exam_id: {
+                        [Op.eq]: Sequelize.col("exams_replies.exam_id"),
+                    },
+                },
+                attributes: ['exam_id', 'title']
+            }
+        ]
+    });
 
-    user.current_round = moment(currentRound).format("DD-MM-YYYY");
+    user.type = rolesMapper(false, user.type);
 
-    return res.status(200).send(user);
+    return res.status(200).send({
+        user,
+        rounds,
+        examsReplies
+    });
 };
 
 const postUpdateUser = async (req, res, next) => {
@@ -296,11 +340,43 @@ const postUpdateUser = async (req, res, next) => {
     }
 };
 
+const getUserUpdateData = async (req, res, next) => {
+    try {
+
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
+const getUserSpecialRoundAccess = async (req, res, next) => {
+    try {
+        const usersCurrentRounds = await userPerRound.findAll({
+            where: {
+                userId: req.user.user_id,
+            },
+        })
+
+        const rounds = await Rounds.findAll({
+            where: {
+                round_id: {
+                    [Op.notIn]: usersCurrentRounds.map((round) => round.roundId),
+                },
+            },
+            attributes: ['round_id', 'round_date', 'finished', 'title'],
+        })
+
+        return res.status(200).send(rounds)
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
 export {
     getUsers,
     postDeleteUser,
     getUpdateUser,
     postUpdateUser,
     getSearchForUser,
-    getUsersSearchFilters
+    getUsersSearchFilters,
+    getUserSpecialRoundAccess,
 };

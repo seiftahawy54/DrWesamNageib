@@ -25,8 +25,13 @@ import {
 import {imageDownloader} from "./utils/general_helper.js";
 import {body} from "express-validator";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
+import {fileFilter, fileStorage} from "./middlewares/multer.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import logger from "./utils/logger.js";
+import fs from "fs";
+import morgan from "morgan";
+import {promisify} from "util";
+import {exec} from "child_process";
 
 dotenv.config();
 const app = express();
@@ -37,6 +42,20 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
+// app.use(
+//     Multer({
+//         limits: {fileSize: 5 * 1024 * 1024},
+//         storage: fileStorage,
+//         fileFilter,
+//     }).any(
+//         "course_img",
+//         "detailed_img",
+//         "certificate_img",
+//         "exam_q_image",
+//         "instructor_img",
+//         "instructor_certificates"
+//     )
+// );
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use("/robots.txt", express.static(path.resolve("public", "robots.txt")));
@@ -64,14 +83,29 @@ app.post(
 app.use("/api", AppRoutes);
 app.use("*", notFoundHandler);
 app.use(errorHandler);
+app.use(morgan("common"));
 
+Payment.hasOne(Courses, {
+    constraints: false,
+});
+Payment.hasOne(Users,
+    {
+        constraints: false,
+    }
+);
+Payment.hasOne(Rounds,
+    {
+        constraints: false,
+    });
 
-Payment.hasOne(Courses);
-Payment.hasOne(Users);
-Payment.hasOne(Rounds);
-
-Rounds.hasOne(Users);
-Rounds.hasOne(Courses);
+Rounds.hasOne(Users,
+    {
+        constraints: false,
+    });
+Rounds.hasOne(Courses,
+    {
+        constraints: false,
+    });
 
 Rounds.belongsToMany(Users, {
     through: "users_ids",
@@ -83,20 +117,39 @@ Rounds.belongsToMany(Courses, {
     constraints: false,
 });
 
-Courses.hasMany(Exams);
-Exams.hasOne(Courses);
+Courses.hasMany(Exams,
+    {
+        constraints: false,
+    });
+Exams.hasOne(Courses,
+    {
+        constraints: false,
+    });
 
-ExamsCourses.hasOne(Courses)
+ExamsCourses.hasOne(Courses,
+    {
+        constraints: false,
+    })
+
 
 ExamsCourses.hasOne(Exams, {
     foreignKey: "exam_id",
     constraints: false,
 })
 
-ExamsReplies.hasOne(Exams);
-ExamsReplies.belongsTo(Users);
+ExamsReplies.hasOne(Exams,
+    {
+        constraints: false,
+    });
+ExamsReplies.belongsTo(Users,
+    {
+        constraints: false,
+    });
 
-Exams.hasMany(ExamsReplies);
+Exams.hasMany(ExamsReplies,
+    {
+        constraints: false,
+    });
 
 UserPerRound.hasMany(Users, {
     foreignKey: "userId",
@@ -109,16 +162,33 @@ UserPerRound.hasMany(Rounds, {
     constraints: false,
 })
 
-Users.belongsTo(UserPerRound)
+Users.belongsTo(UserPerRound,
+    {
+        constraints: false,
+    })
 
-Rounds.belongsTo(UserPerRound)
+Rounds.belongsTo(UserPerRound,
+    {
+        constraints: false,
+    })
 
-Content.belongsTo(ContentAccessList)
-Users.belongsTo(ContentAccessList)
+Content.belongsTo(ContentAccessList,
+    {
+        constraints: false,
+    })
+Users.belongsTo(ContentAccessList,
+    {
+        constraints: false,
+    })
 
-ContentAccessList.hasMany(Content)
-ContentAccessList.hasMany(Users)
-
+ContentAccessList.hasMany(Content,
+    {
+        constraints: false,
+    })
+ContentAccessList.hasMany(Users,
+    {
+        constraints: false,
+    })
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
@@ -126,10 +196,11 @@ try {
     await sequelize.authenticate();
     await sequelize.sync({
         alter: true,
+        // force: true
     });
 
     app.listen(port, () => {
-        logger.info(`working on ${port}`)
+        logger.info(`${process.env.BACKEND_URL} working on ${port}`)
     });
 } catch (e) {
     logger.error(e)

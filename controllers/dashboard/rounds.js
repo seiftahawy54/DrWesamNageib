@@ -23,7 +23,7 @@ export const getRounds = async (req, res, next) => {
                 ["updatedAt", "DESC"],
                 ["createdAt", "DESC"],
             ],
-            attributes: ["id", "round_date", "round_id", "finished", "course_id", "round_link", "archived"],
+            attributes: ["id", "round_date", "round_id", "title", "finished", "course_id", "round_link", "archived"],
             where: {
                 isDeleted: false,
             },
@@ -93,7 +93,7 @@ export const getStartNewRound = async (req, res, next) => {
 
 export const postAddNewRound = async (req, res, next) => {
     try {
-        const {courseId, round_date: roundDate, content: roundLink, usersIds} = req.body;
+        const {courseId, round_date: roundDate, content: roundLink, usersIds, roundTitle: title} = req.body;
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -104,14 +104,15 @@ export const postAddNewRound = async (req, res, next) => {
             course_id: courseId,
             round_date: moment(roundDate).toISOString(),
             round_link: roundLink,
+            finished: false,
+            archived: false,
+            title,
         });
 
-        for (let userId of usersIds) {
             await userPerRound.create({
                 userId,
                 roundId: addingResult.round_id
             })
-        }
 
         if (typeof addingResult === "object") {
             return res.status(201).json({message: "Round Added Successfully"});
@@ -123,7 +124,7 @@ export const postAddNewRound = async (req, res, next) => {
 
 export const getUpdateRound = async (req, res, next) => {
     try {
-        const roundId = req.params.roundId;
+        const {roundId} = req.params;
         const round = await Rounds.findOne({
             where: {
                 round_id: roundId
@@ -132,25 +133,30 @@ export const getUpdateRound = async (req, res, next) => {
             attributes: ["round_date", "round_link", "finished", 'round_id'],
         });
 
-        return res.send(round)
+        let users = [];
 
-        const users = await userPerRound.findAll({
-            where: {roundId},
-            include: [
-                {
-                    model: Users,
-                    on: {
-                        user_id: {
-                            [Op.eq]: Sequelize.col("userPerRound.userId"),
+        if (process.env.NODE_ENV === 'production') {
+            users = await userPerRound.findAll({
+                where: {roundId},
+                include: [
+                    {
+                        model: Users,
+                        on: {
+                            user_id: {
+                                [Op.eq]: Sequelize.col("userPerRound.userId"),
+                            },
                         },
-                    },
-                }
-            ]
-        });
+                    }
+                ]
+            });
 
-        const filteredUsers = users.map(({users}) => users);
+            users = users.map(({users}) => users);
+        } else {
 
-        res.status(200).json({round, users: filteredUsers});
+        }
+
+        return res.status(200).send([...users])
+        // res.status(200).json({round, users: filteredUsers});
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -160,62 +166,39 @@ export const putUpdateRound = async (req, res, next) => {
     try {
         const roundId = req.params.roundId;
         // const {roundDate, roundLink, finishRound} = req.body;
-        const {courseId, roundDate, content: roundLink, usersIds, isFinished, isArchived} = req.body;
+        const {courseId, roundDate, content: roundLink, usersIds, isFinished, isArchived, roundTitle: title} = req.body;
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
             return res.status(400).json(extractErrorMessages(errors.array()));
         }
 
-        const findingRound = await Rounds.findOne({
-            where: {
-                round_id: roundId
-            }
-        });
-
-        if (isArchived) {
-            await findingRound.update(
-                {
-                    archived: true,
-                },
-                {where: {round_id: roundId}}
-            );
-        }
-
-        if (isFinished) {
-            await findingRound.update(
-                {
-                    finished: true,
-                },
-                {where: {round_id: roundId}}
-            );
-
-            return res.status(200).send('Round is finished!');
-        }
-
         // Update round's users
-        const userPerRoundResult = await userPerRound.destroy({where: {roundId}});
-
-        for (let userId of usersIds) {
-            await userPerRound.create({
+        if (!isFinished) {
+            await userPerRound.destroy({where: {roundId}});
+            const newUsersArr = usersIds.map(userId => ({
                 userId,
                 roundId
-            })
+            }));
+
+            await userPerRound.bulkCreate(newUsersArr);
         }
 
         const updatingRoundsResult = await Rounds.update(
             {
                 round_date: moment(roundDate).toISOString(),
                 round_link: roundLink,
-                finished: false,
-                course_id: courseId
+                course_id: courseId,
+                finished: isFinished,
+                archived: isArchived,
+                title,
             },
             {where: {round_id: roundId}}
         );
 
         return res.status(201).send({
             updatingRoundsResult,
-            userPerRoundResult
+            // userPerRoundResult
         });
     } catch (e) {
         await errorRaiser(e, next);
@@ -289,6 +272,7 @@ export const addUsersToRounds = async (req, res, next) => {
 
 const roundsCoursesQueries = async () => {
     const freeUsers = (await Users.findAll({
+        attributes: ['user_id', 'id', 'name', 'email'],
         include: [
             {
                 model: userPerRound,
@@ -309,6 +293,7 @@ const roundsCoursesQueries = async () => {
         include: [
             {
                 model: Users,
+                attributes: ['user_id', 'id', 'name', 'email'],
                 on: {
                     user_id: {
                         [Op.eq]: Sequelize.col("userPerRound.userId"),
@@ -336,6 +321,7 @@ const roundsCoursesQueries = async () => {
         include: [
             {
                 model: Users,
+                attributes: ['user_id', 'id', 'name', 'email'],
                 on: {
                     user_id: {
                         [Op.eq]: Sequelize.col("userPerRound.userId"),
@@ -415,6 +401,7 @@ export const getRoundData = async (req, res, next) => {
             order: [
                 ['name', "ASC"]
             ],
+            attributes: ['user_id', 'id', 'name', 'email'],
             include: [
                 {
                     model: userPerRound,
@@ -439,5 +426,60 @@ export const getRoundData = async (req, res, next) => {
         })
     } catch (e) {
         await errorRaiser(e, next)
+    }
+}
+
+const getRoundsFilters = async (req, res, next) => {
+    try {
+        const categories = [
+            "Rounds",
+            "Courses",
+            "Status",
+            "Archived",
+        ];
+
+        const roundsDates = await Rounds.findAll({
+            attributes: ["round_date"],
+            where: {
+                isDeleted: false,
+            },
+            order: [["round_date", "DESC"]],
+        });
+
+        const courses = await Courses.findAll({
+            attributes: ["name"],
+            where: {
+                isDeleted: false,
+            },
+            order: [["name", "ASC"]],
+        })
+
+        const values = [
+            roundsDates,
+            courses,
+            [
+                "Working",
+                "Finished",
+            ],
+            [
+                "Archived",
+                "Unarchived",
+            ]
+        ];
+
+        return res.status(200).json({
+            categories,
+            values
+        })
+    } catch (e) {
+        await errorRaiser(e, next)
+    }
+}
+
+export const performSearchingOperation = async (req, res, next) => {
+    try {
+
+    } catch (e) {
+
     }
 }

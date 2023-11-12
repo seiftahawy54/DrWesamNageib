@@ -3,7 +3,7 @@ import {errorRaiser} from "../utils/error_raiser.js";
 import {
     downloadingCoursesImages,
     extractError,
-    sortCourses,
+    sortCourses, validURL,
 } from "../utils/general_helper.js";
 import {Courses} from "../models/index.js";
 import {Users} from "../models/index.js";
@@ -15,6 +15,7 @@ import {sequelize} from "../utils/db.js";
 import userPerRound from "../models/userPerRound.js";
 import {Op, Sequelize} from "sequelize";
 import logger from "../utils/logger.js";
+import {getSingleFile} from "../utils/aws.js";
 
 const getIndex = async (req, res, next) => {
     try {
@@ -53,6 +54,13 @@ const singleCourse = async (req, res, next) => {
 
         const numberOfCourses = await Courses.findAndCountAll();
 
+        try {
+            if (!validURL(course.course_img)) {
+                course.course_img = await getSingleFile(course.course_img);
+            }
+        } catch (e) {
+            logger.info(e)
+        }
         // const filteredRounds = roundsResult.filter((round) => !round.finished);
 
         return res.status(200).json({
