@@ -429,7 +429,11 @@ const getAllUserData = async (req, res, next) => {
             });
 
         try {
-            user_img = await getSingleFile(user_img);
+            if (user_img) {
+                user_img = await getSingleFile(user_img);
+            } else {
+                user_img = `${process.env.BACKEND_URL}/imgs/imgs/default-user.png`;
+            }
         } catch (e) {
             user_img = `${process.env.BACKEND_URL}/imgs/imgs/default-user.png`;
             console.log(user_img)
@@ -482,7 +486,17 @@ const getBoughtCourses = async (req, res, next) => {
 const getUserRound = async (req, res, next) => {
     try {
         let roundData = await userPerRound.findAll({
-            where: {userId: req.user.user_id},
+            where: {
+                userId: req.user.user_id,
+                [Op.or]: [
+                    {
+                        specialAccess: false,
+                    },
+                    {
+                        specialAccess: true
+                    }
+                ]
+            },
             include: [
                 {
                     model: Rounds,
@@ -495,10 +509,24 @@ const getUserRound = async (req, res, next) => {
                     where: {
                         [Op.or]: [
                             {
-                                finished: false
+                                [Op.or]: [
+                                    {
+                                        finished: false
+                                    },
+                                    {
+                                        archived: true
+                                    }
+                                ]
                             },
                             {
-                                archived: true
+                                [Op.or]: [
+                                    {
+                                        "$userPerRound.specialAccess$": false
+                                    },
+                                    {
+                                        "$userPerRound.specialAccess$": true
+                                    }
+                                ]
                             }
                         ]
                     },

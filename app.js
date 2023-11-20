@@ -194,10 +194,18 @@ const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
 try {
     await sequelize.authenticate();
-    await sequelize.sync({
-        alter: true,
-        // force: true
-    });
+
+    let dbOptions = {};
+
+    if (process.env.NODE_ENV === 'test') {
+        dbOptions['alter'] = false;
+        dbOptions['force'] = true;
+    } else {
+        dbOptions['alter'] = true;
+        dbOptions['force'] = false;
+    }
+
+    await sequelize.sync(dbOptions);
 
     app.listen(port, () => {
         logger.info(`${process.env.BACKEND_URL} working on ${port}`)
