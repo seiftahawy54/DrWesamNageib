@@ -11,7 +11,7 @@ import path from "path";
 import {errorRaiser} from "../../utils/error_raiser.js";
 
 const getCheckCertificate = async (req, res, next) => {
-    const {certificateSerialNumber} = req.body;
+    let { certificateHash: certificateSerialNumber } = req.query;
 
     const certificate = await UserPerCertificates.findOne({
         where: {
@@ -64,7 +64,7 @@ const getCheckCertificate = async (req, res, next) => {
                     roundAndCourse.round_date,
                     roundAndCourse.course.course_img,
                     roundAndCourse.course.course_category,
-                    await checkCertificateQrCode,
+                    checkCertificateQrCode,
                     certificateSerial
                 );
 

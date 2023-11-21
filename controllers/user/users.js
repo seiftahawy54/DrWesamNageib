@@ -670,23 +670,34 @@ const getUserProfileCertificate = async (req, res, next) => {
          * {
          *   roundDate: "",
          *   finishedCourseName: "",
-         *   courseId: ""
+         *   courseId: "",
+         *   certificateHash: ""
          *  }
          */
         let certificatesGenArr = [];
-
 
         if (Array.isArray(findingFinishedRounds) && findingFinishedRounds.length === 0) {
             return res.status(200).json({message: "You've not finished any rounds", certificateData: []});
         }
 
         for (let finishedRound of findingFinishedRounds) {
+            const {certificateHash} = (await UserPerCertificates.findOne({
+                where: {
+                    userId: req.user.user_id,
+                    courseId: finishedRound.rounds[0].course.course_id
+                }
+            }));
+
+            const certificateURL = `${process.env.BACKEND_URL}/api/certificates/check?certificateHash=${certificateHash}`
+
             certificatesGenArr.push({
                 roundDate: finishedRound.rounds[0].title,
                 courseName: finishedRound.rounds[0].course.name,
-                courseId: finishedRound.rounds[0].course.course_id
+                courseId: finishedRound.rounds[0].course.course_id,
+                certificateURL,
             })
         }
+
 
         return res.status(200).json({certificateData: certificatesGenArr});
     } catch (e) {
