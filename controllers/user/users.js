@@ -186,12 +186,26 @@ const getPerformExam = async (req, res, next) => {
                     where: {
                         [Op.or]: [
                             {
-                                finished: false,
+                                [Op.or]: [
+                                    {
+                                        finished: false
+                                    },
+                                    {
+                                        archived: true
+                                    }
+                                ]
                             },
                             {
-                                archived: true
+                                [Op.or]: [
+                                    {
+                                        "$userPerRound.specialAccess$": false
+                                    },
+                                    {
+                                        "$userPerRound.specialAccess$": true
+                                    }
+                                ]
                             }
-                        ],
+                        ]
                     }
                 }
             ]
