@@ -9,9 +9,10 @@ import {createCertificate} from "../../utils/general_helper.js";
 import fs from "fs";
 import path from "path";
 import {errorRaiser} from "../../utils/error_raiser.js";
+import userPerRound from "../../models/userPerRound.js";
 
 const getCheckCertificate = async (req, res, next) => {
-    const {certificateSerialNumber} = req.body;
+    let { certificateHash: certificateSerialNumber } = req.query;
 
     const certificate = await UserPerCertificates.findOne({
         where: {
@@ -31,41 +32,59 @@ const getCheckCertificate = async (req, res, next) => {
         })
     }
 
-    const roundAndCourse = await Rounds.findOne(
+    const roundAndCourse = await userPerRound.findOne(
         {
-            where: {course_id: certificate.courseId},
+            where: {
+                userId: certificate.userId,
+                [Op.or]: [
+                    {specialAccess: true},
+                    {specialAccess: false}
+                ]
+            },
             include: [
                 {
-                    model: Courses,
-                    as: "course",
+                    model: Rounds,
+                    as: "rounds",
                     on: {
-                        course_id: {
-                            [Op.eq]: Sequelize.col("rounds.course_id"),
+                        round_id: {
+                            [Op.eq]: Sequelize.col("userPerRound.roundId"),
                         },
-                    }
-                }
+                    },
+                    include: [
+                        {
+                            model: Courses,
+                            on: {
+                                course_id: {
+                                    [Op.eq]: Sequelize.col("rounds.course_id"),
+                                },
+                            },
+                        }
+                    ]
+                },
             ]
         }
-    )
+    );
+
+    const round = roundAndCourse.rounds[0];
+    const course = roundAndCourse.rounds[0].course;
 
     const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${certificateSerialNumber}`);
-    let certificateSerial = '';
 
     const user = await Users.findOne({where: {user_id: certificate.userId}});
 
     try {
-        getSingleFile(roundAndCourse.course.course_img)
+        getSingleFile(course.course_img)
             .then(async (response) => {
                 const certificateDoc = createCertificate(
                     user.name,
                     user.user_id,
-                    roundAndCourse.course.name,
-                    roundAndCourse.course.total_hours,
-                    roundAndCourse.round_date,
-                    roundAndCourse.course.course_img,
-                    roundAndCourse.course.course_category,
-                    await checkCertificateQrCode,
-                    certificateSerial
+                    course.name,
+                    course.total_hours,
+                    round.round_date,
+                    course.course_img,
+                    course.course_category,
+                    checkCertificateQrCode,
+                    certificateSerialNumber
                 );
 
                 certificateDoc.certificateObject.pipe(

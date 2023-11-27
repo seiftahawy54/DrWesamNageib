@@ -9,7 +9,7 @@
     "debug": "nodemon --inspect app.js $PORT",
     "web": "node app.js",
     "sass": "sass --watch ./public/scss/:./public/css/",
-    "test": "NODE_ENV=test vitest run",
+    "test": "NODE_ENV=test vitest",
     "start": "node app.js"
   },
   "dependencies": {
@@ -45,6 +45,7 @@
     "googleapis": "^100.0.0",
     "gulp-sass": "^5.1.0",
     "helmet": "^5.0.2",
+    "jest": "^29.7.0",
     "joi": "^17.6.0",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
@@ -64,7 +65,7 @@
     "stripe": "^13.4.0",
     "supertest": "^6.3.3",
     "vite": "^4.4.9",
-    "vitest": "^0.20.3",
+    "vitest": "^0.34.6",
     "winston": "^3.9.0"
   },
   "devDependencies": {

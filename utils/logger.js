@@ -46,11 +46,13 @@ const logger = winston.createLogger({
     ],
 });
 
-logger.add(
-    new winston.transports.Console({
-        format: winston.format.simple(),
-    })
-);
+if (process.env.NODE_ENV !== 'test') {
+    logger.add(
+        new winston.transports.Console({
+            format: winston.format.simple(),
+        })
+    );
+}
 
 process.on("unhandledRejection", (reason, promise) => {
     console.log("Unhandled Rejection at: Promise", promise, "reason:", reason);

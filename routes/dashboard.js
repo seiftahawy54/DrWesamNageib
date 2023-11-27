@@ -1,4 +1,4 @@
-import {getOverview} from "../controllers/dashboard/dashboard.js";
+import {getOverview, getStatistics} from "../controllers/dashboard/dashboard.js";
 
 import {getPaymentsPage} from "../controllers/dashboard/payments.js";
 import express from "express";
@@ -17,7 +17,7 @@ import ContentRoutes from "./dashboard/content.js";
 const allDashboardRoutes = express.Router();
 
 allDashboardRoutes
-    .get("/overview", getOverview)
+    .get("/statistics", getStatistics)
     .use("/users", UsersRoutes)
     .use("/rounds", RoundsRoutes)
     .use("/exams", ExamsRoutes)

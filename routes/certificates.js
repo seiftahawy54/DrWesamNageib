@@ -3,6 +3,6 @@ import CertificatesControllers from '../controllers/certificates/index.js'
 
 const router = Router();
 
-router.post('/check', CertificatesControllers.getCheckCertificate)
+router.get('/check', CertificatesControllers.getCheckCertificate)
 
 export default router;

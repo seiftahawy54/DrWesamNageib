@@ -186,12 +186,26 @@ const getPerformExam = async (req, res, next) => {
                     where: {
                         [Op.or]: [
                             {
-                                finished: false,
+                                [Op.or]: [
+                                    {
+                                        finished: false
+                                    },
+                                    {
+                                        archived: true
+                                    }
+                                ]
                             },
                             {
-                                archived: true
+                                [Op.or]: [
+                                    {
+                                        "$userPerRound.specialAccess$": false
+                                    },
+                                    {
+                                        "$userPerRound.specialAccess$": true
+                                    }
+                                ]
                             }
-                        ],
+                        ]
                     }
                 }
             ]
@@ -429,7 +443,11 @@ const getAllUserData = async (req, res, next) => {
             });
 
         try {
-            user_img = await getSingleFile(user_img);
+            if (user_img) {
+                user_img = await getSingleFile(user_img);
+            } else {
+                user_img = `${process.env.BACKEND_URL}/imgs/imgs/default-user.png`;
+            }
         } catch (e) {
             user_img = `${process.env.BACKEND_URL}/imgs/imgs/default-user.png`;
             console.log(user_img)
@@ -482,7 +500,17 @@ const getBoughtCourses = async (req, res, next) => {
 const getUserRound = async (req, res, next) => {
     try {
         let roundData = await userPerRound.findAll({
-            where: {userId: req.user.user_id},
+            where: {
+                userId: req.user.user_id,
+                [Op.or]: [
+                    {
+                        specialAccess: false,
+                    },
+                    {
+                        specialAccess: true
+                    }
+                ]
+            },
             include: [
                 {
                     model: Rounds,
@@ -495,10 +523,24 @@ const getUserRound = async (req, res, next) => {
                     where: {
                         [Op.or]: [
                             {
-                                finished: false
+                                [Op.or]: [
+                                    {
+                                        finished: false
+                                    },
+                                    {
+                                        archived: true
+                                    }
+                                ]
                             },
                             {
-                                archived: true
+                                [Op.or]: [
+                                    {
+                                        "$userPerRound.specialAccess$": false
+                                    },
+                                    {
+                                        "$userPerRound.specialAccess$": true
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -642,23 +684,34 @@ const getUserProfileCertificate = async (req, res, next) => {
          * {
          *   roundDate: "",
          *   finishedCourseName: "",
-         *   courseId: ""
+         *   courseId: "",
+         *   certificateHash: ""
          *  }
          */
         let certificatesGenArr = [];
-
 
         if (Array.isArray(findingFinishedRounds) && findingFinishedRounds.length === 0) {
             return res.status(200).json({message: "You've not finished any rounds", certificateData: []});
         }
 
         for (let finishedRound of findingFinishedRounds) {
+            const {certificateHash} = (await UserPerCertificates.findOne({
+                where: {
+                    userId: req.user.user_id,
+                    courseId: finishedRound.rounds[0].course.course_id
+                }
+            }));
+
+            const certificateURL = `${process.env.BACKEND_URL}/api/certificates/check?certificateHash=${certificateHash}`
+
             certificatesGenArr.push({
                 roundDate: finishedRound.rounds[0].title,
                 courseName: finishedRound.rounds[0].course.name,
-                courseId: finishedRound.rounds[0].course.course_id
+                courseId: finishedRound.rounds[0].course.course_id,
+                certificateURL,
             })
         }
+
 
         return res.status(200).json({certificateData: certificatesGenArr});
     } catch (e) {
@@ -668,7 +721,7 @@ const getUserProfileCertificate = async (req, res, next) => {
 
 
 const userExamsRelatedData = async (userId) => {
-    // Finding the user's exams
+    // Finding the user's passed any special exams
     const userExamsData = await ExamsReplies.findAll({
         where: {
             user_id: userId,
@@ -725,6 +778,10 @@ const userExamsRelatedData = async (userId) => {
             where: {
                 userId,
                 "$rounds.course.special_course$": true,
+                [Op.or]: [
+                    {specialAccess: true},
+                    {specialAccess: false},
+                ]
             },
             include: [
                 {

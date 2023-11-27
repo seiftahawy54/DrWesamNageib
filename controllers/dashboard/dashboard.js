@@ -1,17 +1,39 @@
-import { errorRaiser } from "../../utils/error_raiser.js";
-import { validationResult } from "express-validator";
+import {errorRaiser} from "../../utils/error_raiser.js";
+import {validationResult} from "express-validator";
 import moment from "moment";
 
-import { Rounds } from "../../models/index.js";
-import { Payment } from "../../models/index.js";
-import { Courses } from "../../models/index.js";
-import { Users } from "../../models/index.js";
-import { Messages } from "../../models/index.js";
-import { Opinions } from "../../models/index.js";
-import { About } from "../../models/index.js";
-import { extractErrorMessages } from "../../utils/general_helper.js";
+import {Rounds, Payment, Courses, Users, Messages, Opinions, About} from "../../models/index.js";
+import {extractErrorMessages} from "../../utils/general_helper.js";
 import config from "config";
+import Sequelize from 'sequelize'
 
+export const getStatistics = async (req, res, next) => {
+    try {
+        const models = [Users, Courses, Payment]
+        const statistics = {};
+
+        for (let model of models) {
+            statistics[model.tableName] = (await model.findAll({
+                attributes: [
+                    [Sequelize.fn('date_trunc', 'day', Sequelize.col('createdAt')), 'creationDate'],
+                    [Sequelize.fn('count', Sequelize.col('*')), 'count'],
+                ],
+                group: ['creationDate'],
+            }))
+                .map((data) => {
+                    return [
+                        new Date(data.dataValues.creationDate),
+                        parseInt(data.dataValues.count)
+                    ]
+                })
+        }
+
+
+        return res.send({...statistics})
+    } catch (e) {
+        await errorRaiser(e, next, "API");
+    }
+}
 export const getOverview = async (req, res, next) => {
   let numberOfUsers = await Users.findAll({
     attributes: ["createdAt", "name"],
@@ -87,89 +109,88 @@ export const postDeleteMessage = async (req, res, next) => {
 };
 
 export const getOpinionsPage = async (req, res, next) => {
-  try {
-    let pageNumber = req.query.page;
-    if (!pageNumber) {
-      pageNumber = 1;
-    }
-    const numberOfResults = await Opinions.findAndCountAll();
-    const fetchingResults = await Opinions.findAll({
-      limit: config.get('paginationMaxSize'),
-      offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
-    });
+    try {
+        let pageNumber = req.query.page;
+        if (!pageNumber) {
+            pageNumber = 1;
+        }
+        const numberOfResults = await Opinions.findAndCountAll();
+        const fetchingResults = await Opinions.findAll({
+            limit: config.get('paginationMaxSize'),
+            offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
+        });
 
-    res.status(200).json({
-      opinions: fetchingResults,
-      numberOfLinks: Math.ceil(numberOfResults.count / config.get('paginationMaxSize')),
-      activePage: pageNumber,
-      paginationOptions: {}
-    });
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
+        res.status(200).json({
+            opinions: fetchingResults,
+            numberOfLinks: Math.ceil(numberOfResults.count / config.get('paginationMaxSize')),
+            activePage: pageNumber,
+        });
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
 };
 
 export const postDeleteOpinion = async (req, res, next) => {
-  try {
-    const fetchingResults = (
-      await Opinions.findByPk(req.body.opinionId)
-    ).destroy();
-    if (fetchingResults.rowCount === 1) {
-      return res.status(200).json({ message: "Opinion deleted successfully" });
+    try {
+        const fetchingResults = (
+            await Opinions.findByPk(req.body.opinionId)
+        ).destroy();
+        if (fetchingResults.rowCount === 1) {
+            return res.status(200).json({message: "Opinion deleted successfully"});
+        }
+        return res.status(500).json({message: "Server error "});
+    } catch (e) {
+        await errorRaiser(e, next);
     }
-    return res.status(500).json({ message: "Server error " });
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
 };
 
 export const getUpdateOpinion = async (req, res, next) => {
-  try {
-    const opinionId = req.params.opinionId;
-    const findingOpinion = await Opinions.findByPk(opinionId);
+    try {
+        const opinionId = req.params.opinionId;
+        const findingOpinion = await Opinions.findByPk(opinionId);
 
-    return res.status(200).json({
-      opinion: findingOpinion,
-    });
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
+        return res.status(200).json({
+            opinion: findingOpinion,
+        });
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
 };
 
 export const postUpdateOpinion = async (req, res, next) => {
-  try {
-    const opinionId = req.body.opinionId;
-    const email = req.body.sender_email;
-    const name = req.body.sender_name;
-    const course = req.body.sender_course;
-    const opinion = req.body.opinion;
-    const errors = validationResult(req);
-    const date = req.body.date;
+    try {
+        const opinionId = req.body.opinionId;
+        const email = req.body.sender_email;
+        const name = req.body.sender_name;
+        const course = req.body.sender_course;
+        const opinion = req.body.opinion;
+        const errors = validationResult(req);
+        const date = req.body.date;
 
-    const findingOpinion = await Opinions.findByPk(opinionId);
+        const findingOpinion = await Opinions.findByPk(opinionId);
 
-    if (!errors.isEmpty()) {
-      return res.status(400).json(extractErrorMessages(errors.array()));
+        if (!errors.isEmpty()) {
+            return res.status(400).json(extractErrorMessages(errors.array()));
+        }
+
+        const updatingResult = await Opinions.update(
+            {
+                sender_name: name,
+                sender_email: email,
+                sender_course: course,
+                sender_message: opinion,
+                created_on: moment(date).toISOString(),
+            },
+            {where: {opinion_id: opinionId}}
+        );
+
+        logger.info(`updating opinion: ${updatingResult}`);
+
+        if (updatingResult[0] === 1) {
+            return res.status(200).json({message: "Opinion updated successfully"});
+        }
+        return res.status(500).json({message: "Server error"});
+    } catch (e) {
+        await errorRaiser(e, next);
     }
-
-    const updatingResult = await Opinions.update(
-      {
-        sender_name: name,
-        sender_email: email,
-        sender_course: course,
-        sender_message: opinion,
-        created_on: moment(date).toISOString(),
-      },
-      { where: { opinion_id: opinionId } }
-    );
-
-    logger.info(`updating opinion: ${updatingResult}`);
-
-    if (updatingResult[0] === 1) {
-      return res.status(200).json({ message: "Opinion updated successfully" });
-    }
-    return res.status(500).json({ message: "Server error" });
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
 };

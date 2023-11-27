@@ -14,6 +14,11 @@ const UserPerRound = sequelize.define("userPerRound", {
         type: Sequelize.STRING,
         foreignKey: true,
     },
+    specialAccess: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    }
 });
 
 export default UserPerRound;
