@@ -147,7 +147,7 @@
   async function mounted() {
     this.paragraphs = (await axios.get("/dashboard/about/paragraphs-data")).data.paragraphs
     this.instructors = (await axios.get("/dashboard/about/instructors-data")).data.instructors
-    console.log(this.paragraphs)
+    console.log(this.instructors)
   }
 
   createApp({
@@ -216,7 +216,6 @@
           )
             .then(res => {
               console.log(res)
-              alert("Deletion is done!")
               window.location.reload()
             })
             .catch(err => {

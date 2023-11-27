@@ -1,249 +1,227 @@
 // NODE MODULES IMPORTS
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 import path from "path";
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
-import helmet from "helmet";
-import morgan from "morgan";
-import fs from "fs";
-import expressSession from "express-session";
-import SessionStore from "connect-session-sequelize";
-// import pgSession from "connect-pg-simple";
-import csrf from "csurf";
-import flash from "connect-flash";
 import Multer from "multer";
-import { Sequelize } from "sequelize";
-import crypto from "crypto";
+import cors from "cors";
 
 // MY MODULES IMPORTS
-import { sequelize } from "./utils/db.js";
-import { coursesRoutes } from "./routes/courses.js";
-import { shoppingRoutes } from "./routes/shopping.js";
-import { authRoutes } from "./routes/auth.js";
-import { dashboardRoutes } from "./routes/dashboard.js";
-import { globalAccess, isAuthenticated } from "./middlewares/dashboard-auth.js";
-import { errorRaiser } from "./utils/error_raiser.js";
-import { userRoutes } from "./routes/user.js";
-import { getSingleFile } from "./utils/aws.js";
-import { ExamsReplies, Users } from "./models/index.js";
-import { Rounds } from "./models/index.js";
-import { Payment } from "./models/index.js";
-import { Courses } from "./models/index.js";
-import { isUserAuthenticated } from "./middlewares/user-auth.js";
-import { imageDownloader } from "./utils/general_helper.js";
-import { body } from "express-validator";
-import { getExamPreview } from "./controllers/user/user.js";
+import {sequelize} from "./utils/db.js";
+import AppRoutes from './routes/index.js'
+import {
+    ExamsReplies,
+    Users,
+    Rounds,
+    Payment,
+    Courses,
+    UserPerRound,
+    Exams,
+    ExamsCourses,
+    ContentAccessList, Content, Discounts
+} from "./models/index.js";
+import {imageDownloader} from "./utils/general_helper.js";
+import {body} from "express-validator";
+import notFoundHandler from "./middlewares/notFoundHandler.js";
+import {fileFilter, fileStorage} from "./middlewares/multer.js";
+import errorHandler from "./middlewares/errorHandler.js";
+import logger from "./utils/logger.js";
+import fs from "fs";
+import morgan from "morgan";
+import {promisify} from "util";
+import {exec} from "child_process";
 
 dotenv.config();
 const app = express();
-
-const fileStorage = Multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "");
-  },
-  filename: (req, file, cb) => {
-    cb(null, crypto.randomBytes(10).toString("hex") + "-" + file.originalname);
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/jpeg"
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(cors());
 app.use(cookieParser());
-app.use(
-  Multer({
-    limits: { fileSize: 5 * 1024 * 1024 },
-    storage: fileStorage,
-    fileFilter: fileFilter,
-  }).any(
-    "course_img",
-    "detailed_img",
-    "certificate_img",
-    "user_img",
-    "exam_q_image",
-    "instructorImg",
-    "instructorCertificates"
-  )
-);
+// app.use(
+//     Multer({
+//         limits: {fileSize: 5 * 1024 * 1024},
+//         storage: fileStorage,
+//         fileFilter,
+//     }).any(
+//         "course_img",
+//         "detailed_img",
+//         "certificate_img",
+//         "exam_q_image",
+//         "instructor_img",
+//         "instructor_certificates"
+//     )
+// );
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use("/robots.txt", express.static(path.resolve("public", "robots.txt")));
 app.use("/sitemap.xml", express.static(path.resolve("public", "sitemap.xml")));
 app.use(express.static(path.resolve("public")));
 app.use(
-  "/downloaded_images",
-  express.static(path.resolve("downloaded_images"))
+    "/static",
+    express.static(path.resolve("downloaded_images"))
 );
-
-// Session Configurations
-const SequelizeStore = SessionStore(expressSession.Store);
 
 app.use(
-  expressSession({
-    store: new SequelizeStore({
-      db: sequelize,
-      // table: "Sessions",
-    }),
-    secret: "app_secret",
-    resave: false,
-    saveUninitialized: false,
-  })
+    "/static/certificates",
+    express.static(path.resolve("public/certificates"))
 );
-
-const csrfProtection = csrf();
-app.use(csrfProtection);
-app.use(flash());
-
-const accessLogStream = fs.createWriteStream(path.resolve("access.log"), {
-  flags: "a",
-});
 
 // app.use(helmet());
 app.use(compression());
-app.use(morgan("combined", { stream: accessLogStream }));
-
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isAuthenticatedAdmin;
-  res.locals.isUserAuthenticated = req.session.userIsAuthenticated;
-  res.locals.errorMessage = req.flash("error");
-  res.locals.successMessage = req.flash("success");
-  const token = req.csrfToken();
-  res.cookie("XSRF-TOKEN", token);
-  res.locals.csrfToken = token;
-  // req.session.reload((err) => {
-  //   console.log(`session things: `, err);
-  // });
-  next();
-});
-
-app.use(async (req, res, next) => {
-  if (req.session.user) {
-    const findingUser = await Users.findAll({
-      where: { user_id: req.session.user.user_id },
-    });
-
-    if (!findingUser) {
-      return next();
-    } else {
-      req.user = findingUser[0];
-      return next();
-    }
-  } else {
-    return next();
-  }
-});
-
-app.get("/testing", (req, res, next) => {
-  res.render("testing.ejs", {
-    title: "Testing",
-    path: "/testing",
-  });
-});
 
 app.post(
-  "/download_image",
-  body("img_id").isString().isLength({ min: 15 }),
-  imageDownloader
+    "/download_image",
+    body("img_id").isString().isLength({min: 15}),
+    imageDownloader
 );
-app.use("/courses", coursesRoutes);
-app.use("/dashboard", isAuthenticated, dashboardRoutes);
-app.use(authRoutes);
-app.use(shoppingRoutes);
-app.use(globalAccess).get("/exams/preview/:replyId", getExamPreview);
-app.use(isUserAuthenticated, userRoutes);
+
+app.use("/api", AppRoutes);
+app.use("*", notFoundHandler);
+app.use(errorHandler);
+app.use(morgan("common"));
 
 Payment.hasOne(Courses, {
-  foreignKey: "course_id",
-  through: "course_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    constraints: false,
 });
-Payment.hasOne(Users, {
-  foreignKey: "user_id",
-  through: "user_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
-});
-Payment.hasOne(Rounds, {
-  foreignKey: "round_id",
-  through: "round_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
-});
-Users.hasOne(Rounds, {
-  foreignKey: "current_round",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
-});
-Rounds.hasOne(Courses, {
-  foreignKey: "course_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
-});
+Payment.hasOne(Users,
+    {
+        constraints: false,
+    }
+);
+Payment.hasOne(Rounds,
+    {
+        constraints: false,
+    });
+
+Rounds.hasOne(Users,
+    {
+        constraints: false,
+    });
+Rounds.hasOne(Courses,
+    {
+        constraints: false,
+    });
+
 Rounds.belongsToMany(Users, {
-  through: "users_ids",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
-});
-ExamsReplies.belongsTo(Users, {
-  foreignKey: "user_id",
-  constraints: false,
-  onDelete: "cascade",
-  onUpdate: "cascade",
+    through: "users_ids",
+    constraints: false,
 });
 
-app.use((error, req, res, next) => {
-  if (error.errorType === "API") {
-    console.log(error);
-    return res.status(error.httpStatusCode).json({ error: error.message });
-  }
-  console.log(error);
-  return res.status(500).render("500", {
-    title: "Server Error",
-    path: "",
-  });
+Rounds.belongsToMany(Courses, {
+    through: "users_ids",
+    constraints: false,
 });
 
-app.use((req, res, next) => {
-  res.render("404", {
-    title: "There's an error!",
-    path: "",
-  });
-});
+Courses.hasMany(Exams,
+    {
+        constraints: false,
+    });
+Exams.hasOne(Courses,
+    {
+        constraints: false,
+    });
+
+ExamsCourses.hasOne(Courses,
+    {
+        constraints: false,
+    })
+
+
+ExamsCourses.hasOne(Exams, {
+    foreignKey: "exam_id",
+    constraints: false,
+})
+
+ExamsReplies.hasOne(Exams,
+    {
+        constraints: false,
+    });
+ExamsReplies.belongsTo(Users,
+    {
+        constraints: false,
+    });
+
+Exams.hasMany(ExamsReplies,
+    {
+        constraints: false,
+    });
+
+UserPerRound.hasMany(Users, {
+    foreignKey: "userId",
+    constraints: false,
+})
+
+UserPerRound.hasMany(Rounds, {
+    foreignKey: "roundId",
+    targetKey: "round_id",
+    constraints: false,
+})
+
+Users.belongsTo(UserPerRound,
+    {
+        constraints: false,
+    })
+
+Rounds.belongsTo(UserPerRound,
+    {
+        constraints: false,
+    })
+
+Content.belongsTo(ContentAccessList,
+    {
+        constraints: false,
+    })
+Users.belongsTo(ContentAccessList,
+    {
+        constraints: false,
+    })
+
+ContentAccessList.hasMany(Content,
+    {
+        constraints: false,
+    })
+ContentAccessList.hasMany(Users,
+    {
+        constraints: false,
+    })
+
+Courses.hasMany(Discounts, {
+    constraints: false,
+})
+
+Discounts.hasOne(Courses, {
+    constraints: false,
+    through: "course"
+})
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
 try {
-  const connectionResult = await sequelize.authenticate();
-  const syncingResult = await sequelize.sync({
-    alter: true,
-    logging: false,
-  });
+    await sequelize.authenticate();
 
-  app.listen(port, () => {
-    console.log(`working on http://localhost:${port}`);
-  });
+    let dbOptions = {};
+
+    if (process.env.NODE_ENV === 'test') {
+        dbOptions['alter'] = false;
+        dbOptions['force'] = true;
+    } else {
+        dbOptions['alter'] = true;
+        dbOptions['force'] = false;
+    }
+
+    await sequelize.sync(dbOptions);
+
+    app.listen(port, () => {
+        logger.info(`${process.env.BACKEND_URL} working on ${port}`)
+    });
 } catch (e) {
-  throw new Error(e);
+    logger.error(e)
+    throw new Error(e);
 }
+
+export default app;

@@ -26,6 +26,7 @@
           </div>
           <%- include('../../includes/errorMessage.ejs'); %>
           <form
+            id="round-from"
             action="/dashboard/rounds/<% if (editMode === true) { %><%= "edit-round/" + round.round_id %><% } else { %>add-new-round<% } %>"
             method="POST">
             <select name="round_course" class="form-select form-control my-3" aria-label="Default select example"
@@ -93,7 +94,7 @@
                            id="user-<%- index %>"
                            name="user-<%- index %>" value="<%= user.user_id %>">
                     <label class="btn-outlined btn-outline-primary" for="user-<%- index %>">
-                      <%- user.name %>
+                      <%- user.name.split(" ")[0] + " " + user.name.split(" ")[1] %>
                       <%- user.email %>
                     </label>
                   <% }) %>
@@ -172,25 +173,51 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
 <script>
   //=> Searching implementation part
-  /*
 
-  */
-  /*const submitFormBtn = document.getElementById("submit-form-btn")
+  const roundForm = document.getElementById('round-from')
+  const submitFormBtn = document.getElementById("submit-form-btn")
+  const searchingRoundedInput = document.getElementById('searching-rounded')
+  const searchingUnRoundedInput = document.getElementById('searching-unrounded')
+  const searchingOldUsers = document.getElementById('searching-old-users')
 
-  submitFormBtn.addEventListener('click', (e) => {
 
-    const roundedPeopleCheckedLength = document.querySelectorAll('#rounded-container input:checked').length
-    const unRoundedPeopleCheckedLength = document.querySelectorAll('#unrounded-container input:checked').length
-    const oldPeopleCheckedLength = document.querySelectorAll('#prev-users-container input:checked').length
+  const cancelSubmit = (e, inputName) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      alert(`You still haven't finished searching in ${inputName}`)
+    }
+  }
 
-    if ((roundedPeopleCheckedLength + unRoundedPeopleCheckedLength + oldPeopleCheckedLength <= 2)) {
+  window.addEventListener('keydown', () => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      alert(`You still haven't finished searching in users`)
+      return false;
+    }
+  })
+
+  searchingRoundedInput.addEventListener('click', (e) => cancelSubmit(e, 'Rounded People'))
+  searchingUnRoundedInput.addEventListener('click', (e) => cancelSubmit(e, 'Un Rounded People'))
+  searchingOldUsers.addEventListener('click', (e) => cancelSubmit(e, 'Old Users'))
+
+  const checkForm = (e) => {
+    if (searchingRoundedInput.value.length > 0 || searchingUnRoundedInput.value.length > 0 || searchingOldUsers.value.length > 0) {
       e.preventDefault()
       alert("Please check that you have cancelled some people")
     }
-  })*/
+  }
+
+  roundForm.addEventListener('submit', (e) => {
+    checkForm(e)
+  })
+
+  submitFormBtn
+    .addEventListener('click', (e) => {
+      checkForm(e)
+    })
 
   const searchingInUsers = (searchingInputId, searchingContainer) => {
-    //=>> UnRounded people
+    //==> UnRounded people
     const unRoundedSearchingInput = document.getElementById(searchingInputId)
     const unRoundedContainerDiv = document.getElementById(searchingContainer)
     const unRoundedContainerDivElements = document.querySelectorAll(`#${searchingContainer} *`)

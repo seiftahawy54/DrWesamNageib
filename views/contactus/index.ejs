@@ -1,5 +1,6 @@
 <%- include("../includes/top_part.ejs"); %>
-<link rel="stylesheet" href="/css/contactus/index.css"/>
+<link rel="stylesheet" href="/css/contactus/index.css" />
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>
@@ -13,26 +14,38 @@
             <%- errorMessage; %>
           </div>
         <% } %>
+        <% if (successMessage) { %>
+          <div class="error-container">
+            <div class="alert fs-4 text-center alert-primary" role="alert">
+              <%- successMessage %>
+            </div>
+          </div>
+        <% } %>
         <div class="custom-head">
           <h3>Contact for any issues</h3>
           <span></span>
         </div>
-        <form action="/contact" method="POST">
+        <form action="/contact" method="POST" id="contact-form">
           <div class="form-floating my-3">
             <input type="text" name="contact_name" id="contact_name" class="form-control"
-                   placeholder="Your name"/>
+                   placeholder="Your name" />
             <label for="contact_name">Your name</label>
           </div>
           <div class="form-floating my-3">
-            <input type="email" name="contact_email" id="contact_email" placeholder="Your email" class="form-control"/>
+            <input type="email" name="contact_email" id="contact_email" placeholder="Your email" class="form-control" />
             <label for="contact_email">Your email</label>
+          </div>
+          <div class="d-none">
+            <input type="text" id="dummy-field" class="form-control" />
           </div>
           <div class="form-floating my-3">
             <textarea name="contact_content" id="contact_content" placeholder="Enter your message" class="form-control"
                       cols="30" rows="30"></textarea>
             <label for="contact_content">Your Message</label>
           </div>
-          <input type="hidden" name="_csrf" value="<%= csrfToken; %>"/>
+          <div class="g-recaptcha brochure__form__captcha"
+               data-sitekey="6LcJvQwjAAAAAJrKeHOf5gHw8FGtgQcYeZKLDslE"></div>
+          <input type="hidden" name="_csrf" value="<%= csrfToken; %>" />
           <button class="btn" type="submit">Send your message</button>
         </form>
       </div>
@@ -58,6 +71,10 @@
     </div>
   </div>
 </section>
+
+<script>
+
+</script>
 
 <%- include("../includes/footer.ejs"); %>
 <%- include("../includes/bottom_part.ejs"); %>

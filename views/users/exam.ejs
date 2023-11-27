@@ -1,6 +1,13 @@
 <%- include("../includes/top_part.ejs"); %>
 <link rel="stylesheet" href="/css/user/profile.css" />
 <link rel="stylesheet" href="/css/user/exam.css" />
+<style>
+    @media print {
+        .row {
+            display: none;
+        }
+    }
+</style>
 </head>
 <body>
 <%- include("../includes/navigation.ejs"); %>

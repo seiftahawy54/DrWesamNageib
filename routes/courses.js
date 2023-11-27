@@ -1,26 +1,31 @@
 import {
-  getIndex,
-  singleCourse,
-  addCourseToCart,
-  getCoursesCategories,
-  getAllCoursesData,
+    getIndex,
+    singleCourse,
+    addCourseToCart,
+    getCoursesCategories,
+    getAllCoursesData,
+    isAddedToCart
 } from "../controllers/courses.js";
-import express from "express";
-import { isUserAuthenticated } from "../middlewares/user-auth.js";
-import { body } from "express-validator";
+import {Router} from "express";
+import {isUserAuthenticated} from "../middlewares/user-auth.js";
+import {body} from "express-validator";
+import {getShoppingCart, postDeleteFromCart} from "../controllers/shop.js";
 
-const router = express.Router();
+const coursesRoutes = Router();
 
-router
-  .get("/", getIndex)
-  .get("/courses-categories", getCoursesCategories)
-  .get("/all-courses", getAllCoursesData)
-  .get("/:courseId", singleCourse)
-  .post(
-    "/addToCart",
-    [body("selected_round").notEmpty()],
-    isUserAuthenticated,
-    addCourseToCart
-  );
+coursesRoutes
+    .get("/", getAllCoursesData)
+    .get("/courses-categories", getCoursesCategories)
+    .get("/:courseId", singleCourse)
+    .post(
+        "/addToCart",
+        [body("roundDate").notEmpty()],
+        isUserAuthenticated,
+        addCourseToCart
+    )
+    .post("/delete_from_cart", isUserAuthenticated, postDeleteFromCart)
+    .get("/cart", isUserAuthenticated, getShoppingCart)
+    .get('/isAddedToCart/:courseId', isUserAuthenticated, isAddedToCart);
 
-export { router as coursesRoutes };
+const router = Router().use("/", coursesRoutes);
+export default router;

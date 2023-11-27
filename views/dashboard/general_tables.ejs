@@ -140,6 +140,18 @@
                     </td>
                   <% } %>
                   <% if ("notDeleteRow" in customStuff) { %>
+                  <% } else if ("repliesDeletion" in customStuff) { %>
+                    <td class="<%= tableName.toLowerCase() %>-delete">
+                      <form
+                        id="deleteRowForm"
+                        action="/dashboard/<%= tableName.toLowerCase() %>/delete-<%= singleTableName.toLowerCase() %>"
+                        method="post">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <input type="hidden" name="<%- updateInputName %>" value="<%= primaryKey %>">
+                        <button type="submit" class="btn btn-danger" id="deleteRowButton">
+                          Delete <%= tableName %></button>
+                      </form>
+                    </td>
                   <% } else { %>
                     <td class="<%= tableName.toLowerCase() %>-delete">
                       <form
@@ -159,7 +171,7 @@
             </table>
           </div>
           <% if ("pagination" in customStuff) { %>
-            <%- include('../includes/pagination.ejs', { numberOfLinks: customStuff.pagination.numberOfLinks, activePage: customStuff.pagination.activePage }); %>
+            <%- include('../includes/pagination.ejs', { paginationOptions: customStuff.pagination }); %>
           <% } %>
         </div>
       </div>
@@ -231,12 +243,15 @@
 
   const deletingButton = document.querySelector("#deleteRowButton")
   const deletingForm = document.querySelector("#deleteRowForm")
-  deletingForm.addEventListener("click", (e) => {
+  const deletingModalButton = document.querySelector("#deletingModalButton")
+  const confirmDeletion = document.querySelector("#confirmDeletionButton")
+
+  deletingForm.addEventListener("submit", (e) => {
     e.preventDefault()
-    const deletingModalButton = document.querySelector("#deletingModalButton")
+
+    console.log(`confirmDeletion`, confirmDeletion)
 
     deletingModalButton.click()
-    const confirmDeletion = document.querySelector("#confirmDeletionButton")
 
     confirmDeletion.addEventListener("click", () => {
       deletingForm.submit()

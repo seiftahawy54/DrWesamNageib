@@ -1,34 +1,45 @@
-import { Router } from "express";
+import {Router} from "express";
 import {
-  getRounds,
-  getStartNewRound,
-  getUpdateRound,
-  postAddNewRound,
-  postDeleteRound,
-  postUpdateRound,
-} from "../../controllers/dashboard/d_rounds.js";
-import { body } from "express-validator";
+    getRounds,
+    postAddNewRound,
+    postDeleteRound,
+    removeUsersFromRounds,
+    addUsersToRounds,
+    putUpdateRound,
+    gerRunningRounds,
+    getUsersForRounds,
+    getRoundsCourses,
+    getRoundData
+} from "../../controllers/dashboard/rounds.js";
+import {body} from "express-validator";
 
 const router = Router();
 
+const roundsValidation = [
+    body('roundTitle').isString().notEmpty(),
+    body("courseId").isString().notEmpty(),
+    body("roundDate").isString().notEmpty(),
+    body("content").isString().notEmpty(),
+    body('usersIds').isArray().notEmpty(),
+];
+
 router
-  .get("/", getRounds)
-  .get("/add-new-round", getStartNewRound)
-  .post(
-    "/add-new-round",
-    [
-      body("round_course").notEmpty(),
-      body("round_date").notEmpty(),
-      body("round_link").notEmpty(),
-    ],
-    postAddNewRound
-  )
-  .get("/edit-round/:roundId", getUpdateRound)
-  .post(
-    "/edit-round/:roundId",
-    [body("round_date").notEmpty()],
-    postUpdateRound
-  )
-  .post("/delete-rounds", postDeleteRound);
+    .delete("/:roundId", postDeleteRound)
+    .put("/:roundId", roundsValidation, putUpdateRound)
+    .post(
+        "/",
+        roundsValidation,
+        postAddNewRound
+    )
+    .get('/running', gerRunningRounds)
+    .put('/addUsers/:roundId', [body('usersIds').isArray().notEmpty()], addUsersToRounds)
+    .delete("/removeUsers/:roundId", [
+        body("usersIds").isArray().notEmpty(),
+    ], removeUsersFromRounds)
+    .get("/usersForRounds", getUsersForRounds)
+    .get('/coursesForRounds', getRoundsCourses)
+    .get("/", getRounds)
+    .get("/:roundId", getRoundData)
+;
 
 export default router;

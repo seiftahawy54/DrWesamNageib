@@ -76,10 +76,16 @@ submitBtn.addEventListener("click", async (e) => {
           `/exams/preview/${res.data.previewLink}`
         );
         clearAnswers();
-        window.location = "/exam/submitted-exam";
+        window.location.replace("/exam/submitted-exam");
       })
       .catch((err) => {
         console.error(err);
       });
   }
 });
+
+/*window.addEventListener("load", () => {
+  if (localStorage.getItem("grade")) {
+    window.location = "/profile";
+  }
+});*/

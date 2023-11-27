@@ -54,14 +54,13 @@ export const getAddNewInstructor = async (req, res, next) => {
 export const getUpdateInstructor = async (req, res, next) => {
   try {
     const instructorId = req.params.instructorId;
+    const instructor_data = await About.findByPk(instructorId);
 
     return res.render("dashboard/about/instructor", {
       title: "Update instructor",
       path: "/dashboard/about",
       editMode: true,
-      instructor: {
-        instructor_id: instructorId,
-      },
+      instructor: instructor_data,
     });
   } catch (e) {
     await errorRaiser(e, next);
@@ -87,13 +86,12 @@ export const postUpdateInstructor = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(422).json({
-        message: errors.array()[0].msg,
-      });
+      req.flash("error", errors.array()[0].msg);
+      return res.redirect(`/dashboard/about/edit-instructor/${instructorId}`);
     }
 
-    const instructorName = req.body.instructorName;
-    const instructorData = req.body.instructorData;
+    const instructorName = req.body.instructor_name;
+    const instructorData = req.body.instructor_data;
 
     let newInstructorImg = [],
       newInstructorCertificates = [],
@@ -105,29 +103,57 @@ export const postUpdateInstructor = async (req, res, next) => {
     if (
       req.files.length > 0 &&
       req.files.length === 1 &&
-      req.files[0].fieldname === "instructorImg"
+      req.files[0].fieldname === "instructor_img"
     ) {
-      newInstructorImg = req.files[0].path;
+      newInstructorImg = req.files[0];
+      await uploadFile(
+        req.files[0].path,
+        req.files[0].filename,
+        req.files[0].mimetype,
+        res,
+        next
+      );
     }
 
     if (
       req.files.length > 0 &&
-      req.files[0].fieldname === "instructorCertificates"
+      req.files[0].fieldname === "instructor_certificates"
     ) {
-      for (let i = 1; i < req.files.length; i++) {
-        newInstructorCertificates = req.files[i].path;
+      for (let i = 0; i < req.files.length; i++) {
+        newInstructorCertificates.push(req.files[i].path);
+        await uploadFile(
+          req.files[i].path,
+          req.files[i].filename,
+          req.files[i].mimetype,
+          res,
+          next
+        );
       }
     }
 
     if (
       req.files.length > 0 &&
       req.files.length > 1 &&
-      req.files[0].fieldname === "instructorImg"
+      req.files[0].fieldname === "instructor_img"
     ) {
       newInstructorImg = req.files[0].path;
+      await uploadFile(
+        req.files[0].path,
+        req.files[0].filename,
+        req.files[0].mimetype,
+        res,
+        next
+      );
 
       for (let i = 1; i < req.files.length; i++) {
         newInstructorCertificates.push(req.files[i].path);
+        await uploadFile(
+          req.files[i].path,
+          req.files[i].filename,
+          req.files[i].mimetype,
+          res,
+          next
+        );
       }
     }
 
@@ -155,11 +181,12 @@ export const postUpdateInstructor = async (req, res, next) => {
       }
     );
 
-    res.status(204).json({
-      message: "Instructor data updated successfully!",
-    });
+    console.log(updatingResult);
+
+    req.flash("success", "Instructor's data updated successfully");
+    return res.redirect("/dashboard/about");
   } catch (e) {
-    await errorRaiser(e, next, "API");
+    await errorRaiser(e, next);
   }
 };
 
@@ -285,36 +312,66 @@ export const postDeleteCertificate = async (req, res, next) => {
 
 export const postAddNewInstructor = async (req, res, next) => {
   try {
-    const instructorName = req.body.instructorName;
-    const instructorData = req.body.instructorData;
-    const instructorImg = req.files[0].path;
-    let instructorCertificates = [];
+    console.log(req.body, req.files);
+    const { instructor_name, instructor_data } = req.body;
+    const instructor_img = req.files[0];
+    let instructor_certificates = [];
+
+    const uploadingSecondImg = await uploadFile(
+      instructor_img.path,
+      instructor_img.filename,
+      instructor_img.mimetype,
+      res,
+      next
+    );
 
     for (let i = 1; i < req.files.length; i++) {
-      instructorCertificates.push(req.files[i].path);
+      instructor_certificates.push(req.files[i].path);
+      await uploadFile(
+        req.files[i].path,
+        req.files[i].filename,
+        req.files[i].mimetype,
+        res,
+        next
+      );
     }
 
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(404).json({
-        message: errors.array()[0].msg,
+      console.log(errors.array());
+      req.flash("error", errors[0].msg);
+      return res.render("dashboard/about/instructor", {
+        title: "Add new instructor",
+        path: "/dashboard/about",
+        editMode: false,
+        instructor: {
+          instructor_data: {
+            instructor_name,
+            instructor_data,
+          },
+        },
       });
     }
 
     const creatingNewInstructor = await About.create({
-      instructor_name: instructorName,
-      instructor_data: instructorData,
-      instructor_image: instructorImg,
-      instructor_certificates: instructorCertificates,
+      instructor_name,
+      instructor_data,
+      instructor_image: instructor_img.path,
+      instructor_certificates,
     });
 
-    return res.status(201).json({
-      message: "Success",
-      newInstructor: creatingNewInstructor,
-    });
+    console.log(creatingNewInstructor);
+
+    return res.redirect("/dashboard/about");
+
+    // return res.status(201).json({
+    //   message: "Success",
+    //   newInstructor: creatingNewInstructor,
+    // });
   } catch (e) {
-    await errorRaiser(e, next, "API");
+    console.log(e);
+    await errorRaiser(e, next);
   }
 };
 
@@ -333,7 +390,7 @@ export const postDeleteInstructor = async (req, res, next) => {
 
     return res.status(201).json({ message: "Success" });
   } catch (e) {
-    await errorRaiser(e, next, "API");
+    await errorRaiser(e, next);
   }
 };
 

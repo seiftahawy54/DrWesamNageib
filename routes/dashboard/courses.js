@@ -1,51 +1,59 @@
 import {
-  getAddNewCourse,
-  getCourses,
-  getEditCourse,
-  postAddNewCourse,
-  postDeleteCourse,
-  postUpdateCourse,
-} from "../../controllers/dashboard/d_courses.js";
-import { body } from "express-validator";
-import { Router } from "express";
-import { upload } from "../../middlewares/multer.js";
+    getAddNewCourse,
+    getCourses,
+    getEditCourse,
+    postAddNewCourse,
+    postDeleteCourse,
+    postUpdateCourse,
+} from "../../controllers/dashboard/courses.js";
+import {body} from "express-validator";
+import {Router} from "express";
+import {upload} from "../../middlewares/multer.js";
 
+const courseObjectValidation = [
+    body("courseName").isString().notEmpty(),
+    body("arCourseName").isString().notEmpty(),
+    body("coursePrice").isNumeric().notEmpty(),
+    body("courseRank").isNumeric().notEmpty(),
+    body("courseThumbnail").isString().notEmpty(),
+    body("courseDescription").isString().notEmpty(),
+    body("isSpecial").isString().notEmpty(),
+    body("courseTotalHours").isString().isLength({min: 1}),
+    body("courseCategory").isString().isLength({min: 5}),
+]
 export default Router()
-  .get("/", getCourses)
-  .get("/add-new-course", getAddNewCourse)
-  .post(
-    "/add-new-course",
-    // upload.any("course_img", "detailed_img"),
-    [
-      body("name").isString().notEmpty(),
-      body("price").isNumeric().notEmpty(),
-      body("arabic_name").isString().notEmpty(),
-      body("course_rank").isNumeric().notEmpty(),
-      body("thumbnail").isString().notEmpty(),
-      body("description").isString().notEmpty(),
-      body("special_course").isString().notEmpty(),
-      body("total_hours").isString().isLength({ min: 1 }),
-      body("course_category").isString().isLength({ min: 5 }),
-      // body("course_img").notEmpty(),
-      // body("detailed_img").notEmpty(),
-    ],
-    postAddNewCourse
-  )
-  .get("/edit-course/:courseId", getEditCourse)
-  .post("/delete-courses", postDeleteCourse)
-  .post(
-    "/edit-course/:courseId",
-    // upload.any("course_img", "detailed_img"),
-    [
-      body("name").isString().notEmpty(),
-      body("price").isNumeric().notEmpty(),
-      body("arabic_name").isString().notEmpty(),
-      body("course_rank").isNumeric().notEmpty(),
-      body("thumbnail").isString().notEmpty(),
-      body("description").isString().notEmpty(),
-      body("special_course").isString().notEmpty(),
-      body("total_hours").isString().isLength({ min: 1 }),
-      body("course_category").isString().isLength({ min: 5 }),
-    ],
-    postUpdateCourse
-  );
+    .get("/", getCourses)
+    .get("/:courseId", getEditCourse)
+    .post(
+        "/",
+        upload().fields([
+            {
+                name: 'mainImg',
+                maxCount: 1,
+            },
+            {
+                name: 'briefImg',
+                maxCount: 1
+            }
+        ]),
+        courseObjectValidation,
+        postAddNewCourse
+    )
+    .delete("/:courseId", postDeleteCourse)
+    .put(
+        "/:courseId",
+        upload().fields([
+            {
+                name: 'mainImg',
+                maxCount: 1,
+                required: false,
+            },
+            {
+                name: 'briefImg',
+                maxCount: 1,
+                required: false,
+            }
+        ]),
+        courseObjectValidation,
+        postUpdateCourse
+    );

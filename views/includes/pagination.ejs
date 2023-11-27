@@ -1,14 +1,86 @@
 <nav aria-label="navigation" class="my-3">
   <ul class="pagination justify-content-center">
-    <% if (numberOfLinks) { %>
-      <% for (let i = 1; i <= numberOfLinks; i++) { %>
-        <li class="page-item  <%= parseInt(activePage) === i ? 'active' : "" %>">
+    <% if (paginationOptions.numberOfLinks && !('hasNext' in paginationOptions)) { %>
+      <% for (let i = 1; i <= paginationOptions.numberOfLinks; i++) { %>
+        <li class="page-item  <%= parseInt(paginationOptions.activePage) === i ? 'active' : "" %>">
           <a class="page-link"
-             href="<%= path %>/?page=<%= i %>" <%- activePage ? `aria-current="page"` : "" %>>
+             href="<%= path %>/?page=<%= i %>" <%- paginationOptions.activePage ? `aria-current="page"` : "" %>>
             <%= i %>
           </a>
         </li>
       <% } %>
+    <% } else if (paginationOptions.numberOfLinks) { %>
+      <li class="page-item <%= !paginationOptions.hasPrev ? 'disabled' : '' %>">
+        <a class="page-link" href="<%= path %>/?page=<%= paginationOptions.prev %>">Previous</a>
+      </li>
+
+      <li class="page-item <%= paginationOptions.activePage === paginationOptions.firstPage ? 'active' : '' %>">
+        <a class="page-link" href="<%= path %>/?page=<%= paginationOptions.firstPage %>">
+          <%= paginationOptions.firstPage %>
+        </a>
+      </li>
+
+      <% if (paginationOptions.activePage - 1 < 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="<%= path %>/?page=<%= paginationOptions.activePage - 1 %>">
+            <%= paginationOptions.activePage - 1 %>
+          </a>
+        </li>
+      <% } %>
+
+
+      <% if (
+        paginationOptions.activePage > paginationOptions.firstPage &&
+        paginationOptions.activePage < paginationOptions.lastPage) { %>
+        <li class="page-item active">
+          <a class="page-link"
+             href="<%= path %>/?page=<%= paginationOptions.activePage %>"
+          >
+            <%= paginationOptions.activePage %>
+          </a>
+        </li>
+      <% } %>
+
+      <% if (paginationOptions.activePage + 1 < paginationOptions.numberOfLinks) { %>
+        <li class="page-item">
+          <a class="page-link" href="<%= path %>/?page=<%= 1 + paginationOptions.activePage %>">
+            <%= 1 + paginationOptions.activePage %>
+          </a>
+        </li>
+      <% } %>
+
+      <li class="page-item <%= paginationOptions.activePage === paginationOptions.lastPage ? 'active' : '' %>">
+        <a class="page-link" href="<%= path %>/?page=<%= paginationOptions.lastPage %>">
+          <%= paginationOptions.lastPage %>
+        </a>
+      </li>
+      <li class="page-item <%= !paginationOptions.hasNext ? 'disabled' : '' %>">
+        <a class="page-link" href="<%= path %>/?page=<%= paginationOptions.next %>">Next</a>
+      </li>
     <% } %>
   </ul>
+  <div class="text-center">
+    <form id="goToForm">
+      <button>
+        Go to
+      </button>
+      <input id="goToInput" type="number" min="1"
+             max="<%= paginationOptions.lastPage %>" />
+    </form>
+  </div>
 </nav>
+
+<script>
+  const form = document.getElementById("goToForm")
+  const input = document.getElementById("goToInput")
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault()
+    console.log(`<%= path %>/?page=${input.value}`)
+    if (input.value) {
+      window.location = `<%= path %>/?page=${input.value}`
+    }
+  })
+</script>
+
+
