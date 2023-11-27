@@ -89,6 +89,8 @@ export const createCertificate = (
         .add(3, "months")
         .format("LL")
 
+    console.log(startDate, endDate)
+
     let sendingData = {
         courseName,
         roundDate: moment(roundStartingDate).format("DD-MM-YYYY"),

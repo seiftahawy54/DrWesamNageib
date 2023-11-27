@@ -20,7 +20,7 @@ import {
     UserPerRound,
     Exams,
     ExamsCourses,
-    ContentAccessList, Content
+    ContentAccessList, Content, Discounts
 } from "./models/index.js";
 import {imageDownloader} from "./utils/general_helper.js";
 import {body} from "express-validator";
@@ -189,6 +189,15 @@ ContentAccessList.hasMany(Users,
     {
         constraints: false,
     })
+
+Courses.hasMany(Discounts, {
+    constraints: false,
+})
+
+Discounts.hasOne(Courses, {
+    constraints: false,
+    through: "course"
+})
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 

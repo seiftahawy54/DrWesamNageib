@@ -721,7 +721,7 @@ const getUserProfileCertificate = async (req, res, next) => {
 
 
 const userExamsRelatedData = async (userId) => {
-    // Finding the user's exams
+    // Finding the user's passed any special exams
     const userExamsData = await ExamsReplies.findAll({
         where: {
             user_id: userId,
@@ -778,6 +778,10 @@ const userExamsRelatedData = async (userId) => {
             where: {
                 userId,
                 "$rounds.course.special_course$": true,
+                [Op.or]: [
+                    {specialAccess: true},
+                    {specialAccess: false},
+                ]
             },
             include: [
                 {
