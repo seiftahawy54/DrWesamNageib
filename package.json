@@ -5,12 +5,13 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "nodemon app.js $PORT",
-    "debug": "nodemon --inspect app.js $PORT",
+    "dev": "NODE_ENV=development nodemon app.js $PORT",
+    "debug": "NODE_ENV=development nodemon --inspect app.js $PORT",
     "web": "node app.js",
     "sass": "sass --watch ./public/scss/:./public/css/",
     "test": "NODE_ENV=test vitest",
-    "start": "node app.js"
+    "start": "node app.js",
+    "production": "NODE_ENV=production node app.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.51.0",
