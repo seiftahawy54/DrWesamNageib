@@ -20,6 +20,7 @@ const questionsSchema = joi.array().items(
         correctAnswer: joi.string().min(1).max(1),
         questionHint: joi.string().min(0),
         order: joi.string().min(0),
+        questionRationale: joi.string().min(0),
     }),
     joi.object({
         examImage: joi.string().min(13),
@@ -152,7 +153,7 @@ export const postDeleteExam = async (req, res, next) => {
 export const getUpdateExam = async (req, res, next) => {
     try {
         const {examId} = req.params;
-        const {exam, course_id} = await ExamsCourses.findOne({
+        const searchResult = await ExamsCourses.findOne({
             where: {exam_id: examId},
             include: [
                 {
@@ -165,6 +166,12 @@ export const getUpdateExam = async (req, res, next) => {
                 }
             ]
         });
+
+        if (!searchResult) {
+            return res.status(404).send("Exam Not Found")
+        }
+
+        const {exam, course_id} = searchResult;
 
         exam.courseId = course_id;
 
@@ -213,22 +220,29 @@ export const getUpdateExam = async (req, res, next) => {
 export const postUpdateExam = async (req, res, next) => {
     try {
         const examId = req.params.examId;
-        const questions = req.body.questions;
-        const examTitle = req.body.examTitle;
-        const examStatus = req.body.examStatus;
-        const specialExam = req.body.specialExam;
-        const presentation = req.body.forPresentation;
-
-        console.log(`Is presentation ===> `, req.body)
+        const {
+            questions,
+            examTitle,
+            examStatus,
+            specialExam,
+            forPresentation: presentation,
+            courseId: course_id
+        } = req.body;
 
         const validationErrors = validationResult(req);
         const {error} = await questionsSchema.validate(questions);
 
-        console.log(`Validation of schema ===> `, util.inspect(error, false, null));
-
         if (error || !validationErrors.isEmpty()) {
             return res.status(422).json(extractErrorMessages(validationErrors.array()));
         }
+
+        const updateCoursePerExam = await ExamsCourses.update({
+            course_id
+        }, {
+            where: {
+                exam_id: examId
+            }
+        })
 
         const updatingExam = await Exams.update(
             {
@@ -236,7 +250,8 @@ export const postUpdateExam = async (req, res, next) => {
                 questions,
                 title: examTitle,
                 special_exam: specialExam,
-                presentation
+                presentation,
+                course_id
             },
             {where: {exam_id: examId}}
         );
@@ -245,6 +260,7 @@ export const postUpdateExam = async (req, res, next) => {
 
         res.status(201).json({
             questions,
+            updateCoursePerExam
         });
     } catch (e) {
         await errorRaiser(e, next);

@@ -32,14 +32,14 @@ const getCheckCertificate = async (req, res, next) => {
         })
     }
 
-    const roundAndCourse = await userPerRound.findOne(
+    const roundAndCourse = await userPerRound.findAll(
         {
             where: {
                 userId: certificate.userId,
                 [Op.or]: [
                     {specialAccess: true},
                     {specialAccess: false}
-                ]
+                ],
             },
             include: [
                 {
@@ -49,6 +49,9 @@ const getCheckCertificate = async (req, res, next) => {
                         round_id: {
                             [Op.eq]: Sequelize.col("userPerRound.roundId"),
                         },
+                    },
+                    where: {
+                        course_id: certificate.courseId
                     },
                     include: [
                         {
@@ -65,8 +68,8 @@ const getCheckCertificate = async (req, res, next) => {
         }
     );
 
-    const round = roundAndCourse.rounds[0];
-    const course = roundAndCourse.rounds[0].course;
+    const round = roundAndCourse[0].rounds[0];
+    const course = roundAndCourse[0].rounds[0].course;
 
     const checkCertificateQrCode = await qr.toDataURL(`${process.env.FRONTEND_URL}/check/certificate/${certificateSerialNumber}`);
 
@@ -108,7 +111,7 @@ const getCheckCertificate = async (req, res, next) => {
             });
     } catch (e) {
         logger.error(e);
-        await errorRaiser(e, next)
+        next(e);
     }
 }
 

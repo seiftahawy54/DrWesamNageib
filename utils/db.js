@@ -1,9 +1,17 @@
 import {Sequelize} from "sequelize";
 
 import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+let envPath = `.env.${process.env.NODE_ENV}`
 
+if (process.env.NODE_ENV === 'production') {
+    envPath = `.env`
+}
+
+dotenv.config({
+    path: path.resolve(`.env.${process.env.NODE_ENV}`)
+});
 
 let sslOptions = {};
 
