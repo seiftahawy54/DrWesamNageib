@@ -1,0 +1,16 @@
+@use "../utils/variables" as vars;
+
+$tables_rows: 3;
+
+.certificates {
+  .content {
+    .table-head {
+      font-size: vars.$lg_font_size - 2 !important;
+      grid-template-columns: repeat($tables_rows, 1fr) !important;
+    }
+
+    .table-row {
+      grid-template-columns: repeat($tables_rows, 1fr) !important;
+    }
+  }
+}

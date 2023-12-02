@@ -1,0 +1,51 @@
+/*
+
+@mixin computeRgba($color, $opacityWanted) {
+@return "rgba(" red($color) + ',' + green($creen) + ',' + blue() $opacity) ";
+}
+*/
+.single-course-section {
+  min-height: calc(100vh - 161px - 131px);
+}
+.single-course-section .bread-crumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: 30px;
+}
+.single-course-section .course-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+}
+.single-course-section .course-data h2 {
+  font-size: 24px;
+  font-weight: 400;
+  margin-block-end: 20px;
+}
+.single-course-section .course-data .course-price {
+  color: red;
+  font-size: 18px;
+  font-weight: 500;
+}
+.single-course-section .course-data .course-description {
+  margin-block: 30px;
+}
+.single-course-section .course-data .course-type {
+  margin-block-end: 20px;
+}
+.single-course-section .course-data .course-type strong {
+  display: block;
+  margin-block: 10px;
+}
+.single-course-section .course-data .course-type span {
+  display: block;
+  padding: 10px 20px;
+  border: 1px solid #000;
+  width: fit-content;
+  border-radius: 4px;
+}
+
+/*# sourceMappingURL=single_course.css.map */

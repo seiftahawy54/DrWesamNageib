@@ -1,0 +1,59 @@
+.courses #editor,
+.courses .ck-editor {
+  border-radius: 4px !important;
+}
+.courses .content {
+  padding-bottom: 120px;
+}
+.courses .content .content-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.courses .content .courses-data {
+  border: 2px solid #000;
+  border-radius: 4px;
+}
+.courses .content .courses-data .table-head {
+  display: grid;
+  font-size: 18px;
+  border-bottom: 2px solid #000;
+  grid-template-columns: repeat(6, 1fr);
+  padding: 11px 24px;
+  justify-items: center;
+}
+.courses .content .courses-data .table-row {
+  padding: 11px 24px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  font-size: 16px;
+  justify-items: center;
+  align-items: center;
+}
+.courses .content .courses-data .table-row .course-description {
+  width: 180px;
+  height: 100px;
+  overflow: scroll;
+}
+.courses .content .courses-data .table-row .course-update button,
+.courses .content .courses-data .table-row .course-delete button {
+  width: fit-content;
+  /*width: 100px;
+  height: 25px;*/
+}
+
+@media (max-width: 575px) {
+  .content {
+    padding-inline: 0 !important;
+    padding-block: 120px;
+  }
+}
+@media (min-width: 576px) and (max-width: 991px) {
+  .content {
+    padding-inline: 0 !important;
+    padding-block: 120px;
+  }
+}
+
+/*# sourceMappingURL=courses.css.map */

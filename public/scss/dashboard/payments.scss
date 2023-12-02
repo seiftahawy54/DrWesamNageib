@@ -1,0 +1,18 @@
+@use "../utils/variables" as vars;
+
+$tables_rows: 4;
+
+.payments {
+  .content {
+    padding-inline-start: 80px !important;
+
+    .table-head {
+      font-size: vars.$lg_font_size - 2 !important;
+      grid-template-columns: repeat($tables_rows, 1fr) !important;
+    }
+
+    .table-row {
+      grid-template-columns: repeat($tables_rows, 1fr) !important;
+    }
+  }
+}

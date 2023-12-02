@@ -1,0 +1,9 @@
+.certificates .content .table-head {
+  font-size: 18px !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+.certificates .content .table-row {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+/*# sourceMappingURL=about.css.map */

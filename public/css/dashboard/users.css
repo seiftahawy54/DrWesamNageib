@@ -1,0 +1,12 @@
+.users .content {
+  padding-inline-start: 80px !important;
+}
+.users .content .table-head {
+  font-size: 17px !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+}
+.users .content .table-row {
+  grid-template-columns: repeat(7, 1fr) !important;
+}
+
+/*# sourceMappingURL=users.css.map */

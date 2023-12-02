@@ -1,0 +1,17 @@
+.messages .content {
+  padding-inline-start: 80px !important;
+}
+.messages .content .table-head {
+  font-size: 18px !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+.messages .content .table-row {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+.messages .content .table-row .message-content {
+  overflow: auto;
+  width: 200px;
+  height: 50px;
+}
+
+/*# sourceMappingURL=messages.css.map */

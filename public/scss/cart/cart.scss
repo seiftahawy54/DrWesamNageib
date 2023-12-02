@@ -1,0 +1,58 @@
+@use "../utils/common" as common;
+@use "../utils/variables" as vars;
+
+.shopping-cart {
+  margin-block: 30px;
+  min-height: calc(100vh - 311px);
+
+  .cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cart-content {
+    .purchase-details {
+      margin-block: 20px;
+      position: relative;
+
+      h3 {
+        word-break: break-word;
+      }
+
+      .delete-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: fit-content;
+
+        svg {
+          fill: red;
+          transition: transform 0.2s ease-in-out;
+          @include common.similarHW(40px);
+          cursor: pointer;
+
+          &:hover {
+            transform: rotate(30deg);
+          }
+        }
+      }
+    }
+  }
+
+  .purchase-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    font-size: vars.$lg_font_size;
+    background-color: #f2ba36;
+    color: rgba(0, 0, 0, 0.9);
+    margin-block-start: 30px;
+
+    img {
+      @include common.similarHW(68px);
+      object-fit: contain;
+    }
+  }
+}

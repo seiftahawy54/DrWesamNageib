@@ -1,0 +1,123 @@
+@use "../utils/common" as common;
+@use "../utils/mediaFns" as mediaQ;
+@use "../utils/variables" as vars;
+
+.featured-courses {
+  .small-brief {
+    margin-block: 80px;
+  }
+
+  .featured-course-container {
+    /*
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    */
+
+    .featured-courses-container {
+      box-shadow: 0 3px 6px rgba(vars.$main_color, 0.5);
+      padding: 27px 16px;
+      border-top: 8px solid vars.$main_color;
+      font-size: vars.$md_font_size;
+      //max-width: calc(100vw / 4);
+
+      a {
+        width: 100%;
+      }
+
+      .course-title-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+
+        .course-thumbnail {
+          img {
+            @include common.similarHW(60px);
+          }
+        }
+      }
+
+      .course-about {
+        font-weight: 300;
+        margin-block: 32px;
+      }
+    }
+  }
+}
+
+.all-courses {
+  h3 {
+    font-family: vars.$sans_font;
+  }
+
+  .course-sort {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .all-courses-cont {
+    margin-block-start: 20px;
+
+    .course {
+      border: 0.5px solid #707070;
+      box-shadow: 0 3px 6px rgba(vars.$main_color, 0.2);
+      border-radius: 5px;
+      margin-block-end: 20px;
+      transition: box-shadow 0.25s ease-in-out;
+      cursor: pointer;
+
+      .course-thumbnail {
+        width: 100%;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+      }
+
+      .course-footer {
+        padding: 20px;
+      }
+
+      .course-title {
+        margin-block-end: 10px;
+        font-size: vars.$sm_font_size;
+      }
+
+      .course-price {
+        color: red;
+        font-family: vars.$sans_font;
+      }
+
+      &:hover {
+        box-shadow: 0 3px 6px rgba(vars.$main_color, 0.4);
+      }
+    }
+  }
+}
+
+/*
+@include mediaQ.allSmScreens {
+  .featured-course-container {
+    .featured-courses-container {
+      max-width: 100vw !important;
+    }
+  }
+}
+
+@include mediaQ.tabletIpad {
+  .featured-course-container {
+    .featured-courses-container {
+      max-width: calc(100vw / 2) !important;
+    }
+  }
+}
+
+@include mediaQ.laptops {
+  .featured-course-container {
+    .featured-courses-container {
+      max-width: calc(100vw / 3) !important;
+    }
+  }
+}
+*/

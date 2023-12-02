@@ -1,0 +1,77 @@
+@use "../utils/variables" as vars;
+
+.submit-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.exam-result {
+  min-height: calc(100vh - 120px - 180px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.question {
+  position: relative;
+  border: 1px solid vars.$main_color;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+  transition: box-shadow 0.25s ease-in-out;
+  margin-block-end: 20px;
+
+  &.invalid {
+    border-color: var(--bs-danger);
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(var(--bs-danger), 0.5);
+    }
+  }
+
+  .answers-container {
+    .answer {
+      label {
+        cursor: pointer;
+
+        &:hover {
+          font-weight: 600;
+        }
+      }
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+
+  .question-number {
+    display: flex;
+    width: max(55px);
+    border-radius: 50%;
+    font-size: 18px;
+  }
+
+  .delete-exam {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  .edit-exam {
+    position: absolute;
+    top: 10px;
+    right: 55px;
+    cursor: pointer;
+
+    &:hover {
+      path {
+        color: var(--bs-success);
+      }
+    }
+  }
+}
