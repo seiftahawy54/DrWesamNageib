@@ -4,7 +4,13 @@ import {errorRaiser} from "../../../utils/error_raiser.js";
 import {sequelize} from "../../../utils/db.js";
 import moment from "moment";
 import {Op, Sequelize} from "sequelize";
-import {calcPagination, rolesMap, rolesMapper, userPerformedExams} from "../../../utils/general_helper.js";
+import {
+    calcPagination, constructError,
+    extractErrorMessages,
+    rolesMap,
+    rolesMapper,
+    userPerformedExams
+} from "../../../utils/general_helper.js";
 import {
     NUMBER_TYPE,
     STRING_TYPE,
@@ -12,6 +18,8 @@ import {
 } from "../../../validators/typesValidators.js";
 import userPerRound from "../../../models/userPerRound.js";
 import config from "config";
+import {validationResult} from "express-validator";
+import bcrypt from "bcrypt";
 
 const getSearchForUser = async (req, res, next) => {
     try {
@@ -239,12 +247,19 @@ const getUpdateUser = async (req, res, next) => {
     // Searching if user joined any rounds
     const rounds = await userPerRound.findAll({
         where: {
-            userId: userId
+            userId: userId,
+            [Op.or]: [
+                {
+                    specialAccess: false,
+                }, {
+                    specialAccess: true
+                }
+            ]
         },
         include: [
             {
                 model: Rounds,
-                attributes: ['round_id', 'round_date', 'finished', 'course_id', 'title', 'round_link'],
+                attributes: ['round_id', 'round_date', 'finished', 'course_id', 'title'],
                 on: {
                     round_id: {
                         [Op.eq]: Sequelize.col("userPerRound.roundId"),
@@ -257,9 +272,11 @@ const getUpdateUser = async (req, res, next) => {
     // Exams Replies
     const examsReplies = await ExamsReplies.findAll({
         where: {
-            user_id: userId
+            user_id: userId,
+            isDeleted: false,
         },
-        attributes: ['reply_id'],
+        attributes: ['reply_id', 'grade', 'createdAt'],
+        order: [["createdAt", "DESC"]],
         include: [
             {
                 model: Exams,
@@ -269,12 +286,25 @@ const getUpdateUser = async (req, res, next) => {
                         [Op.eq]: Sequelize.col("exams_replies.exam_id"),
                     },
                 },
-                attributes: ['exam_id', 'title']
+                attributes: ['exam_id', 'title', 'questions']
             }
         ]
     });
 
-    user.type = rolesMapper(false, user.type);
+    // Calculating grades
+    const totalQuestionsGrade = (questions) => {
+        return questions.filter(question => {
+            return question && ("questionHeader" in question);
+        }).length
+    }
+
+    examsReplies.forEach(reply => {
+        reply.dataValues.maxGrade = totalQuestionsGrade(reply.exam.questions);
+    })
+
+    if (user.type > 3) {
+        user.type = 4;
+    }
 
     return res.status(200).send({
         user,
@@ -284,75 +314,42 @@ const getUpdateUser = async (req, res, next) => {
 };
 
 const postUpdateUser = async (req, res, next) => {
-    const userId = req.params.userId;
-    const email = req.body.email;
-    const name = req.body.name;
-    const whatsapp_no = req.body.whatsapp_no;
-    let finishedCurrentRound = req.body.finishing_round;
-    const specialization = req.body.specialization;
-
-    const updatingUser = await Users.findByPk(userId);
-
-    let updatingSingleUser, updatingRoundsUsers;
-
-    if (finishedCurrentRound === "on") {
-        updatingSingleUser = await Users.update(
-            {
-                name,
-                email,
-                whatsapp_no,
-                specialization,
-                current_round: null,
-                finished_course: updatingUser.current_round,
-            },
-            {where: {user_id: userId}}
-        );
-
-        const currentUserRound = await Rounds.findByPk(updatingUser.current_round);
-
-        updatingRoundsUsers = await Rounds.update(
-            {
-                users_ids: currentUserRound.users_ids.filter((id) => id !== userId),
-            },
-            {where: {round_id: currentUserRound.round_id}}
-        );
-    } else {
-        updatingSingleUser = await Users.update(
-            {
-                name,
-                email,
-                whatsapp_no,
-                specialization,
-            },
-            {where: {user_id: userId}}
-        );
-    }
-
-    if (updatingSingleUser[0] >= 1) {
-        res.redirect("/dashboard/users");
-    } else {
-        const findingResult = await Users.findByPk(userId);
-        res.render("dashboard/users_forms", {
-            title: "Update User",
-            path: "/dashboard/users",
-            user: findingResult,
-        });
-    }
-};
-
-const getUserUpdateData = async (req, res, next) => {
     try {
+        const {userId} = req.params;
+        const {name, type, email, specialization, whatsappNumber: whatsapp_no} = req.body;
+        const errors = validationResult(req);
 
+        if (!errors.isEmpty()) {
+            return res.status(422).send(extractErrorMessages(errors.array()));
+        }
+
+        const user = await Users.update({
+            name,
+            type,
+            email,
+            specialization,
+            whatsapp_no
+        }, {
+            where: {
+                user_id: userId
+            }
+        })
+
+        if (user[0] >= 1) {
+            return res.status(200).send("User updated successfully");
+        }
     } catch (e) {
         await errorRaiser(e, next);
     }
-}
+};
 
 const getUserSpecialRoundAccess = async (req, res, next) => {
     try {
+        const {userId} = req.params;
+
         const usersCurrentRounds = await userPerRound.findAll({
             where: {
-                userId: req.user.user_id,
+                userId,
             },
         })
 
@@ -361,11 +358,139 @@ const getUserSpecialRoundAccess = async (req, res, next) => {
                 round_id: {
                     [Op.notIn]: usersCurrentRounds.map((round) => round.roundId),
                 },
+                finished: true
             },
-            attributes: ['round_id', 'round_date', 'finished', 'title'],
+            attributes: ['round_id', 'round_date', 'finished', 'title', 'createdAt'],
+            order: [['createdAt', 'desc']]
         })
 
         return res.status(200).send(rounds)
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
+const putUpdateUserPassword = async (req, res, next) => {
+    try {
+        const {userId} = req.params;
+        const {password, confirmPassword} = req.body;
+
+        if (password !== confirmPassword) {
+            return res.status(422).json(
+                constructError(
+                    "password",
+                    "Passwords do not match",
+                )
+            )
+        }
+
+        const encryptionResult = bcrypt.hashSync(password, 12);
+
+        const updateUserPasswordResult = await Users.update({
+            password: encryptionResult
+        }, {
+            where: {
+                user_id: userId
+            }
+        })
+
+        if (updateUserPasswordResult[0] >= 1) {
+            return res.status(200).send("Password updated successfully");
+        } else {
+            return res.status(500).send("Something went wrong")
+        }
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
+const putRemoveUserFromRounds = async (req, res, next) => {
+    try {
+        const {userId} = req.params;
+        const {rounds} = req.body;
+
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.send(422).send(extractErrorMessages(errors.array()))
+        }
+
+        for (let i = 0; i < rounds.length; i++) {
+            await userPerRound.destroy({where: {userId, roundId: rounds[i]}});
+        }
+
+        return res.status(200).send("User Removed from rounds successfully!")
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
+const addUserToSpecialAccessRound = async (req, res, next) => {
+    try {
+        const {userId} = req.params;
+        const {rounds} = req.body;
+        let specialAccess = req.query.specialAccess === 'true';
+
+        const usersToRoundArr = rounds.map(round => ({
+            userId,
+            roundId: round,
+            specialAccess,
+        }))
+
+        const result = await userPerRound.bulkCreate(usersToRoundArr);
+
+        return res.status(200).send(result);
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
+const gerRunningRounds = async (req, res, next) => {
+    try {
+
+        const {userId} = req.params;
+
+        const usersCurrentRounds = await userPerRound.findAll({
+            where: {
+                userId,
+            },
+        })
+
+        const rounds = await Rounds.findAll({
+            where: {
+                round_id: {
+                    [Op.notIn]: usersCurrentRounds.map((round) => round.roundId),
+                },
+                finished: false
+            },
+            attributes: ['round_id', 'round_date', 'finished', 'title', 'createdAt'],
+            order: [['createdAt', 'desc']]
+        })
+
+
+        return res.status(200).send(rounds);
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
+const deleteExamsRepliesForUser = async (req, res, next) => {
+    try {
+        const {userId} = req.params;
+        const {replies} = req.body;
+
+        for (let i = 0; i < replies.length; i++) {
+            await ExamsReplies.update({
+                isDeleted: true
+            }, {
+                where: {
+                    reply_id: replies[i],
+                    user_id: userId
+                }
+            });
+        }
+
+        return res.status(200).send("Exams Replies deleted successfully!");
     } catch (e) {
         await errorRaiser(e, next);
     }
@@ -379,4 +504,9 @@ export {
     getSearchForUser,
     getUsersSearchFilters,
     getUserSpecialRoundAccess,
+    putUpdateUserPassword,
+    putRemoveUserFromRounds,
+    addUserToSpecialAccessRound,
+    gerRunningRounds,
+    deleteExamsRepliesForUser
 };

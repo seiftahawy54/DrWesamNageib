@@ -1,3 +1,13 @@
+let envPath = `.env.${process.env.NODE_ENV}`
+
+if (process.env.NODE_ENV === 'production') {
+    envPath = `.env`
+}
+
+dotenv.config({
+    path: envPath,
+});
+
 // NODE MODULES IMPORTS
 import * as dotenv from "dotenv";
 import path from "path";
@@ -5,8 +15,9 @@ import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
-import Multer from "multer";
 import cors from "cors";
+import {body} from "express-validator";
+import morgan from "morgan";
 
 // MY MODULES IMPORTS
 import {sequelize} from "./utils/db.js";
@@ -20,20 +31,13 @@ import {
     UserPerRound,
     Exams,
     ExamsCourses,
-    ContentAccessList, Content
+    ContentAccessList, Content, Discounts
 } from "./models/index.js";
 import {imageDownloader} from "./utils/general_helper.js";
-import {body} from "express-validator";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
-import {fileFilter, fileStorage} from "./middlewares/multer.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import logger from "./utils/logger.js";
-import fs from "fs";
-import morgan from "morgan";
-import {promisify} from "util";
-import {exec} from "child_process";
 
-dotenv.config();
 const app = express();
 
 app.set("view engine", "ejs");
@@ -42,20 +46,6 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
-// app.use(
-//     Multer({
-//         limits: {fileSize: 5 * 1024 * 1024},
-//         storage: fileStorage,
-//         fileFilter,
-//     }).any(
-//         "course_img",
-//         "detailed_img",
-//         "certificate_img",
-//         "exam_q_image",
-//         "instructor_img",
-//         "instructor_certificates"
-//     )
-// );
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use("/robots.txt", express.static(path.resolve("public", "robots.txt")));
@@ -190,14 +180,31 @@ ContentAccessList.hasMany(Users,
         constraints: false,
     })
 
+Courses.hasMany(Discounts, {
+    constraints: false,
+})
+
+Discounts.hasOne(Courses, {
+    constraints: false,
+    through: "course"
+})
+
 const port = process.env.PORT || process.env.DEV_PORT || 4000;
 
 try {
     await sequelize.authenticate();
-    await sequelize.sync({
-        alter: true,
-        // force: true
-    });
+
+    let dbOptions = {};
+
+    if (process.env.NODE_ENV === 'test') {
+        dbOptions['alter'] = false;
+        dbOptions['force'] = true;
+    } else {
+        dbOptions['alter'] = true;
+        dbOptions['force'] = false;
+    }
+
+    await sequelize.sync(dbOptions);
 
     app.listen(port, () => {
         logger.info(`${process.env.BACKEND_URL} working on ${port}`)

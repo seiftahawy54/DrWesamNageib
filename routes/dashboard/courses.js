@@ -45,13 +45,9 @@ export default Router()
         upload().fields([
             {
                 name: 'mainImg',
-                maxCount: 1,
-                required: false,
             },
             {
                 name: 'briefImg',
-                maxCount: 1,
-                required: false,
             }
         ]),
         courseObjectValidation,
