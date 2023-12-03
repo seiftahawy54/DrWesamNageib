@@ -502,14 +502,6 @@ const getUserRound = async (req, res, next) => {
         let roundData = await userPerRound.findAll({
             where: {
                 userId: req.user.user_id,
-                [Op.or]: [
-                    {
-                        specialAccess: false,
-                    },
-                    {
-                        specialAccess: true
-                    }
-                ]
             },
             include: [
                 {
@@ -533,9 +525,9 @@ const getUserRound = async (req, res, next) => {
                                 ]
                             },
                             {
-                                [Op.or]: [
+                                [Op.and]: [
                                     {
-                                        "$userPerRound.specialAccess$": false
+                                        finished: true
                                     },
                                     {
                                         "$userPerRound.specialAccess$": true
