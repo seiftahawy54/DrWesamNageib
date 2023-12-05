@@ -1,9 +1,10 @@
 import {errorRaiser} from "../../utils/error_raiser.js";
-import {Courses, Discounts} from "../../models/index.js";
+import {Courses, Discounts, Users} from "../../models/index.js";
 import {validationResult} from "express-validator";
 import config from "config";
 import {calcPagination, extractErrorMessages} from "../../utils/general_helper.js";
-import {Op} from "sequelize";
+import {Op, Sequelize} from "sequelize";
+import discountPerUsage from "../../models/discountPerUsage.js";
 
 const getDiscountsPage = async (req, res, next) => {
     try {
@@ -20,14 +21,23 @@ const getDiscountsPage = async (req, res, next) => {
             where: {
                 isDeleted: false
             },
-            include: [
+            include:
                 {
-                    model: Courses,
+                    model: discountPerUsage,
+                    // Select the count
+                    on: {
+                        discountId: {
+                            [Op.eq]: Sequelize.col("discount.id"),
+                        }
+                    }
                 }
-            ]
         });
 
         const pagination = await calcPagination(Discounts, pageNumber)
+
+        allDiscounts.forEach(discount => {
+            discount.dataValues.numberOfUsages = discount.dataValues.discountPerUsages.length
+        })
 
         return res.status(200).json({
             discounts: allDiscounts,
@@ -90,12 +100,128 @@ const postAddNewDiscount = async (req, res, next) => {
 
         return res.status(201).json({message: "Discount added successfully"});
     } catch (e) {
-        return await errorRaiser(e, next);
+        next(e);
     }
 };
+
+const deleteDiscount = async (req, res, next) => {
+    try {
+        const {discountId} = req.params;
+
+        const discount = await Discounts.findOne({
+            where: {
+                id: discountId
+            }
+        })
+
+        if (!discount) {
+            return res.status(404).json({message: "Discount not found"})
+        }
+
+        const updateResult = await Discounts.update({
+            isDeleted: true
+        })
+
+        if (updateResult > 0) {
+            return res.status(200).json({message: "Discount deleted successfully"})
+        }
+
+        return res.status(500).json({message: "Server error"})
+    } catch (e) {
+        next(e)
+    }
+}
+
+const getSingleDiscountData = async (req, res, next) => {
+    try {
+        const {discountId} = req.params;
+        const discount = await Discounts.findOne({
+            where: {
+                id: parseInt(discountId),
+            }
+        })
+
+        if (!discount) {
+            return res.status(404).json({message: "Discount not found"})
+        }
+
+        let usages = await discountPerUsage.findAll({
+            where: {
+                discountId
+            },
+            include: {
+                model: Users,
+                on: {
+                    user_id: {
+                        [Op.eq]: Sequelize.col("discountPerUsage.userId"),
+                    },
+                }
+            }
+        }) ?? [];
+
+        if (usages.length > 0) {
+            usages = usages.map(({users}) => users).flat();
+        }
+
+        return res.status(200).json({
+            discount,
+            usages
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
+const putUpdateDiscount = async (req, res, next) => {
+    try {
+        const {discountId} = req.params;
+        const {
+            discountPercentage: percentage,
+            discountCode,
+            status
+        } = req.body;
+
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(422).json(extractErrorMessages(errors.array()))
+        }
+
+        const discount = await Discounts.findOne({
+            where: {
+                id: parseInt(discountId)
+            }
+        })
+
+        if (!discount) {
+            return res.status(404).json({message: "Discount not found"})
+        }
+
+        const updateResult = await Discounts.update({
+            percentage,
+            discountCode,
+            status
+        }, {
+            where: {
+                id: parseInt(discountId)
+            }
+        })
+
+        if (updateResult > 0) {
+            return res.status(200).json({message: "Discount updated successfully"})
+        }
+
+        return res.status(500).json({message: "Server error"})
+    } catch (e) {
+        next(e)
+    }
+}
 
 export default {
     getDiscountsPage,
     postAddNewDiscount,
-    getCoursesToDiscounts
+    getCoursesToDiscounts,
+    deleteDiscount,
+    getSingleDiscountData,
+    putUpdateDiscount
 }

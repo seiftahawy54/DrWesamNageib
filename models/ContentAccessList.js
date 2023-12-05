@@ -6,12 +6,10 @@ const ContentAccessList = sequelize.define("contentAccessList", {
     contentId: {
         type: Sequelize.INTEGER,
         foreignKey: true,
-        defaultValue: UUIDV4,
         allowNull: false,
     },
     userId: {
         type: Sequelize.STRING,
-        defaultValue: UUIDV4,
         foreignKey: true,
         allowNull: false,
     },

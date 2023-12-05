@@ -13,7 +13,7 @@ import moment from "moment";
 import {validationResult} from "express-validator";
 import logger from "../../utils/logger.js";
 
-import {Courses, Exams, ExamsReplies, Payment, Rounds, Users,} from "../../models/index.js";
+import {Courses, Discounts, Exams, ExamsReplies, Payment, Rounds, Users,} from "../../models/index.js";
 import {errorRaiser} from "../../utils/error_raiser.js";
 import userPerRound from "../../models/userPerRound.js";
 import {Op, Sequelize} from "sequelize";
@@ -21,6 +21,7 @@ import qr from "qrcode";
 import path from "path";
 import UserPerCertificates from "../../models/UserPerCertificates.js";
 import crypto from "crypto";
+import discountPerUsage from "../../models/discountPerUsage.js";
 
 const getUserProfile = async (req, res, next) => {
     try {
@@ -809,6 +810,72 @@ const userExamsRelatedData = async (userId) => {
     }
 }
 
+const applyCoupon = async (req, res, next) => {
+    try {
+        const {couponCode} = req.body;
+
+        if (!couponCode) {
+            return res.status(422).json({
+                coupon: "Coupon code is required"
+            })
+        }
+
+        const findingCoupon = await Discounts.findOne({
+            where: {
+                discountCode: couponCode,
+            },
+        })
+
+        if (!findingCoupon) {
+            return res.status(404).json({
+                message: "Coupon not found"
+            })
+        }
+
+        if (!findingCoupon.status) {
+            return res.status(400).json({
+                message: "Coupon is not active"
+            })
+        }
+
+        const isUsedBefore = await discountPerUsage.findOne({
+            where: {
+                [Op.and]: [
+                    {userId: req.user.user_id},
+                    {discountId: findingCoupon.id}
+                ]
+            }
+        })
+
+        if (isUsedBefore && isUsedBefore.isUsed) {
+            return res.status(422).json({
+                message: "Coupon already used"
+            })
+        }
+
+        if (isUsedBefore && !isUsedBefore.isUsed) {
+            return res.status(200).json({
+                message: "Coupon is available to use",
+                usageId: isUsedBefore.id,
+                coupon: findingCoupon,
+            })
+        }
+
+        const createUsage = await discountPerUsage.create({
+            userId: req.user.user_id,
+            discountId: findingCoupon.id,
+        })
+
+        return res.status(200).json({
+            message: "Coupon applied successfully",
+            usageId: createUsage.id,
+            coupon: findingCoupon,
+        })
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
+}
+
 export default {
     getUserProfile,
     getUserProfileCertificate,
@@ -823,5 +890,6 @@ export default {
     getAllUserData,
     getBoughtCourses,
     getUserRound,
-    getUserGrades
+    getUserGrades,
+    applyCoupon
 }
