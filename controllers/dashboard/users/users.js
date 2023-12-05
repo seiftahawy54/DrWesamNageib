@@ -31,7 +31,7 @@ const getSearchForUser = async (req, res, next) => {
         if (specialization) ({error, message} = validateRequestInput(specialization, 'specialization', STRING_TYPE));
         if (page) ({error, message} = validateRequestInput(page, 'page', STRING_TYPE))
 
-        if (!page) {
+        if (!page || page < 1) {
             page = 1
         }
 

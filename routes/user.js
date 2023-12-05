@@ -8,6 +8,7 @@ const userProfileRoutes = Router();
 const examsRoutes = Router();
 const certificatesRoutes = Router();
 const userCartRoutes = Router()
+const couponsRoutes = Router();
 
 userProfileRoutes
     .get("/", usersController.getUserProfile)
@@ -60,10 +61,16 @@ examsRoutes
 userCartRoutes.get('/', getShoppingCart)
 userCartRoutes.delete('/:roundId', postDeleteFromCart)
 
+//-----------------------------------------------
+// User Coupons routes
+//-----------------------------------------------
+couponsRoutes.post('/', usersController.applyCoupon)
+
 const usersRoutes = Router()
     .use("/", userProfileRoutes)
     .use("/certificates", certificatesRoutes)
     .use("/exams", examsRoutes)
-    .use('/cart', userCartRoutes);
+    .use('/cart', userCartRoutes)
+    .use('/coupons', couponsRoutes);
 
 export default usersRoutes;

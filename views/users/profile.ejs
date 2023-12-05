@@ -59,53 +59,58 @@
             <tr>
               <th scope="row">
                 Your Bought Courses
-              </th>
-              <td>
-                <div class="info" v-if="payments">
-                  <template v-for="payment in payments" :key="payment.id">
-                    <div class="bought_courses">
-                      <span v-text="payment.name"></span>
-                      <span v-text="payment.price"></span>
-                    </div>
-                  </template>
-                </div>
-                <div class="info" v-if="!payments">
-                  <span>You haven't bought any courses yet!</span>
-                </div>
-              </td>
-            </tr>
-            <template v-for="round in rounds" :key="round.round_id">
-              <tr>
-                <th scope="row">
-                  Round {{ round.round_date}} files
-                </th>
-                <td>
-                  <div v-if="rounds">
-                    <div class="info round-files" v-html="round.round_link">
-                    </div>
+              </div>
+              <div class="info" v-if="payments">
+                <template v-for="payment in payments" :key="payment.id">
+                  <div class="bought_courses">
+                    <span v-text="payment.name"></span>
+                    <span v-text="payment.price"></span>
                   </div>
-                </td>
-              </tr>
-            </template>
-            <tr v-if="examsData.userExams">
-              <th scope="row">
-                Your Performed Exams:
-              </th>
-              <td v-if="examsData.hasOwnProperty('userExams')">
-                <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
-                  <a :href="`/exams/preview/${ grade.reply_id }`" class="me-3">{{ grade.title }} report</a>
-                  <span class="text-center">
-                                <sup><span> {{ grade.grade }} </span></sup> /
-                                <sub><span> {{ grade.questions.length }} </span></sub>
-                              </span>
+                </template>
+              </div>
+              <div class="info" v-if="!payments">
+                <span>You haven't bought any courses yet!</span>
+              </div>
+            </div>
+
+            <div class='info-container' v-if="round">
+              <div class="info">
+                Round files
+              </div>
+              <div class="info" v-html="round">
+              </div>
+            </div>
+
+
+            <span v-if="examsData.userExams">
+              Your Performed Exams:
+            </span>
+
+            <div v-if="examsData.hasOwnProperty('userExams')" class="info-container">
+              <div v-for="(item, index) in examsData.userExams" class="exams-previews info">
+                <div class="preview-{{ index }}">
+                  <span>{{ index + 1}} : </span>
+                  <a :href="`/exams/preview/${ item.reply_id }`">{{ item.title }} report</a>
                 </div>
-              </td>
-            </tr>
-            <tr v-if="certificate">
-              <th scope="row">
-                Certificates
-              </th>
-              <td>
+              </div>
+
+              <div class="info payments-details" v-for="(grade, index) in examsData.userExams">
+                <div class="bought_courses">
+                  <span class="text-center">
+                    <sup><span> {{ grade.grade }} </span></sup> /
+                    <sub><span> {{ grade.questions.length }} </span></sub>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
+            <div class='info-container' v-if="certificate">
+              <div class="info">
+                Your certificate
+              </div>
+
+              <div class="info">
                 <a :href="`/certificates/${certificate.courseId}`" class="link-success"
                    v-text="`${certificate.courseName} - ${certificate.roundDate}`"></a>
               </td>

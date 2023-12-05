@@ -3,9 +3,9 @@ import {validationResult} from "express-validator";
 import moment from "moment";
 
 import {Rounds, Payment, Courses, Users, Messages, Opinions, About} from "../../models/index.js";
-import {extractErrorMessages} from "../../utils/general_helper.js";
+import {calcPagination, extractErrorMessages} from "../../utils/general_helper.js";
 import config from "config";
-import Sequelize from 'sequelize'
+import Sequelize, {Op} from 'sequelize'
 
 export const getStatistics = async (req, res, next) => {
     try {
@@ -112,19 +112,28 @@ export const getOpinionsPage = async (req, res, next) => {
     try {
         let pageNumber = req.query.page;
         if (!pageNumber) {
-            pageNumber = 1;
+            pageNumber = 1
         }
-        const numberOfResults = await Opinions.findAndCountAll();
-        const fetchingResults = await Opinions.findAll({
+
+        const opinions = await Opinions.findAll({
             limit: config.get('paginationMaxSize'),
             offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
-        });
+            order: [['createdAt', 'DESC']],
+            include: {
+                model: Courses,
+                on: {
+                    course_id: {[Op.eq]: Sequelize.col("opinions.sender_course")},
+                },
+                attributes: ["name"],
+            }
+        })
 
-        res.status(200).json({
-            opinions: fetchingResults,
-            numberOfLinks: Math.ceil(numberOfResults.count / config.get('paginationMaxSize')),
-            activePage: pageNumber,
-        });
+        const pagination = await calcPagination(Opinions, pageNumber)
+
+        return res.status(200).json({
+            opinions,
+            pagination,
+        })
     } catch (e) {
         await errorRaiser(e, next);
     }

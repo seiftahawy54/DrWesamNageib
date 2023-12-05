@@ -24,6 +24,7 @@ import {
 import moment from "moment";
 import userPerRound from "../models/userPerRound.js";
 import {Op} from "sequelize";
+import discountPerUsage from "../models/discountPerUsage.js";
 
 export const Environment =
     process.env.NODE_ENV === "production"
@@ -487,6 +488,7 @@ export const getCompletePayment = async (req, res, next) => {
 
 export const postCreateOrder = async (req, res, next) => {
     const request = new paypal.orders.OrdersCreateRequest();
+    const {discountId} = req.query
     const {cart} = await Users.findOne({
         where: {
             user_id: req.user.user_id,
@@ -508,7 +510,50 @@ export const postCreateOrder = async (req, res, next) => {
     });
 
     const coursesPrice = extractArrOfPrices(filteredCourses);
-    const total = calcTotalPrice(coursesPrice);
+    let total = calcTotalPrice(coursesPrice);
+
+    console.log(req.query)
+
+    if (discountId && parseInt(discountId) > 0) {
+        const findDiscountUsage = await discountPerUsage.findOne({
+            where: {
+                [Op.and]: [
+                    {
+                        discountId: parseInt(discountId),
+                    },
+                    {
+                        userId: req.user.user_id
+                    }
+                ]
+            }
+        });
+
+        const findingCouponData = await Discounts.findOne({
+            where: {
+                id: parseInt(discountId),
+            }
+        })
+
+        if (findingCouponData && findDiscountUsage && !findDiscountUsage.isUsed) {
+            total = (total * (1 - (findingCouponData.percentage / 100))).toFixed(2);
+
+            await discountPerUsage.update({
+                isApplied: true,
+            },
+                {
+                    where: {
+                        [Op.and]: [
+                            {
+                                discountId: parseInt(discountId),
+                            },
+                            {
+                                userId: req.user.user_id
+                            }
+                        ]
+                    }
+                })
+        }
+    }
 
     request.prefer("return=representation");
     request.requestBody({
@@ -544,6 +589,28 @@ export const postSuccess = async (req, res, next) => {
                 user_id: req.user.user_id,
             }
         })
+        const {discountId} = req.query;
+
+        // Check if there's a coupon applied or not
+        if (discountId && parseInt(discountId) > 0) {
+            const couponPerUsage = await discountPerUsage.findOne({
+                where: {
+                    discountId: parseInt(discountId),
+                    userId: req.user.user_id
+                }
+            })
+
+            if (couponPerUsage && !couponPerUsage.isUsed && couponPerUsage.isApplied) {
+                await discountPerUsage.update({
+                    isUsed: true
+                }, {
+                    where: {
+                        discountId: parseInt(discountId),
+                        userId: req.user.user_id
+                    }
+                })
+            }
+        }
 
         const createdPayments = [];
         const createdRounds = [];

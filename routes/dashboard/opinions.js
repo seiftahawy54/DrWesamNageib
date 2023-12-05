@@ -22,6 +22,6 @@ opinionsRoutes
     ],
     postUpdateOpinion
   )
-  .post("/delete-opinion", postDeleteOpinion);
+  .delete("/", postDeleteOpinion);
 
 export default opinionsRoutes;

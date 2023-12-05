@@ -1,3 +1,4 @@
+
 let envPath = `.env.${process.env.NODE_ENV}`
 
 if (process.env.NODE_ENV === 'production') {
@@ -31,8 +32,9 @@ import {
     UserPerRound,
     Exams,
     ExamsCourses,
-    ContentAccessList, Content, Discounts
+    ContentAccessList, Content, Discounts, Opinions
 } from "./models/index.js";
+import discountPerUsage from "./models/discountPerUsage.js";
 import {imageDownloader} from "./utils/general_helper.js";
 import notFoundHandler from "./middlewares/notFoundHandler.js";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -180,13 +182,20 @@ ContentAccessList.hasMany(Users,
         constraints: false,
     })
 
-Courses.hasMany(Discounts, {
+discountPerUsage.hasMany(Users, {
     constraints: false,
 })
 
-Discounts.hasOne(Courses, {
+discountPerUsage.hasMany(Discounts, {
     constraints: false,
-    through: "course"
+})
+
+Discounts.hasMany(discountPerUsage, {
+    constraints: false,
+})
+
+Opinions.hasMany(Courses, {
+    constraints: false,
 })
 
 const port = process.env.PORT || process.env.DEV_PORT || 4000;

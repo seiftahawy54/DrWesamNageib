@@ -10,11 +10,28 @@ import {calcPagination} from "../../../utils/general_helper.js";
 
 export const getAllReplies = async (req, res, next) => {
     try {
-        let {page} = req.query;
+        let {page, newest, oldest, highest, lowest} = req.query;
 
         if (!page) {
             page = 1;
         }
+
+        // const sortObject = new Set([]);
+        //
+        // if (newest) {
+        //     sortObject.add(["createdAt", "DESC"]);
+        // }
+        // if (oldest) {
+        //     sortObject.add(["createdAt", "ASC"]);
+        // }
+        //
+        // if (lowest) {
+        //     sortObject.add(["grade", "ASC"]);
+        // }
+        //
+        // if (highest) {
+        //     sortObject.add(["grade", "DESC"]);
+        // }
 
         let allExamsReplies = await Exams.findAll({
             attributes: ["id", ["exam_id", "examId"], ["title", "examTitle"], [Sequelize.fn("COUNT", "exams_replies"), 'repliesCount']],
@@ -32,15 +49,12 @@ export const getAllReplies = async (req, res, next) => {
                     }
                 }
             ],
-            order: [['id', 'ASC']],
+            order: [['grade', 'DESC']],
             group: ["exam.exam_id", "exam.id", "title"],
         })
 
         allExamsReplies = allExamsReplies.slice((page - 1) * config.get('paginationMaxSize'), page * config.get('paginationMaxSize'));
 
-        // for (let exam of allExamsReplies) {
-        //     exam.dataValues.repliesCount = exam.exams_replies.length;
-        // }
 
         const pagination = await calcPagination(Exams, page)
 
@@ -86,7 +100,7 @@ export const getRepliesForExam = async (req, res, next) => {
                     attributes: ["name"],
                 }
             ],
-            order: [["id", "DESC"]],
+            order: [["grade", "DESC"]],
             where: {
                 exam_id: examId,
                 isDeleted: false
