@@ -109,10 +109,12 @@ export const postAddNewRound = async (req, res, next) => {
             title,
         });
 
-            await userPerRound.create({
-                userId,
-                roundId: addingResult.round_id
-            })
+        const newRoundsPerUsers = usersIds.map(userId => ({
+            userId,
+            roundId: addingResult.round_id
+        }))
+
+        await userPerRound.bulkCreate(newRoundsPerUsers)
 
         if (typeof addingResult === "object") {
             return res.status(201).json({message: "Round Added Successfully"});

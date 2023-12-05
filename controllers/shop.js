@@ -381,7 +381,13 @@ export const getOpinionsForm = (req, res, next) => {
 };
 
 export const postOpinions = async (req, res, next) => {
-    const {course, opinion} = req.body;
+    const {
+        name,
+        email,
+        whatsappNumber,
+        opinion,
+        course,
+    } = req.body;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -403,10 +409,11 @@ export const postOpinions = async (req, res, next) => {
 
     try {
         const newOpinion = await Opinions.create({
-            sender_name: req.user.name,
-            sender_email: req.user.email,
+            sender_name: name,
+            sender_email: email,
             sender_course: course,
             sender_message: opinion,
+            sender_whatsapp: whatsappNumber,
         })
 
         return res.status(200).json({

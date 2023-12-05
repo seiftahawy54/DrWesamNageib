@@ -3,9 +3,9 @@ import {validationResult} from "express-validator";
 import moment from "moment";
 
 import {Rounds, Payment, Courses, Users, Messages, Opinions, About} from "../../models/index.js";
-import {extractErrorMessages} from "../../utils/general_helper.js";
+import {calcPagination, extractErrorMessages} from "../../utils/general_helper.js";
 import config from "config";
-import Sequelize from 'sequelize'
+import Sequelize, {Op} from 'sequelize'
 
 export const getStatistics = async (req, res, next) => {
     try {
@@ -35,96 +35,105 @@ export const getStatistics = async (req, res, next) => {
     }
 }
 export const getOverview = async (req, res, next) => {
-  let numberOfUsers = await Users.findAll({
-    attributes: ["createdAt", "name"],
-  });
-  let numberOfCourses = await Courses.findAll({
-    attributes: ["createdAt", "name"],
-  });
-  let numberOfRounds = await Rounds.findAll();
-  let numberOfMessages = await Messages.findAll();
-  let numberOfPayments = await Payment.findAll();
-  let numberOfCertificates = await About.findAll();
-
-  const generateStatistics = (model, uniqueProperty) => {
-    let statisticsObject = new Map();
-    model.forEach((data) => {
-      const date = moment(data.createdAt).format("DD-MM");
-      statisticsObject.set(date, [
-        ...(statisticsObject.get(date) || []),
-        data[uniqueProperty],
-      ]);
+    let numberOfUsers = await Users.findAll({
+        attributes: ["createdAt", "name"],
     });
-    return Object.fromEntries(statisticsObject);
-  };
+    let numberOfCourses = await Courses.findAll({
+        attributes: ["createdAt", "name"],
+    });
+    let numberOfRounds = await Rounds.findAll();
+    let numberOfMessages = await Messages.findAll();
+    let numberOfPayments = await Payment.findAll();
+    let numberOfCertificates = await About.findAll();
 
-  numberOfUsers = generateStatistics(numberOfUsers, "name");
-  numberOfCourses = generateStatistics(numberOfCourses, "name");
-  numberOfPayments = generateStatistics(numberOfPayments, "user_id");
+    const generateStatistics = (model, uniqueProperty) => {
+        let statisticsObject = new Map();
+        model.forEach((data) => {
+            const date = moment(data.createdAt).format("DD-MM");
+            statisticsObject.set(date, [
+                ...(statisticsObject.get(date) || []),
+                data[uniqueProperty],
+            ]);
+        });
+        return Object.fromEntries(statisticsObject);
+    };
 
-  return res.status(200).json({
-    statsNumbers: {
-      users: numberOfUsers,
-      courses: numberOfCourses,
-      payments: numberOfPayments,
-    },
-  });
+    numberOfUsers = generateStatistics(numberOfUsers, "name");
+    numberOfCourses = generateStatistics(numberOfCourses, "name");
+    numberOfPayments = generateStatistics(numberOfPayments, "user_id");
+
+    return res.status(200).json({
+        statsNumbers: {
+            users: numberOfUsers,
+            courses: numberOfCourses,
+            payments: numberOfPayments,
+        },
+    });
 };
 
 export const getMessages = async (req, res, next) => {
-  try {
-    const allMessages = await Messages.findAll();
-    return res.status(200).json({
-      messages: allMessages,
-    });
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
+    try {
+        const allMessages = await Messages.findAll();
+        return res.status(200).json({
+            messages: allMessages,
+        });
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
 };
 
 export const postDeleteAllMessages = async (req, res, next) => {
-  try {
-    const deletingAllMessages = await Messages.destroy({
-      truncate: true,
-    });
+    try {
+        const deletingAllMessages = await Messages.destroy({
+            truncate: true,
+        });
 
-    logger.info(`Deleting all messages result ===> ${deletingAllMessages}`);
+        logger.info(`Deleting all messages result ===> ${deletingAllMessages}`);
 
-    return res.status(200).json({
-      message: "All messages deleted successfully",
-    });
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
+        return res.status(200).json({
+            message: "All messages deleted successfully",
+        });
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
 };
 
 export const postDeleteMessage = async (req, res, next) => {
-  try {
-    const messageId = req.body.messageId;
-    const deletingResult = await (await Messages.findByPk(messageId)).destroy();
-    return res.status(200).json({ message: "Message Deleted Successfully" });
-  } catch (e) {
-    await errorRaiser(e, next);
-  }
+    try {
+        const messageId = req.body.messageId;
+        const deletingResult = await (await Messages.findByPk(messageId)).destroy();
+        return res.status(200).json({message: "Message Deleted Successfully"});
+    } catch (e) {
+        await errorRaiser(e, next);
+    }
 };
 
 export const getOpinionsPage = async (req, res, next) => {
     try {
         let pageNumber = req.query.page;
         if (!pageNumber) {
-            pageNumber = 1;
+            pageNumber = 1
         }
-        const numberOfResults = await Opinions.findAndCountAll();
-        const fetchingResults = await Opinions.findAll({
+
+        const opinions = await Opinions.findAll({
             limit: config.get('paginationMaxSize'),
             offset: (parseInt(pageNumber) - 1) * config.get('paginationMaxSize'),
-        });
+            order: [['createdAt', 'DESC']],
+            include: {
+                model: Courses,
+                on: {
+                    course_id: {[Op.eq]: Sequelize.col("opinions.sender_course")},
+                },
+                attributes: ["name"],
+            }
+        })
 
-        res.status(200).json({
-            opinions: fetchingResults,
-            numberOfLinks: Math.ceil(numberOfResults.count / config.get('paginationMaxSize')),
-            activePage: pageNumber,
-        });
+        const pagination = await calcPagination(Opinions, pageNumber)
+
+        return res.status(200).json({
+            opinions,
+            pagination,
+        })
     } catch (e) {
         await errorRaiser(e, next);
     }

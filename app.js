@@ -32,7 +32,7 @@ import {
     UserPerRound,
     Exams,
     ExamsCourses,
-    ContentAccessList, Content, Discounts
+    ContentAccessList, Content, Discounts, Opinions
 } from "./models/index.js";
 import discountPerUsage from "./models/discountPerUsage.js";
 import {imageDownloader} from "./utils/general_helper.js";
@@ -191,6 +191,10 @@ discountPerUsage.hasMany(Discounts, {
 })
 
 Discounts.hasMany(discountPerUsage, {
+    constraints: false,
+})
+
+Opinions.hasMany(Courses, {
     constraints: false,
 })
 
