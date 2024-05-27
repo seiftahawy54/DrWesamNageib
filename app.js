@@ -205,7 +205,7 @@ try {
 
     let dbOptions = {};
 
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'production') {
         dbOptions['alter'] = false;
         dbOptions['force'] = true;
     } else {
